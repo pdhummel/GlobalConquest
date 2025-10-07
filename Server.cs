@@ -18,10 +18,13 @@ public class Server
     long lastMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
     private readonly GameState gameState = new();
 
-    public void StartAsHost(int port, int maxPeers, string key)
+    public void StartAsHost(GameSettings gameSettings, string key)
     {
-        this.maxPeers = maxPeers;
+        this.maxPeers = gameSettings.NumberOfHumans;
         this.key = key;
+        gameState.GameSettings = gameSettings;
+        Map map = new Map(gameSettings.Height, gameSettings.Width);
+        gameState.Map = map;
         listener = new EventBasedNetListener();
 
         // Set up event handlers for connection/data
@@ -36,7 +39,7 @@ public class Server
         };
 
         // Start the server manager
-        server.Start(port);
+        server.Start(gameSettings.Port);
         isRunning = true;
 
         // Create and start the new thread for the server's polling loop
@@ -54,16 +57,26 @@ public class Server
         while (isRunning)
         {
             server?.PollEvents();
-            Thread.Sleep(15); // Adjust sleep time to control CPU usage.
+            Thread.Sleep(1000); // Adjust sleep time to control CPU usage.
 
             NetDataWriter writer = new NetDataWriter();
-            string jsonString = JsonSerializer.Serialize(this.gameState);
-            writer.Put(jsonString);
             if (server != null)
             {
                 foreach (NetPeer peer in server.ConnectedPeerList)
                 {
-                    peer.Send(writer, DeliveryMethod.ReliableOrdered);
+                    for (int liY = 0; liY < gameState.Map.Y; liY++)
+                    {
+                        for (int liX = 0; liX < gameState.Map.X; liX++)
+                        {
+                            gameState.MapHex = gameState.Map.Hexes[liY, liX];
+                            //Console.WriteLine("ServerLoop(): hex=" + gameState.MapHex.Terrain);
+                            string jsonString = JsonSerializer.Serialize(this.gameState);
+                            //Console.WriteLine("ServerLoop(): jsonString=" + jsonString);
+                            writer.Put(jsonString);
+                            peer.Send(writer, DeliveryMethod.ReliableOrdered);
+                            writer.Reset();
+                        }
+                    }
                 }
             }
         }

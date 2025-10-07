@@ -5,20 +5,31 @@ using Color = Microsoft.Xna.Framework.Color;
 using System.Text.Json;
 using MonoGame.Extended;
 using System.Windows.Documents;
+using Myra;
+using Myra.Graphics2D;
+using Myra.Graphics2D.UI;
+using static Myra.Graphics2D.UI.Grid;
+using static Myra.Graphics2D.UI.Label;
 
 namespace GlobalConquest;
 
 public class GlobalConquestGame : Game
 {
+    public Server? Server { get; set; }
+    public Client? Client { get; set; } = new Client();
+    public MainGameScreen MainGameScreen { get; set; }
+
     private GraphicsDeviceManager _graphics;
     private readonly IntPtr drawSurface;
-    public Client? Client { get; set; }
     SpriteFont? font;
     OrthographicCamera camera;
     int zoomLevel = 0;
     float[] zoomLevels = [1.0F, 0.75F, .5F, 0.25F, 0.15F, 0.1F];
     long lastMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
     int previousScrollWheelValue = 0;
+    private Desktop desktop;
+
+
 
 
 
@@ -37,13 +48,6 @@ public class GlobalConquestGame : Game
     {
         this.drawSurface = drawSurface;
         _graphics.PreparingDeviceSettings += new EventHandler<PreparingDeviceSettingsEventArgs>(graphics_PreparingDeviceSettings);
-        Control? control = Control.FromHandle(Window.Handle);
-        if (control != null)
-        {
-            control.VisibleChanged += new EventHandler(GlobalConquestGame_VisibleChanged);
-        }
-
-
     }
 
     void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
@@ -53,25 +57,47 @@ public class GlobalConquestGame : Game
 
     private void GlobalConquestGame_VisibleChanged(object? sender, EventArgs e)
     {
-        Control? control = Control.FromHandle(Window.Handle);
-        if (control != null && control.Visible == true)
-        {
-            control.Visible = false;
-        }
+        //Control? control = Control.FromHandle(Window.Handle);
+        //if (control != null && control.Visible == true)
+        //{
+        //    control.Visible = false;
+        //}
     }
 
     protected override void Initialize()
     {
         // Add your initialization logic here
-        hexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, 100, 100);
+        //hexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, 50, 100);
         base.Initialize();
     }
 
     protected override void LoadContent()
     {
+        MyraEnvironment.Game = this;
+        desktop = new Desktop();
+        var grid = new Grid
+        {
+        RowSpacing = 8,
+        ColumnSpacing = 8
+        };
+
+        grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+        grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+        grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
+        grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
+        desktop.Root = grid;
+
+        ConquestMenu conquestMenu = new ConquestMenu(this, grid);
+        conquestMenu.LoadContent();
+        
         camera = new OrthographicCamera(GraphicsDevice);
         // create a new SpriteBatch, which can be used to draw textures.
         Globals.spriteBatch = new SpriteBatch(GraphicsDevice);
+    }
+
+    public void HexMapLoadContent()
+    {
+        hexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
         hexMapEngineAdapter.LoadContent();
     }
 
@@ -83,13 +109,29 @@ public class GlobalConquestGame : Game
             Exit();
         KeyboardState kstate = Keyboard.GetState();
 
-        if (kstate.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up) && currentMilliseconds - lastMilliseconds > 50)
+        if (kstate.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up) &&
+            hexMapEngineAdapter != null &&
+            currentMilliseconds - lastMilliseconds > 50)
         {
-            //zoomIn();
+            hexMapEngineAdapter?.scrollUp();
         }
-        if (kstate.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down) && currentMilliseconds - lastMilliseconds > 50)
+        if (kstate.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down) &&
+            hexMapEngineAdapter != null &&
+            currentMilliseconds - lastMilliseconds > 50)
         {
-            //zoomOut();
+            hexMapEngineAdapter?.scrollDown();
+        }
+        if (kstate.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left) &&
+            hexMapEngineAdapter != null &&
+            currentMilliseconds - lastMilliseconds > 50)
+        {
+            hexMapEngineAdapter?.scrollLeft();
+        }
+        if (kstate.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right) &&
+            hexMapEngineAdapter != null &&
+            currentMilliseconds - lastMilliseconds > 50)
+        {
+            hexMapEngineAdapter?.scrollRight();
         }
 
 
@@ -117,8 +159,14 @@ public class GlobalConquestGame : Game
         previousScrollWheelValue = currentScrollWheelValue;
 
         // TODO: Add your update logic here
-        hexMapEngineAdapter.Process_UpdateEvent(gameTime);
+        if (Client.isLoadContentComplete)
+            hexMapEngineAdapter?.Process_UpdateEvent(gameTime);
         base.Update(gameTime);
+    }
+
+    public void updateMap()
+    {
+        hexMapEngineAdapter?.updateMap();
     }
 
     protected override void Draw(GameTime gameTime)
@@ -127,7 +175,9 @@ public class GlobalConquestGame : Game
 
         Globals.spriteBatch?.Begin(transformMatrix: camera.GetViewMatrix());
         // TODO: Add your drawing code here     
-        hexMapEngineAdapter.Process_DrawEvent(gameTime);
+        desktop.Render();
+        if (Client.isLoadContentComplete)
+            hexMapEngineAdapter?.Process_DrawEvent(gameTime);
         Globals.spriteBatch?.End();
 
         base.Draw(gameTime);
@@ -148,7 +198,7 @@ public class GlobalConquestGame : Game
             zoomLevel--;
         }
         camera.Zoom = zoomLevels[zoomLevel];
-        Console.WriteLine("zoomLevel=" + zoomLevel + ", zoom=" + camera.Zoom);
+        //Console.WriteLine("zoomLevel=" + zoomLevel + ", zoom=" + camera.Zoom);
         lastMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
     }
     
@@ -157,9 +207,10 @@ public class GlobalConquestGame : Game
         if (zoomLevel < zoomLevels.Length - 1)
         {
             zoomLevel++;
+            hexMapEngineAdapter?.focusToCenter();
         }
         camera.Zoom = zoomLevels[zoomLevel];
-        Console.WriteLine("zoomLevel=" + zoomLevel + ", zoom=" + camera.Zoom);
+        //Console.WriteLine("zoomLevel=" + zoomLevel + ", zoom=" + camera.Zoom);
         lastMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
     }
 

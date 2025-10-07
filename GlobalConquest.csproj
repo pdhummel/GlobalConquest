@@ -6,7 +6,7 @@
     <RollForward>Major</RollForward>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
-     <UseWindowsForms>true</UseWindowsForms>
+     <UseWindowsForms>false</UseWindowsForms>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>    
     <ImplicitUsings>enable</ImplicitUsings>     
@@ -37,6 +37,7 @@
   <PackageReference Include="MonoGame.Forms.DX" Version="3.1.0" />
   <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*" />
   <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" />
+  <PackageReference Include="Myra" Version="1.5.9" />
   </ItemGroup>
 
   <ItemGroup>

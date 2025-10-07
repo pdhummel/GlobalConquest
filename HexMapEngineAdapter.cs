@@ -2,7 +2,7 @@ using HexagonMappingEngine;
 using HexagonalMapEngine.Classes;
 using HexMapEngine.Classes;
 using Myra;
-using Myra.Graphics2D.Text;
+//using Myra.Graphics2D.Text;
 using System;
 using System.Collections;
 using System.Windows;
@@ -22,6 +22,7 @@ class HexMapEngineAdapter
 
     GraphicsDevice GraphicsDevice;
     Game game;
+    GlobalConquestGame gcGame;
     private Microsoft.Xna.Framework.GraphicsDeviceManager coGraphicsDeviceManager;
 
     private int ciRowPosition = 0;
@@ -54,15 +55,17 @@ class HexMapEngineAdapter
     public HexMapEngineAdapter(Game game, GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics, int hexHeight, int hexWidth)
     {
         this.game = game;
+        this.gcGame = (GlobalConquestGame)game;
         this.GraphicsDevice = graphicsDevice;
         this.coGraphicsDeviceManager = graphics;
         this.hexHeight = hexHeight;
         this.hexWidth = hexWidth;
-        coMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+        //coMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
     }
 
     public void LoadContent()
     {
+        Console.WriteLine("HexMapEngineAdapter.LoadContent(): enter");
         coSpriteBatch = Globals.spriteBatch;
 
         Globals.pixel = new Texture2D(GraphicsDevice, 1, 1);
@@ -70,7 +73,7 @@ class HexMapEngineAdapter
 
         HexMapEngine.Structures.Global.ACTUAL_MAP_WIDTH_IN_TILES = hexWidth;
         HexMapEngine.Structures.Global.ACTUAL_MAP_HEIGHT_IN_TILES = hexHeight;
-        HexMapEngine.Classes.HexTileMapLoad loHexTileMapLoad = new HexMapEngine.Classes.HexTileMapLoad(hexHeight, hexWidth);
+        //HexMapEngine.Classes.HexTileMapLoad loHexTileMapLoad = new HexMapEngine.Classes.HexTileMapLoad(hexHeight, hexWidth);
 
         createHexTexture2D(0, "unknown", "sea-flat-hex-72x72");
         createHexTexture2D(1, "sea", "sea-flat-hex-72x72");
@@ -80,44 +83,29 @@ class HexMapEngineAdapter
         createHexTexture2D(5, "forest", "forest-flat-hex-72x72");
         createHexTexture2D(6, "desert", "desert-flat-hex-72x72");
 
-        Texture2D[,] textures = new Texture2D[hexHeight, hexWidth];
-        //Random rnd = new Random();
-        long milliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        Console.WriteLine("HexMapEngineAdapter.LoadContent(): hexHeight=" + hexHeight + ", hexWidth=" + hexWidth);
+        updateMap();
+        Console.WriteLine("HexMapEngineAdapter.LoadContent(): hex count=" + HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY.Length);
 
+        Myra.MyraEnvironment.Game = game;
+
+    }
+
+    public void updateMap()
+    {
+        HexMapEngine.Classes.HexTileMapLoad loHexTileMapLoad = new HexMapEngine.Classes.HexTileMapLoad(hexHeight, hexWidth);
+        HexMapEngine.Structures.Global.MYRAUI_DEFAULT_SPRITE_FONT = loHexTileMapLoad.Load_MyraUIDefaultSpriteFont(game);
+        Texture2D[,] textures = new Texture2D[hexHeight, hexWidth];
         for (int liY = 0; liY < hexHeight; liY++)
         {
             for (int liX = 0; liX < hexWidth; liX++)
             {
-                //int textureIndex = rnd.Next(1, 7);
-                //float elevationNoise = OpenSimplex2S.Noise2(milliseconds, liX, liY);
-                //float moistureNoise = OpenSimplex2S.Noise2(milliseconds, liX, liY);
-                float elevationNoise = OpenSimplex2.Noise2(milliseconds, liX, liY);
-                float moistureNoise = OpenSimplex2.Noise2(milliseconds, liX, liY);
-                //textures[liY, liX] = idToTerrain[textureIndex].TEXTURE2D_IMAGE_TILE;
-                string biome = determineBiome(elevationNoise, moistureNoise);
-                elevationNoise = shapeForIsland(biome, elevationNoise, liX, liY, hexWidth, hexHeight);
-                biome = determineBiome(elevationNoise, moistureNoise);
+                string biome = gcGame.Client.GameState.Map.Hexes[liY, liX].Terrain;
                 textures[liY, liX] = terrain[biome].TEXTURE2D_IMAGE_TILE;
             }
         }
         HexTile[,] hexTiles = loHexTileMapLoad.Load_MapHexTileArray(textures);
         HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY = hexTiles;
-
-
-        // ---
-        // load tile content items into global array-list
-        // ---
-        //HexMapEngine.Structures.Global.TEXTURE2D_ARRAY_LIST = loHexTileMapLoad.Load_Textured2DArrayList(game);
-        // TODO: this should not be needed.
-        HexMapEngine.Structures.Global.TEXTURE2D_ARRAY_LIST = this.Load_Textured2DArrayList(game);
-
-
-        HexMapEngine.Structures.Global.MYRAUI_DEFAULT_SPRITE_FONT = loHexTileMapLoad.Load_MyraUIDefaultSpriteFont(game);
-
-        Myra.MyraEnvironment.Game = game;
-        //Window.AllowUserResizing = false;
-
-        //coBitmapFont = Myra.DefaultAssets.Font;
 
     }
 
@@ -138,75 +126,34 @@ class HexMapEngineAdapter
         return hexTexture2D;
     }
 
-
-    public ArrayList Load_Textured2DArrayList(Game poThis)
-    {
-        ArrayList loTextured2DArrayListObjects = new ArrayList();
-
-        HexMapEngine.Structures.HexTexture2D loHexTexture2D;
-
-        Microsoft.Xna.Framework.Graphics.Texture2D loTexture2DTile;
-
-
-        // load content texture images into array    
-        loTexture2DTile = poThis.Content.Load<Texture2D>("DarkGrass_72x72");
-        loHexTexture2D = new HexMapEngine.Structures.HexTexture2D();
-        loHexTexture2D.TEXTURE2D_ID = 1;
-        loHexTexture2D.TEXTURE2D_IMAGE_TILE = loTexture2DTile;
-        loTextured2DArrayListObjects.Add(loHexTexture2D);
-
-
-        loTexture2DTile = poThis.Content.Load<Texture2D>("YellowHexagonOutline_72x72");
-        loHexTexture2D = new HexMapEngine.Structures.HexTexture2D();
-        loHexTexture2D.TEXTURE2D_ID = 2;
-        loHexTexture2D.TEXTURE2D_IMAGE_TILE = loTexture2DTile;
-        loTextured2DArrayListObjects.Add(loHexTexture2D);
-
-        return loTextured2DArrayListObjects;
-    }
-
-
-
     public void Process_DrawEvent(GameTime gameTime)
     {
-
-        string lsMouseState = "";
-
-
+        //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): enter");
         // set screen background color
-        GraphicsDevice.Clear(Color.Black);
-
+        //GraphicsDevice.Clear(Color.Black);
 
         coHexTileMap = new HexMapEngine.Classes.HexTileMap(coSpriteBatch,
                                                             HexMapEngine.Structures.Global.MYRAUI_DEFAULT_SPRITE_FONT,
                                                             coGraphicsDeviceManager,
                                                             coTexture2DTile,
                                                             coTextureYellowBorder2DTile);
-
+        //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): " + HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[0, 0]);
         coHexTileMap.Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
-
     }
 
 
     public void Process_UpdateEvent(GameTime gameTime)
     {
-
+        //Console.WriteLine("HexMapEngineAdapter.Process_UpdateEvent(): enter");
         // user-defined update logic here
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
         {
             game.Exit();
         }
 
-
         // mouse state logic (get the state of the mouse)
         coMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
-
-
         csScrollDirection = "";
-
-        coKeyboardState = Keyboard.GetState();
-
-
         // ---
         // mouse left button click / find which hex mouse clicked
         // ---
@@ -219,206 +166,126 @@ class HexMapEngineAdapter
 
 
         // ---
-        // test mouse position outside the board
-        // ...
-        // if mouse position is to the left of the board, move board to the left
-        // if mouse position is to the right of the board, move board to the right
-        // if mouse position is beyond the top of the board, move board up
-        // if mouse position is beyond the bottom of the board, move board down
-        // ---
-
-        //move left    
-        //  * code removed to drop testing of arrow buttons
-        //  * if ((coKeyboardState.IsKeyDown(Keys.Left)) || (coMouseState.X < 1))
+        // handle mouse position outside the board
         if (coMouseState.X < 1)
         {
-            csScrollDirection = "L";
-
-            ciRowPosition = ciRowPosition + 0;          // maintain current row position
-            ciColumnPosition = ciColumnPosition - 1;    // decrease column position by 1
-
-            HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X =
-                MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X - 2,
-                                    0,
-                                    (HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS - ciMovementOffset));
+            //scrollLeft();
         }
 
 
-        // move right
-        //  * code removed to drop testing of arrow buttons
-        //  * if ((coKeyboardState.IsKeyDown(Keys.Right)) || (coMouseState.X > ciScreenWidth))
         if (coMouseState.X > ciScreenWidth)
         {
-            csScrollDirection = "R";
-
-            ciRowPosition = ciRowPosition + 0;          // maintain current row position
-            ciColumnPosition = ciColumnPosition + 1;    // increase column position by 1
-
-            // TODO: fix this so can't scroll forever
-            //HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X =
-            //    MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X + 2,
-            //                        0,
-            //                        (HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS + ciMovementOffset));
-            HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X =
-                MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X + 2,
-                                    0,
-                                    (HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS * Globals.WIDTH / 2));
+            //scrollRight();
         }
 
-
-        // move up
-        //  * code removed to drop testing of arrow buttons
-        //  * if ((coKeyboardState.IsKeyDown(Keys.Up)) || (coMouseState.Y < 1))
         if (coMouseState.Y < 1)
         {
-            csScrollDirection = "U";
-
-            ciRowPosition = ciRowPosition + 1;          // increase row position by 1
-            ciColumnPosition = ciColumnPosition + 0;    // maintain current column position
-
-            HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y =
-                MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y - 2,
-                                    0,
-                                ((HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y * ciMovementOffset) + ciMovementOffset));
+            //scrollUp();
         }
 
 
+        if (coMouseState.Y > ciScreenHeight)
+        {
+            //scrollDown();
+        }
+    }
+
+
+
+    // move right
+    //  * code removed to drop testing of arrow buttons
+    //  * if ((coKeyboardState.IsKeyDown(Keys.Right)) || (coMouseState.X > ciScreenWidth))
+    public void scrollRight()
+    {
+        csScrollDirection = "R";
+
+        ciRowPosition = ciRowPosition + 0;          // maintain current row position
+        ciColumnPosition = ciColumnPosition + 3;    // increase column position by 1
+
+        // TODO: fix this so can't scroll forever
+        //HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X =
+        //    MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X + 2,
+        //                        0,
+        //                        (HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS + ciMovementOffset));
+        HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X =
+            MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X + 2,
+                                0,
+                                (HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS * Globals.WIDTH / 2));
+    }
+
+    //move left    
+    //  * code removed to drop testing of arrow buttons
+    //  * if ((coKeyboardState.IsKeyDown(Keys.Left)) || (coMouseState.X < 1))
+    public void scrollLeft()
+    {
+        csScrollDirection = "L";
+
+        ciRowPosition = ciRowPosition + 0;          // maintain current row position
+        ciColumnPosition = ciColumnPosition - 3;    // decrease column position by 1
+
+        HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X =
+            MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X - 2,
+                                0,
+                                (HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS - ciMovementOffset));
+    }
+
+    public void scrollDown()
+    {
         // move down    
         //  * code removed to drop testing of arrow buttons
         //  * if ((coKeyboardState.IsKeyDown(Keys.Down)) || (coMouseState.Y > ciScreenHeight))
         //if (coMouseState.Y > ciScreenHeight)
-        if (coMouseState.Y > ciScreenHeight)
-        {
-            csScrollDirection = "D";
+        csScrollDirection = "D";
 
-            ciRowPosition = ciRowPosition - 1;          // decrease row position by 1
-            ciColumnPosition = ciColumnPosition + 0;    // maintain current column position
+        ciRowPosition = ciRowPosition - 3;          // decrease row position by 1
+        ciColumnPosition = ciColumnPosition + 0;    // maintain current column position
 
-            // TODO: fix this so can't scroll forever
-            //HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y =
-            //    MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y + 2,
-            //                        0,
-            //                        ((HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y * ciMovementOffset) + ciMovementOffset));
+        // TODO: fix this so can't scroll forever
+        //HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y =
+        //    MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y + 2,
+        //                        0,
+        //                        ((HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y * ciMovementOffset) + ciMovementOffset));
 
-            HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y =
-                MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y + 2,
-                                    0,
-                                    (HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * Globals.HEIGHT/2));
-        }
+        HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y =
+            MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y + 2,
+                                0,
+                                (HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * Globals.HEIGHT / 2));
     }
 
-
-    private string determineBiome(float elevation, float moisture)
+    public void scrollUp()
     {
-        // these thresholds will need tuning to match your generator
-        if (elevation < 0.1F)
-        {
-            return "sea";
-        }
-        if (elevation < 0.12F)
-        {
-            return "swamp";
-        }
+        // move up
+        //  * code removed to drop testing of arrow buttons
+        //  * if ((coKeyboardState.IsKeyDown(Keys.Up)) || (coMouseState.Y < 1))
+        csScrollDirection = "U";
 
-        if (elevation > 0.8F)
-        {
-            if (moisture < 0.1F)
-            {
+        ciRowPosition = ciRowPosition + 3;          // increase row position by 1
+        ciColumnPosition = ciColumnPosition + 0;    // maintain current column position
 
-            }
-            if (moisture < 0.2F)
-            {
-
-            }
-            if (moisture < 0.5F)
-            {
-
-            }
-            return "mountain";
-        }
-
-        if (elevation > 0.6F)
-        {
-            if (moisture < 0.33F)
-            {
-                return "desert";
-            }
-            if (moisture < 0.66F)
-            {
-                return "desert";
-            }
-            return "forest";
-        }
-
-        if (elevation > 0.3F)
-        {
-            if (moisture < 0.16F)
-            {
-                return "desert";
-            }
-            if (moisture < 0.50F)
-            {
-                return "grass";
-            }
-            if (moisture < 0.83F)
-            {
-                return "forest";
-            }
-            return "forest";
-        }
-
-        if (moisture < 0.16F)
-        {
-            return "desert";
-        }
-        if (moisture < 0.33F)
-        {
-            return "grass";
-        }
-        if (moisture < 0.66F)
-        {
-            return "forest";
-        }
-        return "forest";
+        HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y =
+            MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y - 2,
+                                0,
+                            ((HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y * ciMovementOffset) + ciMovementOffset));
     }
 
-    // https://www.redblobgames.com/maps/terrain-from-noise/
-    private float shapeForIsland(string biome, float elevation, int x, int y, int width, int height)
+    public void focusToCenter()
     {
-        // nx = 2*x/width - 1 and ny = 2*y/height - 1
-        // square bump: d = 1 - (1-nx²) * (1-ny²)
-        // euclidian^2: d = min(1, (nx² + ny²) / sqrt(2))
-        float nWidth = 0;
-        if (x != 0)
-            nWidth = (2.0F / width) - (1.0F/x);
-        float nHeight = 0;
-        if (y != 0)
-            nHeight = (2.0F / height) - (1.0F/y);
-        float mix = 0.5F;
-        //float distance = 1.0F - ((1.0F - (nWidth * (x ^ 2))) * ((1.0F - (nHeight * (y ^ 2)))));
-        // distance from center
-        int xDistance = Math.Abs((width / 2) - x);
-        int yDistance = Math.Abs((height / 2) - y);
-        float distance = (float)Math.Sqrt((xDistance * xDistance) + (yDistance * yDistance));
-        float diagonal = (float)Math.Sqrt((width * width) + (height * height)) / 2;
-        //Console.WriteLine("shapeForIsland(): elevation=" + elevation + ", x=" + x + ", y=" + y + ", width=" +width + ", height=" + height + ", nWidth=" + nWidth + ", nHeight=" + nHeight + ", distance=" + distance);        
-        // Lerp(a, b, t) is defined as a + (b — a) * t.
-        // e = lerp(e, 1-d, mix)
-        // float newElevation = elevation + (1.0F - distance - elevation) * mix;
-        float newElevation = elevation;
-        if (distance < (diagonal * .4F) &&
-            (biome.Equals("sea") || biome.Equals("swamp")))
-        {
-            newElevation = elevation + 0.75F;
-        }
-        else if ((distance > (diagonal * .6F) ||
-                xDistance == width || yDistance == height) &&
-                !(biome.Equals("sea") || biome.Equals("swamp")))
-        {
-            newElevation = elevation - 0.75F;
-        }
-        Console.WriteLine("shapeForIsland(): diagonal=" + diagonal +", biome=" + biome + ", elevation=" + elevation + ", x=" + x + ", y=" + y + ", xd=" + xDistance + ", yd=" + yDistance + ", distance=" + distance + ", newE=" + newElevation);
-        return newElevation;
+        ciRowPosition = Globals.HEIGHT / 2;
+        ciColumnPosition = Globals.WIDTH /2;
+
+        HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y =
+            MathHelper.Clamp(HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y * 50,
+                                0,
+                            (HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * Globals.HEIGHT / 2));
+        HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X =
+            MathHelper.Clamp(HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X * 50,
+                                0,
+                            (HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS * Globals.WIDTH / 2));
+    }
+
+    public void scrollTowardsCenter()
+    {
+
     }
 
 }

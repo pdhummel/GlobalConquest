@@ -49,6 +49,18 @@
 /processorParam:TextureFormat=Color
 /build:forest-flat-hex-72x72.png
 
+#begin GC-cropped-intro_000.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:GC-cropped-intro_000.png
+
 #begin grass-flat-hex-72x72.png
 /importer:TextureImporter
 /processor:TextureProcessor
