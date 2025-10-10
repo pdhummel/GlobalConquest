@@ -19,34 +19,38 @@ public class MainGameScreen
     public Panel factionsPanel { get; } = new Panel();
     public Panel miniMapPanel { get; } = new Panel();
     public Panel detailsPanel { get; } = new Panel();
+
+    public bool IsVisible { get; set; } = true;
     public MainGameScreen(Game game, Grid grid)
     {
         this.game = game;
         this.grid = grid;
-        ((GlobalConquestGame)game).MainGameScreen = this;
+        ((GlobalConquestGame)game).MainGameScreen = this;        
     }
 
     public void LoadContent()
     {
-        mapPanel.Width = 800;
-        mapPanel.Height = 750;
+        mapPanel.Width = game.Window.ClientBounds.Width - 200;
+        mapPanel.Height = game.Window.ClientBounds.Height;
         mapPanel.Border = new SolidBrush("#808000FF");
         mapPanel.BorderThickness = new Thickness(2);
 
         factionsPanel.Width = 200;
-        factionsPanel.Height = 250;
+        factionsPanel.Height = game.Window.ClientBounds.Height / 3;
         factionsPanel.Border = new SolidBrush("#808000FF");
         factionsPanel.BorderThickness = new Thickness(2);
 
         miniMapPanel.Width = 200;
-        miniMapPanel.Height = 250;
+        factionsPanel.Height = game.Window.ClientBounds.Height / 3;
         miniMapPanel.Border = new SolidBrush("#808000FF");
         miniMapPanel.BorderThickness = new Thickness(2);
 
         detailsPanel.Width = 200;
-        detailsPanel.Height = 250;
+        factionsPanel.Height = game.Window.ClientBounds.Height / 3;
         detailsPanel.Border = new SolidBrush("#808000FF");
         detailsPanel.BorderThickness = new Thickness(2);
+
+        game.Window.ClientSizeChanged += Window_ClientSizeChanged;
 
     }
 
@@ -54,33 +58,24 @@ public class MainGameScreen
     {
         mapPanel.Left = 0;
         mapPanel.Top = 0;
-        //Grid.SetColumn(mapPanel, 0);
-        //Grid.SetRow(mapPanel, 0);
-        //Grid.SetRowSpan(mapPanel, 3);
-        //Grid.SetColumnSpan(mapPanel, 4);
         grid.Desktop.Widgets.Add(mapPanel);
         mapPanel.Visible = true;
 
-        //Grid.SetColumn(factionsPanel, 5);
-        //Grid.SetRow(factionsPanel, 0);
         grid.Desktop.Widgets.Add(factionsPanel);
-        factionsPanel.Left = 800;
+        factionsPanel.Left = (int)mapPanel.Width;
         factionsPanel.Top = 0;
         factionsPanel.Visible = true;
 
-        //Grid.SetColumn(miniMapPanel, 1);
-        //Grid.SetRow(miniMapPanel, 1);
         grid.Desktop.Widgets.Add(miniMapPanel);
-        miniMapPanel.Left = 800;
-        miniMapPanel.Top = 250;
+        miniMapPanel.Left = (int)mapPanel.Width;
+        miniMapPanel.Top = (int)factionsPanel.Height;
         miniMapPanel.Visible = true;
 
-        //Grid.SetColumn(detailsPanel, 1);
-        //Grid.SetRow(detailsPanel, 2);
         grid.Desktop.Widgets.Add(detailsPanel);
-        detailsPanel.Left = 800;
-        detailsPanel.Top = 500;
+        detailsPanel.Left = (int)mapPanel.Width;
+        detailsPanel.Top = (int)factionsPanel.Height + (int)miniMapPanel.Height;
         detailsPanel.Visible = true;
+        IsVisible = true;
 
     }
 
@@ -95,7 +90,26 @@ public class MainGameScreen
         factionsPanel.RemoveFromParent();
         miniMapPanel.RemoveFromParent();
         detailsPanel.RemoveFromParent();
-
+        IsVisible = false;
     }
 
+    private void Window_ClientSizeChanged(object sender, System.EventArgs e)
+    {
+        if (game.Window.ClientBounds.Width > 1000)
+        {
+            mapPanel.Width = game.Window.ClientBounds.Width - 200;
+            mapPanel.Height = game.Window.ClientBounds.Height;
+            factionsPanel.Left = (int)mapPanel.Width;
+            miniMapPanel.Left = (int)mapPanel.Width;
+            detailsPanel.Left = (int)mapPanel.Width;
+
+            factionsPanel.Height = game.Window.ClientBounds.Height / 3;
+            miniMapPanel.Height = game.Window.ClientBounds.Height / 3;
+            detailsPanel.Height = game.Window.ClientBounds.Height / 3;
+
+            miniMapPanel.Top = (int)factionsPanel.Height;
+            detailsPanel.Top = (int)factionsPanel.Height + (int)miniMapPanel.Height;
+        }
+        
+    }
 }

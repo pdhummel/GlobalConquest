@@ -17,7 +17,7 @@ namespace GlobalConquest;
 
 class HexMapEngineAdapter
 {
-    Dictionary<string, HexTexture2D> terrain = new Dictionary<string, HexTexture2D>();
+    public Dictionary<string, HexTexture2D> terrain = new Dictionary<string, HexTexture2D>();
     Dictionary<int, HexTexture2D> idToTerrain = new Dictionary<int, HexTexture2D>();
 
     GraphicsDevice GraphicsDevice;
@@ -67,6 +67,12 @@ class HexMapEngineAdapter
     {
         Console.WriteLine("HexMapEngineAdapter.LoadContent(): enter");
         coSpriteBatch = Globals.spriteBatch;
+        this.LoadContent(coSpriteBatch);
+    }
+
+    public void LoadContent(SpriteBatch coSpriteBatch)
+    {
+        Console.WriteLine("HexMapEngineAdapter.LoadContent(): enter");
 
         Globals.pixel = new Texture2D(GraphicsDevice, 1, 1);
         Globals.pixel.SetData<Microsoft.Xna.Framework.Color>(new Microsoft.Xna.Framework.Color[] { Microsoft.Xna.Framework.Color.White });
@@ -126,11 +132,13 @@ class HexMapEngineAdapter
         return hexTexture2D;
     }
 
-    public void Process_DrawEvent(GameTime gameTime)
+    public void Process_DrawEvent(GameTime gameTime, int maxPixelsX, int maxPixelsY)
     {
         //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): enter");
         // set screen background color
         //GraphicsDevice.Clear(Color.Black);
+        HexMapEngine.Structures.Global.X_MAX_PIXELS = maxPixelsX;
+        HexMapEngine.Structures.Global.Y_MAX_PIXELS = maxPixelsY;
 
         coHexTileMap = new HexMapEngine.Classes.HexTileMap(coSpriteBatch,
                                                             HexMapEngine.Structures.Global.MYRAUI_DEFAULT_SPRITE_FONT,
@@ -139,6 +147,12 @@ class HexMapEngineAdapter
                                                             coTextureYellowBorder2DTile);
         //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): " + HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[0, 0]);
         coHexTileMap.Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
+    }
+
+    public void adjustZoom(float zoom)
+    {
+        HexMapEngine.Structures.Global.X_ZOOM_FACTOR = zoom;
+        HexMapEngine.Structures.Global.Y_ZOOM_FACTOR = zoom;
     }
 
 
@@ -210,7 +224,8 @@ class HexMapEngineAdapter
         HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X =
             MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X + 2,
                                 0,
-                                (HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS * Globals.WIDTH / 2));
+                                //(HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS * Globals.WIDTH / 2));
+                                (HexMapEngine.Structures.Global.X_MAX_PIXELS));
     }
 
     //move left    
@@ -226,7 +241,8 @@ class HexMapEngineAdapter
         HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X =
             MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X - 2,
                                 0,
-                                (HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS - ciMovementOffset));
+                                //(HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS - ciMovementOffset));
+                                (HexMapEngine.Structures.Global.X_MAX_PIXELS));
     }
 
     public void scrollDown()
@@ -249,7 +265,8 @@ class HexMapEngineAdapter
         HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y =
             MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y + 2,
                                 0,
-                                (HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * Globals.HEIGHT / 2));
+                                //(HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * Globals.HEIGHT / 2));
+                                (HexMapEngine.Structures.Global.Y_MAX_PIXELS));
     }
 
     public void scrollUp()
@@ -265,27 +282,37 @@ class HexMapEngineAdapter
         HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y =
             MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y - 2,
                                 0,
-                            ((HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y * ciMovementOffset) + ciMovementOffset));
+                            //((HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y * ciMovementOffset) + ciMovementOffset));
+                            (HexMapEngine.Structures.Global.Y_MAX_PIXELS));
     }
 
-    public void focusToCenter()
+    public void focusAfterZoomOut()
     {
-        ciRowPosition = Globals.HEIGHT / 2;
-        ciColumnPosition = Globals.WIDTH /2;
+        ciRowPosition = 0;
+        ciColumnPosition = 0;
 
-        HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y =
-            MathHelper.Clamp(HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y * 50,
-                                0,
-                            (HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * Globals.HEIGHT / 2));
-        HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X =
-            MathHelper.Clamp(HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X * 50,
-                                0,
-                            (HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS * Globals.WIDTH / 2));
+        //HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y = 0;
+        //MathHelper.Clamp(HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y * 50,
+        //                0,
+        //           (HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * Globals.HEIGHT / 2));
+        //HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X = 0;
+        //MathHelper.Clamp(HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X * 50,
+        //                    0,
+        //                (HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS * Globals.WIDTH / 2));
     }
-
-    public void scrollTowardsCenter()
+    
+    public Vector2 getPixelCenter()
     {
+        if (coHexTileMap == null)
+        {
+            coHexTileMap = new HexMapEngine.Classes.HexTileMap(coSpriteBatch,
+                                                            HexMapEngine.Structures.Global.MYRAUI_DEFAULT_SPRITE_FONT,
+                                                            coGraphicsDeviceManager,
+                                                            coTexture2DTile,
+                                                            coTextureYellowBorder2DTile);
+        }                                                            
+        return coHexTileMap.getPixelCenter();
+    } 
 
-    }
 
 }

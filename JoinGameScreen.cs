@@ -166,7 +166,7 @@ public class JoinGameScreen
         grid.Widgets.Add(fightingForceLabel);
         fightingForceLabel.Visible = true;
 
-        Grid.SetColumn(fightingForceComboView, 2);
+        Grid.SetColumn(fightingForceComboView, 1);
         Grid.SetRow(fightingForceComboView, 3);
         grid.Widgets.Add(fightingForceComboView);
         fightingForceComboView.Visible = true;
