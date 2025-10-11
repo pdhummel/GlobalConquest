@@ -1,17 +1,8 @@
-using HexagonMappingEngine;
-using HexagonalMapEngine.Classes;
-using HexMapEngine.Classes;
-using Myra;
-//using Myra.Graphics2D.Text;
-using System;
-using System.Collections;
-using System.Windows;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using Color = Microsoft.Xna.Framework.Color;
 using HexMapEngine.Structures;
-using System.Configuration;
+
 
 namespace GlobalConquest;
 
@@ -60,7 +51,6 @@ class HexMapEngineAdapter
         this.coGraphicsDeviceManager = graphics;
         this.hexHeight = hexHeight;
         this.hexWidth = hexWidth;
-        //coMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
     }
 
     public void LoadContent()
@@ -140,11 +130,14 @@ class HexMapEngineAdapter
         HexMapEngine.Structures.Global.X_MAX_PIXELS = maxPixelsX;
         HexMapEngine.Structures.Global.Y_MAX_PIXELS = maxPixelsY;
 
-        coHexTileMap = new HexMapEngine.Classes.HexTileMap(coSpriteBatch,
+        if (coHexTileMap == null)
+        {
+            coHexTileMap = new HexMapEngine.Classes.HexTileMap(coSpriteBatch,
                                                             HexMapEngine.Structures.Global.MYRAUI_DEFAULT_SPRITE_FONT,
                                                             coGraphicsDeviceManager,
                                                             coTexture2DTile,
-                                                            coTextureYellowBorder2DTile);
+                                                            coTextureYellowBorder2DTile);            
+        }
         //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): " + HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[0, 0]);
         coHexTileMap.Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
     }
@@ -206,101 +199,62 @@ class HexMapEngineAdapter
 
 
 
-    // move right
-    //  * code removed to drop testing of arrow buttons
-    //  * if ((coKeyboardState.IsKeyDown(Keys.Right)) || (coMouseState.X > ciScreenWidth))
     public void scrollRight()
     {
         csScrollDirection = "R";
-
-        ciRowPosition = ciRowPosition + 0;          // maintain current row position
-        ciColumnPosition = ciColumnPosition + 3;    // increase column position by 1
-
-        // TODO: fix this so can't scroll forever
-        //HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X =
-        //    MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X + 2,
-        //                        0,
-        //                        (HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS + ciMovementOffset));
-        HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X =
-            MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X + 2,
-                                0,
-                                //(HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS * Globals.WIDTH / 2));
-                                (HexMapEngine.Structures.Global.X_MAX_PIXELS));
+        scrollToPosition(ciRowPosition, ciColumnPosition + 3);
     }
 
-    //move left    
-    //  * code removed to drop testing of arrow buttons
-    //  * if ((coKeyboardState.IsKeyDown(Keys.Left)) || (coMouseState.X < 1))
     public void scrollLeft()
     {
         csScrollDirection = "L";
-
-        ciRowPosition = ciRowPosition + 0;          // maintain current row position
-        ciColumnPosition = ciColumnPosition - 3;    // decrease column position by 1
-
-        HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X =
-            MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X - 2,
-                                0,
-                                //(HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS - ciMovementOffset));
-                                (HexMapEngine.Structures.Global.X_MAX_PIXELS));
+        scrollToPosition(ciRowPosition, ciColumnPosition -3);
     }
 
     public void scrollDown()
     {
-        // move down    
-        //  * code removed to drop testing of arrow buttons
-        //  * if ((coKeyboardState.IsKeyDown(Keys.Down)) || (coMouseState.Y > ciScreenHeight))
-        //if (coMouseState.Y > ciScreenHeight)
         csScrollDirection = "D";
-
-        ciRowPosition = ciRowPosition - 3;          // decrease row position by 1
-        ciColumnPosition = ciColumnPosition + 0;    // maintain current column position
-
-        // TODO: fix this so can't scroll forever
-        //HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y =
-        //    MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y + 2,
-        //                        0,
-        //                        ((HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y * ciMovementOffset) + ciMovementOffset));
-
-        HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y =
-            MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y + 2,
-                                0,
-                                //(HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * Globals.HEIGHT / 2));
-                                (HexMapEngine.Structures.Global.Y_MAX_PIXELS));
+        scrollToPosition(ciRowPosition + 3, ciColumnPosition);
     }
 
     public void scrollUp()
     {
-        // move up
-        //  * code removed to drop testing of arrow buttons
-        //  * if ((coKeyboardState.IsKeyDown(Keys.Up)) || (coMouseState.Y < 1))
         csScrollDirection = "U";
-
-        ciRowPosition = ciRowPosition + 3;          // increase row position by 1
-        ciColumnPosition = ciColumnPosition + 0;    // maintain current column position
-
-        HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y =
-            MathHelper.Clamp(HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y - 2,
-                                0,
-                            //((HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y * ciMovementOffset) + ciMovementOffset));
-                            (HexMapEngine.Structures.Global.Y_MAX_PIXELS));
+        scrollToPosition(ciRowPosition - 3, ciColumnPosition);
     }
 
-    public void focusAfterZoomOut()
+    public void scrollToPosition(int row, int column)
     {
-        ciRowPosition = 0;
-        ciColumnPosition = 0;
+        int yIncrement = row - ciRowPosition;
+        int xIncrement = column - ciColumnPosition;
+        int oldRowPosition = ciRowPosition;
+        int oldColPosition = ciColumnPosition;
+        ciRowPosition = row;
+        ciColumnPosition = column;
 
-        //HexagonalMapEngine.Classes.Camera.coCameraVector2Location.Y = 0;
-        //MathHelper.Clamp(HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y * 50,
-        //                0,
-        //           (HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * Globals.HEIGHT / 2));
-        //HexagonalMapEngine.Classes.Camera.coCameraVector2Location.X = 0;
-        //MathHelper.Clamp(HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X * 50,
-        //                    0,
-        //                (HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS * Globals.WIDTH / 2));
+        coHexTileMap.cameraWrapper.coCameraVector2Location.X =
+            MathHelper.Clamp(coHexTileMap.cameraWrapper.coCameraVector2Location.X + xIncrement,
+                                0,
+                                getPixelCenter().X * 2);
+                                //(HexMapEngine.Structures.Global.X_MAX_PIXELS));
+
+        coHexTileMap.cameraWrapper.coCameraVector2Location.Y =
+            MathHelper.Clamp(coHexTileMap.cameraWrapper.coCameraVector2Location.Y + yIncrement,
+                                0,
+                            getPixelCenter().Y * 2);
+                            //(HexMapEngine.Structures.Global.Y_MAX_PIXELS));
+
+        //Console.WriteLine("oldRow=" + oldRowPosition + ", oldCol=" + oldColPosition +
+        //", newrow=" + row + ", newcol=" + column + ", yinc=" + yIncrement + ", xinc=" + xIncrement +
+        //", hexCamY=" + coHexTileMap.cameraWrapper.coCameraVector2Location.Y + ", hexCamX=" + coHexTileMap.cameraWrapper.coCameraVector2Location.X);
     }
+
     
+    public Vector2 getCurrentPixelPosition()
+    {
+        return new Vector2(ciColumnPosition, ciRowPosition);
+    }
+
     public Vector2 getPixelCenter()
     {
         if (coHexTileMap == null)
@@ -310,7 +264,7 @@ class HexMapEngineAdapter
                                                             coGraphicsDeviceManager,
                                                             coTexture2DTile,
                                                             coTextureYellowBorder2DTile);
-        }                                                            
+        }
         return coHexTileMap.getPixelCenter();
     } 
 

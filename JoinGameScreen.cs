@@ -119,9 +119,6 @@ public class JoinGameScreen
         cancelButton.Click += cancelButtonClicked;
         okButton.Click += okButtonClicked;
 
-        mainGameScreen = new MainGameScreen(game, grid);
-        mainGameScreen.LoadContent();
-
     }
 
     public void show()
@@ -218,6 +215,8 @@ public class JoinGameScreen
 
     private void okButtonClicked(object? sender, EventArgs e)
     {
+        mainGameScreen = new MainGameScreen(game, grid);
+        mainGameScreen.LoadContent();
         this.hide();
         GameSettings gameSettings = new GameSettings();
         GlobalConquestGame gcGame = (GlobalConquestGame)game;

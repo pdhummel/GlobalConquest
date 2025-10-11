@@ -73,6 +73,10 @@ public class MainGameScreen
 
         grid.Desktop.Widgets.Add(detailsPanel);
         detailsPanel.Left = (int)mapPanel.Width;
+        if (miniMapPanel.Height == null)
+        {
+            miniMapPanel.Height = factionsPanel.Height;
+        }
         detailsPanel.Top = (int)factionsPanel.Height + (int)miniMapPanel.Height;
         detailsPanel.Visible = true;
         IsVisible = true;

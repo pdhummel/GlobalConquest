@@ -1,14 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Color = Microsoft.Xna.Framework.Color;
-using MonoGame.Extended;
-using System.Windows.Documents;
-using Myra;
-using Myra.Graphics2D;
-using Myra.Graphics2D.UI;
-using static Myra.Graphics2D.UI.Grid;
-using static Myra.Graphics2D.UI.Label;
+
 
 namespace GlobalConquest;
 
