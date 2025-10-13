@@ -4,24 +4,22 @@ namespace GlobalConquest;
 
 public class Factions
 {
-    public Faction[] factions { get; }
+    public Faction[] FactionArray { get; }
     public Dictionary<string, Faction> nameToFaction = new Dictionary<string, Faction>();
 
     public Factions()
     {
-        factions = new Faction[4];
-        addFaction(0, "Amber Array", Color.Yellow);
-        addFaction(1, "Ochre Order", Color.Orange);
-        addFaction(2, "Magenta Mob", Color.Magenta);
-        addFaction(3, "Cyan Circle", Color.Cyan);
+        FactionArray = new Faction[4];
+        AddFaction(0, "Amber Array", Color.Yellow);
+        AddFaction(1, "Ochre Order", Color.Orange);
+        AddFaction(2, "Magenta Mob", Color.Magenta);
+        AddFaction(3, "Cyan Circle", Color.Cyan);
     }
 
-    private void addFaction(int index, String name, Color color)
+    private void AddFaction(int index, String name, Color color)
     {
-        Faction faction = new Faction();
-        faction.Name = name;
-        faction.Color = color;
-        factions[index] = faction;
+        Faction faction = new(name, color);
+        FactionArray[index] = faction;
         nameToFaction[faction.Name] = faction;
         
     }

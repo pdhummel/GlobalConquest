@@ -220,7 +220,7 @@ public class JoinGameScreen
         this.hide();
         GameSettings gameSettings = new GameSettings();
         GlobalConquestGame gcGame = (GlobalConquestGame)game;
-        gcGame.Client = new Client();
+        gcGame.Client = new Client(gcGame);
         JoinGameValues joinGameValues = new JoinGameValues();
         joinGameValues.HostIp = hostIpTextBox.Text;
         joinGameValues.Port = Int32.Parse(portTextBox.Text);

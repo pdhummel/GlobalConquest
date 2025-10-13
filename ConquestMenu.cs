@@ -97,8 +97,8 @@ public class ConquestMenu
     {
         conquestMenuLabel.Visible = false;
         conquestVerticalMenu.Visible = false;
-        conquestMenuLabel.RemoveFromParent();
-        conquestVerticalMenu.RemoveFromParent();
+        conquestMenuLabel?.RemoveFromParent();
+        conquestVerticalMenu?.RemoveFromParent();
     }
 
 

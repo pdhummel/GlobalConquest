@@ -12,12 +12,11 @@ namespace GlobalConquest;
 public class GlobalConquestGame : Game
 {
     public Server? Server { get; set; }
-    public Client? Client { get; set; } = new Client();
+    public Client? Client { get; set; }
     public MainGameScreen MainGameScreen { get; set; }
 
     private GraphicsDeviceManager _graphics;
     private readonly IntPtr drawSurface;
-    SpriteFont? font;
     OrthographicCamera camera;
     Custom2dCamera miniMapCamera;
     RenderTarget2D miniMapRenderTarget2D;
@@ -29,6 +28,7 @@ public class GlobalConquestGame : Game
     Rectangle miniMapRectangle;
     HexMapEngineAdapter hexMapEngineAdapter;
     HexMapEngineAdapter miniMapHexMapEngineAdapter;
+    Texture2D viewPortBox;
 
     public GlobalConquestGame()
     {
@@ -40,6 +40,7 @@ public class GlobalConquestGame : Game
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
         Window.AllowUserResizing = true;
+        Client = new Client(this);
     }
 
     public GlobalConquestGame(IntPtr drawSurface) : this()
@@ -86,6 +87,9 @@ public class GlobalConquestGame : Game
         miniMapCamera = new Custom2dCamera(GraphicsDevice);
         // create a new SpriteBatch, which can be used to draw textures.
         Globals.spriteBatch = new SpriteBatch(GraphicsDevice);
+
+        viewPortBox = new Texture2D(GraphicsDevice, 1, 1);
+        viewPortBox.SetData(new[] { Color.White });
     }
 
     public void HexMapLoadContent()
@@ -95,14 +99,16 @@ public class GlobalConquestGame : Game
         miniMapHexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
         miniMapHexMapEngineAdapter.LoadContent();
 
-        miniMapRenderTarget2D = new RenderTarget2D(
-            GraphicsDevice,
-            (int)MainGameScreen.miniMapPanel.Width,
-            (int)MainGameScreen.miniMapPanel.Height,
-            false,
-            SurfaceFormat.Color,
-            DepthFormat.None);
-        
+        if (MainGameScreen != null && MainGameScreen.miniMapPanel != null && MainGameScreen.miniMapPanel.Width != null && MainGameScreen.miniMapPanel.Height != null)
+        {
+            miniMapRenderTarget2D = new RenderTarget2D(
+                GraphicsDevice,
+                (int)MainGameScreen.miniMapPanel.Width,
+                (int)MainGameScreen.miniMapPanel.Height,
+                false,
+                SurfaceFormat.Color,
+                DepthFormat.None);
+        }
     }
 
 
@@ -166,10 +172,13 @@ public class GlobalConquestGame : Game
                 //    ", row=" + rowColVector.Y + ", col=" + rowColVector.X
                 //);
 
-                Vector2 currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
-                hexMapEngineAdapter.scrollToPosition((int)worldPosition.Y, (int)currentPosition.X);
-                currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
-                hexMapEngineAdapter.scrollToPosition((int)currentPosition.Y, (int)worldPosition.X);
+                if (hexMapEngineAdapter != null)
+                {
+                    Vector2 currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
+                    hexMapEngineAdapter.scrollToPosition((int)worldPosition.Y, (int)currentPosition.X);
+                    currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
+                    hexMapEngineAdapter.scrollToPosition((int)currentPosition.Y, (int)worldPosition.X);
+                }
             }
         }
 
@@ -196,7 +205,7 @@ public class GlobalConquestGame : Game
         previousScrollWheelValue = currentScrollWheelValue;
 
         // TODO: Add your update logic here
-        if (Client.isLoadContentComplete)
+        if (Client != null && Client.isLoadContentComplete)
             hexMapEngineAdapter?.Process_UpdateEvent(gameTime);
         base.Update(gameTime);
     }
@@ -217,28 +226,45 @@ public class GlobalConquestGame : Game
         Globals.spriteBatch?.End();
 
         // If the MainGameScreen is visible and the map is calculated.
-        if (Client != null && Client.isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible)
+        if (Client != null && Client.isLoadContentComplete && MainGameScreen != null &&
+            MainGameScreen.mapPanel != null && MainGameScreen.mapPanel.Width != null && MainGameScreen.mapPanel.Height != null &&
+            MainGameScreen.IsVisible)
         {
-            miniMapRectangle = new Rectangle(MainGameScreen.miniMapPanel.Left, MainGameScreen.miniMapPanel.Top, (int)MainGameScreen.miniMapPanel.Width, (int)MainGameScreen.miniMapPanel.Height);
-            // Create the minimap on the render target
-            GraphicsDevice.SetRenderTarget(miniMapRenderTarget2D);
-            GraphicsDevice.Clear(Color.Black);
-            Vector2 v2 = hexMapEngineAdapter.getPixelCenter();
-            float xZoom = (float)MainGameScreen.miniMapPanel.Width / (v2.X * 2);
-            float yZoom = (float)MainGameScreen.miniMapPanel.Height / (v2.Y * 2);
-            miniMapCamera.Zoom = xZoom;
-            
-            //Console.WriteLine("zoom=" + miniMapCamera.Zoom + ", miniMap width=" + MainGameScreen.miniMapPanel.Width + ", width=" + Globals.WIDTH);
-            miniMapCamera.Position = v2;
+            Vector2 currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
+            Rectangle viewportRectangle = new Rectangle(
+                (int)currentPosition.X,
+                (int)currentPosition.Y,
+                (int)MainGameScreen.mapPanel.Width,
+                (int)MainGameScreen.mapPanel.Height
+            );
+            //Console.WriteLine("currentX=" + currentPosition.X + ", currentY=" + currentPosition.Y + ", viewWidth=" + viewportRectangle.Width + ", viewHeight=" + viewportRectangle.Height);
+
+            // Setup the miniMap
+            if (MainGameScreen.miniMapPanel != null && MainGameScreen.miniMapPanel.Width != null && MainGameScreen.miniMapPanel.Height != null)
+            {
+                miniMapRectangle = new Rectangle(MainGameScreen.miniMapPanel.Left, MainGameScreen.miniMapPanel.Top,
+                    (int)MainGameScreen.miniMapPanel.Width, (int)MainGameScreen.miniMapPanel.Height);
+                // Create the minimap on the render target
+                GraphicsDevice.SetRenderTarget(miniMapRenderTarget2D);
+                GraphicsDevice.Clear(Color.Black);
+                Vector2 v2 = hexMapEngineAdapter.getPixelCenter();
+                float xZoom = (float)MainGameScreen.miniMapPanel.Width / (v2.X * 2);
+                float yZoom = (float)MainGameScreen.miniMapPanel.Height / (v2.Y * 2);
+                miniMapCamera.Zoom = xZoom;
+                //Console.WriteLine("zoom=" + miniMapCamera.Zoom + ", miniMap width=" + MainGameScreen.miniMapPanel.Width + ", width=" + Globals.WIDTH);
+                miniMapCamera.Position = v2;
+            }
             Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
+            // Draw on the miniMap
             miniMapHexMapEngineAdapter?.Process_DrawEvent(gameTime, -1, -1);
+            // This shows what is visible on the map as a box on the miniMap
+            Globals.spriteBatch?.Draw(viewPortBox, viewportRectangle, null, Color.White * 0.25f);
             Globals.spriteBatch?.End();
 
-            // Create the map on the screen and place the minimap
+            // Create the map on the mapPanel and place the minimap on the miniMapPanel
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Clear(Color.Black);
             Globals.spriteBatch?.Begin(transformMatrix: camera.GetViewMatrix());
-            //Globals.spriteBatch?.Begin();
             int maxPixelsX = (int)this.MainGameScreen.mapPanel.Width - 72;
             int maxPixelsY = (int)this.MainGameScreen.mapPanel.Height - 72;
             hexMapEngineAdapter?.Process_DrawEvent(gameTime, maxPixelsX, maxPixelsY);
@@ -315,6 +341,18 @@ public class GlobalConquestGame : Game
         return new Vector2(worldX, worldY);
     }
 
+    private Vector2 ConvertWorldToMinimap(Vector2 worldPosition, Rectangle miniMapRect, Rectangle worldRect)
+    {
+        // Calculate the ratio of the minimap to the game world
+        float scaleX = (float)miniMapRect.Width / worldRect.Width;
+        float scaleY = (float)miniMapRect.Height / worldRect.Height;
+
+        // Calculate the position relative to the minimap's top-left corner
+        float miniMapX = (worldPosition.X - worldRect.X) * scaleX + miniMapRect.X;
+        float miniMapY = (worldPosition.Y - worldRect.Y) * scaleY + miniMapRect.Y;
+        return new Vector2(miniMapX, miniMapY);
+    }
+
     private Vector2 ConvertPixelsToHexRowCol(Vector2 position)
     {
         float col = 0;
@@ -322,10 +360,13 @@ public class GlobalConquestGame : Game
         Vector2 centerVector = hexMapEngineAdapter.getPixelCenter();
         int worldWidth = (int)centerVector.X * 2;
         int worldHeight = (int)centerVector.Y * 2;
-        int tilesWidth = this.Client.GameState.GameSettings.Width;
-        int tilesHeight = this.Client.GameState.GameSettings.Height;
-        row = tilesHeight * position.Y / worldHeight;
-        col = tilesWidth * position.X / worldWidth;
+        if (Client != null)
+        {
+            int tilesWidth = this.Client.GameState.GameSettings.Width;
+            int tilesHeight = this.Client.GameState.GameSettings.Height;
+            row = tilesHeight * position.Y / worldHeight;
+            col = tilesWidth * position.X / worldWidth;
+        }
         return new Vector2(col, row);
     }
 }

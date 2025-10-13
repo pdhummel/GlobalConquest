@@ -8,11 +8,12 @@ public class Faction
 
     public Color Color { get; set; }
 
-    public Player Player { get; set; }
+    public Player? Player { get; set; }
 
-    public Faction()
+    public Faction(string name, Color color)
     {
-
+        Name = name;
+        Color = color;
     }
 }
 

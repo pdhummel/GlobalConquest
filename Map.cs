@@ -83,7 +83,8 @@ public class Map
         {
             if (moisture < 0.02F)
             {
-                return "desert";
+                //return "desert";
+                return "grass";
             }
             if (moisture < 0.66F)
             {

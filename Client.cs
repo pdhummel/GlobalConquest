@@ -6,18 +6,22 @@ namespace GlobalConquest;
 
 public class Client
 {
-    private NetManager? client;
+    private NetManager? netmanagerclient;
     private EventBasedNetListener? listener;
     private Thread? clientThread;
     public string? ClientIdentifier { get; set; }
     private NetPeer? serverPeer;
 
-    public GlobalConquestGame GlobalConquestGame { get; set; }
+    public GlobalConquestGame? GlobalConquestGame { get; set; }
 
     public bool isLoadContentComplete { get; set; } = false;
 
     public GameState GameState { get; set; } = new GameState();
 
+    public Client(GlobalConquestGame gcGame)
+    {
+        GlobalConquestGame = gcGame;
+    }
 
     public void Connect(JoinGameValues joinGameValues, string key)
     {
@@ -27,15 +31,15 @@ public class Client
         listener.NetworkReceiveEvent += OnNetworkReceive;
         listener.PeerDisconnectedEvent += OnPeerDisconnected;
 
-        client = new NetManager(listener)
+        netmanagerclient = new NetManager(listener)
         {
             UnconnectedMessagesEnabled = true,
             UnsyncedEvents = true
         };
-        client.Start();
+        netmanagerclient.Start();
         string host = joinGameValues.HostIp;
         int port = joinGameValues.Port;
-        serverPeer = client.Connect(host, port, key); // Use the same key as the server
+        serverPeer = netmanagerclient.Connect(host, port, key); // Use the same key as the server
         Console.WriteLine($"Connect(): Client attempting to connect to {host}:{port}");
         // Create and start the new thread for the client's polling loop
         clientThread = new Thread(new ThreadStart(ClientLoop))
@@ -49,7 +53,7 @@ public class Client
 
     private void OnDestroy()
     {
-        client?.Stop();
+        netmanagerclient?.Stop();
     }
 
     private void ClientLoop()
@@ -58,14 +62,14 @@ public class Client
         // This is the client's polling loop, which runs continuously on its own thread.
         while (true)
         {
-            client?.PollEvents();
+            netmanagerclient?.PollEvents();
             Thread.Sleep(15); // Adjust sleep time to control CPU usage.
         }
     }
 
     public void Stop()
     {
-        client?.Stop();
+        netmanagerclient?.Stop();
         Console.WriteLine("Stop(): Client stopped.");
     }
 
@@ -133,10 +137,10 @@ public class Client
             GameState = newGameState;
             if (!isLoadContentComplete)
             {
-                GlobalConquestGame.HexMapLoadContent();
+                GlobalConquestGame?.HexMapLoadContent();
                 isLoadContentComplete = true;
             }
-            GlobalConquestGame.updateMap();
+            GlobalConquestGame?.updateMap();
         }
         reader.Recycle(); // Free up the data reader
     }

@@ -2,6 +2,8 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using HexMapEngine.Structures;
+using System.Numerics;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 
 namespace GlobalConquest;
@@ -39,6 +41,7 @@ class HexMapEngineAdapter
 
     private Microsoft.Xna.Framework.Input.MouseState coMouseState;
     private Microsoft.Xna.Framework.Input.KeyboardState coKeyboardState;
+    private Dictionary<string, Texture2D> units = new Dictionary<string, Texture2D>();
 
 
 
@@ -78,6 +81,9 @@ class HexMapEngineAdapter
         createHexTexture2D(4, "swamp", "swamp-flat-hex-72x72");
         createHexTexture2D(5, "forest", "forest-flat-hex-72x72");
         createHexTexture2D(6, "desert", "desert-flat-hex-72x72");
+
+        Texture2D magentaTank = game.Content.Load<Texture2D>("magenta-tank-48x48");
+        units["magenta-tank"] = magentaTank;
 
         Console.WriteLine("HexMapEngineAdapter.LoadContent(): hexHeight=" + hexHeight + ", hexWidth=" + hexWidth);
         updateMap();
@@ -136,10 +142,14 @@ class HexMapEngineAdapter
                                                             HexMapEngine.Structures.Global.MYRAUI_DEFAULT_SPRITE_FONT,
                                                             coGraphicsDeviceManager,
                                                             coTexture2DTile,
-                                                            coTextureYellowBorder2DTile);            
+                                                            coTextureYellowBorder2DTile);
         }
         //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): " + HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[0, 0]);
+        // TODO: remove hard coded test of unit placement
         coHexTileMap.Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
+        drawUnitAtHex(0, 0, "magenta-tank");
+        drawUnitAtHex(1, 1, "magenta-tank");
+        drawUnitAtHex(2, 2, "magenta-tank");
     }
 
     public void adjustZoom(float zoom)
@@ -208,7 +218,7 @@ class HexMapEngineAdapter
     public void scrollLeft()
     {
         csScrollDirection = "L";
-        scrollToPosition(ciRowPosition, ciColumnPosition -3);
+        scrollToPosition(ciRowPosition, ciColumnPosition - 3);
     }
 
     public void scrollDown()
@@ -236,20 +246,20 @@ class HexMapEngineAdapter
             MathHelper.Clamp(coHexTileMap.cameraWrapper.coCameraVector2Location.X + xIncrement,
                                 0,
                                 getPixelCenter().X * 2);
-                                //(HexMapEngine.Structures.Global.X_MAX_PIXELS));
+        //(HexMapEngine.Structures.Global.X_MAX_PIXELS));
 
         coHexTileMap.cameraWrapper.coCameraVector2Location.Y =
             MathHelper.Clamp(coHexTileMap.cameraWrapper.coCameraVector2Location.Y + yIncrement,
                                 0,
                             getPixelCenter().Y * 2);
-                            //(HexMapEngine.Structures.Global.Y_MAX_PIXELS));
+        //(HexMapEngine.Structures.Global.Y_MAX_PIXELS));
 
         //Console.WriteLine("oldRow=" + oldRowPosition + ", oldCol=" + oldColPosition +
         //", newrow=" + row + ", newcol=" + column + ", yinc=" + yIncrement + ", xinc=" + xIncrement +
         //", hexCamY=" + coHexTileMap.cameraWrapper.coCameraVector2Location.Y + ", hexCamX=" + coHexTileMap.cameraWrapper.coCameraVector2Location.X);
     }
 
-    
+
     public Vector2 getCurrentPixelPosition()
     {
         return new Vector2(ciColumnPosition, ciRowPosition);
@@ -266,7 +276,28 @@ class HexMapEngineAdapter
                                                             coTextureYellowBorder2DTile);
         }
         return coHexTileMap.getPixelCenter();
-    } 
+    }
 
+    public Rectangle getPixelWorldBounds()
+    {
+        Vector2 v2 = getPixelCenter();
+        Rectangle worldBounds = new Rectangle(0, 0, (int)v2.X * 2, (int)v2.Y * 2);
+        return worldBounds;
+    }
+
+    private void drawUnitAtHex(int row, int column, string unit)
+    {
+        Vector2 rowColVector = new Vector2(row, column);
+        Vector2 pixelVector = ConvertHexRowColToPixels(rowColVector);
+        pixelVector.X += 10;
+        pixelVector.Y += 9;
+        Globals.spriteBatch?.Draw(units[unit], pixelVector, null, Color.White);
+
+    }
+
+    private Vector2 ConvertHexRowColToPixels(Vector2 hexVector)
+    {
+        return coHexTileMap.hexToPixel(hexVector);
+    }
 
 }
