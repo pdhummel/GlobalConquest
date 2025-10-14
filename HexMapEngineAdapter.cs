@@ -146,7 +146,6 @@ class HexMapEngineAdapter
         //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): " + HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[0, 0]);
         coHexTileMap.Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
         DrawUnits();
-
     }
 
     public void DrawUnits()
@@ -204,7 +203,7 @@ class HexMapEngineAdapter
         }
 
 
-        if (coMouseState.X > ciScreenWidth)
+        if (coMouseState.X > gcGame.MainGameScreen.mapPanel.Left + gcGame.MainGameScreen.mapPanel.Width)
         {
             //scrollRight();
         }
@@ -226,7 +225,10 @@ class HexMapEngineAdapter
     public void scrollRight()
     {
         csScrollDirection = "R";
-        scrollToPosition(ciRowPosition, ciColumnPosition + 3);
+        Rectangle worldBounds = getPixelWorldBounds();
+        int mapPanelWidth = (int)gcGame.MainGameScreen.mapPanel.Width;
+        if (ciColumnPosition + 3 < worldBounds.Right - mapPanelWidth + 72)
+            scrollToPosition(ciRowPosition, ciColumnPosition + 3);
     }
 
     public void scrollLeft()
@@ -238,7 +240,10 @@ class HexMapEngineAdapter
     public void scrollDown()
     {
         csScrollDirection = "D";
-        scrollToPosition(ciRowPosition + 3, ciColumnPosition);
+        Rectangle worldBounds = getPixelWorldBounds();
+        int mapPanelHeight = (int)gcGame.MainGameScreen.mapPanel.Height;
+        if (ciRowPosition + 3 < worldBounds.Bottom - mapPanelHeight + 72)
+            scrollToPosition(ciRowPosition + 3, ciColumnPosition);
     }
 
     public void scrollUp()
@@ -276,6 +281,10 @@ class HexMapEngineAdapter
 
     public Vector2 getCurrentPixelPosition()
     {
+        if (ciColumnPosition < 0)
+            ciColumnPosition = 0;
+        if (ciRowPosition < 0)
+            ciRowPosition = 0;
         return new Vector2(ciColumnPosition, ciRowPosition);
     }
 
@@ -301,17 +310,76 @@ class HexMapEngineAdapter
 
     private void drawUnitAtHex(int row, int column, string unit)
     {
-        Vector2 rowColVector = new Vector2(row, column);
-        Vector2 pixelVector = ConvertHexRowColToPixels(rowColVector);
-        pixelVector.X += 10;
-        pixelVector.Y += 9;
+        Vector2 currentPixelPosition = this.getCurrentPixelPosition();
+        Vector2 rowColVector = new Vector2(column, row);
+        Vector2 pixelVector = ConvertHexToPixels(rowColVector);
+        //Console.WriteLine("row=" + row + ", col=" + column +
+        //    ", currentPixelX=" + currentPixelPosition.X + ", currentPixelY=" + currentPixelPosition.Y +
+        //    ", pixelX=" + pixelVector.X + ", PixelY=" + pixelVector.Y
+        //);
+        if (pixelVector.X + HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS < currentPixelPosition.X ||
+            pixelVector.X > currentPixelPosition.X + gcGame.MainGameScreen.mapPanel.Width ||
+            pixelVector.Y + HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS < currentPixelPosition.Y ||
+            pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.mapPanel.Height           )
+        {
+            if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+                return;
+        }
+
+        if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+        {
+            pixelVector.X += 10 - currentPixelPosition.X;
+            pixelVector.Y += 9 - currentPixelPosition.Y;
+        }
+        else
+        {
+            pixelVector.X += 10;
+            pixelVector.Y += 9;
+        }
+        if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
+            (pixelVector.X + HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.mapPanel.Left + gcGame.MainGameScreen.mapPanel.Width ||
+            pixelVector.Y + HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.mapPanel.Top + gcGame.MainGameScreen.mapPanel.Height))
+        {
+            return;
+        }
+
         Globals.spriteBatch?.Draw(units[unit], pixelVector, null, Color.White);
 
     }
 
-    private Vector2 ConvertHexRowColToPixels(Vector2 hexVector)
+    // A row is like a snake, it goes up or down per column
+    private Vector2 ConvertHexToPixels(Vector2 hexVector)
     {
         return coHexTileMap.hexToPixel(hexVector);
+    }
+
+
+    // TODO: incomplete hexY logic
+    private Vector2 ConvertPixelsToHex(Vector2 pixelVector)
+    {
+        float pixelX = pixelVector.X;
+        float pixelY = pixelVector.Y;
+        float hexX = (pixelX - HexMapEngine.Structures.Global.X_VIEW_OFFSET_PIXELS) / HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X;
+        if (hexX < 0)
+            hexX = 0;
+        float hexY = (pixelY - HexMapEngine.Structures.Global.Y_VIEW_OFFSET_PIXELS) / HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS;
+        if (hexY < 0)
+            hexY = 0;
+        float hexY2 = (pixelY / HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS) - HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y;
+        if (hexY2 < 0)
+            hexY2 = 0;
+
+        Vector2 hexVector = new Vector2((int)hexX, (int)hexY);
+        Vector2 hexVector2 = new Vector2((int)hexX, (int)hexY2);
+        Vector2 tmpPixelVector = ConvertHexToPixels(hexVector);
+        Vector2 tmpPixelVector2 = ConvertHexToPixels(hexVector2);
+        Console.WriteLine("pixelY=" + pixelY +
+            ", tmpPixelX=" + tmpPixelVector.X + ", tmpPixelY=" + tmpPixelVector.Y +
+                          ", tmpPixelX2=" + tmpPixelVector2.X + ", tmpPixelY2=" + tmpPixelVector2.Y);
+        if (pixelVector.Y == tmpPixelVector.Y)
+            return hexVector;
+        else
+            return hexVector2;
     }
 
 }
