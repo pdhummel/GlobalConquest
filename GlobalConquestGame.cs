@@ -255,10 +255,12 @@ public class GlobalConquestGame : Game
                 miniMapCamera.Position = v2;
             }
             Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
+            Globals.spriteBatch.Tag = "miniMap";
             // Draw on the miniMap
             miniMapHexMapEngineAdapter?.Process_DrawEvent(gameTime, -1, -1);
             // This shows what is visible on the map as a box on the miniMap
             Globals.spriteBatch?.Draw(viewPortBox, viewportRectangle, null, Color.White * 0.25f);
+            Globals.spriteBatch.Tag = "";
             Globals.spriteBatch?.End();
 
             // Create the map on the mapPanel and place the minimap on the miniMapPanel
