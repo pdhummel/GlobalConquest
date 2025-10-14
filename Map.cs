@@ -62,6 +62,11 @@ public class Map
         return hexes;
     }
 
+    public void placeUnit(Unit unit, int x, int y)
+    {
+        Hexes[y, x].setUnit(unit);
+    }
+
     private string determineBiome(float elevation, float moisture)
     {
         // these thresholds will need tuning to match your generator

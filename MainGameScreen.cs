@@ -81,6 +81,17 @@ public class MainGameScreen
         detailsPanel.Visible = true;
         IsVisible = true;
 
+        GlobalConquestGame gcGame = (GlobalConquestGame)game;
+        Unit unit = new Unit();
+        unit.Color = "magenta";
+        unit.UnitType = "tank";
+        PlaceUnitAction action = new PlaceUnitAction();
+        action.Unit = unit;
+        action.X = 0;
+        action.Y = 0;
+        action.ClassType = "GlobalConquest.PlaceUnitAction";
+        gcGame.Client.SendAction("Paul", action);
+
     }
 
     public void hide()

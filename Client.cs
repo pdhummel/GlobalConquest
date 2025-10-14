@@ -78,7 +78,24 @@ public class Client
         NetDataWriter writer = new();
         writer.Put(data); // Add your data
         serverPeer?.Send(writer, DeliveryMethod.ReliableOrdered);
-        Console.WriteLine("SendData(): " + peerIdentifier + "Client sent data " + data);
+        Console.WriteLine("SendData(): " + peerIdentifier + " Client sent data " + data);
+    }
+
+    public void SendAction(string peerIdentifier, PlayerAction action)
+    {
+        Type type = Type.GetType(action.ClassType);
+        dynamic subClassAction = Convert.ChangeType(action, type);
+
+        if (peerIdentifier == null)
+        {
+            peerIdentifier = subClassAction.ClientIdentifier;
+        }
+        if (subClassAction.ClientIdentifier == null)
+        {
+            subClassAction.ClientIdentifier = peerIdentifier;
+        }
+        String data = JsonSerializer.Serialize(subClassAction);
+        SendData(peerIdentifier, data);
     }
 
 

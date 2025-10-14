@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using HexMapEngine.Structures;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
-using System.Numerics;
 
 
 namespace GlobalConquest;
@@ -21,6 +20,7 @@ class HexMapEngineAdapter
     private int ciRowPosition = 0;
     private int ciColumnPosition = 0;
     private string csScrollDirection = "";  // R,L,U,D used for key-based scrolling
+    private int ciMovementOffset = 14;
     private int ciScreenWidth = Globals.WIDTH;
 
     private int ciScreenHeight = Globals.HEIGHT;
@@ -144,16 +144,26 @@ class HexMapEngineAdapter
                                                             coTextureYellowBorder2DTile);
         }
         //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): " + HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[0, 0]);
-        // TODO: remove hard coded test of unit placement
         coHexTileMap.Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
-        drawUnitAtHex(0, 0, "magenta-tank");
-        drawUnitAtHex(0, 1, "magenta-tank");
-        drawUnitAtHex(1, 2, "magenta-tank");
-        drawUnitAtHex(1, 3, "magenta-tank");
-        drawUnitAtHex(gcGame.Client.GameState.Map.Y/2, gcGame.Client.GameState.Map.X/2, "magenta-tank");
-        drawUnitAtHex(gcGame.Client.GameState.Map.Y-2, gcGame.Client.GameState.Map.X-3, "magenta-tank");
-        drawUnitAtHex(gcGame.Client.GameState.Map.Y-1, gcGame.Client.GameState.Map.X-2, "magenta-tank");
-        drawUnitAtHex(gcGame.Client.GameState.Map.Y-1, gcGame.Client.GameState.Map.X-1, "magenta-tank");
+        DrawUnits();
+
+    }
+
+    public void DrawUnits()
+    {
+        MapHex[,] hexes = gcGame.Client.GameState.Map.Hexes;
+        for (int liY = 0; liY < hexHeight; liY++)
+        {
+            for (int liX = 0; liX < hexWidth; liX++)
+            {
+                Unit unit = hexes[liY, liX].getUnit();
+                if (unit != null)
+                {
+                    string unitId = unit.Color + "-" + unit.UnitType;
+                    drawUnitAtHex(liY, liX, unitId);
+                }
+            }
+        }
     }
 
     public void adjustZoom(float zoom)
@@ -194,7 +204,7 @@ class HexMapEngineAdapter
         }
 
 
-        if (coMouseState.X > gcGame.MainGameScreen.mapPanel.Left + gcGame.MainGameScreen.mapPanel.Width)
+        if (coMouseState.X > ciScreenWidth)
         {
             //scrollRight();
         }
@@ -216,10 +226,7 @@ class HexMapEngineAdapter
     public void scrollRight()
     {
         csScrollDirection = "R";
-        Rectangle worldBounds = getPixelWorldBounds();
-        int mapPanelWidth = (int)gcGame.MainGameScreen.mapPanel.Width;
-        if (ciColumnPosition + 3 < worldBounds.Right - mapPanelWidth + 72)
-            scrollToPosition(ciRowPosition, ciColumnPosition + 3);
+        scrollToPosition(ciRowPosition, ciColumnPosition + 3);
     }
 
     public void scrollLeft()
@@ -231,10 +238,7 @@ class HexMapEngineAdapter
     public void scrollDown()
     {
         csScrollDirection = "D";
-        Rectangle worldBounds = getPixelWorldBounds();
-        int mapPanelHeight = (int)gcGame.MainGameScreen.mapPanel.Height;
-        if (ciRowPosition + 3 < worldBounds.Bottom - mapPanelHeight + 72)
-            scrollToPosition(ciRowPosition + 3, ciColumnPosition);
+        scrollToPosition(ciRowPosition + 3, ciColumnPosition);
     }
 
     public void scrollUp()
@@ -272,10 +276,6 @@ class HexMapEngineAdapter
 
     public Vector2 getCurrentPixelPosition()
     {
-        if (ciColumnPosition < 0)
-            ciColumnPosition = 0;
-        if (ciRowPosition < 0)
-            ciRowPosition = 0;
         return new Vector2(ciColumnPosition, ciRowPosition);
     }
 
@@ -301,76 +301,17 @@ class HexMapEngineAdapter
 
     private void drawUnitAtHex(int row, int column, string unit)
     {
-        Vector2 currentPixelPosition = this.getCurrentPixelPosition();
-        Vector2 rowColVector = new Vector2(column, row);
-        Vector2 pixelVector = ConvertHexToPixels(rowColVector);
-        //Console.WriteLine("row=" + row + ", col=" + column +
-        //    ", currentPixelX=" + currentPixelPosition.X + ", currentPixelY=" + currentPixelPosition.Y +
-        //    ", pixelX=" + pixelVector.X + ", PixelY=" + pixelVector.Y
-        //);
-        if (pixelVector.X + HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS < currentPixelPosition.X ||
-            pixelVector.X > currentPixelPosition.X + gcGame.MainGameScreen.mapPanel.Width ||
-            pixelVector.Y + HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS < currentPixelPosition.Y ||
-            pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.mapPanel.Height           )
-        {
-            if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
-                return;
-        }
-
-        if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
-        {
-            pixelVector.X += 10 - currentPixelPosition.X;
-            pixelVector.Y += 9 - currentPixelPosition.Y;
-        }
-        else
-        {
-            pixelVector.X += 10;
-            pixelVector.Y += 9;
-        }
-        if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
-            (pixelVector.X + HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.mapPanel.Left + gcGame.MainGameScreen.mapPanel.Width ||
-            pixelVector.Y + HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.mapPanel.Top + gcGame.MainGameScreen.mapPanel.Height))
-        {
-            return;
-        }
-
+        Vector2 rowColVector = new Vector2(row, column);
+        Vector2 pixelVector = ConvertHexRowColToPixels(rowColVector);
+        pixelVector.X += 10;
+        pixelVector.Y += 9;
         Globals.spriteBatch?.Draw(units[unit], pixelVector, null, Color.White);
 
     }
 
-    // A row is like a snake, it goes up or down per column
-    private Vector2 ConvertHexToPixels(Vector2 hexVector)
+    private Vector2 ConvertHexRowColToPixels(Vector2 hexVector)
     {
         return coHexTileMap.hexToPixel(hexVector);
-    }
-
-
-    // TODO: incomplete hexY logic
-    private Vector2 ConvertPixelsToHex(Vector2 pixelVector)
-    {
-        float pixelX = pixelVector.X;
-        float pixelY = pixelVector.Y;
-        float hexX = (pixelX - HexMapEngine.Structures.Global.X_VIEW_OFFSET_PIXELS) / HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X;
-        if (hexX < 0)
-            hexX = 0;
-        float hexY = (pixelY - HexMapEngine.Structures.Global.Y_VIEW_OFFSET_PIXELS) / HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS;
-        if (hexY < 0)
-            hexY = 0;
-        float hexY2 = (pixelY / HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS) - HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y;
-        if (hexY2 < 0)
-            hexY2 = 0;
-
-        Vector2 hexVector = new Vector2((int)hexX, (int)hexY);
-        Vector2 hexVector2 = new Vector2((int)hexX, (int)hexY2);
-        Vector2 tmpPixelVector = ConvertHexToPixels(hexVector);
-        Vector2 tmpPixelVector2 = ConvertHexToPixels(hexVector2);
-        Console.WriteLine("pixelY=" + pixelY +
-            ", tmpPixelX=" + tmpPixelVector.X + ", tmpPixelY=" + tmpPixelVector.Y +
-                          ", tmpPixelX2=" + tmpPixelVector2.X + ", tmpPixelY2=" + tmpPixelVector2.Y);
-        if (pixelVector.Y == tmpPixelVector.Y)
-            return hexVector;
-        else
-            return hexVector2;
     }
 
 }

@@ -1,5 +1,7 @@
 using LiteNetLib;
 using LiteNetLib.Utils;
+using System.DirectoryServices.ActiveDirectory;
+using System.Reflection;
 using System.Text.Json;
 
 namespace GlobalConquest;
@@ -132,6 +134,14 @@ public class Server
         reader.Recycle(); // Free up the data reader
         PlayerAction? action =
                 JsonSerializer.Deserialize<PlayerAction>(jsonString);
+        //Type type = Type.GetType(action.ClassType);
+        //dynamic subClassAction = Convert.ChangeType(action, type);
+        PlayerAction subClassAction = action.makeSubclass();
+        subClassAction.MessageAsJson = jsonString;
+        MethodInfo executeMethod = subClassAction.GetType().GetMethod("deserializeAndExecute");
+        object[] parameters = new object[] { gameState };
+        executeMethod?.Invoke(subClassAction, parameters);
+
     }
 
     private void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)

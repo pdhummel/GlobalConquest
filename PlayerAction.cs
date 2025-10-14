@@ -5,14 +5,37 @@ public class PlayerAction
 {
     public string ClientIdentifier { get; set; }
 
-    public string Type { get; set; }
+    public string ClassType { get; set; }
 
-    public PlayerAction(string clientIdentifier, string type)
+    public string? MessageAsJson { get; set; }
+
+    public PlayerAction()
+    {
+
+    }
+
+    public PlayerAction(string clientIdentifier, string classType)
     {
         ClientIdentifier = clientIdentifier;
-        Type = type;
+        ClassType = classType;
+    }
+
+    public PlayerAction makeSubclass()
+    {
+        Type type = Type.GetType(ClassType);
+        object instance = Activator.CreateInstance(type);
+        return (PlayerAction)instance;
+    }
+
+    public void deserializeAndExecute(Object gameStateObj)
+    {
+        
     }
 
 
+    public void execute(Object gameStateObj)
+    {
+        Console.WriteLine("PlayerAction.execute();");
+    }
 
 }

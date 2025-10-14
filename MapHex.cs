@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Text.Json;
 
 namespace GlobalConquest;
 
@@ -22,9 +23,15 @@ public class MapHex
 
     public Unit getUnit()
     {
+        Unit tmpUnit = new Unit();
         if (Units.Count > 0)
         {
-            return (Unit)Units[0];
+            if (Units[0].GetType().Equals(tmpUnit.GetType))
+                return (Unit)Units[0];
+
+            Unit unit =
+                JsonSerializer.Deserialize<Unit>(Units[0].ToString());
+            return unit;
         }
         else
         {
@@ -34,7 +41,10 @@ public class MapHex
 
     public void setUnit(Unit unit)
     {
-        Units[0] = unit;
+        if (Units.Count > 0)
+            Units[0] = unit;
+        else
+            Units.Add(unit);
     }
 
 }
