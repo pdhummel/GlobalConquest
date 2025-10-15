@@ -41,11 +41,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!--
     <Reference Include="HexagonMappingEngine">
       <HintPath>.\lib\HexagonMappingEngine\HexagonMappingEngine.dll</HintPath>
       <Private>true</Private>
       <CopyLocal>true</CopyLocal>
     </Reference>
+    -->
     <Reference Include="Myra">
       <HintPath>.\lib\HexagonMappingEngine\Myra.dll</HintPath>
       <Private>True</Private>

@@ -1,7 +1,9 @@
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using HexMapEngine.Structures;
+using GlobalConquest.HexMapEngine;
+using GlobalConquest.HexMapEngine.Classes;
+using GlobalConquest.HexMapEngine.Structures;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using GlobalConquest.Actions;
 
@@ -28,7 +30,7 @@ class HexMapEngineAdapter
     private int hexHeight;
 
     // Set by PreBase_Process_DrawEvent
-    private HexMapEngine.Classes.HexTileMap coHexTileMap;
+    private HexTileMap coHexTileMap;
 
     // Set by LoadContent
     private Microsoft.Xna.Framework.Graphics.SpriteBatch coSpriteBatch;
@@ -67,9 +69,8 @@ class HexMapEngineAdapter
         Globals.pixel = new Texture2D(GraphicsDevice, 1, 1);
         Globals.pixel.SetData<Microsoft.Xna.Framework.Color>(new Microsoft.Xna.Framework.Color[] { Microsoft.Xna.Framework.Color.White });
 
-        HexMapEngine.Structures.Global.ACTUAL_MAP_WIDTH_IN_TILES = hexWidth;
-        HexMapEngine.Structures.Global.ACTUAL_MAP_HEIGHT_IN_TILES = hexHeight;
-        //HexMapEngine.Classes.HexTileMapLoad loHexTileMapLoad = new HexMapEngine.Classes.HexTileMapLoad(hexHeight, hexWidth);
+        Global.ACTUAL_MAP_WIDTH_IN_TILES = hexWidth;
+        Global.ACTUAL_MAP_HEIGHT_IN_TILES = hexHeight;
 
         createHexTexture2D(0, "unknown", "sea-flat-hex-72x72");
         createHexTexture2D(1, "sea", "sea-flat-hex-72x72");
@@ -84,7 +85,7 @@ class HexMapEngineAdapter
 
         Console.WriteLine("HexMapEngineAdapter.LoadContent(): hexHeight=" + hexHeight + ", hexWidth=" + hexWidth);
         updateMap();
-        Console.WriteLine("HexMapEngineAdapter.LoadContent(): hex count=" + HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY.Length);
+        Console.WriteLine("HexMapEngineAdapter.LoadContent(): hex count=" + Global.MAP_HEX_TILE_ARRAY.Length);
 
         Myra.MyraEnvironment.Game = game;
         testPlacingUnits();
@@ -133,8 +134,8 @@ class HexMapEngineAdapter
 
     public void updateMap()
     {
-        HexMapEngine.Classes.HexTileMapLoad loHexTileMapLoad = new HexMapEngine.Classes.HexTileMapLoad(hexHeight, hexWidth);
-        HexMapEngine.Structures.Global.MYRAUI_DEFAULT_SPRITE_FONT = loHexTileMapLoad.Load_MyraUIDefaultSpriteFont(game);
+        HexTileMapLoad loHexTileMapLoad = new HexMapEngine.Classes.HexTileMapLoad(hexHeight, hexWidth);
+        Global.MYRAUI_DEFAULT_SPRITE_FONT = loHexTileMapLoad.Load_MyraUIDefaultSpriteFont(game);
         Texture2D[,] textures = new Texture2D[hexHeight, hexWidth];
         for (int liY = 0; liY < hexHeight; liY++)
         {
@@ -145,7 +146,7 @@ class HexMapEngineAdapter
             }
         }
         HexTile[,] hexTiles = loHexTileMapLoad.Load_MapHexTileArray(textures);
-        HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY = hexTiles;
+        Global.MAP_HEX_TILE_ARRAY = hexTiles;
 
     }
 
@@ -171,18 +172,18 @@ class HexMapEngineAdapter
         //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): enter");
         // set screen background color
         //GraphicsDevice.Clear(Color.Black);
-        HexMapEngine.Structures.Global.X_MAX_PIXELS = maxPixelsX;
-        HexMapEngine.Structures.Global.Y_MAX_PIXELS = maxPixelsY;
+        Global.X_MAX_PIXELS = maxPixelsX;
+        Global.Y_MAX_PIXELS = maxPixelsY;
 
         if (coHexTileMap == null)
         {
-            coHexTileMap = new HexMapEngine.Classes.HexTileMap(coSpriteBatch,
-                                                            HexMapEngine.Structures.Global.MYRAUI_DEFAULT_SPRITE_FONT,
+            coHexTileMap = new HexTileMap(coSpriteBatch,
+                                                            Global.MYRAUI_DEFAULT_SPRITE_FONT,
                                                             coGraphicsDeviceManager,
                                                             coTexture2DTile,
                                                             coTextureYellowBorder2DTile);
         }
-        //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): " + HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[0, 0]);
+        //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): " + Global.MAP_HEX_TILE_ARRAY[0, 0]);
         coHexTileMap.Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
         DrawUnits();
     }
@@ -206,8 +207,8 @@ class HexMapEngineAdapter
 
     public void adjustZoom(float zoom)
     {
-        HexMapEngine.Structures.Global.X_ZOOM_FACTOR = zoom;
-        HexMapEngine.Structures.Global.Y_ZOOM_FACTOR = zoom;
+        Global.X_ZOOM_FACTOR = zoom;
+        Global.Y_ZOOM_FACTOR = zoom;
     }
 
 
@@ -327,8 +328,8 @@ class HexMapEngineAdapter
     {
         if (coHexTileMap == null)
         {
-            coHexTileMap = new HexMapEngine.Classes.HexTileMap(coSpriteBatch,
-                                                            HexMapEngine.Structures.Global.MYRAUI_DEFAULT_SPRITE_FONT,
+            coHexTileMap = new HexTileMap(coSpriteBatch,
+                                                            Global.MYRAUI_DEFAULT_SPRITE_FONT,
                                                             coGraphicsDeviceManager,
                                                             coTexture2DTile,
                                                             coTextureYellowBorder2DTile);
@@ -352,9 +353,9 @@ class HexMapEngineAdapter
         //    ", currentPixelX=" + currentPixelPosition.X + ", currentPixelY=" + currentPixelPosition.Y +
         //    ", pixelX=" + pixelVector.X + ", PixelY=" + pixelVector.Y
         //);
-        if (pixelVector.X + HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS < currentPixelPosition.X ||
+        if (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS < currentPixelPosition.X ||
             pixelVector.X > currentPixelPosition.X + gcGame.MainGameScreen.mapPanel.Width ||
-            pixelVector.Y + HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS < currentPixelPosition.Y ||
+            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS < currentPixelPosition.Y ||
             pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.mapPanel.Height           )
         {
             if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
@@ -372,8 +373,8 @@ class HexMapEngineAdapter
             pixelVector.Y += 9;
         }
         if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
-            (pixelVector.X + HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.mapPanel.Left + gcGame.MainGameScreen.mapPanel.Width ||
-            pixelVector.Y + HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.mapPanel.Top + gcGame.MainGameScreen.mapPanel.Height))
+            (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.mapPanel.Left + gcGame.MainGameScreen.mapPanel.Width ||
+            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.mapPanel.Top + gcGame.MainGameScreen.mapPanel.Height))
         {
             return;
         }
@@ -394,13 +395,13 @@ class HexMapEngineAdapter
     {
         float pixelX = pixelVector.X;
         float pixelY = pixelVector.Y;
-        float hexX = (pixelX - HexMapEngine.Structures.Global.X_VIEW_OFFSET_PIXELS) / HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X;
+        float hexX = (pixelX - Global.X_VIEW_OFFSET_PIXELS) / Global.MAP_TILE_OFFSET_X;
         if (hexX < 0)
             hexX = 0;
-        float hexY = (pixelY - HexMapEngine.Structures.Global.Y_VIEW_OFFSET_PIXELS) / HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS;
+        float hexY = (pixelY - Global.Y_VIEW_OFFSET_PIXELS) / Global.ACTUAL_TILE_HEIGHT_IN_PIXELS;
         if (hexY < 0)
             hexY = 0;
-        float hexY2 = (pixelY / HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS) - HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y;
+        float hexY2 = (pixelY / Global.ACTUAL_TILE_HEIGHT_IN_PIXELS) - Global.MAP_TILE_OFFSET_Y;
         if (hexY2 < 0)
             hexY2 = 0;
 
