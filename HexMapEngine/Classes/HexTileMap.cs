@@ -196,7 +196,7 @@ namespace GlobalConquest.HexMapEngine.Classes
 
         #region Internal Methods - Mouse Handling
 
-        internal HexMapEngine.Structures.HexTile Find_MouseSelectedHex(int piXMousePosition, int piYMousePosition)
+        public HexMapEngine.Structures.HexTile Find_MouseSelectedHex(int piXMousePosition, int piYMousePosition)
         {
             bool lboolBreakFromForLoops = false;
 
@@ -212,9 +212,12 @@ namespace GlobalConquest.HexMapEngine.Classes
                     {
                         loHexTileSelected = HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[liLengthDim0, liLengthDim1];
 
+
                         if (loHexTileMath.IsPoint_InsideHexagon(ref loHexTileSelected, piXMousePosition, piYMousePosition))
                         {
                             lboolBreakFromForLoops = true;
+                            loHexTileSelected.MAP_TILE_POSITION_X = liLengthDim0;
+                            loHexTileSelected.MAP_TILE_POSITION_Y = liLengthDim1;
                             break;
                         }
                     }

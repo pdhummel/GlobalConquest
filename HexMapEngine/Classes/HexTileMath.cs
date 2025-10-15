@@ -343,7 +343,7 @@ namespace GlobalConquest.HexMapEngine.Classes
                     {    
                         loHexTileSelected = HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[liYIndex, liXIndex];
 
-                        loHexTileSelected.HEX_TILE_SELECTED = true;
+                        //loHexTileSelected.HEX_TILE_SELECTED = true;
 
                         // update passed hex-tile structure & hex-tile structure in global array
                         poHexTileSelected = loHexTileSelected;

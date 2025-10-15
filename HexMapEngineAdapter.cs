@@ -224,19 +224,19 @@ class HexMapEngineAdapter
         // mouse state logic (get the state of the mouse)
         coMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
         csScrollDirection = "";
-        // ---
+
+
         // mouse left button click / find which hex mouse clicked
-        // ---
-
-        // if (coMouseState.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
-        // {
-        //     Find_MouseSelectedHex();
-
-        // }
+        //if (coMouseState.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
+        //{
+            //HexTile hexTile = coHexTileMap.Find_MouseSelectedHex(coMouseState.X, coMouseState.Y);
+            //Console.WriteLine("row=" + hexTile.ROW_ID + ", col=" + hexTile.COLUMN_ID + ", X=" + hexTile.MAP_TILE_POSITION_X + ", Y=" + hexTile.MAP_TILE_POSITION_Y);
+        //}
 
 
-        // ---
-        // handle mouse position outside the board
+
+        // Scroll when the mouse position is outside the board --
+        // This has been replaced by using arrow keys.
         if (coMouseState.X < 1)
         {
             //scrollLeft();
