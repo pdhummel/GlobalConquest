@@ -5,7 +5,7 @@ using Myra.Graphics2D.UI;
 using static Myra.Graphics2D.UI.Grid;
 using static Myra.Graphics2D.UI.Label;
 
-namespace GlobalConquest;
+namespace GlobalConquest.UI;
 
 public class ConquestMenu
 {

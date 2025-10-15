@@ -8,7 +8,7 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Thickness = Myra.Graphics2D.Thickness;
 
-namespace GlobalConquest;
+namespace GlobalConquest.UI;
 
 public class MainGameScreen
 {

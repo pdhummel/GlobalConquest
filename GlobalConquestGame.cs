@@ -7,6 +7,7 @@ using MonoGame.Extended;
 using Myra;
 using Myra.Graphics2D.UI;
 using GlobalConquest.Actions;
+using GlobalConquest.UI;
 
 namespace GlobalConquest;
 

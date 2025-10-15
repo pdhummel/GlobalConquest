@@ -9,7 +9,7 @@ using Myra.Graphics2D.UI;
 using static Myra.Graphics2D.UI.Grid;
 using Thickness = Myra.Graphics2D.Thickness;
 
-namespace GlobalConquest;
+namespace GlobalConquest.UI;
 
 
 public class HostGameScreen
