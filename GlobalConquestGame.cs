@@ -6,6 +6,7 @@ using System.Text.Json;
 using MonoGame.Extended;
 using Myra;
 using Myra.Graphics2D.UI;
+using GlobalConquest.Actions;
 
 namespace GlobalConquest;
 
@@ -147,7 +148,7 @@ public class GlobalConquestGame : Game
 
         MouseState currentMouseState = Mouse.GetState();
         var mousePosition = new Vector2(currentMouseState.X, currentMouseState.Y);
-        var relativeMousePos = Vector2.Transform(mousePosition, Matrix.Invert(camera.GetViewMatrix()));
+        //var relativeMousePos = Vector2.Transform(mousePosition, Matrix.Invert(camera.GetViewMatrix()));
 
         if (Client != null && Client.isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible)
         {
@@ -161,9 +162,6 @@ public class GlobalConquestGame : Game
                 // Convert the minimap position to world coordinates
                 Vector2 worldPosition = ConvertMiniMapToWorld(minimapMousePos);
 
-                // Pan the main camera to the new world position
-
-                //Vector2 rowColVector = ConvertPixelsToHexRowCol(worldPosition);
                 //Console.WriteLine("rectX=" + miniMapRectangle.X + ", rectY=" + miniMapRectangle.Y +
                 //    ", mousePositionX=" + mousePosition.X + ", mousePositionY=" + mousePosition.Y +
                 //    ", relX=" + relativeMousePos.X + ", relY=" + relativeMousePos.Y +
@@ -174,6 +172,8 @@ public class GlobalConquestGame : Game
 
                 if (hexMapEngineAdapter != null)
                 {
+                    worldPosition.X -= (int)MainGameScreen.mapPanel.Width/2;
+                    worldPosition.Y -= (int)MainGameScreen.mapPanel.Height/2;
                     Vector2 currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
                     hexMapEngineAdapter.scrollToPosition((int)worldPosition.Y, (int)currentPosition.X);
                     currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();

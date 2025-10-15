@@ -26,7 +26,7 @@ public class MapHex
         Unit tmpUnit = new Unit();
         if (Units.Count > 0)
         {
-            if (Units[0].GetType().Equals(tmpUnit.GetType))
+            if (Units[0].GetType().Equals(tmpUnit.GetType()))
                 return (Unit)Units[0];
 
             Unit unit =

@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using HexMapEngine.Structures;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
-
+using GlobalConquest.Actions;
 
 namespace GlobalConquest;
 
@@ -20,7 +20,6 @@ class HexMapEngineAdapter
     private int ciRowPosition = 0;
     private int ciColumnPosition = 0;
     private string csScrollDirection = "";  // R,L,U,D used for key-based scrolling
-    private int ciMovementOffset = 14;
     private int ciScreenWidth = Globals.WIDTH;
 
     private int ciScreenHeight = Globals.HEIGHT;
@@ -39,7 +38,6 @@ class HexMapEngineAdapter
     private Microsoft.Xna.Framework.Graphics.Texture2D coTextureYellowBorder2DTile;
 
     private Microsoft.Xna.Framework.Input.MouseState coMouseState;
-    private Microsoft.Xna.Framework.Input.KeyboardState coKeyboardState;
     private Dictionary<string, Texture2D> units = new Dictionary<string, Texture2D>();
 
 
@@ -89,6 +87,47 @@ class HexMapEngineAdapter
         Console.WriteLine("HexMapEngineAdapter.LoadContent(): hex count=" + HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY.Length);
 
         Myra.MyraEnvironment.Game = game;
+        testPlacingUnits();
+    }
+
+    private void testPlacingUnits()
+    {
+        GlobalConquestGame gcGame = (GlobalConquestGame)game;
+        Unit unit = new Unit();
+        unit.Color = "magenta";
+        unit.UnitType = "tank";
+        PlaceUnitAction action = new PlaceUnitAction();
+        action.Unit = unit;
+        action.X = 0;
+        action.Y = 0;
+        action.ClassType = "GlobalConquest.Actions.PlaceUnitAction";
+        gcGame.Client?.SendAction("Paul", action);
+        action.X = 1;
+        action.Y = 0;
+        gcGame.Client?.SendAction("Paul", action);
+        action.X = 2;
+        action.Y = 1;
+        gcGame.Client?.SendAction("Paul", action);
+        action.X = 3;
+        action.Y = 1;
+        gcGame.Client?.SendAction("Paul", action);
+
+        //int width = gcGame.Client.GameState.GameSettings.Width;
+        //int height = gcGame.Client.GameState.GameSettings.Height;
+        int width = 50;
+        int height = 50;
+        action.X = width / 2;
+        action.Y = height / 2;
+        gcGame.Client?.SendAction("Paul", action);
+        action.X = width - 3;
+        action.Y = height - 2;
+        gcGame.Client?.SendAction("Paul", action);
+        action.X = width - 2;
+        action.Y = height - 1;
+        gcGame.Client?.SendAction("Paul", action);
+        action.X = width - 1;
+        action.Y = height - 1;
+        gcGame.Client?.SendAction("Paul", action);
 
     }
 
@@ -256,8 +295,6 @@ class HexMapEngineAdapter
     {
         int yIncrement = row - ciRowPosition;
         int xIncrement = column - ciColumnPosition;
-        int oldRowPosition = ciRowPosition;
-        int oldColPosition = ciColumnPosition;
         ciRowPosition = row;
         ciColumnPosition = column;
 
@@ -265,13 +302,11 @@ class HexMapEngineAdapter
             MathHelper.Clamp(coHexTileMap.cameraWrapper.coCameraVector2Location.X + xIncrement,
                                 0,
                                 getPixelCenter().X * 2);
-        //(HexMapEngine.Structures.Global.X_MAX_PIXELS));
 
         coHexTileMap.cameraWrapper.coCameraVector2Location.Y =
             MathHelper.Clamp(coHexTileMap.cameraWrapper.coCameraVector2Location.Y + yIncrement,
                                 0,
                             getPixelCenter().Y * 2);
-        //(HexMapEngine.Structures.Global.Y_MAX_PIXELS));
 
         //Console.WriteLine("oldRow=" + oldRowPosition + ", oldCol=" + oldColPosition +
         //", newrow=" + row + ", newcol=" + column + ", yinc=" + yIncrement + ", xinc=" + xIncrement +

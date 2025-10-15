@@ -80,41 +80,6 @@ public class MainGameScreen
         detailsPanel.Top = (int)factionsPanel.Height + (int)miniMapPanel.Height;
         detailsPanel.Visible = true;
         IsVisible = true;
-
-        GlobalConquestGame gcGame = (GlobalConquestGame)game;
-        Unit unit = new Unit();
-        unit.Color = "magenta";
-        unit.UnitType = "tank";
-        PlaceUnitAction action = new PlaceUnitAction();
-        action.Unit = unit;
-        action.X = 0;
-        action.Y = 0;
-        action.ClassType = "GlobalConquest.PlaceUnitAction";
-        gcGame.Client.SendAction("Paul", action);
-        action.X = 1;
-        action.Y = 0;
-        gcGame.Client.SendAction("Paul", action);
-        action.X = 2;
-        action.Y = 1;
-        gcGame.Client.SendAction("Paul", action);
-        action.X = 3;
-        action.Y = 1;
-        gcGame.Client.SendAction("Paul", action);
-
-        //gcGame.Client.GameState.Map.X = 50;
-        //gcGame.Client.GameState.Map.Y = 50;
-        action.X = 50/ 2;
-        action.Y = 50 / 2;
-        gcGame.Client.SendAction("Paul", action);
-        action.X = 50 - 3;
-        action.Y = 50 - 2;
-        gcGame.Client.SendAction("Paul", action);
-        action.X = 50 - 2;
-        action.Y = 50 - 1;
-        gcGame.Client.SendAction("Paul", action);
-        action.X = 50 - 1;
-        action.Y = 50 - 1;
-        gcGame.Client.SendAction("Paul", action);
     }
 
     public void hide()
