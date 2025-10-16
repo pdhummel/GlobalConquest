@@ -25,12 +25,15 @@ public class GlobalConquestGame : Game
     int zoomLevel = 0;
     float[] zoomLevels = [1.0F, 0.75F, .5F, 0.25F, 0.15F, 0.1F];
     long lastMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-    int previousScrollWheelValue = 0;
     private Desktop desktop;
     Rectangle miniMapRectangle;
     HexMapEngineAdapter hexMapEngineAdapter;
     HexMapEngineAdapter miniMapHexMapEngineAdapter;
     Texture2D viewPortBox;
+    public MouseState previousMouseState = Mouse.GetState();
+    public MouseState currentMouseState = Mouse.GetState();
+    KeyboardState currentKeyboardState = Keyboard.GetState();
+    KeyboardState previousKeyboardState = Keyboard.GetState();
 
     public GlobalConquestGame()
     {
@@ -119,35 +122,36 @@ public class GlobalConquestGame : Game
         long currentMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
             Exit();
-        KeyboardState kstate = Keyboard.GetState();
+        currentKeyboardState = Keyboard.GetState();
 
-        if (kstate.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up) &&
+        if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up) &&
             hexMapEngineAdapter != null &&
-            currentMilliseconds - lastMilliseconds > 50)
+             currentMilliseconds - lastMilliseconds > 50)
         {
             hexMapEngineAdapter?.scrollUp();
         }
-        if (kstate.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down) &&
+        if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down) &&
             hexMapEngineAdapter != null &&
-            currentMilliseconds - lastMilliseconds > 50)
+             currentMilliseconds - lastMilliseconds > 50)
         {
             hexMapEngineAdapter?.scrollDown();
         }
-        if (kstate.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left) &&
+        if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left) &&
             hexMapEngineAdapter != null &&
-            currentMilliseconds - lastMilliseconds > 50)
+             currentMilliseconds - lastMilliseconds > 50)
         {
             hexMapEngineAdapter?.scrollLeft();
         }
-        if (kstate.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right) &&
+        if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right) &&
             hexMapEngineAdapter != null &&
-            currentMilliseconds - lastMilliseconds > 50)
+             currentMilliseconds - lastMilliseconds > 50)
         {
             hexMapEngineAdapter?.scrollRight();
         }
+        previousKeyboardState = currentKeyboardState; 
 
-
-        MouseState currentMouseState = Mouse.GetState();
+        previousMouseState = currentMouseState;
+        currentMouseState = Mouse.GetState();
         var mousePosition = new Vector2(currentMouseState.X, currentMouseState.Y);
         //var relativeMousePos = Vector2.Transform(mousePosition, Matrix.Invert(camera.GetViewMatrix()));
 
@@ -183,31 +187,13 @@ public class GlobalConquestGame : Game
             }
         }
 
-        // Update the scroll wheel values
-        int currentScrollWheelValue = currentMouseState.ScrollWheelValue;
-
-        // Calculate the scroll wheel delta
-        int scrollDelta = currentScrollWheelValue - previousScrollWheelValue;
-
-        // Respond to scroll wheel movement
-        if (scrollDelta > 0)
-        {
-            // Mouse wheel scrolled up
-            // Implement desired action, e.g., zoom in, scroll up
-            //zoomIn();
-
-        }
-        else if (scrollDelta < 0)
-        {
-            // Mouse wheel scrolled down
-            // Implement desired action, e.g., zoom out, scroll down
-            //zoomOut();
-        }
-        previousScrollWheelValue = currentScrollWheelValue;
-
         // TODO: Add your update logic here
         if (Client != null && Client.isLoadContentComplete)
+        {
             hexMapEngineAdapter?.Process_UpdateEvent(gameTime);
+            handleClickMouseOnMap();
+        }
+        
         base.Update(gameTime);
     }
 
@@ -358,18 +344,34 @@ public class GlobalConquestGame : Game
 
     private Vector2 ConvertPixelsToHexRowCol(Vector2 position)
     {
-        float col = 0;
-        float row = 0;
-        Vector2 centerVector = hexMapEngineAdapter.getPixelCenter();
-        int worldWidth = (int)centerVector.X * 2;
-        int worldHeight = (int)centerVector.Y * 2;
-        if (Client != null)
-        {
-            int tilesWidth = this.Client.GameState.GameSettings.Width;
-            int tilesHeight = this.Client.GameState.GameSettings.Height;
-            row = tilesHeight * position.Y / worldHeight;
-            col = tilesWidth * position.X / worldWidth;
-        }
-        return new Vector2(col, row);
+        return hexMapEngineAdapter.ConvertPixelsToHex(position);
     }
+
+    public Vector2 findClickedHex(int mouseX, int mouseY)
+    {
+        Vector2 v = hexMapEngineAdapter.ConvertPixelsToHex(new Vector2(mouseX, mouseY));
+        Console.WriteLine("findClickedHex(): " + v.X + " " + v.Y);
+        return v;
+    }
+
+    private void handleClickMouseOnMap()
+    {
+        if (currentMouseState.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed &&  previousMouseState.LeftButton == ButtonState.Released)
+        {
+            if (
+                currentMouseState.X >= 0 && currentMouseState.X >= MainGameScreen.mapPanel.Left &&
+                currentMouseState.X <= MainGameScreen.mapPanel.Left + MainGameScreen.mapPanel.Width &&
+                currentMouseState.Y >= 0 && currentMouseState.Y >= MainGameScreen.mapPanel.Top &&
+                currentMouseState.X <= MainGameScreen.mapPanel.Top + MainGameScreen.mapPanel.Height
+            )
+            {
+                // mouse left button click - find which hex mouse clicked
+                //HexTile hexTile = coHexTileMap.Find_MouseSelectedHex(currentMouseState.X, currentMouseState.Y);
+                findClickedHex(currentMouseState.X, currentMouseState.Y);
+                //Console.WriteLine("row=" + hexTile.ROW_ID + ", col=" + hexTile.COLUMN_ID + ", X=" + hexTile.MAP_TILE_POSITION_X + ", Y=" + hexTile.MAP_TILE_POSITION_Y);
+            }
+        }
+
+    }
+
 }

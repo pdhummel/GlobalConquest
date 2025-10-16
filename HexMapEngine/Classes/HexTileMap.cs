@@ -167,6 +167,8 @@ namespace GlobalConquest.HexMapEngine.Classes
 
                         if ((Global.X_MAX_PIXELS < 0 || tmpCalculatedMapTileX < Global.X_MAX_PIXELS) && (Global.Y_MAX_PIXELS < 0 || tmpCalculatedMapTileY < Global.Y_MAX_PIXELS))
                         {
+                            loHexTile.PixelX = liCalculatedMapTileX;
+                            loHexTile.PixelY = liCalculatedMapTileY;
                             Draw_HexTile(loHexTile,
                                             liCalculatedMapTileX,
                                             liCalculatedMapTileY,

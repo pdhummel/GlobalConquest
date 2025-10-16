@@ -26,7 +26,9 @@ namespace GlobalConquest.HexMapEngine.Structures
             private int     siMapTilePositionX;
             private int     siMapTilePositionY;
             private bool    sboolEvenColumn;
-            private bool    sboolHexTileSelected;
+        private bool sboolHexTileSelected;
+            public int PixelX { get; set; }
+            public int PixelY { get; set; }
             public Texture2D texture2D { get; set; }
 
 

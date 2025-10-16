@@ -39,7 +39,7 @@ class HexMapEngineAdapter
     private Microsoft.Xna.Framework.Graphics.Texture2D coTexture2DTile;
     private Microsoft.Xna.Framework.Graphics.Texture2D coTextureYellowBorder2DTile;
 
-    private Microsoft.Xna.Framework.Input.MouseState coMouseState;
+    //private Microsoft.Xna.Framework.Input.MouseState coMouseState;
     private Dictionary<string, Texture2D> units = new Dictionary<string, Texture2D>();
 
 
@@ -221,46 +221,35 @@ class HexMapEngineAdapter
             game.Exit();
         }
 
-        // mouse state logic (get the state of the mouse)
-        coMouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
-        csScrollDirection = "";
-
-
-        // mouse left button click / find which hex mouse clicked
-        //if (coMouseState.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
-        //{
-            //HexTile hexTile = coHexTileMap.Find_MouseSelectedHex(coMouseState.X, coMouseState.Y);
-            //Console.WriteLine("row=" + hexTile.ROW_ID + ", col=" + hexTile.COLUMN_ID + ", X=" + hexTile.MAP_TILE_POSITION_X + ", Y=" + hexTile.MAP_TILE_POSITION_Y);
-        //}
-
-
-
-        // Scroll when the mouse position is outside the board --
-        // This has been replaced by using arrow keys.
-        if (coMouseState.X < 1)
-        {
-            //scrollLeft();
-        }
-
-
-        if (coMouseState.X > gcGame.MainGameScreen.mapPanel.Left + gcGame.MainGameScreen.mapPanel.Width)
-        {
-            //scrollRight();
-        }
-
-        if (coMouseState.Y < 1)
-        {
-            //scrollUp();
-        }
-
-
-        if (coMouseState.Y > ciScreenHeight)
-        {
-            //scrollDown();
-        }
+        mouseScroll(false);
     }
 
 
+    private void mouseScroll(bool isEnabled)
+    {
+        // Scroll when the mouse position is outside the board --
+        // This has been replaced by using arrow keys.
+        if (isEnabled)
+        {
+            csScrollDirection = "";
+            if (gcGame.currentMouseState.X < 1)
+            {
+                scrollLeft();
+            }
+            if (gcGame.currentMouseState.X > gcGame.MainGameScreen.mapPanel.Left + gcGame.MainGameScreen.mapPanel.Width)
+            {
+                scrollRight();
+            }
+            if (gcGame.currentMouseState.Y < 1)
+            {
+                scrollUp();
+            }
+            if (gcGame.currentMouseState.Y > ciScreenHeight)
+            {
+                scrollDown();
+            }
+        }
+    }
 
     public void scrollRight()
     {
@@ -391,17 +380,22 @@ class HexMapEngineAdapter
 
 
     // TODO: incomplete hexY logic
-    private Vector2 ConvertPixelsToHex(Vector2 pixelVector)
+    public Vector2 ConvertPixelsToHex(Vector2 pixelVector)
     {
         float pixelX = pixelVector.X;
         float pixelY = pixelVector.Y;
-        float hexX = (pixelX - Global.X_VIEW_OFFSET_PIXELS) / Global.MAP_TILE_OFFSET_X;
+        Vector2 currentPixelPosition = getCurrentPixelPosition();
+        //float hexX = (pixelX - Global.X_VIEW_OFFSET_PIXELS) / Global.MAP_TILE_OFFSET_X;
+        //float hexX = (pixelX) / Global.MAP_TILE_OFFSET_X;
+        float hexX = (pixelX + currentPixelPosition.X) / Global.MAP_TILE_OFFSET_X;
         if (hexX < 0)
             hexX = 0;
-        float hexY = (pixelY - Global.Y_VIEW_OFFSET_PIXELS) / Global.ACTUAL_TILE_HEIGHT_IN_PIXELS;
+        //float hexY = (pixelY - Global.Y_VIEW_OFFSET_PIXELS) / Global.ACTUAL_TILE_HEIGHT_IN_PIXELS;
+        float hexY = (pixelY + currentPixelPosition.Y) / Global.ACTUAL_TILE_HEIGHT_IN_PIXELS;
         if (hexY < 0)
             hexY = 0;
-        float hexY2 = (pixelY / Global.ACTUAL_TILE_HEIGHT_IN_PIXELS) - Global.MAP_TILE_OFFSET_Y;
+        //float hexY2 = (pixelY / Global.ACTUAL_TILE_HEIGHT_IN_PIXELS) - Global.MAP_TILE_OFFSET_Y;
+        float hexY2 = (pixelY + currentPixelPosition.Y) / Global.MAP_TILE_OFFSET_Y;
         if (hexY2 < 0)
             hexY2 = 0;
 
@@ -409,13 +403,21 @@ class HexMapEngineAdapter
         Vector2 hexVector2 = new Vector2((int)hexX, (int)hexY2);
         Vector2 tmpPixelVector = ConvertHexToPixels(hexVector);
         Vector2 tmpPixelVector2 = ConvertHexToPixels(hexVector2);
-        Console.WriteLine("pixelY=" + pixelY +
-            ", tmpPixelX=" + tmpPixelVector.X + ", tmpPixelY=" + tmpPixelVector.Y +
-                          ", tmpPixelX2=" + tmpPixelVector2.X + ", tmpPixelY2=" + tmpPixelVector2.Y);
-        if (pixelVector.Y == tmpPixelVector.Y)
-            return hexVector;
+        //Console.WriteLine("pixelY=" + pixelY +
+        //    ", currentX=" + currentPixelPosition.X + ", currentY=" + currentPixelPosition.Y +
+        //    ", hexX=" + hexX + ", hexY=" + hexY + ", hexY2=" + hexY2 +
+        //    ", tmpPixelX=" + tmpPixelVector.X + ", tmpPixelY=" + tmpPixelVector.Y +
+        //                  ", tmpPixelX2=" + tmpPixelVector2.X + ", tmpPixelY2=" + tmpPixelVector2.Y);
+        Vector2 returnVector;
+        if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector.Y && pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector.Y + 72)
+            returnVector = hexVector;
+        else if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector2.Y && pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector2.Y + 72)
+            returnVector = hexVector2;
         else
-            return hexVector2;
+            return new Vector2(-1, -1);
+        return returnVector;
     }
+
+
 
 }
