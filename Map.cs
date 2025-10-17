@@ -193,4 +193,40 @@ public class Map
         return newElevation;
     }
 
+    public override bool Equals(object obj)
+    {
+        if (obj is Map other)
+        {
+            if (Y == other.Y && X == other.X)
+            {
+                for (int y = 0; y < Y; y++)
+                {
+                    for (int x = 0; x < X; x++)
+                    {
+                        if (!Hexes[y, x].Equals(other.Hexes[y, x]))
+                            return false;
+                    }
+                }
+                return true;
+            }
+        }
+        //Console.WriteLine("Map.Equals(): false");
+        return false;
+    }
+
+
+    public override int GetHashCode()
+    {
+        // Combine hash codes of relevant properties
+        int hashCode = 0;
+        for (int y = 0; y < Y; y++)
+        {
+            for (int x = 0; x < X; x++)
+            {
+                hashCode = HashCode.Combine(hashCode, Hexes[y, x].GetHashCode());
+            }
+        }
+        return hashCode;
+    }
+
 }

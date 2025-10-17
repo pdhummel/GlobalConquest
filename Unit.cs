@@ -14,9 +14,39 @@ public class Unit
     public int AttackDamagePoints { get; set; }
     public int RemainingDamagePoints { get; set; }
 
+    public bool IsVisibleToAmber { get; set; } = true;
+    public bool IsVisibleToOchre { get; set; } = true;
+    public bool IsVisibleToMagenta { get; set; } = true;
+    public bool IsVisibleToCyan { get; set; } = true;
+
 
     public Unit()
     {
 
     }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is Unit other)
+        {
+            return Owner == other.Owner &&
+                UnitType == other.UnitType &&
+                Color == other.Color &&
+                Y == other.Y &&
+                X == other.X &&
+                IsVisibleToAmber == other.IsVisibleToAmber &&
+                IsVisibleToCyan == other.IsVisibleToCyan &&
+                IsVisibleToMagenta == other.IsVisibleToMagenta &&
+                IsVisibleToOchre == other.IsVisibleToOchre;
+        }
+        //Console.WriteLine("Unit.Equals(): false");
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        // Combine hash codes of relevant properties
+        return HashCode.Combine(Owner+Color, UnitType, Y, X, IsVisibleToAmber, IsVisibleToCyan, IsVisibleToMagenta, IsVisibleToOchre); 
+    }
+
 }

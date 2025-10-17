@@ -158,7 +158,11 @@ public class Client
                 GlobalConquestGame?.HexMapLoadContent();
                 isLoadContentComplete = true;
             }
-            GlobalConquestGame?.updateMap();
+            if (oldGameState != null && oldGameState.Map != null && !newGameState.Map.Equals(oldGameState.Map))
+            {
+                //Console.WriteLine(oldGameState.Map.GetHashCode() + " " + newGameState.Map.GetHashCode());
+                GlobalConquestGame?.updateMap();    
+            }
         }
         reader.Recycle(); // Free up the data reader
     }

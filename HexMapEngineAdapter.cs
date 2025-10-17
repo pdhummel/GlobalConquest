@@ -236,7 +236,7 @@ class HexMapEngineAdapter
             {
                 scrollLeft();
             }
-            if (gcGame.currentMouseState.X > gcGame.MainGameScreen.mapPanel.Left + gcGame.MainGameScreen.mapPanel.Width)
+            if (gcGame.currentMouseState.X > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width)
             {
                 scrollRight();
             }
@@ -255,7 +255,7 @@ class HexMapEngineAdapter
     {
         csScrollDirection = "R";
         Rectangle worldBounds = getPixelWorldBounds();
-        int mapPanelWidth = (int)gcGame.MainGameScreen.mapPanel.Width;
+        int mapPanelWidth = (int)gcGame.MainGameScreen.MapPanel.Width;
         if (ciColumnPosition + 3 < worldBounds.Right - mapPanelWidth + 72)
             scrollToPosition(ciRowPosition, ciColumnPosition + 3);
     }
@@ -270,7 +270,7 @@ class HexMapEngineAdapter
     {
         csScrollDirection = "D";
         Rectangle worldBounds = getPixelWorldBounds();
-        int mapPanelHeight = (int)gcGame.MainGameScreen.mapPanel.Height;
+        int mapPanelHeight = (int)gcGame.MainGameScreen.MapPanel.Height;
         if (ciRowPosition + 3 < worldBounds.Bottom - mapPanelHeight + 72)
             scrollToPosition(ciRowPosition + 3, ciColumnPosition);
     }
@@ -343,9 +343,9 @@ class HexMapEngineAdapter
         //    ", pixelX=" + pixelVector.X + ", PixelY=" + pixelVector.Y
         //);
         if (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS < currentPixelPosition.X ||
-            pixelVector.X > currentPixelPosition.X + gcGame.MainGameScreen.mapPanel.Width ||
+            pixelVector.X > currentPixelPosition.X + gcGame.MainGameScreen.MapPanel.Width ||
             pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS < currentPixelPosition.Y ||
-            pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.mapPanel.Height           )
+            pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.MapPanel.Height           )
         {
             if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
                 return;
@@ -362,8 +362,8 @@ class HexMapEngineAdapter
             pixelVector.Y += 9;
         }
         if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
-            (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.mapPanel.Left + gcGame.MainGameScreen.mapPanel.Width ||
-            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.mapPanel.Top + gcGame.MainGameScreen.mapPanel.Height))
+            (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
+            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height))
         {
             return;
         }

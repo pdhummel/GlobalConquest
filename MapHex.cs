@@ -47,4 +47,31 @@ public class MapHex
             Units.Add(unit);
     }
 
+
+    public override bool Equals(object obj)
+    {
+        if (obj is MapHex other)
+        {
+            return Terrain == other.Terrain &&
+                Y == other.Y &&
+                X == other.X &&
+                IsVisibleToAmber == other.IsVisibleToAmber &&
+                IsVisibleToCyan == other.IsVisibleToCyan &&
+                IsVisibleToMagenta == other.IsVisibleToMagenta &&
+                IsVisibleToOchre == other.IsVisibleToOchre;
+        }
+        //Console.WriteLine("MapHex.Equals(): false");
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        // Combine hash codes of relevant properties
+        Unit unit = getUnit();
+        int unitHashCode = 0;
+        if (unit != null)
+            unitHashCode = unit.GetHashCode();
+        return HashCode.Combine(Terrain, Y, X, IsVisibleToAmber, IsVisibleToCyan, IsVisibleToMagenta, IsVisibleToOchre, unitHashCode); 
+    }
+
 }

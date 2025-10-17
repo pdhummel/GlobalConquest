@@ -61,6 +61,13 @@
 /processorParam:TextureFormat=Color
 /build:GC-cropped-intro_000.png
 
+#begin gcDetailsPanel.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:gcDetailsPanel.spritefont
+
 #begin grass-flat-hex-72x72.png
 /importer:TextureImporter
 /processor:TextureProcessor
