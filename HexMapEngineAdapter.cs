@@ -6,6 +6,7 @@ using GlobalConquest.HexMapEngine.Classes;
 using GlobalConquest.HexMapEngine.Structures;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using GlobalConquest.Actions;
+using System.Numerics;
 
 namespace GlobalConquest;
 
@@ -67,7 +68,7 @@ class HexMapEngineAdapter
         Console.WriteLine("HexMapEngineAdapter.LoadContent(): enter");
 
         Globals.pixel = new Texture2D(GraphicsDevice, 1, 1);
-        Globals.pixel.SetData<Microsoft.Xna.Framework.Color>(new Microsoft.Xna.Framework.Color[] { Microsoft.Xna.Framework.Color.White });
+        Globals.pixel.SetData<Color>(new Microsoft.Xna.Framework.Color[] { Color.White });
 
         Global.ACTUAL_MAP_WIDTH_IN_TILES = hexWidth;
         Global.ACTUAL_MAP_HEIGHT_IN_TILES = hexHeight;
@@ -368,18 +369,37 @@ class HexMapEngineAdapter
             return;
         }
 
-        Globals.spriteBatch?.Draw(units[unit], pixelVector, null, Color.White);
+        //Globals.spriteBatch?.Draw(units[unit], pixelVector, null, Color.White);
+        //coSpriteBatch.Draw(units[unit], pixelVector, null, Color.White);
+        coSpriteBatch.Draw(
+                            units[unit],
+                            pixelVector,
+                            null,
+                            Color.White,
+                            0.0f,
+                            Vector2.Zero,
+                            new Vector2(1.0f, 1.0f),
+                            SpriteEffects.None,
+                            0.5f
+                            );
+
 
     }
 
     // A row is like a snake, it goes up or down per column
-    private Vector2 ConvertHexToPixels(Vector2 hexVector)
+    public Vector2 ConvertHexToPixels(Vector2 hexVector)
     {
-        return coHexTileMap.hexToPixel(hexVector);
+        Vector2 pixelVector = coHexTileMap.hexToPixel(hexVector);
+        return new Vector2(pixelVector.X, pixelVector.Y);
+    }
+    public Vector2 ConvertHexCenterToVisiblePixel(Vector2 hexVector)
+    {
+        Vector2 pixelVector = coHexTileMap.hexToPixel(hexVector);
+        Vector2 currentPixelPosition = getCurrentPixelPosition();
+        return new Vector2(pixelVector.X+36 - currentPixelPosition.X, pixelVector.Y+36 - currentPixelPosition.Y);
     }
 
 
-    // TODO: incomplete hexY logic
     public Vector2 ConvertPixelsToHex(Vector2 pixelVector)
     {
         float pixelX = pixelVector.X;
@@ -401,20 +421,47 @@ class HexMapEngineAdapter
 
         Vector2 hexVector = new Vector2((int)hexX, (int)hexY);
         Vector2 hexVector2 = new Vector2((int)hexX, (int)hexY2);
+        Vector2 hexVector3 = new Vector2((int)hexX, (int)hexY - 1);
+        Vector2 hexVector4 = new Vector2((int)hexX, (int)hexY + 1);
+        Vector2 hexVector5 = new Vector2((int)hexX, (int)hexY2 - 1);
+        Vector2 hexVector6 = new Vector2((int)hexX, (int)hexY2+1);
         Vector2 tmpPixelVector = ConvertHexToPixels(hexVector);
         Vector2 tmpPixelVector2 = ConvertHexToPixels(hexVector2);
-        //Console.WriteLine("pixelY=" + pixelY +
-        //    ", currentX=" + currentPixelPosition.X + ", currentY=" + currentPixelPosition.Y +
-        //    ", hexX=" + hexX + ", hexY=" + hexY + ", hexY2=" + hexY2 +
-        //    ", tmpPixelX=" + tmpPixelVector.X + ", tmpPixelY=" + tmpPixelVector.Y +
-        //                  ", tmpPixelX2=" + tmpPixelVector2.X + ", tmpPixelY2=" + tmpPixelVector2.Y);
+        Vector2 tmpPixelVector3 = ConvertHexToPixels(hexVector3);
+        Vector2 tmpPixelVector4 = ConvertHexToPixels(hexVector4);
+        Vector2 tmpPixelVector5 = ConvertHexToPixels(hexVector5);
+        Vector2 tmpPixelVector6 = ConvertHexToPixels(hexVector6);
         Vector2 returnVector;
-        if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector.Y && pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector.Y + 72)
+        if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector.Y &&
+            pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector.Y + 72)
             returnVector = hexVector;
-        else if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector2.Y && pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector2.Y + 72)
+        else if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector2.Y &&
+                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector2.Y + 72)
             returnVector = hexVector2;
+        else if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector3.Y &&
+                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector3.Y + 72)
+            returnVector = hexVector3;
+        else if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector4.Y &&
+                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector4.Y + 72)
+            returnVector = hexVector4;
+        else if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector5.Y &&
+                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector5.Y + 72)
+            returnVector = hexVector5;
+        else if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector6.Y &&
+                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector6.Y + 72)
+            returnVector = hexVector6;
         else
-            return new Vector2(-1, -1);
+        {
+            returnVector = new Vector2(-1, -1);
+        }
+        if (returnVector.X < 0 || returnVector.Y < 0)
+        {
+            Console.WriteLine("HexMapEngineAdapter.ConvertPixelsToHex(): pixelY=" + pixelY +
+                ", currentY=" + currentPixelPosition.Y +
+                ", hexX=" + hexX + ", hexY=" + hexY + ", hexY2=" + hexY2 +
+                ", tmpPixelY=" + tmpPixelVector.Y +
+                ", tmpPixelY2=" + tmpPixelVector2.Y);            
+        }
         return returnVector;
     }
 

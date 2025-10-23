@@ -1,3 +1,7 @@
+using System.Collections;
+using System.Text.Json;
+using GlobalConquest.Actions;
+
 namespace GlobalConquest;
 
 public class Unit
@@ -19,10 +23,26 @@ public class Unit
     public bool IsVisibleToMagenta { get; set; } = true;
     public bool IsVisibleToCyan { get; set; } = true;
 
+    public ArrayList ActionQueue { get; set; } = new ArrayList();
+
 
     public Unit()
     {
 
+    }
+
+    public UnitAction getNextAction()
+    {
+        if (ActionQueue.Count < 1)
+        {
+            return null;
+        }
+        if (ActionQueue[0].GetType().Equals(new UnitAction().GetType()))
+            return (UnitAction)ActionQueue[0];
+
+        UnitAction unitAction =
+            JsonSerializer.Deserialize<UnitAction>(ActionQueue[0].ToString());
+        return unitAction;
     }
 
     public override bool Equals(object obj)

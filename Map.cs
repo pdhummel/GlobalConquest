@@ -64,7 +64,18 @@ public class Map
 
     public void placeUnit(Unit unit, int x, int y)
     {
-        Hexes[y, x].setUnit(unit);
+        if (x >= 0 && x < X && y >= 0 && y < Y)
+            Hexes[y, x].setUnit(unit);
+    }
+
+    public Unit? getUnitAtXY(int x, int y)
+    {
+        Unit? unit = null;
+        if (x >= 0 && x < X && y >= 0 && y < Y)
+        {
+            unit = Hexes[y, x].getUnit();    
+        }
+        return unit;
     }
 
     private string determineBiome(float elevation, float moisture)

@@ -1,4 +1,5 @@
 using System.Windows;
+using GlobalConquest.HexMapEngine.Structures;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Myra;
@@ -6,6 +7,8 @@ using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
+using Point = Microsoft.Xna.Framework.Point;
 using Thickness = Myra.Graphics2D.Thickness;
 
 namespace GlobalConquest.UI;
@@ -13,6 +16,7 @@ namespace GlobalConquest.UI;
 public class MainGameScreen
 {
     Game game;
+    GlobalConquestGame gcGame;
     Grid grid;
 
     public Panel MapPanel { get; } = new Panel();
@@ -21,11 +25,16 @@ public class MainGameScreen
     public Panel DetailsPanel { get; } = new Panel();
 
     public bool IsVisible { get; set; } = true;
+
+    public bool IsShowContextMenu { get; set; } = false;
+
+
     public MainGameScreen(Game game, Grid grid)
     {
         this.game = game;
         this.grid = grid;
-        ((GlobalConquestGame)game).MainGameScreen = this;        
+        gcGame = ((GlobalConquestGame)game);
+        gcGame.MainGameScreen = this;        
     }
 
     public void LoadContent()
@@ -113,6 +122,77 @@ public class MainGameScreen
             MiniMapPanel.Top = (int)FactionsPanel.Height;
             DetailsPanel.Top = (int)FactionsPanel.Height + (int)MiniMapPanel.Height;
         }
-        
+
     }
+
+    public bool IsContextMenuVisible()
+    {
+        if (MapPanel.Widgets.Count > 0)
+        {
+            Widget widget = MapPanel.Widgets[0];
+            return widget.Visible;
+        }
+        return false;
+    }
+
+    public void HideContextMenu()
+    {
+        if (MapPanel.Widgets.Count > 0)
+        {
+            Widget widget = MapPanel.Widgets[0];
+            MapPanel.Widgets.Remove(widget);
+            widget.RemoveFromParent();
+        }
+    }
+
+    public void ShowContextMenu()
+    {
+        if (!IsShowContextMenu)
+        {
+            return;
+        }
+        Console.WriteLine("ShowContextMenu(): " + IsShowContextMenu);
+        HideContextMenu();
+
+        var container = new VerticalStackPanel
+        {
+            Spacing = 4
+        };
+
+        var titleContainer = new Panel
+        {
+            //Background = DefaultAssets.UITextureRegionAtlas["button"],
+        };
+
+        var titleLabel = new Label
+        {
+            Text = "Choose Option",
+            HorizontalAlignment = HorizontalAlignment.Center
+        };
+
+        titleContainer.Widgets.Add(titleLabel);
+        //container.Widgets.Add(titleContainer);
+
+        var moveMenuItem = new MenuItem();
+        moveMenuItem.Text = "Move";
+        moveMenuItem.Selected += (s, a) =>
+        {
+            Console.WriteLine("move");
+            gcGame.MoveMode = true;
+        };
+
+        var verticalMenu = new VerticalMenu();
+
+        verticalMenu.Items.Add(moveMenuItem);
+
+        container.Widgets.Add(verticalMenu);
+
+        MapPanel.Widgets.Add(container);
+        container.Left = gcGame.currentMouseState.X;
+        container.Top = gcGame.currentMouseState.Y;
+        container.Visible = true;
+        IsShowContextMenu = false;
+
+    }
+
 }

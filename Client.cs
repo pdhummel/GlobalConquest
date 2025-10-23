@@ -161,7 +161,7 @@ public class Client
             if (oldGameState != null && oldGameState.Map != null && !newGameState.Map.Equals(oldGameState.Map))
             {
                 //Console.WriteLine(oldGameState.Map.GetHashCode() + " " + newGameState.Map.GetHashCode());
-                GlobalConquestGame?.updateMap();    
+                GlobalConquestGame?.updateMap();
             }
         }
         reader.Recycle(); // Free up the data reader

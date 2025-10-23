@@ -260,33 +260,49 @@ namespace GlobalConquest.HexMapEngine.Classes
                 loTexture2DTile = Get_TileTextureFromArrayListById(poHexTile.BASE_HEX_TEXTURE_ID);
             }
 
-                //coSpriteBatch.Begin();
+            //coSpriteBatch.Begin();
+            // Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, 
+            //      float rotation, Vector2 origin, Vector2 scale, 
+            //      SpriteEffects effects, float layerDepth)
+            //coSpriteBatch.Draw(
+            //    loTexture2DTile,
+            //    new Rectangle(piCalculatedMapTileX, piCalculatedMapTileY, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels),  // destination
+            //    new Rectangle(0, 0, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels),                                        // source
+            //    Color.White
+            //);
+            //Rectangle destination = new Rectangle(piCalculatedMapTileX, piCalculatedMapTileY, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels);
+            Vector2 destination = new Vector2(piCalculatedMapTileX, piCalculatedMapTileY);
+            Rectangle source = new Rectangle(0, 0, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels);
+            coSpriteBatch.Draw(
+                                loTexture2DTile,
+                                destination,
+                                source,
+                                Color.White,
+                                0.0f,
+                                Vector2.Zero,
+                                new Vector2(1.0f, 1.0f),
+                                SpriteEffects.None,
+                                0.75f
+                                );
 
-                    coSpriteBatch.Draw(
-                                        loTexture2DTile,
-                                        new Rectangle(piCalculatedMapTileX, piCalculatedMapTileY, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels),  // destination
-                                        new Rectangle(0, 0, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels),                                        // source
-                                        Color.White
-                                      );
+            // hex-border overlay test (if hexagon is marked as selected)
+            if (poHexTile.HEX_TILE_SELECTED) 
+            {
+                loTexture2DTile = Get_TileTextureFromArrayListById(2);
 
-                    // hex-border overlay test (if hexagon is marked as selected)
-                    if (poHexTile.HEX_TILE_SELECTED) 
-                    {
-                        loTexture2DTile = Get_TileTextureFromArrayListById(2);
-
-                        coSpriteBatch.Draw(
-                                            loTexture2DTile,
-                                            new Rectangle(piCalculatedMapTileX, piCalculatedMapTileY, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels),  // destination
-                                            new Rectangle(0, 0, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels),                                        // source
-                                            Color.White
-                                          );
-                    }
-
-                //coSpriteBatch.End();
-
-                // update hex tile in array pixel positions on map board
-                Update_HexTileArrayPixelPositions(poHexTile, piCalculatedMapTileX, piCalculatedMapTileY);
+                coSpriteBatch.Draw(
+                                    loTexture2DTile,
+                                    new Rectangle(piCalculatedMapTileX, piCalculatedMapTileY, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels),  // destination
+                                    new Rectangle(0, 0, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels),                                        // source
+                                    Color.White
+                                    );
             }
+
+            //coSpriteBatch.End();
+
+            // update hex tile in array pixel positions on map board
+            Update_HexTileArrayPixelPositions(poHexTile, piCalculatedMapTileX, piCalculatedMapTileY);
+        }
 
         #endregion
 

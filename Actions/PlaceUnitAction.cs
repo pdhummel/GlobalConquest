@@ -19,7 +19,7 @@ public class PlaceUnitAction : PlayerAction
     
     public new void execute(Object gameStateObj)
     {
-        //Console.WriteLine("PlaceUnitAction.execute()");
+        Console.WriteLine("PlaceUnitAction.execute()");
         GameState gameState = (GameState)gameStateObj;
         gameState.Map.placeUnit(Unit, X, Y);
         Unit.X = X;
