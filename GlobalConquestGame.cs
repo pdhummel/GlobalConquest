@@ -444,7 +444,7 @@ public class GlobalConquestGame : Game
             currentMouseState.X >= 0 && currentMouseState.X >= MainGameScreen.MapPanel.Left &&
             currentMouseState.X <= MainGameScreen.MapPanel.Left + MainGameScreen.MapPanel.Width &&
             currentMouseState.Y >= 0 && currentMouseState.Y >= MainGameScreen.MapPanel.Top &&
-            currentMouseState.X <= MainGameScreen.MapPanel.Top + MainGameScreen.MapPanel.Height
+            currentMouseState.Y <= MainGameScreen.MapPanel.Top + MainGameScreen.MapPanel.Height
         )
         {
             //  find which hex mouse clicked

@@ -1,6 +1,6 @@
 ﻿using GlobalConquest;
 
-//var game = new Game1(form.GetDrawSurface());
 var game = new GlobalConquestGame();
+Console.WriteLine("Program starting");
 game.Run();
-Console.WriteLine("Program started");
+Console.WriteLine("Program exited");

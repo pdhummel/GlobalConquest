@@ -121,7 +121,7 @@ namespace GlobalConquest.HexMapEngine.Classes
                 liCalculatedMapTileY = (tileY * HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS) + Global.MAP_TILE_OFFSET_Y - tileOffSetY;
             }
             liCalculatedMapTileX += Global.X_VIEW_OFFSET_PIXELS;
-            liCalculatedMapTileY += Global.Y_VIEW_OFFSET_PIXELS + Global.Y_HEADER_OFFSET;
+            liCalculatedMapTileY += Global.Y_VIEW_OFFSET_PIXELS;
 
             Vector2 v2 = new Vector2(liCalculatedMapTileX, liCalculatedMapTileY);
             return v2;

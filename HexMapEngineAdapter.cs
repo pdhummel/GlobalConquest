@@ -437,22 +437,22 @@ class HexMapEngineAdapter
         Vector2 tmpPixelVector6 = ConvertHexToPixels(hexVector6);
         Vector2 returnVector;
         if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector.Y &&
-            pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector.Y + 72)
+            pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS + Global.Y_VIEW_OFFSET_PIXELS)
             returnVector = hexVector;
         else if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector2.Y &&
-                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector2.Y + 72)
+                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector2.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS + Global.Y_VIEW_OFFSET_PIXELS)
             returnVector = hexVector2;
         else if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector3.Y &&
-                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector3.Y + 72)
+                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector3.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS + Global.Y_VIEW_OFFSET_PIXELS)
             returnVector = hexVector3;
         else if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector4.Y &&
-                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector4.Y + 72)
+                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector4.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS + Global.Y_VIEW_OFFSET_PIXELS)
             returnVector = hexVector4;
         else if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector5.Y &&
-                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector5.Y + 72)
+                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector5.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS + Global.Y_VIEW_OFFSET_PIXELS)
             returnVector = hexVector5;
         else if (pixelVector.Y + currentPixelPosition.Y >= tmpPixelVector6.Y &&
-                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector6.Y + 72)
+                 pixelVector.Y + currentPixelPosition.Y <= tmpPixelVector6.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS + Global.Y_VIEW_OFFSET_PIXELS)
             returnVector = hexVector6;
         else
         {
