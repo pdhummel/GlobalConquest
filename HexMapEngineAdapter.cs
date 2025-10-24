@@ -20,7 +20,7 @@ class HexMapEngineAdapter
     GlobalConquestGame gcGame;
     private Microsoft.Xna.Framework.GraphicsDeviceManager coGraphicsDeviceManager;
 
-    private int ciRowPosition = 0;
+    private int ciRowPosition = 0; // 24?
     private int ciColumnPosition = 0;
     private string csScrollDirection = "";  // R,L,U,D used for key-based scrolling
     private int ciScreenWidth = Globals.WIDTH;
@@ -309,6 +309,7 @@ class HexMapEngineAdapter
     {
         if (ciColumnPosition < 0)
             ciColumnPosition = 0;
+        // TODO?
         if (ciRowPosition < 0)
             ciRowPosition = 0;
         return new Vector2(ciColumnPosition, ciRowPosition);
@@ -346,7 +347,8 @@ class HexMapEngineAdapter
         if (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS < currentPixelPosition.X ||
             pixelVector.X > currentPixelPosition.X + gcGame.MainGameScreen.MapPanel.Width ||
             pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS < currentPixelPosition.Y ||
-            pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.MapPanel.Height           )
+            pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.MapPanel.Height
+           )
         {
             if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
                 return;
@@ -364,7 +366,9 @@ class HexMapEngineAdapter
         }
         if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
             (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
-            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height))
+            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height) ||
+            pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS/2
+            )
         {
             return;
         }
@@ -465,6 +469,9 @@ class HexMapEngineAdapter
         return returnVector;
     }
 
-
+    public void setYPixelOffset(int offset)
+    {
+        Global.Y_VIEW_OFFSET_PIXELS = offset;
+    }
 
 }

@@ -24,6 +24,9 @@ public class MainGameScreen
     public Panel MiniMapPanel { get; } = new Panel();
     public Panel DetailsPanel { get; } = new Panel();
 
+    public Panel MainGameMenuPanel { get; } = new Panel();
+    public MainGameMenu MainGameMenu {get;set;}
+
     public bool IsVisible { get; set; } = true;
 
     public bool IsShowContextMenu { get; set; } = false;
@@ -39,6 +42,11 @@ public class MainGameScreen
 
     public void LoadContent()
     {
+        MainGameMenuPanel.Width = game.Window.ClientBounds.Width;
+        MainGameMenuPanel.Height = 24;
+        MainGameMenuPanel.Border = new SolidBrush("#808000FF");
+        MainGameMenuPanel.BorderThickness = new Thickness(2);
+
         MapPanel.Width = game.Window.ClientBounds.Width - 200;
         MapPanel.Height = game.Window.ClientBounds.Height;
         MapPanel.Border = new SolidBrush("#808000FF");
@@ -55,29 +63,35 @@ public class MainGameScreen
         MiniMapPanel.BorderThickness = new Thickness(2);
 
         DetailsPanel.Width = 200;
-        FactionsPanel.Height = game.Window.ClientBounds.Height / 3;
+        DetailsPanel.Height = game.Window.ClientBounds.Height - FactionsPanel.Height - MiniMapPanel.Height;
         DetailsPanel.Border = new SolidBrush("#808000FF");
         DetailsPanel.BorderThickness = new Thickness(2);
 
         game.Window.ClientSizeChanged += Window_ClientSizeChanged;
+        MainGameMenu = new MainGameMenu(this);
 
     }
 
     public void show()
     {
+        MainGameMenuPanel.Left = 0;
+        MainGameMenuPanel.Top = 0;
+        grid.Desktop.Widgets.Add(MainGameMenuPanel);
+        MainGameMenuPanel.Visible = true;
+
         MapPanel.Left = 0;
-        MapPanel.Top = 0;
+        MapPanel.Top = (int)MainGameMenuPanel.Height;
         grid.Desktop.Widgets.Add(MapPanel);
         MapPanel.Visible = true;
 
         grid.Desktop.Widgets.Add(FactionsPanel);
         FactionsPanel.Left = (int)MapPanel.Width;
-        FactionsPanel.Top = 0;
+        FactionsPanel.Top = (int)MainGameMenuPanel.Height;
         FactionsPanel.Visible = true;
 
         grid.Desktop.Widgets.Add(MiniMapPanel);
         MiniMapPanel.Left = (int)MapPanel.Width;
-        MiniMapPanel.Top = (int)FactionsPanel.Height;
+        MiniMapPanel.Top = (int)MainGameMenuPanel.Height + (int)FactionsPanel.Height;
         MiniMapPanel.Visible = true;
 
         grid.Desktop.Widgets.Add(DetailsPanel);
@@ -86,18 +100,20 @@ public class MainGameScreen
         {
             MiniMapPanel.Height = FactionsPanel.Height;
         }
-        DetailsPanel.Top = (int)FactionsPanel.Height + (int)MiniMapPanel.Height;
+        DetailsPanel.Top = (int)MainGameMenuPanel.Height + (int)FactionsPanel.Height + (int)MiniMapPanel.Height;
         DetailsPanel.Visible = true;
         IsVisible = true;
     }
 
     public void hide()
     {
+        MainGameMenuPanel.Visible = false;
         MapPanel.Visible = false;
         FactionsPanel.Visible = false;
         MiniMapPanel.Visible = false;
         DetailsPanel.Visible = false;
 
+        MainGameMenuPanel.RemoveFromParent();
         MapPanel.RemoveFromParent();
         FactionsPanel.RemoveFromParent();
         MiniMapPanel.RemoveFromParent();
@@ -117,10 +133,10 @@ public class MainGameScreen
 
             FactionsPanel.Height = game.Window.ClientBounds.Height / 3;
             MiniMapPanel.Height = game.Window.ClientBounds.Height / 3;
-            DetailsPanel.Height = game.Window.ClientBounds.Height / 3;
+            DetailsPanel.Height = game.Window.ClientBounds.Height - FactionsPanel.Height - MiniMapPanel.Height;
 
-            MiniMapPanel.Top = (int)FactionsPanel.Height;
-            DetailsPanel.Top = (int)FactionsPanel.Height + (int)MiniMapPanel.Height;
+            MiniMapPanel.Top = (int)MainGameMenuPanel.Height + (int)FactionsPanel.Height;
+            DetailsPanel.Top = (int)MainGameMenuPanel.Height + (int)FactionsPanel.Height + (int)MiniMapPanel.Height;
         }
 
     }

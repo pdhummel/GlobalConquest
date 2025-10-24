@@ -288,7 +288,9 @@ public class GlobalConquestGame : Game
             Globals.spriteBatch?.End();
             SpriteBatch miniMapSpriteBatch = new SpriteBatch(GraphicsDevice);
             miniMapSpriteBatch.Begin();
+            //hexMapEngineAdapter.setYPixelOffset(0);
             miniMapSpriteBatch.Draw(miniMapRenderTarget2D, miniMapRectangle, Color.White);
+            //hexMapEngineAdapter.setYPixelOffset(24);
             miniMapSpriteBatch.End();
         }
 

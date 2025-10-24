@@ -94,29 +94,35 @@ namespace GlobalConquest.HexMapEngine.Classes
             int centerTileX = HexMapEngine.Structures.Global.ACTUAL_MAP_WIDTH_IN_TILES / 2;
             return hexToPixel(new Vector2(centerTileX, centerTileY));
         }
-        
+
+
         public Vector2 hexToPixel(Vector2 hexVector)
+        {
+            return hexToPixel(hexVector, 0, 0);
+        }
+        
+        public Vector2 hexToPixel(Vector2 hexVector, int tileOffSetX, int tileOffSetY)
         {
             int tileY = (int)hexVector.Y;
             int tileX = (int)hexVector.X;
-            int liTileOffsetX = 0;
-            int liTileOffsetY = 0;
-            int liCalculatedMapTileX = 0;
-            int liCalculatedMapTileY = 0;
+
+            int liCalculatedMapTileX;
+            int liCalculatedMapTileY;
 
             if (tileX % 2 == 0)
             {
-                liCalculatedMapTileX = (tileX * HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X) - liTileOffsetX;
-                liCalculatedMapTileY = (tileY * HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS) - liTileOffsetY;
+                liCalculatedMapTileX = (tileX * HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X) - tileOffSetX;
+                liCalculatedMapTileY = (tileY * HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS) - tileOffSetY;
             }
             // odd columns
             else
             {
-                liCalculatedMapTileX = (tileX * HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X) - liTileOffsetX;
-                liCalculatedMapTileY = (tileY * HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS) + HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y - liTileOffsetY;
+                liCalculatedMapTileX = (tileX * HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X) - tileOffSetX;
+                liCalculatedMapTileY = (tileY * HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS) + Global.MAP_TILE_OFFSET_Y - tileOffSetY;
             }
             liCalculatedMapTileX += Global.X_VIEW_OFFSET_PIXELS;
-            liCalculatedMapTileY += Global.Y_VIEW_OFFSET_PIXELS;
+            liCalculatedMapTileY += Global.Y_VIEW_OFFSET_PIXELS + Global.Y_HEADER_OFFSET;
+
             Vector2 v2 = new Vector2(liCalculatedMapTileX, liCalculatedMapTileY);
             return v2;
         }
@@ -147,25 +153,14 @@ namespace GlobalConquest.HexMapEngine.Classes
 
                     if (loHexTile.TILE_COUNT > 0)
                     {
-                        // 0 & even columns
-                        if (loHexTile.EVEN_COLUMN)
-                        {
-                            liCalculatedMapTileX = (liX * HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X) - liTileOffsetX;
-                            liCalculatedMapTileY = (liY * HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS) - liTileOffsetY;
-                        }
-                        // odd columns
-                        else
-                        {
-                            liCalculatedMapTileX = (liX * HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X) - liTileOffsetX;
-                            liCalculatedMapTileY = (liY * HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS) + HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y - liTileOffsetY;
-                        }
-
-                        liCalculatedMapTileX += Global.X_VIEW_OFFSET_PIXELS;
-                        liCalculatedMapTileY += Global.Y_VIEW_OFFSET_PIXELS;
+                        Vector2 pixelVector = hexToPixel(new Vector2(liX, liY), liTileOffsetX, liTileOffsetY);
+                        liCalculatedMapTileX = (int)pixelVector.X;
+                        liCalculatedMapTileY = (int)pixelVector.Y;
                         int tmpCalculatedMapTileX = (int)((float)liCalculatedMapTileX * Global.X_ZOOM_FACTOR);
                         int tmpCalculatedMapTileY = (int)((float)liCalculatedMapTileY * Global.Y_ZOOM_FACTOR);
 
-                        if ((Global.X_MAX_PIXELS < 0 || tmpCalculatedMapTileX < Global.X_MAX_PIXELS) && (Global.Y_MAX_PIXELS < 0 || tmpCalculatedMapTileY < Global.Y_MAX_PIXELS))
+                        if ((Global.X_MAX_PIXELS < 0 || tmpCalculatedMapTileX < Global.X_MAX_PIXELS) &&
+                            (Global.Y_MAX_PIXELS < 0 || tmpCalculatedMapTileY < Global.Y_MAX_PIXELS) && tmpCalculatedMapTileY >= Global.Y_VIEW_OFFSET_PIXELS)
                         {
                             loHexTile.PixelX = liCalculatedMapTileX;
                             loHexTile.PixelY = liCalculatedMapTileY;

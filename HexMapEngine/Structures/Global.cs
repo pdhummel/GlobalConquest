@@ -50,12 +50,11 @@ namespace GlobalConquest.HexMapEngine.Structures
 
         // Added so the hex drawing can be constrained by the size of an external container.
         public static int X_VIEW_OFFSET_PIXELS = 0;
-        public static int Y_VIEW_OFFSET_PIXELS = 0;
+        public static int Y_VIEW_OFFSET_PIXELS = 24; // for our menu
         public static int X_MAX_PIXELS = -1;
         public static int Y_MAX_PIXELS = -1;
         public static float X_ZOOM_FACTOR = 1;
         public static float Y_ZOOM_FACTOR = 1;
-
 
         public static int ACTUAL_TILE_HEIGHT_IN_PIXELS
         {
