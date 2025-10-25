@@ -7,11 +7,25 @@ namespace GlobalConquest;
 public class Unit
 {
     public Faction Owner { get; set; }
-    public string UnitType { get; set; } = "infantry"; // infantry, tank, plane, ComCen, carrier, battleship, spy
+    public string UnitType { get; set; } = "infantry";
     public string Color { get; set; }
 
     public int Y { get; set; }
     public int X { get; set; }
+
+    // Global Conquest Manual - Technical Notes - p79-83
+    // Units start with 100 strength points. When strength equals zero the unit is dead.
+    public int StrengthPoints { get; set; } = 100;
+
+    // When an infantry or armor unit moves from land to sea,
+    // it will pause for four rounds to load into its transports and to have a 
+    // marshmallow roast there on the beach. 
+    // When going from transport to land (unloading), it will take eight rounds. 
+    // If the beach square has a friendly dug-in infantry unit squatting in it, 
+    // this loading/unloading takes only one round.
+    public int RoundsToPause { get; set; } = 0;
+
+    
 
     public int ActionPoints { get; set; }
     public Dictionary<string, int> MovementCostThroughTerrain = new Dictionary<string, int>();
@@ -23,7 +37,7 @@ public class Unit
     public bool IsVisibleToMagenta { get; set; } = true;
     public bool IsVisibleToCyan { get; set; } = true;
 
-    public ArrayList ActionQueue { get; set; } = new ArrayList();
+    public List<UnitAction> ActionQueue { get; set; } = new List<UnitAction>();
 
 
     public Unit()

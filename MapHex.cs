@@ -14,7 +14,7 @@ public class MapHex
     public bool IsVisibleToMagenta { get; set; } = true;
     public bool IsVisibleToCyan { get; set; } = true;
 
-    public ArrayList Units { get; set; } = new ArrayList();
+    public List<Unit> Units { get; set; } = new List<Unit>();
 
     public MapHex()
     {

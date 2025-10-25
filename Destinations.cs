@@ -1,12 +1,14 @@
 using System.Collections;
+using GlobalConquest.Actions;
+namespace GlobalConquest;
 
 public class Destinations
 {
-    // ArrayList of UnitAction
-    Dictionary<string, ArrayList> colorToDestinations;
+    // List of UnitAction
+    Dictionary<string, List<UnitAction>> colorToDestinations;
 
     public Destinations()
     {
-        colorToDestinations = new Dictionary<string, ArrayList>();
+        colorToDestinations = new Dictionary<string, List<UnitAction>>();
     }
 }

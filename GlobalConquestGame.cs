@@ -38,6 +38,7 @@ public class GlobalConquestGame : Game
     MapHex? lastSelectedHex;
     Unit? lastSelectedUnit;
     public bool MoveMode { get; set; } = false;
+    public UnitTypes UnitTypes { get; set; }
 
     public GlobalConquestGame()
     {
@@ -50,6 +51,7 @@ public class GlobalConquestGame : Game
         IsMouseVisible = true;
         Window.AllowUserResizing = true;
         Client = new Client(this);
+        UnitTypes = new UnitTypes();
     }
 
     public GlobalConquestGame(IntPtr drawSurface) : this()

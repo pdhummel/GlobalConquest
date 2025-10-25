@@ -9,6 +9,8 @@ public class GameSettings
     public int Height { get; set; }
 
     public int Width { get; set; }
+    public int NumberOfTurnsForGame { get; set; } = -1;
+    public int NumberOfRoundsPerTurn { get; set; } = 10;
 
     public GameSettings()
     {
