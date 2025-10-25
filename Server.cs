@@ -19,7 +19,7 @@ public class Server
     private string? key;
     private int maxPeers;
     long lastMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-    private readonly GameState gameState = new();
+    public readonly GameState gameState = new();
 
     public void StartAsHost(GameSettings gameSettings, string key)
     {
@@ -140,7 +140,7 @@ public class Server
         PlayerAction subClassAction = action.makeSubclass();
         subClassAction.MessageAsJson = jsonString;
         MethodInfo executeMethod = subClassAction.GetType().GetMethod("deserializeAndExecute");
-        object[] parameters = new object[] { gameState };
+        object[] parameters = new object[] { this };
         executeMethod?.Invoke(subClassAction, parameters);
 
     }
@@ -149,6 +149,8 @@ public class Server
     {
         Console.WriteLine($"OnPeerDisconnected(): Peer disconnected: {peer.Address} from Server. Reason: {disconnectInfo.Reason}");
     }
+
+
 
 }
 

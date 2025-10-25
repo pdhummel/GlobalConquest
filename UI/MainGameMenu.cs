@@ -1,3 +1,4 @@
+using GlobalConquest.Actions;
 using Microsoft.Xna.Framework;
 using Myra.Graphics2D.UI;
 
@@ -25,11 +26,19 @@ public class MainGameMenu
         viewMenuItem.Items.Add(new MenuItem("Airplanes", "Airplanes"));
         viewMenuItem.Items.Add(new MenuItem("Treaties", "Treaties"));
 
-
         horizontalMenu.Items.Add(executeMenuItem);
         horizontalMenu.Items.Add(fileMenuItem);
         horizontalMenu.Items.Add(viewMenuItem);
         mainGameScreen.MainGameMenuPanel.Widgets.Add(horizontalMenu);
+
+         executeMenuItem.Selected += (s, a) =>
+         {
+             Client client = mainGameScreen.gcGame.Client;
+             ExecuteAction executeAction = new ExecuteAction();
+             executeAction.ClassType = "GlobalConquest.Actions.ExecuteAction";  //executeAction.GetType().FullName
+             executeAction.ClientIdentifier = client.ClientIdentifier;
+             client.SendAction(client.ClientIdentifier, executeAction);
+         };
     }
 
 

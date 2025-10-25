@@ -27,13 +27,13 @@ public class PlayerAction
         return (PlayerAction)instance;
     }
 
-    public void deserializeAndExecute(Object gameStateObj)
+    public void deserializeAndExecute(Object serverObj)
     {
         
     }
 
 
-    public void execute(Object gameStateObj)
+    public void execute(Object serverObj)
     {
         Console.WriteLine("PlayerAction.execute();");
     }

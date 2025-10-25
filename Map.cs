@@ -73,9 +73,20 @@ public class Map
         Unit? unit = null;
         if (x >= 0 && x < X && y >= 0 && y < Y)
         {
-            unit = Hexes[y, x].getUnit();    
+            unit = Hexes[y, x].getUnit();
         }
         return unit;
+    }
+    
+    public void moveUnit(Unit unit, int destinationX, int destinationY)
+    {
+        MapHex targetMapHex = Hexes[destinationY, destinationX];
+        targetMapHex.setUnit(unit);
+        MapHex sourceMapHex = Hexes[unit.Y, unit.X];
+        if (sourceMapHex.Units.Count > 0)
+        {
+            Hexes[unit.Y, unit.X].Units.RemoveAt(0);    
+        }
     }
 
     private string determineBiome(float elevation, float moisture)

@@ -16,7 +16,7 @@ namespace GlobalConquest.UI;
 public class MainGameScreen
 {
     Game game;
-    GlobalConquestGame gcGame;
+    public GlobalConquestGame gcGame;
     Grid grid;
 
     public Panel MapPanel { get; } = new Panel();

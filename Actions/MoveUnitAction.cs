@@ -11,17 +11,17 @@ public class MoveUnitAction : PlayerAction
     public int ToY { get; set; }
 
 
-    public new void deserializeAndExecute(Object gameStateObj)
+    public new void deserializeAndExecute(Object serverObj)
     {
         MoveUnitAction? action =
                 JsonSerializer.Deserialize<MoveUnitAction>(this.MessageAsJson);
-        action?.execute(gameStateObj);
+        action?.execute(serverObj);
     }
     
-    public new void execute(Object gameStateObj)
+    public new void execute(Object serverObj)
     {
         Console.WriteLine("MoveUnitAction.execute()");
-        GameState gameState = (GameState)gameStateObj;
+        GameState gameState = ((Server)serverObj).gameState;
         UnitAction unitAction = new UnitAction();
         unitAction.Action = "move";
         unitAction.TargetX = ToX;

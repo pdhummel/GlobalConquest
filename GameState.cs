@@ -14,7 +14,9 @@ public class GameState
 
     public MapHex MapHex { get; set; }
 
-    public Destinations Destinations { get; set; }
+    public Dictionary<string, bool> PlayerExecutionReady { get; set; } = new Dictionary<string, bool>();
+    public int CurrentTurn { get; set; } = 0;
+    public string CurrentPhase { get; set; } = "plan";
 
     public GameState()
     {
