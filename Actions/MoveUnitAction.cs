@@ -21,12 +21,14 @@ public class MoveUnitAction : PlayerAction
     public new void execute(Object serverObj)
     {
         Console.WriteLine("MoveUnitAction.execute()");
-        GameState gameState = ((Server)serverObj).gameState;
+        Server server = (Server)serverObj;
+        GameState gameState = server.gameState;
         UnitAction unitAction = new UnitAction();
         unitAction.Action = "move";
         unitAction.TargetX = ToX;
         unitAction.TargetY = ToY;
         Unit.ActionQueue.Add(unitAction);
         gameState.Map.Hexes[FromY, FromX].setUnit(Unit);
+        server.sendGameStateAndMapHex(Unit.X, Unit.Y);
     }
 }

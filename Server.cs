@@ -20,6 +20,7 @@ public class Server
     private int maxPeers;
     long lastMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
     public readonly GameState gameState = new();
+    private bool initialSync = false;
 
     public void StartAsHost(GameSettings gameSettings, string key)
     {
@@ -55,37 +56,55 @@ public class Server
 
     private void ServerLoop()
     {
+        int sleepTime = 1000;
         Console.WriteLine("ServerLoop(): Server polling");
         // This is the server's polling loop, which runs continuously on its own thread.
         while (isRunning)
         {
             server?.PollEvents();
-            Thread.Sleep(1000); // Adjust sleep time to control CPU usage.
+            syncAllMapHexes();
+            if (initialSync)
+                sleepTime = 10000;
+            Thread.Sleep(sleepTime); // Adjust sleep time to control CPU usage.
+        }
+    }
 
-            NetDataWriter writer = new NetDataWriter();
-            if (server != null)
+    public void syncAllMapHexes()
+    {
+        for (int liY = 0; liY < gameState.Map.Y; liY++)
+        {
+            for (int liX = 0; liX < gameState.Map.X; liX++)
             {
-                foreach (NetPeer peer in server.ConnectedPeerList)
-                {
-                    for (int liY = 0; liY < gameState.Map.Y; liY++)
-                    {
-                        for (int liX = 0; liX < gameState.Map.X; liX++)
-                        {
-                            gameState.MapHex = gameState.Map.Hexes[liY, liX];
-                            //Console.WriteLine("ServerLoop(): hex=" + gameState.MapHex.Terrain);
-                            string jsonString = JsonSerializer.Serialize(this.gameState);
-                            //Console.WriteLine("ServerLoop(): jsonString=" + jsonString);
-                            writer.Put(jsonString);
-                            peer.Send(writer, DeliveryMethod.ReliableOrdered);
-                            writer.Reset();
-                        }
-                    }
-                }
+                sendGameStateAndMapHex(liX, liY);
             }
         }
     }
 
+    public void sendGameStateAndMapHex(int x, int y)
+    {
+        if (server != null)
+        {
+            foreach (NetPeer peer in server.ConnectedPeerList)
+            {
+                sendGameStateAndMapHex(peer, x, y);
+                // TODO: fix this -- consider initialSync based on all clients
+                initialSync = true;
+            }
+        }
+    }
 
+    public void sendGameStateAndMapHex(NetPeer peer, int x, int y)
+    {
+        NetDataWriter writer = new NetDataWriter();
+        if (server != null)
+        {
+            gameState.MapHex = gameState.Map.Hexes[y, x];
+            string jsonString = JsonSerializer.Serialize(this.gameState);
+            writer.Put(jsonString);
+            peer.Send(writer, DeliveryMethod.ReliableOrdered);
+            writer.Reset();
+        }
+    }
 
     private void StopServer()
     {

@@ -59,7 +59,11 @@ public class ExecuteAction : PlayerAction
             UnitAction unitAction = unit.getNextAction();
             if (unitAction != null && "move".Equals(unitAction.Action))
             {
+                int fromX = unit.X;
+                int fromY = unit.Y;
                 gameState.Map.moveUnit(unit, unitAction.TargetX, unitAction.TargetY);
+                server.sendGameStateAndMapHex(unitAction.TargetX, unitAction.TargetY);
+                server.sendGameStateAndMapHex(fromX, fromY);
             }
 
             unit.ActionQueue.RemoveAt(0);

@@ -20,9 +20,11 @@ public class PlaceUnitAction : PlayerAction
     public new void execute(Object serverObj)
     {
         Console.WriteLine("PlaceUnitAction.execute()");
-        GameState gameState = ((Server)serverObj).gameState;
+        Server server = (Server)serverObj;
+        GameState gameState = server.gameState;
         gameState.Map.placeUnit(Unit, X, Y);
         Unit.X = X;
         Unit.Y = Y;
+        server.sendGameStateAndMapHex(X, Y);
     }
 }
