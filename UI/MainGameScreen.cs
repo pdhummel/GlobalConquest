@@ -167,7 +167,7 @@ public class MainGameScreen
         {
             return;
         }
-        Console.WriteLine("ShowContextMenu(): " + IsShowContextMenu);
+        //Console.WriteLine("ShowContextMenu(): " + IsShowContextMenu);
         HideContextMenu();
 
         var container = new VerticalStackPanel

@@ -80,6 +80,18 @@ public class Server
         }
     }
 
+    public void sendGameState()
+    {
+        if (server != null)
+        {
+            foreach (NetPeer peer in server.ConnectedPeerList)
+            {
+                sendGameStateAndMapHex(peer, 0, 0);
+            }
+        }
+    }
+
+
     public void sendGameStateAndMapHex(int x, int y)
     {
         if (server != null)

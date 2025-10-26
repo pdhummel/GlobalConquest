@@ -4,7 +4,7 @@ namespace GlobalConquest.Actions;
 
 public class MoveUnitAction : PlayerAction
 {
-    public Unit Unit { get; set; }
+    public Unit? Unit { get; set; }
     public int FromX { get; set; }
     public int FromY { get; set; }
     public int ToX { get; set; }
@@ -13,9 +13,12 @@ public class MoveUnitAction : PlayerAction
 
     public new void deserializeAndExecute(Object serverObj)
     {
-        MoveUnitAction? action =
-                JsonSerializer.Deserialize<MoveUnitAction>(this.MessageAsJson);
-        action?.execute(serverObj);
+        if (MessageAsJson != null)
+        {
+            MoveUnitAction? action =
+                    JsonSerializer.Deserialize<MoveUnitAction>(this.MessageAsJson);
+            action?.execute(serverObj);
+        }
     }
     
     public new void execute(Object serverObj)
@@ -27,8 +30,11 @@ public class MoveUnitAction : PlayerAction
         unitAction.Action = "move";
         unitAction.TargetX = ToX;
         unitAction.TargetY = ToY;
-        Unit.ActionQueue.Add(unitAction);
-        gameState.Map.Hexes[FromY, FromX].setUnit(Unit);
-        server.sendGameStateAndMapHex(Unit.X, Unit.Y);
+        Unit?.ActionQueue.Add(unitAction);
+        if (Unit != null)
+        {
+            gameState.Map.Hexes[FromY, FromX].setUnit(Unit);
+            server.sendGameStateAndMapHex(Unit.X, Unit.Y);
+        }    
     }
 }

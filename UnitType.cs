@@ -1,8 +1,8 @@
 public class UnitType
 {
     // infantry, tank, plane, ComCen, carrier, battleship, spy
-    public string Name { get; set; }
-    public string LandOrSea { get; set; }
+    public string? Name { get; set; }
+    public string? LandOrSea { get; set; }
 
     // Global Conquest Manual - Technical Notes - p79-83
     public int Cost { get; set; }

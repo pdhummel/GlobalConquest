@@ -459,7 +459,7 @@ public class GlobalConquestGame : Game
         }
         if (selectedHexVector.X == -1 || selectedHexVector.Y == -1)
         {
-            Console.WriteLine("handleClickMouseOnMap(): selectedHex == -1");
+            //Console.WriteLine("handleClickMouseOnMap(): selectedHex == -1");
         }
         return selectedHexVector;
     }
