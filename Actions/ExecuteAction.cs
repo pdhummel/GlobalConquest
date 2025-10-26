@@ -4,6 +4,7 @@ namespace GlobalConquest.Actions;
 
 public class ExecuteAction : PlayerAction
 {
+    Server? server;
 
 
     public new void deserializeAndExecute(Object serverObj)
@@ -29,12 +30,21 @@ public class ExecuteAction : PlayerAction
         }
 
         // TODO: evaluate whether the execution phase should occur.
-        doExecutionPhase(server);
+        this.server = server;
+        Thread executionPhaseThread = new Thread(new ThreadStart(doExecutionPhase))
+        {
+            IsBackground = true // Ensures thread closes with the main app
+        };
+        executionPhaseThread.Start();
+
+        //doExecutionPhase(server);
     }
 
 
-    public void doExecutionPhase(Server server)
+    public void doExecutionPhase()
     {
+        Console.WriteLine("doExecutionPhase(): enter");
+        Server? server = this.server;
         GameState gameState = server.gameState;
         gameState.CurrentPhase = "execution";
         server.sendGameState();
@@ -61,7 +71,7 @@ public class ExecuteAction : PlayerAction
         int rounds = server.gameState.GameSettings.NumberOfRoundsPerTurn;
         for (int i = 0; i < rounds; i++)
         {
-            processRound(server, units);
+            processRound(i, server, units);
             Thread.Sleep(1000);
         }
 
@@ -71,55 +81,63 @@ public class ExecuteAction : PlayerAction
     }
 
 
-    public void processRound(Server server, List<Unit> units)
+    public void processRound(int round, Server server, List<Unit> units)
     {
+        Console.WriteLine("processRound(): round=" + round);
         GameState gameState = server.gameState;
-        HashSet<string> processedUnits = new HashSet<string>();
 
 
         foreach (Unit unit in units)
         {
-            //Console.WriteLine(unit.X + "," + unit.Y);
+            Console.WriteLine("processRound(): unit at " + unit.X + "," + unit.Y);
             UnitAction unitAction = unit.getNextAction();
             if (unitAction != null && "move".Equals(unitAction.Action))
             {
                 int fromX = unit.X;
                 int fromY = unit.Y;
-                gameState.Map.moveUnit(unit, unitAction.TargetX, unitAction.TargetY);
-                server.sendGameStateAndMapHex(unitAction.TargetX, unitAction.TargetY);
+                MapHex nextMapHex = determineNextHexTowardsDestination(server, unit, unitAction);
+                Console.WriteLine("processRound(): nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
+                gameState.Map.moveUnit(unit, nextMapHex.X, nextMapHex.Y);
+                unit.X = nextMapHex.X;
+                unit.Y = nextMapHex.Y;
+                if (nextMapHex.X == unitAction.TargetX && nextMapHex.Y == unitAction.TargetY)
+                {
+                    unit.ActionQueue.RemoveAt(0);
+                }
+                server.sendGameStateAndMapHex(nextMapHex.X, nextMapHex.Y);
                 server.sendGameStateAndMapHex(fromX, fromY);
             }
 
-            unit.ActionQueue.RemoveAt(0);
         }
 
     }
     
-    private MapHex? determineNextHexTowardsDestination(Server server, Unit unit, UnitAction unitAction)
+    private MapHex determineNextHexTowardsDestination(Server server, Unit unit, UnitAction unitAction)
     {
-        MapHex? mapHex = null;
         Map map = server.gameState.Map;
         int fromX = unit.X;
         int fromY = unit.Y;
         int toX = unitAction.TargetX;
         int toY = unitAction.TargetY;
+        MapHex mapHex = map.Hexes[fromY, fromX];
 
-        // TODO: is nw/ne or sw/se on the same row?
+        // is nw/ne or sw/se on the same row?
         bool northEastAndWestSameRow = true;
+        // 0,0->S; 1,0->N; 2,1->S; 3,1->N
+        if (fromX % 2 == 0)
+        {
+            northEastAndWestSameRow = false;
+        }
 
         if (fromX == toX && fromY == toY)
         {
             // destination reached
             mapHex = map.Hexes[fromY, fromX];
         }
-        else if (fromX < toX && fromY < toY)
+        else if (fromX == toX && fromY > toY)
         {
-            // south east
-            if (northEastAndWestSameRow)
-                mapHex = map.Hexes[fromY+1, fromX + 1];
-            else
-                mapHex = map.Hexes[fromY, fromX + 1];
-
+            // north
+            mapHex = map.Hexes[fromY - 1, fromX];
         }
         else if (fromX < toX && fromY > toY)
         {
@@ -127,17 +145,30 @@ public class ExecuteAction : PlayerAction
             if (northEastAndWestSameRow)
                 mapHex = map.Hexes[fromY, fromX + 1];
             else
-                mapHex = map.Hexes[fromY-1, fromX + 1];
+                mapHex = map.Hexes[fromY - 1, fromX + 1];
         }
-        else if (fromX == toX && fromY > toY)
+        else if (fromX < toX && fromY < toY)
         {
-            // north
-            mapHex = map.Hexes[fromY-1, fromX];
+            // south east            
+            if (northEastAndWestSameRow)
+                mapHex = map.Hexes[fromY + 1, fromX + 1];
+            else
+                mapHex = map.Hexes[fromY, fromX + 1];
+
         }
         else if (fromX == toX && fromY < toY)
         {
             // south
-            mapHex = map.Hexes[fromY+1, fromX];
+            mapHex = map.Hexes[fromY + 1, fromX];
+        }
+        else if (fromX > toX && fromY < toY)
+        {
+            // south west
+            if (northEastAndWestSameRow)
+                mapHex = map.Hexes[fromY + 1, fromX - 1];
+            else
+                mapHex = map.Hexes[fromY, fromX - 1];
+
         }
         else if (fromX > toX && fromY > toY)
         {
@@ -145,16 +176,7 @@ public class ExecuteAction : PlayerAction
             if (northEastAndWestSameRow)
                 mapHex = map.Hexes[fromY, fromX - 1];
             else
-                mapHex = map.Hexes[fromY-1, fromX - 1];
-
-        }
-        else if (fromX > toX && fromY < toY)
-        {
-            // south west
-            if (northEastAndWestSameRow)
-                mapHex = map.Hexes[fromY+1, fromX - 1];
-            else
-                mapHex = map.Hexes[fromY, fromX - 1];
+                mapHex = map.Hexes[fromY - 1, fromX - 1];
 
         }
         return mapHex;
