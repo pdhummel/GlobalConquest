@@ -100,14 +100,21 @@ public class UnitTypes
 
         // only applies to infantry
         unitType.CanDigInByTerrainYorN["ocean"] = "N";
+        unitType.CanDigInByTerrainYorN["sea"] = "N";
         unitType.CanDigInByTerrainYorN["dock"] = "Y";
         unitType.CanDigInByTerrainYorN["burb"] = "Y";
+        unitType.CanDigInByTerrainYorN["village"] = "Y";
+        unitType.CanDigInByTerrainYorN["town"] = "Y";
+        unitType.CanDigInByTerrainYorN["city"] = "Y";
+        unitType.CanDigInByTerrainYorN["capital"] = "Y";
+        unitType.CanDigInByTerrainYorN["metro"] = "Y";
         unitType.CanDigInByTerrainYorN["resource"] = "Y";
         unitType.CanDigInByTerrainYorN["plain"] = "Y";
         unitType.CanDigInByTerrainYorN["grass"] = "Y";
         unitType.CanDigInByTerrainYorN["forest"] = "Y";
         unitType.CanDigInByTerrainYorN["mountain"] = "Y";
         unitType.CanDigInByTerrainYorN["swamp"] = "N";
+        unitType.CanDigInByTerrainYorN["marsh"] = "N";
 
         // same for all unit types
         unitType.RepairRateByFacility["resource"] = 2;
@@ -119,14 +126,21 @@ public class UnitTypes
 
         // same for all unit types
         unitType.StepsUsedByTerrain["ocean"] = 10;
+        unitType.StepsUsedByTerrain["sea"] = 10;
         unitType.StepsUsedByTerrain["dock"] = 10;
         unitType.StepsUsedByTerrain["burb"] = 10;
+        unitType.StepsUsedByTerrain["village"] = 10;
+        unitType.StepsUsedByTerrain["town"] = 10;
+        unitType.StepsUsedByTerrain["city"] = 10;
+        unitType.StepsUsedByTerrain["capital"] = 10;
+        unitType.StepsUsedByTerrain["metro"] = 10;
         unitType.StepsUsedByTerrain["resource"] = 10;
         unitType.StepsUsedByTerrain["plain"] = 10;
         unitType.StepsUsedByTerrain["grass"] = 10;
         unitType.StepsUsedByTerrain["forest"] = 15;
         unitType.StepsUsedByTerrain["mountain"] = 20;
         unitType.StepsUsedByTerrain["swamp"] = 30;
+        unitType.StepsUsedByTerrain["marsh"] = 30;
 
         UnitTypeMap[unitType.Name] = unitType;
     }
@@ -222,14 +236,21 @@ public class UnitTypes
 
         // Only applies to infantry
         unitType.CanDigInByTerrainYorN["ocean"] = "N";
+        unitType.CanDigInByTerrainYorN["sea"] = "N";
         unitType.CanDigInByTerrainYorN["dock"] = "N";
         unitType.CanDigInByTerrainYorN["burb"] = "N";
+        unitType.CanDigInByTerrainYorN["village"] = "N";
+        unitType.CanDigInByTerrainYorN["town"] = "N";
+        unitType.CanDigInByTerrainYorN["city"] = "N";
+        unitType.CanDigInByTerrainYorN["capital"] = "N";
+        unitType.CanDigInByTerrainYorN["metro"] = "N";
         unitType.CanDigInByTerrainYorN["resource"] = "N";
         unitType.CanDigInByTerrainYorN["plain"] = "N";
         unitType.CanDigInByTerrainYorN["grass"] = "N";
         unitType.CanDigInByTerrainYorN["forest"] = "N";
         unitType.CanDigInByTerrainYorN["mountain"] = "N";
         unitType.CanDigInByTerrainYorN["swamp"] = "N";
+        unitType.CanDigInByTerrainYorN["marsh"] = "N";
 
         // same for all unit types
         unitType.RepairRateByFacility["resource"] = 2;
@@ -241,14 +262,21 @@ public class UnitTypes
 
         // same for all unit types
         unitType.StepsUsedByTerrain["ocean"] = 10;
+        unitType.StepsUsedByTerrain["sea"] = 10;
         unitType.StepsUsedByTerrain["dock"] = 10;
         unitType.StepsUsedByTerrain["burb"] = 10;
+        unitType.StepsUsedByTerrain["village"] = 10;
+        unitType.StepsUsedByTerrain["town"] = 10;
+        unitType.StepsUsedByTerrain["city"] = 10;
+        unitType.StepsUsedByTerrain["capital"] = 10;
+        unitType.StepsUsedByTerrain["metro"] = 10;
         unitType.StepsUsedByTerrain["resource"] = 10;
         unitType.StepsUsedByTerrain["plain"] = 10;
         unitType.StepsUsedByTerrain["grass"] = 10;
         unitType.StepsUsedByTerrain["forest"] = 15;
         unitType.StepsUsedByTerrain["mountain"] = 20;
         unitType.StepsUsedByTerrain["swamp"] = 30;
+        unitType.StepsUsedByTerrain["marsh"] = 30;
 
         UnitTypeMap[unitType.Name] = unitType;
         UnitTypeMap["armor"] = unitType;
@@ -347,14 +375,21 @@ public class UnitTypes
 
         // Only applies to infantry
         unitType.CanDigInByTerrainYorN["ocean"] = "N";
+        unitType.CanDigInByTerrainYorN["sea"] = "N";
         unitType.CanDigInByTerrainYorN["dock"] = "N";
         unitType.CanDigInByTerrainYorN["burb"] = "N";
+        unitType.CanDigInByTerrainYorN["village"] = "N";
+        unitType.CanDigInByTerrainYorN["town"] = "N";
+        unitType.CanDigInByTerrainYorN["city"] = "N";
+        unitType.CanDigInByTerrainYorN["capital"] = "N";
+        unitType.CanDigInByTerrainYorN["metro"] = "N";
         unitType.CanDigInByTerrainYorN["resource"] = "N";
         unitType.CanDigInByTerrainYorN["plain"] = "N";
         unitType.CanDigInByTerrainYorN["grass"] = "N";
         unitType.CanDigInByTerrainYorN["forest"] = "N";
         unitType.CanDigInByTerrainYorN["mountain"] = "N";
         unitType.CanDigInByTerrainYorN["swamp"] = "N";
+        unitType.CanDigInByTerrainYorN["marsh"] = "N";
 
         // same for all unit types
         unitType.RepairRateByFacility["resource"] = 2;
@@ -366,14 +401,21 @@ public class UnitTypes
 
         // same for all unit types
         unitType.StepsUsedByTerrain["ocean"] = 10;
+        unitType.StepsUsedByTerrain["sea"] = 10;
         unitType.StepsUsedByTerrain["dock"] = 10;
         unitType.StepsUsedByTerrain["burb"] = 10;
+        unitType.StepsUsedByTerrain["village"] = 10;
+        unitType.StepsUsedByTerrain["town"] = 10;
+        unitType.StepsUsedByTerrain["city"] = 10;
+        unitType.StepsUsedByTerrain["capital"] = 10;
+        unitType.StepsUsedByTerrain["metro"] = 10;
         unitType.StepsUsedByTerrain["resource"] = 10;
         unitType.StepsUsedByTerrain["plain"] = 10;
         unitType.StepsUsedByTerrain["grass"] = 10;
         unitType.StepsUsedByTerrain["forest"] = 15;
         unitType.StepsUsedByTerrain["mountain"] = 20;
         unitType.StepsUsedByTerrain["swamp"] = 30;
+        unitType.StepsUsedByTerrain["marsh"] = 30;
 
         UnitTypeMap[unitType.Name] = unitType;
     }
@@ -469,14 +511,21 @@ public class UnitTypes
 
         // Only applies to infantry
         unitType.CanDigInByTerrainYorN["ocean"] = "N";
+        unitType.CanDigInByTerrainYorN["sea"] = "N";
         unitType.CanDigInByTerrainYorN["dock"] = "N";
         unitType.CanDigInByTerrainYorN["burb"] = "N";
+        unitType.CanDigInByTerrainYorN["village"] = "N";
+        unitType.CanDigInByTerrainYorN["town"] = "N";
+        unitType.CanDigInByTerrainYorN["city"] = "N";
+        unitType.CanDigInByTerrainYorN["capital"] = "N";
+        unitType.CanDigInByTerrainYorN["metro"] = "N";
         unitType.CanDigInByTerrainYorN["resource"] = "N";
         unitType.CanDigInByTerrainYorN["plain"] = "N";
         unitType.CanDigInByTerrainYorN["grass"] = "N";
         unitType.CanDigInByTerrainYorN["forest"] = "N";
         unitType.CanDigInByTerrainYorN["mountain"] = "N";
         unitType.CanDigInByTerrainYorN["swamp"] = "N";
+        unitType.CanDigInByTerrainYorN["marsh"] = "N";
 
         // same for all unit types
         unitType.RepairRateByFacility["resource"] = 2;
@@ -488,14 +537,21 @@ public class UnitTypes
 
         // same for all unit types
         unitType.StepsUsedByTerrain["ocean"] = 10;
+        unitType.StepsUsedByTerrain["sea"] = 10;
         unitType.StepsUsedByTerrain["dock"] = 10;
         unitType.StepsUsedByTerrain["burb"] = 10;
+        unitType.StepsUsedByTerrain["village"] = 10;
+        unitType.StepsUsedByTerrain["town"] = 10;
+        unitType.StepsUsedByTerrain["city"] = 10;
+        unitType.StepsUsedByTerrain["capital"] = 10;
+        unitType.StepsUsedByTerrain["metro"] = 10;
         unitType.StepsUsedByTerrain["resource"] = 10;
         unitType.StepsUsedByTerrain["plain"] = 10;
         unitType.StepsUsedByTerrain["grass"] = 10;
         unitType.StepsUsedByTerrain["forest"] = 15;
         unitType.StepsUsedByTerrain["mountain"] = 20;
         unitType.StepsUsedByTerrain["swamp"] = 30;
+        unitType.StepsUsedByTerrain["marsh"] = 30;
 
         UnitTypeMap[unitType.Name] = unitType;
     }
@@ -591,14 +647,21 @@ public class UnitTypes
 
         // only applies to infantry
         unitType.CanDigInByTerrainYorN["ocean"] = "N";
+        unitType.CanDigInByTerrainYorN["sea"] = "N";
         unitType.CanDigInByTerrainYorN["dock"] = "Y";
         unitType.CanDigInByTerrainYorN["burb"] = "Y";
+        unitType.CanDigInByTerrainYorN["village"] = "Y";
+        unitType.CanDigInByTerrainYorN["town"] = "Y";
+        unitType.CanDigInByTerrainYorN["city"] = "Y";
+        unitType.CanDigInByTerrainYorN["capital"] = "Y";
+        unitType.CanDigInByTerrainYorN["metro"] = "Y";
         unitType.CanDigInByTerrainYorN["resource"] = "Y";
         unitType.CanDigInByTerrainYorN["plain"] = "Y";
         unitType.CanDigInByTerrainYorN["grass"] = "Y";
         unitType.CanDigInByTerrainYorN["forest"] = "Y";
         unitType.CanDigInByTerrainYorN["mountain"] = "Y";
         unitType.CanDigInByTerrainYorN["swamp"] = "N";
+        unitType.CanDigInByTerrainYorN["marsh"] = "N";
 
         // same for all unit types
         unitType.RepairRateByFacility["resource"] = 2;
@@ -610,14 +673,21 @@ public class UnitTypes
 
         // same for all unit types
         unitType.StepsUsedByTerrain["ocean"] = 10;
+        unitType.StepsUsedByTerrain["sea"] = 10;
         unitType.StepsUsedByTerrain["dock"] = 10;
         unitType.StepsUsedByTerrain["burb"] = 10;
+        unitType.StepsUsedByTerrain["village"] = 10;
+        unitType.StepsUsedByTerrain["town"] = 10;
+        unitType.StepsUsedByTerrain["city"] = 10;
+        unitType.StepsUsedByTerrain["capital"] = 10;
+        unitType.StepsUsedByTerrain["metro"] = 10;
         unitType.StepsUsedByTerrain["resource"] = 10;
         unitType.StepsUsedByTerrain["plain"] = 10;
         unitType.StepsUsedByTerrain["grass"] = 10;
         unitType.StepsUsedByTerrain["forest"] = 15;
         unitType.StepsUsedByTerrain["mountain"] = 20;
         unitType.StepsUsedByTerrain["swamp"] = 30;
+        unitType.StepsUsedByTerrain["marsh"] = 30;
 
         UnitTypeMap[unitType.Name] = unitType;
     }

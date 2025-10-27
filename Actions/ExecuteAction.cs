@@ -37,7 +37,6 @@ public class ExecuteAction : PlayerAction
         };
         executionPhaseThread.Start();
 
-        //doExecutionPhase(server);
     }
 
 
@@ -60,6 +59,9 @@ public class ExecuteAction : PlayerAction
                 Unit unit = mapHex.getUnit();
                 if (unit != null)
                 {
+                    unit.NormalSteps = 0;
+                    unit.BlitzSteps = 0;
+                    unit.SneakSteps = 0;
                     if (unit.ActionQueue.Count > 0)
                     {
                         units.Add(unit);
@@ -71,11 +73,15 @@ public class ExecuteAction : PlayerAction
         int rounds = server.gameState.GameSettings.NumberOfRoundsPerTurn;
         for (int i = 0; i < rounds; i++)
         {
+            gameState.CurrentRound = i;
+            server.sendGameState();
             processRound(i, server, units);
             Thread.Sleep(1000);
         }
 
         // TODO: reset gameState.PlayerExecutionReady
+        gameState.CurrentRound = 0;
+        server.gameState.CurrentTurn += 1;
         server.gameState.CurrentPhase = "plan";
         server.sendGameState();
     }
@@ -83,23 +89,37 @@ public class ExecuteAction : PlayerAction
 
     public void processRound(int round, Server server, List<Unit> units)
     {
-        Console.WriteLine("processRound(): round=" + round);
+        //Console.WriteLine("processRound(): round=" + round);
         GameState gameState = server.gameState;
-
 
         foreach (Unit unit in units)
         {
-            Console.WriteLine("processRound(): unit at " + unit.X + "," + unit.Y);
+            UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+            unit.NormalSteps += unitType.NormalStepsAddedPerRound;
+            if (unit.NormalSteps > 100)
+                unit.NormalSteps = 100;
+            unit.BlitzSteps += unitType.BlitzStepsAddedPerRound;
+            if (unit.BlitzSteps > 100)
+                unit.BlitzSteps = 100;
+            unit.SneakSteps += unitType.SneakStepsAddedPerRound;
+            if (unit.SneakSteps > 100)
+                unit.SneakSteps = 100;
+
+            // Console.WriteLine("processRound(): unit at " + unit.X + "," + unit.Y);
             UnitAction unitAction = unit.getNextAction();
             if (unitAction != null && "move".Equals(unitAction.Action))
             {
                 int fromX = unit.X;
                 int fromY = unit.Y;
                 MapHex nextMapHex = determineNextHexTowardsDestination(server, unit, unitAction);
-                Console.WriteLine("processRound(): nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
-                gameState.Map.moveUnit(unit, nextMapHex.X, nextMapHex.Y);
-                unit.X = nextMapHex.X;
-                unit.Y = nextMapHex.Y;
+                Console.WriteLine("processRound(): unit at " + unit.X + "," + unit.Y + " to nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
+                //Console.WriteLine("processRound(): nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
+                if (unit.X != nextMapHex.X || unit.Y != nextMapHex.Y)
+                {
+                    gameState.Map.moveUnit(unit, nextMapHex.X, nextMapHex.Y);
+                    unit.X = nextMapHex.X;
+                    unit.Y = nextMapHex.Y;
+                }    
                 if (nextMapHex.X == unitAction.TargetX && nextMapHex.Y == unitAction.TargetY)
                 {
                     unit.ActionQueue.RemoveAt(0);
@@ -107,6 +127,7 @@ public class ExecuteAction : PlayerAction
                 server.sendGameStateAndMapHex(nextMapHex.X, nextMapHex.Y);
                 server.sendGameStateAndMapHex(fromX, fromY);
             }
+            server.sendGameStateAndMapHex(unit.X, unit.Y);
 
         }
 
@@ -120,6 +141,7 @@ public class ExecuteAction : PlayerAction
         int toX = unitAction.TargetX;
         int toY = unitAction.TargetY;
         MapHex mapHex = map.Hexes[fromY, fromX];
+        MapHex tmpMapHex = map.Hexes[fromY, fromX];
 
         // is nw/ne or sw/se on the same row?
         bool northEastAndWestSameRow = true;
@@ -132,53 +154,85 @@ public class ExecuteAction : PlayerAction
         if (fromX == toX && fromY == toY)
         {
             // destination reached
-            mapHex = map.Hexes[fromY, fromX];
+            tmpMapHex = map.Hexes[fromY, fromX];
         }
         else if (fromX == toX && fromY > toY)
         {
             // north
-            mapHex = map.Hexes[fromY - 1, fromX];
+            tmpMapHex = map.Hexes[fromY - 1, fromX];
         }
         else if (fromX < toX && fromY > toY)
         {
             // north east
             if (northEastAndWestSameRow)
-                mapHex = map.Hexes[fromY, fromX + 1];
+                tmpMapHex = map.Hexes[fromY, fromX + 1];
             else
-                mapHex = map.Hexes[fromY - 1, fromX + 1];
+                tmpMapHex = map.Hexes[fromY - 1, fromX + 1];
         }
         else if (fromX < toX && fromY < toY)
         {
             // south east            
             if (northEastAndWestSameRow)
-                mapHex = map.Hexes[fromY + 1, fromX + 1];
+                tmpMapHex = map.Hexes[fromY + 1, fromX + 1];
             else
-                mapHex = map.Hexes[fromY, fromX + 1];
+                tmpMapHex = map.Hexes[fromY, fromX + 1];
 
         }
         else if (fromX == toX && fromY < toY)
         {
             // south
-            mapHex = map.Hexes[fromY + 1, fromX];
+            tmpMapHex = map.Hexes[fromY + 1, fromX];
         }
         else if (fromX > toX && fromY < toY)
         {
             // south west
             if (northEastAndWestSameRow)
-                mapHex = map.Hexes[fromY + 1, fromX - 1];
+                tmpMapHex = map.Hexes[fromY + 1, fromX - 1];
             else
-                mapHex = map.Hexes[fromY, fromX - 1];
+                tmpMapHex = map.Hexes[fromY, fromX - 1];
 
         }
         else if (fromX > toX && fromY > toY)
         {
             // north west
             if (northEastAndWestSameRow)
-                mapHex = map.Hexes[fromY, fromX - 1];
+                tmpMapHex = map.Hexes[fromY, fromX - 1];
             else
-                mapHex = map.Hexes[fromY - 1, fromX - 1];
+                tmpMapHex = map.Hexes[fromY - 1, fromX - 1];
 
         }
+        else if (fromX > toX)
+        {
+            // west
+            tmpMapHex = map.Hexes[fromY, fromX - 1];
+        }
+        else if (fromX < toX)
+        {
+            // east
+            tmpMapHex = map.Hexes[fromY, fromX + 1];
+        }
+
+        if (tmpMapHex.getUnit() == null)
+        {
+            UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+            int stepsRequired = unitType.StepsUsedByTerrain[mapHex.Terrain];
+            if (unit.NormalSteps > stepsRequired)
+            {
+                Console.WriteLine("determineNextHexTowardsDestination(): stepsAvailable=" +  unit.NormalSteps + ", stepsRequired=" + stepsRequired);
+                unit.NormalSteps -= stepsRequired;
+                mapHex = tmpMapHex;
+            }
+            else
+            {
+                Console.WriteLine("determineNextHexTowardsDestination(): accumulating movement steps");    
+            }
+        }
+        else
+        {
+            Console.WriteLine("determineNextHexTowardsDestination(): hex blocked by another unit");
+        }
+        
+        
         return mapHex;
     }
 }

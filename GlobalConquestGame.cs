@@ -38,7 +38,6 @@ public class GlobalConquestGame : Game
     MapHex? lastSelectedHex;
     Unit? lastSelectedUnit;
     public bool MoveMode { get; set; } = false;
-    public UnitTypes UnitTypes { get; set; }
 
     public GlobalConquestGame()
     {
@@ -51,7 +50,6 @@ public class GlobalConquestGame : Game
         IsMouseVisible = true;
         Window.AllowUserResizing = true;
         Client = new Client(this);
-        UnitTypes = new UnitTypes();
     }
 
     public GlobalConquestGame(IntPtr drawSurface) : this()
@@ -495,6 +493,14 @@ public class GlobalConquestGame : Game
             Globals.spriteBatch?.DrawString(font, "Last Hex: ", new Vector2(xPos, yPos + 14), Color.White);
             Globals.spriteBatch?.DrawString(font, "Terrain: ", new Vector2(xPos, yPos + 28), Color.White);
             Globals.spriteBatch?.DrawString(font, "Unit: ", new Vector2(xPos, yPos + 42), Color.White);
+        }
+        if ("plan".Equals(Client.GameState.CurrentPhase))
+        {
+            Globals.spriteBatch?.DrawString(font, "Turn: " + (Client.GameState.CurrentTurn+1) + " " + Client.GameState.CurrentPhase, new Vector2(xPos, yPos + 70), Color.White);
+        }
+        else
+        {
+            Globals.spriteBatch?.DrawString(font, "Turn: " + (Client.GameState.CurrentTurn+1) + " " + Client.GameState.CurrentPhase + " round=" + (Client.GameState.CurrentRound+1), new Vector2(xPos, yPos + 70), Color.White);
         }
 
     }

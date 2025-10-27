@@ -25,9 +25,11 @@ public class Unit
     // this loading/unloading takes only one round.
     public int RoundsToPause { get; set; } = 0;
 
-    
 
-    public int ActionPoints { get; set; }
+
+    public int NormalSteps { get; set; } = 0;
+    public int BlitzSteps { get; set; } = 0;
+    public int SneakSteps { get; set; } = 0;
     public Dictionary<string, int> MovementCostThroughTerrain = new Dictionary<string, int>();
     public int AttackDamagePoints { get; set; }
     public int RemainingDamagePoints { get; set; }

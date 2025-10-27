@@ -17,10 +17,13 @@ public class GameState
     public Dictionary<string, bool> PlayerExecutionReady { get; set; } = new Dictionary<string, bool>();
     public int CurrentTurn { get; set; } = 0;
     public string CurrentPhase { get; set; } = "plan";
+    public int CurrentRound { get; set; } = 0;
+    public UnitTypes UnitTypes { get; set; }
 
     public GameState()
     {
         Factions = new Factions();
+        UnitTypes = new UnitTypes();
     }
 
 }

@@ -62,9 +62,8 @@ public class Server
         while (isRunning)
         {
             server?.PollEvents();
-            syncAllMapHexes();
-            if (initialSync)
-                sleepTime = 10000;
+            if (!initialSync)
+                syncAllMapHexes();
             Thread.Sleep(sleepTime); // Adjust sleep time to control CPU usage.
         }
     }
@@ -172,7 +171,15 @@ public class Server
         subClassAction.MessageAsJson = jsonString;
         MethodInfo executeMethod = subClassAction.GetType().GetMethod("deserializeAndExecute");
         object[] parameters = new object[] { this };
-        executeMethod?.Invoke(subClassAction, parameters);
+        if ("plan".Equals(gameState.CurrentPhase))
+        {
+            executeMethod?.Invoke(subClassAction, parameters);
+        }
+        else
+        {
+            Console.WriteLine("Skipping action, currentPhase=" + gameState.CurrentPhase);
+        }
+        
 
     }
 
