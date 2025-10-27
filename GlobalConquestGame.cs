@@ -88,6 +88,12 @@ public class GlobalConquestGame : Game
         grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
         grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
         Desktop.Root = grid;
+        var verticalStackPanel = new VerticalStackPanel();
+        Grid.SetColumn(verticalStackPanel, 0);
+        Grid.SetRow(verticalStackPanel, 0);
+        grid.Widgets.Add(verticalStackPanel);
+
+
 
         ConquestMenu conquestMenu = new ConquestMenu(this, grid);
         conquestMenu.LoadContent();

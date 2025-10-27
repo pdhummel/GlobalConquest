@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Myra;
 using Myra.Graphics2D;
+using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using static Myra.Graphics2D.UI.Grid;
 using static Myra.Graphics2D.UI.Label;
@@ -17,6 +19,7 @@ public class PlayGameMenu
     HostGameScreen hostGameScreen;
     MenuItem omniscientMenuItem;
     MenuItem backToMainConquestMenuItem;
+    Image gcImage = new Image();
 
 
     public PlayGameMenu(ConquestMenu conquestMenu, Game game, Grid grid)
@@ -30,6 +33,10 @@ public class PlayGameMenu
 
     public void LoadContent()
     {
+        Texture2D gcTexture = game.Content.Load<Texture2D>("GC-cropped-intro_000");
+        var textureRegion = new TextureRegion(gcTexture);
+        gcImage.Renderable = textureRegion;
+
         playGameMenuLabel.Id = "playGameMenuLabel";
         playGameMenuLabel.Text = "Play Game";
 
@@ -54,12 +61,12 @@ public class PlayGameMenu
 
     public void show()
     {
-        Grid.SetColumn(playGameMenuLabel, 0);
-        Grid.SetRow(playGameMenuLabel, 0);
-        grid.Widgets.Add(playGameMenuLabel);
-        Grid.SetColumn(playGameVerticalMenu, 0);
-        Grid.SetRow(playGameVerticalMenu, 1);
-        grid.Widgets.Add(playGameVerticalMenu);
+        VerticalStackPanel verticalStackPanel = (VerticalStackPanel)grid.Widgets[0];
+        verticalStackPanel.Widgets.Add(gcImage);
+        gcImage.Visible = true;
+
+        verticalStackPanel.Widgets.Add(playGameMenuLabel);
+        verticalStackPanel.Widgets.Add(playGameVerticalMenu);
         playGameMenuLabel.Visible = true;
         playGameVerticalMenu.Visible = true;
 
@@ -69,8 +76,10 @@ public class PlayGameMenu
 
     public void hide()
     {
+        gcImage.Visible = false;
         playGameMenuLabel.Visible = false;
         playGameVerticalMenu.Visible = false;
+        gcImage.RemoveFromParent();
         playGameMenuLabel.RemoveFromParent();
         playGameVerticalMenu.RemoveFromParent();
     }

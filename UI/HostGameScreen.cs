@@ -125,64 +125,46 @@ public class HostGameScreen
 
     public void show()
     {
-        Grid.SetColumn(gcImage, 2);
-        Grid.SetRow(gcImage, 0);
-        grid.Desktop.Widgets.Add(gcImage);
+        VerticalStackPanel verticalStackPanel = (VerticalStackPanel)grid.Widgets[0];
+        verticalStackPanel.Widgets.Add(gcImage);
         gcImage.Visible = true;
 
-        Grid.SetColumn(hostSettingsLabel, 0);
-        Grid.SetRow(hostSettingsLabel, 4);
-        grid.Widgets.Add(hostSettingsLabel);
+        verticalStackPanel.Widgets.Add(hostSettingsLabel);
         hostSettingsLabel.Visible = true;
 
-        Grid.SetColumn(portLabel, 0);
-        Grid.SetRow(portLabel, 5);
-        grid.Widgets.Add(portLabel);
+        var portPanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(portPanel);
+        portPanel.Widgets.Add(portLabel);
         portLabel.Visible = true;
-
-        Grid.SetColumn(portTextBox, 1);
-        Grid.SetRow(portTextBox, 5);
-        grid.Widgets.Add(portTextBox);
+        portPanel.Widgets.Add(portTextBox);
         portTextBox.Visible = true;
 
-        Grid.SetColumn(humanPlayersLabel, 0);
-        Grid.SetRow(humanPlayersLabel, 6);
-        grid.Widgets.Add(humanPlayersLabel);
+        var humanPlayersPanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(humanPlayersPanel);
+        humanPlayersPanel.Widgets.Add(humanPlayersLabel);
         humanPlayersLabel.Visible = true;
-
-        Grid.SetColumn(humanPlayersTextBox, 1);
-        Grid.SetRow(humanPlayersTextBox, 6);
-        grid.Widgets.Add(humanPlayersTextBox);
+        humanPlayersPanel.Widgets.Add(humanPlayersTextBox);
         humanPlayersTextBox.Visible = true;
 
-        Grid.SetColumn(mapHeightLabel, 0);
-        Grid.SetRow(mapHeightLabel, 7);
-        grid.Widgets.Add(mapHeightLabel);
+        var mapHeightPanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(mapHeightPanel);
+        mapHeightPanel.Widgets.Add(mapHeightLabel);
         mapHeightLabel.Visible = true;
-
-        Grid.SetColumn(mapHeightTextBox, 1);
-        Grid.SetRow(mapHeightTextBox, 7);
-        grid.Widgets.Add(mapHeightTextBox);
+        mapHeightPanel.Widgets.Add(mapHeightTextBox);
         mapHeightTextBox.Visible = true;
 
-        Grid.SetColumn(mapWidthLabel, 2);
-        Grid.SetRow(mapWidthLabel, 7);
-        grid.Widgets.Add(mapWidthLabel);
+        var mapWidthPanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(mapWidthPanel);
+        mapWidthPanel.Widgets.Add(mapWidthLabel);
         mapWidthLabel.Visible = true;
-
-        Grid.SetColumn(mapWidthTextBox, 3);
-        Grid.SetRow(mapWidthTextBox, 7);
-        grid.Widgets.Add(mapWidthTextBox);
+        mapWidthPanel.Widgets.Add(mapWidthTextBox);
         mapWidthTextBox.Visible = true;
 
-        Grid.SetColumn(okButton, 0);
-        Grid.SetRow(okButton, 8);
-        grid.Widgets.Add(okButton);
+        var buttonsPanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(buttonsPanel);
+        buttonsPanel.Widgets.Add(okButton);
         okButton.Visible = true;
-
-        Grid.SetColumn(cancelButton, 1);
-        Grid.SetRow(cancelButton, 8);
-        grid.Widgets.Add(cancelButton);
+        buttonsPanel.Widgets.Add(cancelButton);
         cancelButton.Visible = true;
 
     }

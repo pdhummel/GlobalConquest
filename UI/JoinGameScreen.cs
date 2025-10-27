@@ -26,6 +26,7 @@ public class JoinGameScreen
     ComboView fightingForceComboView = new ComboView();
     Button okButton;
     Button cancelButton;
+    Image gcImage = new Image();
     MainGameScreen mainGameScreen;
 
 
@@ -61,6 +62,10 @@ public class JoinGameScreen
 
     public void LoadContent()
     {
+        Texture2D gcTexture = game.Content.Load<Texture2D>("GC-cropped-intro_000");
+        var textureRegion = new TextureRegion(gcTexture);
+        gcImage.Renderable = textureRegion;
+
         joinGameLabel.Id = "joinGameLabel";
         joinGameLabel.Text = "Join Game";
 
@@ -123,65 +128,53 @@ public class JoinGameScreen
 
     public void show()
     {
-        Grid.SetColumn(joinGameLabel, 0);
-        Grid.SetRow(joinGameLabel, 0);
-        grid.Widgets.Add(joinGameLabel);
+        VerticalStackPanel verticalStackPanel = (VerticalStackPanel)grid.Widgets[0];
+        verticalStackPanel.Widgets.Add(gcImage);
+        gcImage.Visible = true;
+
+        verticalStackPanel.Widgets.Add(joinGameLabel);
         joinGameLabel.Visible = true;
 
-        Grid.SetColumn(hostIpLabel, 0);
-        Grid.SetRow(hostIpLabel, 1);
-        grid.Widgets.Add(hostIpLabel);
+        var hostIpPanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(hostIpPanel);
+        hostIpPanel.Widgets.Add(hostIpLabel);
         hostIpLabel.Visible = true;
-
-        Grid.SetColumn(hostIpTextBox, 1);
-        Grid.SetRow(hostIpTextBox, 1);
-        grid.Widgets.Add(hostIpTextBox);
+        hostIpPanel.Widgets.Add(hostIpTextBox);
         hostIpTextBox.Visible = true;
 
-        Grid.SetColumn(portLabel, 2);
-        Grid.SetRow(portLabel, 1);
-        grid.Widgets.Add(portLabel);
+        var hostPortPanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(hostPortPanel);
+        hostPortPanel.Widgets.Add(portLabel);
         portLabel.Visible = true;
-
-        Grid.SetColumn(portTextBox, 3);
-        Grid.SetRow(portTextBox, 1);
-        grid.Widgets.Add(portTextBox);
+        hostPortPanel.Widgets.Add(portTextBox);
         portTextBox.Visible = true;
 
-        Grid.SetColumn(nameLabel, 0);
-        Grid.SetRow(nameLabel, 2);
-        grid.Widgets.Add(nameLabel);
+        var namePanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(namePanel);
+        namePanel.Widgets.Add(nameLabel);
         nameLabel.Visible = true;
-
-        Grid.SetColumn(nameTextBox, 1);
-        Grid.SetRow(nameTextBox, 2);
-        grid.Widgets.Add(nameTextBox);
+        namePanel.Widgets.Add(nameTextBox);
         nameTextBox.Visible = true;
 
-        Grid.SetColumn(fightingForceLabel, 0);
-        Grid.SetRow(fightingForceLabel, 3);
-        grid.Widgets.Add(fightingForceLabel);
+        var fightingForcePanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(fightingForcePanel);
+        fightingForcePanel.Widgets.Add(fightingForceLabel);
         fightingForceLabel.Visible = true;
-
-        Grid.SetColumn(fightingForceComboView, 1);
-        Grid.SetRow(fightingForceComboView, 3);
-        grid.Widgets.Add(fightingForceComboView);
+        fightingForcePanel.Widgets.Add(fightingForceComboView);
         fightingForceComboView.Visible = true;
 
-        Grid.SetColumn(okButton, 0);
-        Grid.SetRow(okButton, 4);
-        grid.Widgets.Add(okButton);
+        var buttonsPanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(buttonsPanel);
+        buttonsPanel.Widgets.Add(okButton);
         okButton.Visible = true;
-
-        Grid.SetColumn(cancelButton, 1);
-        Grid.SetRow(cancelButton, 4);
-        grid.Widgets.Add(cancelButton);
+        buttonsPanel.Widgets.Add(cancelButton);
         cancelButton.Visible = true;
 
     }
 
     public void hide()
     {
+        gcImage.Visible = false;
         joinGameLabel.Visible = false;
         hostIpLabel.Visible = false;
         hostIpTextBox.Visible = false;
@@ -194,6 +187,7 @@ public class JoinGameScreen
         okButton.Visible = false;
         cancelButton.Visible = false;
 
+        gcImage.RemoveFromParent();
         joinGameLabel.RemoveFromParent();
         hostIpLabel.RemoveFromParent();
         hostIpTextBox.RemoveFromParent();

@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Myra;
 using Myra.Graphics2D;
+using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using static Myra.Graphics2D.UI.Grid;
 using static Myra.Graphics2D.UI.Label;
@@ -16,6 +18,7 @@ public class ConquestMenu
     VerticalMenu? conquestVerticalMenu;
     PlayGameMenu? playGameMenu;
     JoinGameScreen? joinGameScreen;
+    Image gcImage = new Image();
 
 
     public ConquestMenu(Game game, Grid grid)
@@ -26,6 +29,10 @@ public class ConquestMenu
 
     public void LoadContent()
     {
+        Texture2D gcTexture = game.Content.Load<Texture2D>("GC-cropped-intro_000");
+        var textureRegion = new TextureRegion(gcTexture);
+        gcImage.Renderable = textureRegion;
+
         conquestMenuLabel = new Myra.Graphics2D.UI.Label();
         conquestMenuLabel.Id = "conquestMenuLabel";
         conquestMenuLabel.Text = "Conquest!";
@@ -81,13 +88,13 @@ public class ConquestMenu
 
     public void show()
     {
-        Grid.SetColumn(conquestMenuLabel, 0);
-        Grid.SetRow(conquestMenuLabel, 0);
-        grid.Widgets.Add(conquestMenuLabel);
+        VerticalStackPanel verticalStackPanel = (VerticalStackPanel)grid.Widgets[0];
+        verticalStackPanel.Widgets.Add(gcImage);
+        gcImage.Visible = true;
 
-        Grid.SetColumn(conquestVerticalMenu, 0);
-        Grid.SetRow(conquestVerticalMenu, 1);
-        grid.Widgets.Add(conquestVerticalMenu);
+        verticalStackPanel.Widgets.Add(conquestMenuLabel);
+
+        verticalStackPanel.Widgets.Add(conquestVerticalMenu);
 
         conquestMenuLabel.Visible = true;
         conquestVerticalMenu.Visible = true;
@@ -95,8 +102,10 @@ public class ConquestMenu
 
     public void hide()
     {
+        gcImage.Visible = false;
         conquestMenuLabel.Visible = false;
         conquestVerticalMenu.Visible = false;
+        gcImage.RemoveFromParent();
         conquestMenuLabel?.RemoveFromParent();
         conquestVerticalMenu?.RemoveFromParent();
     }
