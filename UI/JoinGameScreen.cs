@@ -1,4 +1,5 @@
 using System.Windows;
+using GlobalConquest.Actions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Myra;
@@ -95,7 +96,7 @@ public class JoinGameScreen
 
         nameTextBox.Id = "nameTextBox";
         nameTextBox.Width = 250;
-        nameTextBox.Text = "your name";
+        nameTextBox.Text = "YourName";
         nameTextBox.Border = new SolidBrush("#808000FF");
         nameTextBox.BorderThickness = new Thickness(2);
 
@@ -220,8 +221,8 @@ public class JoinGameScreen
         joinGameValues.Port = Int32.Parse(portTextBox.Text);
         joinGameValues.Name = nameTextBox.Text;
         joinGameValues.FactionName = ((Label)fightingForceComboView.SelectedItem).Text;
+        gcGame.Client.JoinGameValues = joinGameValues;
         gcGame.Client.Connect(joinGameValues, "GlobalConquest");
-        gcGame.Client.GlobalConquestGame = gcGame;
         mainGameScreen.show();
 
     }

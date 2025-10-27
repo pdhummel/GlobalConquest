@@ -94,7 +94,6 @@ public class GlobalConquestGame : Game
         grid.Widgets.Add(verticalStackPanel);
 
 
-
         ConquestMenu conquestMenu = new ConquestMenu(this, grid);
         conquestMenu.LoadContent();
 
@@ -303,7 +302,13 @@ public class GlobalConquestGame : Game
         // Draw menus and screens.
         // Myra desktop and widgets need to come after other spritebatch draws for correct screen layer ordering
         // otherwise things like the context menu will be hidden.
-        MainGameScreen?.ShowContextMenu();
+        if (lastSelectedUnit != null && Client != null && Client.ClientIdentifier != null && Client.GameState.Players.playerNameToPlayer.ContainsKey(Client.ClientIdentifier))
+        {
+            Player player = Client.GameState.Players.playerNameToPlayer[Client.ClientIdentifier];
+            //Console.WriteLine(Client.ClientIdentifier + ", " + player.FactionColor + " ," + lastSelectedUnit.Color);
+            if (lastSelectedUnit != null && lastSelectedUnit.Color == player.FactionColor)
+                MainGameScreen?.ShowContextMenu();
+        }        
         Desktop.Render();
 
         base.Draw(gameTime);

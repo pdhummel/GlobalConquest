@@ -43,7 +43,7 @@ class HexMapEngineAdapter
     //private Microsoft.Xna.Framework.Input.MouseState coMouseState;
     private Dictionary<string, Texture2D> units = new Dictionary<string, Texture2D>();
 
-
+    private Dictionary<string, Texture2D> burbs = new Dictionary<string, Texture2D>();
 
 
     public HexMapEngineAdapter(Game game, GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics, int hexHeight, int hexWidth)
@@ -81,6 +81,16 @@ class HexMapEngineAdapter
         createHexTexture2D(5, "forest", "forest-flat-hex-72x72");
         createHexTexture2D(6, "desert", "desert-flat-hex-72x72");
 
+        Texture2D magentaMetro = game.Content.Load<Texture2D>("magenta-metro-72x72");
+        burbs["magenta-metro"] = magentaMetro;
+        Texture2D amberMetro = game.Content.Load<Texture2D>("amber-metro-72x72");
+        burbs["amber-metro"] = amberMetro;
+        Texture2D ocherMetro = game.Content.Load<Texture2D>("ocher-metro-72x72");
+        burbs["ocher-metro"] = ocherMetro;
+        Texture2D cyanMetro = game.Content.Load<Texture2D>("cyan-metro-72x72");
+        burbs["cyan-metro"] = cyanMetro;
+
+
         Texture2D magentaTank = game.Content.Load<Texture2D>("magenta-tank-48x48");
         units["magenta-tank"] = magentaTank;
 
@@ -103,16 +113,16 @@ class HexMapEngineAdapter
         action.X = 0;
         action.Y = 0;
         action.ClassType = "GlobalConquest.Actions.PlaceUnitAction";
-        gcGame.Client?.SendAction("Paul", action);
+        //gcGame.Client?.SendAction("Paul", action);
         action.X = 1;
         action.Y = 0;
-        gcGame.Client?.SendAction("Paul", action);
+        //gcGame.Client?.SendAction("Paul", action);
         action.X = 2;
         action.Y = 1;
-        gcGame.Client?.SendAction("Paul", action);
+        //gcGame.Client?.SendAction("Paul", action);
         action.X = 3;
         action.Y = 1;
-        gcGame.Client?.SendAction("Paul", action);
+        //gcGame.Client?.SendAction("Paul", action);
 
         //int width = gcGame.Client.GameState.GameSettings.Width;
         //int height = gcGame.Client.GameState.GameSettings.Height;
@@ -120,16 +130,20 @@ class HexMapEngineAdapter
         int height = 50;
         action.X = width / 2;
         action.Y = height / 2;
-        gcGame.Client?.SendAction("Paul", action);
+        //gcGame.Client?.SendAction("Paul", action);
         action.X = width - 3;
         action.Y = height - 2;
-        gcGame.Client?.SendAction("Paul", action);
+        //gcGame.Client?.SendAction("Paul", action);
         action.X = width - 2;
         action.Y = height - 1;
-        gcGame.Client?.SendAction("Paul", action);
+        //gcGame.Client?.SendAction("Paul", action);
         action.X = width - 1;
         action.Y = height - 1;
+        //gcGame.Client?.SendAction("Paul", action);
+        action.X = 0;
+        action.Y = height - 1;
         gcGame.Client?.SendAction("Paul", action);
+
 
     }
 
@@ -186,7 +200,26 @@ class HexMapEngineAdapter
         }
         //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): " + Global.MAP_HEX_TILE_ARRAY[0, 0]);
         coHexTileMap.Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
+        DrawCities();
         DrawUnits();
+    }
+
+    public void DrawCities()
+    {
+        MapHex[,] hexes = gcGame.Client.GameState.Map.Hexes;
+        for (int liY = 0; liY < hexHeight; liY++)
+        {
+            for (int liX = 0; liX < hexWidth; liX++)
+            {
+                Burb? burb = hexes[liY, liX].Burb;
+                if (burb != null)
+                {
+                    string burbId = burb.Color + "-" + burb.Type;
+                    drawBurbAtHex(liY, liX, burbId);
+                }
+            }
+        }
+        
     }
 
     public void DrawUnits()
@@ -335,6 +368,56 @@ class HexMapEngineAdapter
         return worldBounds;
     }
 
+    private void drawBurbAtHex(int row, int column, string burbId)
+    {
+        Vector2 currentPixelPosition = this.getCurrentPixelPosition();
+        Vector2 rowColVector = new Vector2(column, row);
+        Vector2 pixelVector = ConvertHexToPixels(rowColVector);
+        if (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS < currentPixelPosition.X ||
+            pixelVector.X > currentPixelPosition.X + gcGame.MainGameScreen.MapPanel.Width ||
+            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS < currentPixelPosition.Y ||
+            pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.MapPanel.Height
+           )
+        {
+            if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+                return;
+        }
+
+        if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+        {
+            pixelVector.X += 0 - currentPixelPosition.X;
+            pixelVector.Y += 0 - currentPixelPosition.Y;
+        }
+        else
+        {
+            pixelVector.X += 0;
+            pixelVector.Y += 0;
+        }
+        if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
+            (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
+            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height) ||
+            pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS/2
+            )
+        {
+            return;
+        }
+
+        coSpriteBatch.Draw(
+                            burbs[burbId],
+                            pixelVector,
+                            null,
+                            Color.White,
+                            0.0f,
+                            Vector2.Zero,
+                            new Vector2(1.0f, 1.0f),
+                            SpriteEffects.None,
+                            0.75f
+                            );
+
+
+    }
+
+
     private void drawUnitAtHex(int row, int column, string unit)
     {
         Vector2 currentPixelPosition = this.getCurrentPixelPosition();
@@ -373,8 +456,6 @@ class HexMapEngineAdapter
             return;
         }
 
-        //Globals.spriteBatch?.Draw(units[unit], pixelVector, null, Color.White);
-        //coSpriteBatch.Draw(units[unit], pixelVector, null, Color.White);
         coSpriteBatch.Draw(
                             units[unit],
                             pixelVector,
@@ -386,8 +467,6 @@ class HexMapEngineAdapter
                             SpriteEffects.None,
                             0.5f
                             );
-
-
     }
 
     // A row is like a snake, it goes up or down per column

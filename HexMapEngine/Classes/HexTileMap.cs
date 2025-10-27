@@ -277,7 +277,7 @@ namespace GlobalConquest.HexMapEngine.Classes
                                 Vector2.Zero,
                                 new Vector2(1.0f, 1.0f),
                                 SpriteEffects.None,
-                                0.75f
+                                0.85f
                                 );
 
             // hex-border overlay test (if hexagon is marked as selected)

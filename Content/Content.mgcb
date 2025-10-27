@@ -25,6 +25,30 @@
 /processorParam:TextureFormat=Color
 /build:1x1_#FFFFFFFF.png
 
+#begin amber-metro-72x72.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:amber-metro-72x72.png
+
+#begin cyan-metro-72x72.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:cyan-metro-72x72.png
+
 #begin DarkGrass_72x72.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -92,6 +116,18 @@
 /processorParam:TextureFormat=Color
 /build:grass-flat-hex-72x72.png
 
+#begin magenta-metro-72x72.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:magenta-metro-72x72.png
+
 #begin magenta-tank-48x48.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -122,6 +158,18 @@
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
 /build:MySpriteFont.spritefont
+
+#begin ocher-metro-72x72.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:ocher-metro-72x72.png
 
 #begin sea-flat-hex-72x72.png
 /importer:TextureImporter

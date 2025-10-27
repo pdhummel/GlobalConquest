@@ -17,7 +17,7 @@ public class PlayerAction
 
     public PlayerAction(string clientIdentifier, string classType)
     {
-        ClientIdentifier = clientIdentifier;
+        ClientIdentifier = clientIdentifier; // this is the player name
         ClassType = classType;
     }
 

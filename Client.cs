@@ -10,7 +10,7 @@ public class Client
     private NetManager? netmanagerclient;
     private EventBasedNetListener? listener;
     private Thread? clientThread;
-    public string? ClientIdentifier { get; set; }
+    public string? ClientIdentifier { get; set; }   // this is the player name
     private NetPeer? serverPeer;
 
     public GlobalConquestGame? GlobalConquestGame { get; set; }
@@ -18,6 +18,7 @@ public class Client
     public bool isLoadContentComplete { get; set; } = false;
 
     public GameState GameState { get; set; } = new GameState();
+    public JoinGameValues JoinGameValues {get; set; }
 
     public Client(GlobalConquestGame gcGame)
     {
@@ -104,6 +105,11 @@ public class Client
     private void OnPeerConnected(NetPeer peer)
     {
         Console.WriteLine($"OnPeerConnected(): Client peer connected: {peer.Address}");
+        JoinGameAction joinGameAction = new JoinGameAction();
+        joinGameAction.JoinGameValues = JoinGameValues;
+        joinGameAction.ClassType = "GlobalConquest.Actions.JoinGameAction";
+        joinGameAction.ClientIdentifier = JoinGameValues.Name;
+        SendAction(JoinGameValues.Name, joinGameAction);
     }
 
     private void OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod)

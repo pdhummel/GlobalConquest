@@ -9,6 +9,8 @@ public class GameState
     public GameSettings GameSettings { get; set; }
     public Factions Factions { get; set; }
 
+    public Players Players { get; set; }
+
     [JsonIgnore]
     public Map Map { get; set; }
 
@@ -24,6 +26,7 @@ public class GameState
     {
         Factions = new Factions();
         UnitTypes = new UnitTypes();
+        Players = new Players();
     }
 
 }

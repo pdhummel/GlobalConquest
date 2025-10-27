@@ -85,6 +85,7 @@ public class Server
         {
             foreach (NetPeer peer in server.ConnectedPeerList)
             {
+                //Console.WriteLine("sendGameState(): players=" + gameState.Players.playerNameToPlayer.Count);
                 sendGameStateAndMapHex(peer, 0, 0);
             }
         }
@@ -140,7 +141,7 @@ public class Server
     // --- LiteNetLib Event Handlers ---
     private void OnConnectionRequest(ConnectionRequest request)
     {
-        Console.WriteLine($"OnConnectionRequest(): Incoming connection request to Server from: {request.RemoteEndPoint}");
+        Console.WriteLine($"OnConnectionRequest(): Incoming connection request to Server from: {request.RemoteEndPoint}, data=" + request.Data);
         // In a real application, you would add validation here.
         if (server?.ConnectedPeersCount < maxPeers)
         {

@@ -18,7 +18,28 @@ public class Map
         Y = y;
         X = x;
         Hexes = generateMap(y, x);
+        Burb amberMetro = new Burb();
+        amberMetro.Name = "Amber Array";
+        amberMetro.Type = "metro";
+        amberMetro.Color = "amber";
+        Burb ocherMetro = new Burb();
+        ocherMetro.Name = "Ocher Order";
+        ocherMetro.Type = "metro";
+        ocherMetro.Color = "ocher";
+        Burb magentaMetro = new Burb();
+        magentaMetro.Name = "Magenta Mob";
+        magentaMetro.Type = "metro";
+        magentaMetro.Color = "magenta";
+        Burb cyanMetro = new Burb();
+        cyanMetro.Name = "Cyan Circle";
+        cyanMetro.Type = "metro";
+        cyanMetro.Color = "cyan";
+
         FlattenedHexes = Utilities.FlattenArray(Hexes);
+        Hexes[0, 0].Burb = amberMetro;
+        Hexes[0, x - 1].Burb = ocherMetro;
+        Hexes[y - 1, 0].Burb = magentaMetro;
+        Hexes[y - 1, x - 1].Burb = cyanMetro;
     }
 
     public MapHex[,] unflattenHexes()
