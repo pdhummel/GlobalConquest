@@ -30,7 +30,8 @@ public class MoveUnitAction : PlayerAction
         unitAction.Action = "move";
         unitAction.TargetX = ToX;
         unitAction.TargetY = ToY;
-        Unit?.ActionQueue.Add(unitAction);
+        //Unit?.ActionQueue.Add(unitAction);
+        Unit?.setUnitAction(unitAction);
         if (Unit != null)
         {
             gameState.Map.Hexes[FromY, FromX].setUnit(Unit);

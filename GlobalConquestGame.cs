@@ -143,7 +143,7 @@ public class GlobalConquestGame : Game
              currentMilliseconds - lastMilliseconds > 50)
         {
             MainGameScreen.HideContextMenu();
-            MoveMode = false;
+            //MoveMode = false;
             hexMapEngineAdapter?.scrollUp();
         }
         if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down) &&
@@ -151,7 +151,7 @@ public class GlobalConquestGame : Game
              currentMilliseconds - lastMilliseconds > 50)
         {
             MainGameScreen.HideContextMenu();
-            MoveMode = false;
+            //MoveMode = false;
             hexMapEngineAdapter?.scrollDown();
         }
         if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left) &&
@@ -159,7 +159,7 @@ public class GlobalConquestGame : Game
              currentMilliseconds - lastMilliseconds > 50)
         {
             MainGameScreen.HideContextMenu();
-            MoveMode = false;
+            //MoveMode = false;
             hexMapEngineAdapter?.scrollLeft();
         }
         if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right) &&
@@ -167,7 +167,7 @@ public class GlobalConquestGame : Game
              currentMilliseconds - lastMilliseconds > 50)
         {
             MainGameScreen.HideContextMenu();
-            MoveMode = false;
+            //MoveMode = false;
             hexMapEngineAdapter?.scrollRight();
         }
         previousKeyboardState = currentKeyboardState; 
@@ -202,7 +202,7 @@ public class GlobalConquestGame : Game
                     worldPosition.Y -= (int)MainGameScreen.MapPanel.Height/2;
                     Vector2 currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
                     MainGameScreen.HideContextMenu();
-                    MoveMode = false;
+                    //MoveMode = false;
                     hexMapEngineAdapter.scrollToPosition((int)worldPosition.Y, (int)currentPosition.X);
                     currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
                     hexMapEngineAdapter.scrollToPosition((int)currentPosition.Y, (int)worldPosition.X);
@@ -408,9 +408,9 @@ public class GlobalConquestGame : Game
             handleClickMouseOnMap();
             if (MoveMode)
             {
-                MoveMode = false;
                 if (lastSelectedHex.X >= 0 && lastSelectedHex.Y >= 0 && !previousSelectedHex.Equals(lastSelectedHex))
                 {
+                    MoveMode = false;
                     MoveUnitAction action = new MoveUnitAction();
                     action.Unit = previousSelectedUnit;
                     action.FromX = previousSelectedHex.X;

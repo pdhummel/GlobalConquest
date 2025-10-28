@@ -61,6 +61,14 @@ public class Unit
         return unitAction;
     }
 
+    public void setUnitAction(UnitAction unitAction)
+    {
+        if (ActionQueue.Count < 1)
+            ActionQueue.Add(unitAction);
+        else
+            ActionQueue[0] = unitAction;
+    }
+
     public override bool Equals(object obj)
     {
         if (obj is Unit other)
