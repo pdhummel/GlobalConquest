@@ -62,8 +62,11 @@ public class Server
         while (isRunning)
         {
             server?.PollEvents();
-            if (!initialSync)
+            if (!initialSync && gameState.PlayerJoined.Count >= gameState.GameSettings.NumberOfHumans)
+            {
                 syncAllMapHexes();
+                initialSync = true;
+            }    
             Thread.Sleep(sleepTime); // Adjust sleep time to control CPU usage.
         }
     }
@@ -83,8 +86,11 @@ public class Server
     {
         if (server != null)
         {
-            foreach (NetPeer peer in server.ConnectedPeerList)
+            int count = server.ConnectedPeerList.Count;
+            for (int i=0; i<count; i++)
+            //foreach (NetPeer peer in server.ConnectedPeerList)
             {
+                NetPeer peer = server.ConnectedPeerList[i];
                 //Console.WriteLine("sendGameState(): players=" + gameState.Players.playerNameToPlayer.Count);
                 sendGameStateAndMapHex(peer, 0, 0);
             }
@@ -96,11 +102,14 @@ public class Server
     {
         if (server != null)
         {
-            foreach (NetPeer peer in server.ConnectedPeerList)
+            int count = server.ConnectedPeerList.Count;
+            for (int i=0; i<count; i++)
+            //foreach (NetPeer peer in server.ConnectedPeerList)
             {
+                NetPeer peer = server.ConnectedPeerList[i];
                 sendGameStateAndMapHex(peer, x, y);
                 // TODO: fix this -- consider initialSync based on all clients
-                initialSync = true;
+                //initialSync = true;
             }
         }
     }

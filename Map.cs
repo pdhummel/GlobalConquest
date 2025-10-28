@@ -34,12 +34,16 @@ public class Map
         cyanMetro.Name = "Cyan Circle";
         cyanMetro.Type = "metro";
         cyanMetro.Color = "cyan";
+        Burb capital = new Burb();
+        capital.Name = "Washington";
+        capital.Type = "capital";
 
         FlattenedHexes = Utilities.FlattenArray(Hexes);
-        Hexes[0, 0].Burb = amberMetro;
-        Hexes[0, x - 1].Burb = ocherMetro;
-        Hexes[y - 1, 0].Burb = magentaMetro;
-        Hexes[y - 1, x - 1].Burb = cyanMetro;
+        Hexes[0, 1].Burb = amberMetro;
+        Hexes[1, x - 2].Burb = ocherMetro;
+        Hexes[y - 2, 1].Burb = magentaMetro;
+        Hexes[y - 1, x - 2].Burb = cyanMetro;
+        Hexes[y / 2, x / 2].Burb = capital;
     }
 
     public MapHex[,] unflattenHexes()

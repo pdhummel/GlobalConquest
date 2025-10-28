@@ -17,6 +17,7 @@ public class GameState
     public MapHex MapHex { get; set; }
 
     public Dictionary<string, bool> PlayerExecutionReady { get; set; } = new Dictionary<string, bool>();
+    public Dictionary<string, bool> PlayerJoined { get; set; } = new Dictionary<string, bool>();
     public int CurrentTurn { get; set; } = 0;
     public string CurrentPhase { get; set; } = "plan";
     public int CurrentRound { get; set; } = 0;

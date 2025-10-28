@@ -89,6 +89,8 @@ class HexMapEngineAdapter
         burbs["ocher-metro"] = ocherMetro;
         Texture2D cyanMetro = game.Content.Load<Texture2D>("cyan-metro-72x72");
         burbs["cyan-metro"] = cyanMetro;
+        Texture2D capitalTile = game.Content.Load<Texture2D>("capital-72x72");
+        burbs["capital"] = capitalTile;
 
 
         Texture2D magentaTank = game.Content.Load<Texture2D>("magenta-tank-48x48");
@@ -106,16 +108,13 @@ class HexMapEngineAdapter
         Console.WriteLine("HexMapEngineAdapter.LoadContent(): hex count=" + Global.MAP_HEX_TILE_ARRAY.Length);
 
         Myra.MyraEnvironment.Game = game;
-        testPlacingUnits();
     }
 
-    private void testPlacingUnits()
+    public void testPlacingUnits()
     {
         GlobalConquestGame gcGame = (GlobalConquestGame)game;
-        //int width = gcGame.Client.GameState.GameSettings.Width;
-        //int height = gcGame.Client.GameState.GameSettings.Height;
-        int width = 50;
-        int height = 50;
+        int width = gcGame.Client.GameState.GameSettings.Width;
+        int height = gcGame.Client.GameState.GameSettings.Height;
 
         placeUnit(0, 0, "tank", "amber");
         placeUnit(width - 1, 0, "tank", "ocher");
@@ -203,7 +202,9 @@ class HexMapEngineAdapter
                 Burb? burb = hexes[liY, liX].Burb;
                 if (burb != null)
                 {
-                    string burbId = burb.Color + "-" + burb.Type;
+                    string burbId = burb.Type;
+                    if ("metro".Equals(burb.Type))
+                        burbId = burb.Color + "-" + burb.Type;
                     drawBurbAtHex(liY, liX, burbId);
                 }
             }

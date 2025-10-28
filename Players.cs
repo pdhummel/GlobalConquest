@@ -22,5 +22,6 @@ public class Players
         playerNameToPlayer[name] = player;
         colorToPlayer[color] = player;
         factionNameToPlayer[gameState.Factions.colorToFaction[color].Name] = player;
+        gameState.PlayerJoined[name] = true;
     }
 }

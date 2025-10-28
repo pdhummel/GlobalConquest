@@ -117,6 +117,7 @@ public class GlobalConquestGame : Game
         hexMapEngineAdapter.LoadContent();
         miniMapHexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
         miniMapHexMapEngineAdapter.LoadContent();
+        hexMapEngineAdapter.testPlacingUnits();
 
         if (MainGameScreen != null && MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
         {
@@ -483,7 +484,12 @@ public class GlobalConquestGame : Game
         if (lastSelectedHex != null && lastSelectedHex?.X != -1 && lastSelectedHex?.Y != -1)
         {
             Globals.spriteBatch?.DrawString(font, "Last Hex: " + lastSelectedHex?.X + "," + lastSelectedHex?.Y, new Vector2(xPos, yPos + 14), Color.White);
-            Globals.spriteBatch?.DrawString(font, "Terrain: " + lastSelectedHex?.Terrain, new Vector2(xPos, yPos + 28), Color.White);
+            string terrain = lastSelectedHex?.Terrain;
+            if (lastSelectedHex?.Burb != null)
+            {
+                terrain = lastSelectedHex.Burb.Name + " (" + lastSelectedHex.Burb.Type + ")";
+            }
+            Globals.spriteBatch?.DrawString(font, "Terrain: " + terrain, new Vector2(xPos, yPos + 28), Color.White);
             Unit unit = lastSelectedHex.getUnit();
             if (unit != null)
             {
