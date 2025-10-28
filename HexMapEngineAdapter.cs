@@ -93,6 +93,13 @@ class HexMapEngineAdapter
 
         Texture2D magentaTank = game.Content.Load<Texture2D>("magenta-tank-48x48");
         units["magenta-tank"] = magentaTank;
+        Texture2D amberTank = game.Content.Load<Texture2D>("amber-tank-48x48");
+        units["amber-tank"] = amberTank;
+        Texture2D ocherTank = game.Content.Load<Texture2D>("ocher-tank-48x48");
+        units["ocher-tank"] = ocherTank;
+        Texture2D cyanTank = game.Content.Load<Texture2D>("cyan-tank-48x48");
+        units["cyan-tank"] = cyanTank;
+
 
         Console.WriteLine("HexMapEngineAdapter.LoadContent(): hexHeight=" + hexHeight + ", hexWidth=" + hexWidth);
         updateMap();
@@ -105,46 +112,28 @@ class HexMapEngineAdapter
     private void testPlacingUnits()
     {
         GlobalConquestGame gcGame = (GlobalConquestGame)game;
-        Unit unit = new Unit();
-        unit.Color = "magenta";
-        unit.UnitType = "tank";
-        PlaceUnitAction action = new PlaceUnitAction();
-        action.Unit = unit;
-        action.X = 0;
-        action.Y = 0;
-        action.ClassType = "GlobalConquest.Actions.PlaceUnitAction";
-        //gcGame.Client?.SendAction("Paul", action);
-        action.X = 1;
-        action.Y = 0;
-        //gcGame.Client?.SendAction("Paul", action);
-        action.X = 2;
-        action.Y = 1;
-        //gcGame.Client?.SendAction("Paul", action);
-        action.X = 3;
-        action.Y = 1;
-        //gcGame.Client?.SendAction("Paul", action);
-
         //int width = gcGame.Client.GameState.GameSettings.Width;
         //int height = gcGame.Client.GameState.GameSettings.Height;
         int width = 50;
         int height = 50;
-        action.X = width / 2;
-        action.Y = height / 2;
-        //gcGame.Client?.SendAction("Paul", action);
-        action.X = width - 3;
-        action.Y = height - 2;
-        //gcGame.Client?.SendAction("Paul", action);
-        action.X = width - 2;
-        action.Y = height - 1;
-        //gcGame.Client?.SendAction("Paul", action);
-        action.X = width - 1;
-        action.Y = height - 1;
-        //gcGame.Client?.SendAction("Paul", action);
-        action.X = 0;
-        action.Y = height - 1;
-        gcGame.Client?.SendAction("Paul", action);
 
-
+        placeUnit(0, 0, "tank", "amber");
+        placeUnit(width - 1, 0, "tank", "ocher");
+        placeUnit(width - 1, height - 1, "tank", "cyan");
+        placeUnit(0, height-1, "tank", "magenta");
+    }
+    
+    public void placeUnit(int x, int y, string unitType, string color)
+    {
+        Unit unit = new Unit();
+        unit.Color = color;
+        unit.UnitType = unitType;
+        PlaceUnitAction action = new PlaceUnitAction();
+        action.Unit = unit;
+        action.X = x;
+        action.Y = y;
+        action.ClassType = "GlobalConquest.Actions.PlaceUnitAction";
+        gcGame.Client?.SendAction(gcGame.Client.ClientIdentifier, action);
     }
 
     public void updateMap()
