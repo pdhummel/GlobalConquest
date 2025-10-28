@@ -12,7 +12,7 @@ public class Players
 
     }
     
-    public void AddPlayer(GameState gameState, String name, string color, bool isHuman)
+    public Player AddPlayer(GameState gameState, String name, string color, bool isHuman)
     {
         Console.WriteLine("AddPlayer(): " + name + ", " + color);
         Player player = new();
@@ -23,5 +23,6 @@ public class Players
         colorToPlayer[color] = player;
         factionNameToPlayer[gameState.Factions.colorToFaction[color].Name] = player;
         gameState.PlayerJoined[name] = true;
+        return player;
     }
 }

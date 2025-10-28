@@ -117,7 +117,8 @@ public class GlobalConquestGame : Game
         hexMapEngineAdapter.LoadContent();
         miniMapHexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
         miniMapHexMapEngineAdapter.LoadContent();
-        hexMapEngineAdapter.testPlacingUnits();
+        //placeInitialUnit();
+        
 
         if (MainGameScreen != null && MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
         {
@@ -131,7 +132,22 @@ public class GlobalConquestGame : Game
         }
     }
 
+    private void placeInitialUnit()
+    {
+        Player player = Client.GameState.Players.playerNameToPlayer[Client.ClientIdentifier];
+        int width = Client.GameState.GameSettings.Width;
+        int height = Client.GameState.GameSettings.Height;
 
+        if (player.FactionColor.Equals("amber"))
+            hexMapEngineAdapter.placeUnit(0, 0, "tank", "amber");
+        else if (player.FactionColor.Equals("ocher"))
+            hexMapEngineAdapter.placeUnit(width - 1, 0, "tank", "ocher");
+        else if (player.FactionColor.Equals("cyan"))
+            hexMapEngineAdapter.placeUnit(width - 1, height - 1, "tank", "cyan");
+        else if (player.FactionColor.Equals("magenta"))
+            hexMapEngineAdapter.placeUnit(0, height-1, "tank", "magenta");
+    }
+    
     protected override void Update(GameTime gameTime)
     {
         long currentMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;

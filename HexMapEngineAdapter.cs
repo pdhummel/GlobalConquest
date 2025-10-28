@@ -109,18 +109,6 @@ class HexMapEngineAdapter
 
         Myra.MyraEnvironment.Game = game;
     }
-
-    public void testPlacingUnits()
-    {
-        GlobalConquestGame gcGame = (GlobalConquestGame)game;
-        int width = gcGame.Client.GameState.GameSettings.Width;
-        int height = gcGame.Client.GameState.GameSettings.Height;
-
-        placeUnit(0, 0, "tank", "amber");
-        placeUnit(width - 1, 0, "tank", "ocher");
-        placeUnit(width - 1, height - 1, "tank", "cyan");
-        placeUnit(0, height-1, "tank", "magenta");
-    }
     
     public void placeUnit(int x, int y, string unitType, string color)
     {

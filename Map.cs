@@ -90,7 +90,11 @@ public class Map
     public void placeUnit(Unit unit, int x, int y)
     {
         if (x >= 0 && x < X && y >= 0 && y < Y)
+        {
             Hexes[y, x].setUnit(unit);
+            unit.X = x;
+            unit.Y = y;
+        }
     }
 
     public Unit? getUnitAtXY(int x, int y)
@@ -102,7 +106,7 @@ public class Map
         }
         return unit;
     }
-    
+
     public void moveUnit(Unit unit, int destinationX, int destinationY)
     {
         if (unit.X != destinationX || unit.Y != destinationY)
@@ -116,6 +120,7 @@ public class Map
             }
         }
     }
+        
 
     private string determineBiome(float elevation, float moisture)
     {

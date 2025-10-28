@@ -23,7 +23,20 @@ public class JoinGameAction : PlayerAction
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         Faction faction = gameState.Factions.nameToFaction[JoinGameValues.FactionName];
-        gameState.Players.AddPlayer(gameState, JoinGameValues.Name, faction.Color, true);
-        //server.sendGameState();
+        if (gameState.Players.playerNameToPlayer.ContainsKey(JoinGameValues.Name))
+        {
+            return;
+        }
+        List<string> playerNames = gameState.Players.playerNameToPlayer.Keys.ToList<string>();
+        for (int i=0; i< gameState.Players.playerNameToPlayer.Count; i++)
+        {
+            Player player = gameState.Players.playerNameToPlayer[playerNames[i]];
+            if (player.FactionColor.Equals(faction.Color))
+            {
+                return;
+            }
+        }
+        Player newPlayer = gameState.Players.AddPlayer(gameState, JoinGameValues.Name, faction.Color, true);
+        gameState.placeInitialUnit(newPlayer);
     }
 }
