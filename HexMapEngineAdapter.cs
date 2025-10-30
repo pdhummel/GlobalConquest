@@ -73,7 +73,7 @@ class HexMapEngineAdapter
         Global.ACTUAL_MAP_WIDTH_IN_TILES = hexWidth;
         Global.ACTUAL_MAP_HEIGHT_IN_TILES = hexHeight;
 
-        createHexTexture2D(0, "unknown", "sea-flat-hex-72x72");
+        createHexTexture2D(0, "unknown", "unknown-flat-hex-72x72");
         createHexTexture2D(1, "sea", "sea-flat-hex-72x72");
         createHexTexture2D(2, "grass", "grass-flat-hex-72x72");
         createHexTexture2D(3, "mountain", "mountain-flat-hex-72x72");
@@ -109,7 +109,7 @@ class HexMapEngineAdapter
 
         Myra.MyraEnvironment.Game = game;
     }
-    
+
     public void placeUnit(int x, int y, string unitType, string color)
     {
         Unit unit = new Unit();
@@ -175,7 +175,8 @@ class HexMapEngineAdapter
                                                             coTextureYellowBorder2DTile);
         }
         //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): " + Global.MAP_HEX_TILE_ARRAY[0, 0]);
-        coHexTileMap.Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
+        //coHexTileMap.Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
+        Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
         DrawCities();
         DrawUnits();
     }
@@ -197,7 +198,7 @@ class HexMapEngineAdapter
                 }
             }
         }
-        
+
     }
 
     public void DrawUnits()
@@ -385,12 +386,29 @@ class HexMapEngineAdapter
         if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
             (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
             pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height) ||
-            pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS/2
+            pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS / 2
             )
         {
             return;
         }
 
+        Map map = gcGame.Client.GameState.Map;
+        Player player = identifySelf();
+        if (!map.Hexes[row, column].Visibility[player.FactionColor])
+        {
+            coSpriteBatch.Draw(
+                                terrain["unknown"].TEXTURE2D_IMAGE_TILE,
+                                pixelVector,
+                                null,
+                                Color.White,
+                                0.0f,
+                                Vector2.Zero,
+                                new Vector2(1.0f, 1.0f),
+                                SpriteEffects.None,
+                                0.75f
+                                );
+            return;
+        }
         coSpriteBatch.Draw(
                             burbs[burbId],
                             pixelVector,
@@ -439,7 +457,7 @@ class HexMapEngineAdapter
         if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
             (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
             pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height) ||
-            pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS/2
+            pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS / 2
             )
         {
             return;
@@ -468,7 +486,7 @@ class HexMapEngineAdapter
     {
         Vector2 pixelVector = coHexTileMap.hexToPixel(hexVector);
         Vector2 currentPixelPosition = getCurrentPixelPosition();
-        return new Vector2(pixelVector.X+36 - currentPixelPosition.X, pixelVector.Y+36 - currentPixelPosition.Y);
+        return new Vector2(pixelVector.X + 36 - currentPixelPosition.X, pixelVector.Y + 36 - currentPixelPosition.Y);
     }
 
 
@@ -496,7 +514,7 @@ class HexMapEngineAdapter
         Vector2 hexVector3 = new Vector2((int)hexX, (int)hexY - 1);
         Vector2 hexVector4 = new Vector2((int)hexX, (int)hexY + 1);
         Vector2 hexVector5 = new Vector2((int)hexX, (int)hexY2 - 1);
-        Vector2 hexVector6 = new Vector2((int)hexX, (int)hexY2+1);
+        Vector2 hexVector6 = new Vector2((int)hexX, (int)hexY2 + 1);
         Vector2 tmpPixelVector = ConvertHexToPixels(hexVector);
         Vector2 tmpPixelVector2 = ConvertHexToPixels(hexVector2);
         Vector2 tmpPixelVector3 = ConvertHexToPixels(hexVector3);
@@ -532,7 +550,7 @@ class HexMapEngineAdapter
                 ", currentY=" + currentPixelPosition.Y +
                 ", hexX=" + hexX + ", hexY=" + hexY + ", hexY2=" + hexY2 +
                 ", tmpPixelY=" + tmpPixelVector.Y +
-                ", tmpPixelY2=" + tmpPixelVector2.Y);            
+                ", tmpPixelY2=" + tmpPixelVector2.Y);
         }
         return returnVector;
     }
@@ -541,5 +559,114 @@ class HexMapEngineAdapter
     {
         Global.Y_VIEW_OFFSET_PIXELS = offset;
     }
+
+
+    public void Draw_TileMap(string psScrollDirection,
+                                int piRowPosition,
+                                int piColumnPosition)
+    {
+        int liCalculatedMapTileX = 0;
+        int liCalculatedMapTileY = 0;
+
+        HexMapEngine.Structures.HexTile loHexTile;
+        HexMapEngine.Structures.HexTile[,] loMapHexTileArray = null;
+        HexMapEngine.Classes.TextFileIO loTextFileIO = new HexMapEngine.Classes.TextFileIO();
+
+
+        Vector2 loTileOffset = new Vector2(coHexTileMap.cameraWrapper.CAMERA_VECTOR2_LOCATION.X % HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X,
+                                            coHexTileMap.cameraWrapper.CAMERA_VECTOR2_LOCATION.Y % HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y);
+
+        int liTileOffsetX = (int)coHexTileMap.cameraWrapper.CAMERA_VECTOR2_LOCATION.X;
+        int liTileOffsetY = (int)coHexTileMap.cameraWrapper.CAMERA_VECTOR2_LOCATION.Y;
+
+        for (int liY = 0; liY < (HexMapEngine.Structures.Global.ACTUAL_MAP_HEIGHT_IN_TILES); liY++)
+        {
+            for (int liX = 0; liX < (HexMapEngine.Structures.Global.ACTUAL_MAP_WIDTH_IN_TILES); liX++)
+            {
+                loHexTile = (HexMapEngine.Structures.HexTile)HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[liY, liX];
+
+                if (loHexTile.TILE_COUNT > 0)
+                {
+                    Vector2 pixelVector = coHexTileMap.hexToPixel(new Vector2(liX, liY), liTileOffsetX, liTileOffsetY);
+                    liCalculatedMapTileX = (int)pixelVector.X;
+                    liCalculatedMapTileY = (int)pixelVector.Y;
+                    int tmpCalculatedMapTileX = (int)((float)liCalculatedMapTileX * Global.X_ZOOM_FACTOR);
+                    int tmpCalculatedMapTileY = (int)((float)liCalculatedMapTileY * Global.Y_ZOOM_FACTOR);
+
+                    if ((Global.X_MAX_PIXELS < 0 || tmpCalculatedMapTileX < Global.X_MAX_PIXELS) &&
+                        (Global.Y_MAX_PIXELS < 0 || tmpCalculatedMapTileY < Global.Y_MAX_PIXELS) && tmpCalculatedMapTileY >= Global.Y_VIEW_OFFSET_PIXELS)
+                    {
+                        loHexTile.PixelX = liCalculatedMapTileX;
+                        loHexTile.PixelY = liCalculatedMapTileY;
+
+                        Draw_HexTile(loHexTile,
+                                        liCalculatedMapTileX,
+                                        liCalculatedMapTileY,
+                                        HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS,
+                                        HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS);
+
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    private void Draw_HexTile(HexMapEngine.Structures.HexTile poHexTile,
+                                int piCalculatedMapTileX,
+                                int piCalculatedMapTileY,
+                                int piMapTileHexWidthInPixels,
+                                int piMapTileHexHeightInPixels) {
+        Microsoft.Xna.Framework.Graphics.Texture2D  loTexture2DTile;
+        Map map = gcGame.Client.GameState.Map;
+
+        if (poHexTile.texture2D != null)
+        {
+            loTexture2DTile = poHexTile.texture2D;
+        }
+        else
+        {
+            //loTexture2DTile = Get_TileTextureFromArrayListById(poHexTile.BASE_HEX_TEXTURE_ID);
+            loTexture2DTile = terrain[map.Hexes[piCalculatedMapTileY, piCalculatedMapTileX].Terrain].TEXTURE2D_IMAGE_TILE;
+        }
+
+        Vector2 destination = new Vector2(piCalculatedMapTileX, piCalculatedMapTileY);
+        Rectangle source = new Rectangle(0, 0, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels);
+        Player player = identifySelf();
+        bool visibility = map.Hexes[poHexTile.ROW_ID, poHexTile.COLUMN_ID].Visibility[player.FactionColor];
+        if (! visibility)
+        {
+            coSpriteBatch.Draw(
+                                terrain["unknown"].TEXTURE2D_IMAGE_TILE,
+                                destination,
+                                source,
+                                Color.White,
+                                0.0f,
+                                Vector2.Zero,
+                                new Vector2(1.0f, 1.0f),
+                                SpriteEffects.None,
+                                0.85f
+                                );
+            return;
+        }
+        coSpriteBatch.Draw(
+                            loTexture2DTile,
+                            destination,
+                            source,
+                            Color.White,
+                            0.0f,
+                            Vector2.Zero,
+                            new Vector2(1.0f, 1.0f),
+                            SpriteEffects.None,
+                            0.85f
+                            );
+
+
+
+        // update hex tile in array pixel positions on map board
+        coHexTileMap.Update_HexTileArrayPixelPositions(poHexTile, piCalculatedMapTileX, piCalculatedMapTileY);
+    }
+
 
 }

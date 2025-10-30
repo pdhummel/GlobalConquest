@@ -138,7 +138,7 @@ public class HostGameScreen
         sharedLabel.Text = "Allies";
         visibilityComboView.Widgets.Add(omniLabel);
         visibilityComboView.Widgets.Add(chqLabel);
-        //visibilityComboView.Widgets.Add(fogLabel);
+        visibilityComboView.Widgets.Add(fogLabel);
         //visibilityComboView.Widgets.Add(sharedLabel);
         //visibilityComboView.Widgets.Add(alliesLabel);
         visibilityComboView.SelectedIndex = 0;
@@ -151,13 +151,6 @@ public class HostGameScreen
         executionComboView.Border = new SolidBrush("#808000FF");
         executionComboView.BorderThickness = new Thickness(2);
 
-/*
-immediate -- only one player needs to initiate
-timed grace -- timed after one player initiates
-timed -- seconds
-majority -- all but one needs to initiate
-infinite -- all need to initiate
-*/
         Label immediateiLabel = new Label();
         immediateiLabel.Text = "Immediate";
         Label timedGraceLabel = new Label();

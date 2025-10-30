@@ -102,7 +102,8 @@ public class ExecuteAction : PlayerAction
 
         foreach (Unit unit in units)
         {
-            unitScans(server, unit);
+            scanUnits(server, unit);
+            scanTerrain(server, unit);
         }
 
         foreach (string key in gameState.PlayerExecutionReady.Keys)
@@ -124,9 +125,28 @@ public class ExecuteAction : PlayerAction
         foreach (Unit unit in units)
         {
             addStepsForUnit(server, unit);
-            unitScans(server, unit);
+            scanUnits(server, unit);
+            scanTerrain(server, unit);
             moveUnit(server, unit);            
             server.sendGameStateAndMapHex(unit.X, unit.Y);
+        }
+    }
+
+    public void startGame(Server server)
+    {
+        GameState gameState = server.gameState;
+        for (int liY = 0; liY < gameState.Map.Y; liY++)
+        {
+            for (int liX = 0; liX < gameState.Map.X; liX++)
+            {
+                MapHex mapHex = gameState.Map.Hexes[liY, liX];
+                Unit unit = mapHex.getUnit();
+                if (unit != null)
+                {
+                    scanUnits(server, unit);
+                    scanTerrain(server, unit);                    
+                }
+            }
         }
     }
 
@@ -144,7 +164,7 @@ public class ExecuteAction : PlayerAction
             unit.SneakSteps = 100;
     }
 
-    private void unitScans(Server server, Unit unit)
+    private void scanUnits(Server server, Unit unit)
     {
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
@@ -152,7 +172,7 @@ public class ExecuteAction : PlayerAction
         //unitType.DiscoveryRange   // discover terrain
         //unitType.ScanningRange    // spot enemy units
         HashSet<MapHex> hexesToScanForUnits = map.getMapHexesInRange(mapHex, unitType.ScanningRange);
-        Console.WriteLine("hexes to scan=" + hexesToScanForUnits.Count);
+        //Console.WriteLine("hexes to scan=" + hexesToScanForUnits.Count);
         foreach (MapHex hex in hexesToScanForUnits)
         {
             Unit hexUnit = hex.getUnit();
@@ -169,6 +189,23 @@ public class ExecuteAction : PlayerAction
         }
 
     }
+
+    private void scanTerrain(Server server, Unit unit)
+    {
+        Map map = server.gameState.Map;
+        MapHex mapHex = map.Hexes[unit.Y, unit.X];
+        UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+        //unitType.DiscoveryRange   // discover terrain
+        //unitType.ScanningRange    // spot enemy units
+        HashSet<MapHex> hexesToScan = map.getMapHexesInRange(mapHex, unitType.DiscoveryRange);
+        Console.WriteLine("hexes to scan=" + hexesToScan.Count);
+        foreach (MapHex hex in hexesToScan)
+        {
+            hex.Visibility[unit.Color] = true;
+            server.sendGameStateAndMapHex(hex.X, hex.Y);
+        }
+    }
+
 
     private void moveUnit(Server server, Unit unit)
     {

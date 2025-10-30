@@ -9,13 +9,21 @@ public class MapHex
     public int Y { get; set; }
     public int X { get; set; }
 
-    public Dictionary<string, bool> Visibility = new Dictionary<string, bool>();
+    public Dictionary<string, bool> Visibility { get; set; } = new Dictionary<string, bool>();
 
     public List<Unit> Units { get; set; } = new List<Unit>();
 
     public Burb? Burb { get; set; }
 
     public MapHex()
+    {
+        Visibility["amber"] = false;
+        Visibility["magenta"] = false;
+        Visibility["ocher"] = false;
+        Visibility["cyan"] = false;
+    }
+
+    public void makeVisibleToAll()
     {
         Visibility["amber"] = true;
         Visibility["magenta"] = true;

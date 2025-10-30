@@ -8,6 +8,7 @@ public class Map
     public MapHex[,] Hexes { get; set; }
     public int Y { get; set; }
     public int X { get; set; }
+    public string VisibilityMode { get; set; }
 
     public Map()
     {
@@ -40,10 +41,15 @@ public class Map
 
         FlattenedHexes = Utilities.FlattenArray(Hexes);
         Hexes[0, 1].Burb = amberMetro;
+        Hexes[0, 1].makeVisibleToAll();
         Hexes[1, x - 2].Burb = ocherMetro;
+        Hexes[1, x - 2].makeVisibleToAll();
         Hexes[y - 2, 1].Burb = magentaMetro;
+        Hexes[y - 2, 1].makeVisibleToAll();
         Hexes[y - 1, x - 2].Burb = cyanMetro;
+        Hexes[y - 1, x - 2].makeVisibleToAll();
         Hexes[y / 2, x / 2].Burb = capital;
+        
     }
 
     public MapHex[,] unflattenHexes()

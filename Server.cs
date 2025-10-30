@@ -28,6 +28,7 @@ public class Server
         this.key = key;
         gameState.GameSettings = gameSettings;
         Map map = new Map(gameSettings.Height, gameSettings.Width);
+        map.VisibilityMode = gameSettings.Visibility;
         gameState.Map = map;
         listener = new EventBasedNetListener();
 
@@ -64,7 +65,9 @@ public class Server
             server?.PollEvents();
             if (!initialSync && gameState.PlayerJoined.Count >= gameState.GameSettings.NumberOfHumans)
             {
-                syncAllMapHexes();
+                ExecuteAction executeAction = new ExecuteAction();
+                executeAction.startGame(this);
+                syncAllMapHexes();                
                 initialSync = true;
             }    
             Thread.Sleep(sleepTime); // Adjust sleep time to control CPU usage.
@@ -77,6 +80,10 @@ public class Server
         {
             for (int liX = 0; liX < gameState.Map.X; liX++)
             {
+                if ("Omniscient".Equals(gameState.GameSettings.Visibility) || "Command HQ".Equals(gameState.GameSettings.Visibility))
+                {
+                    gameState.Map.Hexes[liY, liX].makeVisibleToAll();
+                }
                 sendGameStateAndMapHex(liX, liY);
             }
         }

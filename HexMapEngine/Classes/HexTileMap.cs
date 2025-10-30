@@ -127,6 +127,7 @@ namespace GlobalConquest.HexMapEngine.Classes
             return v2;
         }
 
+
         public void Draw_TileMap(string psScrollDirection,
                                     int piRowPosition,
                                     int piColumnPosition)
@@ -134,22 +135,22 @@ namespace GlobalConquest.HexMapEngine.Classes
             int liCalculatedMapTileX = 0;
             int liCalculatedMapTileY = 0;
 
-            HexMapEngine.Structures.HexTile     loHexTile;
-            HexMapEngine.Structures.HexTile[,]  loMapHexTileArray = null;
-            HexMapEngine.Classes.TextFileIO     loTextFileIO = new HexMapEngine.Classes.TextFileIO();
+            HexMapEngine.Structures.HexTile loHexTile;
+            HexMapEngine.Structures.HexTile[,] loMapHexTileArray = null;
+            HexMapEngine.Classes.TextFileIO loTextFileIO = new HexMapEngine.Classes.TextFileIO();
 
 
-            Vector2  loTileOffset = new Vector2(cameraWrapper.CAMERA_VECTOR2_LOCATION.X % HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X,
+            Vector2 loTileOffset = new Vector2(cameraWrapper.CAMERA_VECTOR2_LOCATION.X % HexMapEngine.Structures.Global.MAP_TILE_OFFSET_X,
                                                 cameraWrapper.CAMERA_VECTOR2_LOCATION.Y % HexMapEngine.Structures.Global.MAP_TILE_OFFSET_Y);
 
-            int      liTileOffsetX = (int)cameraWrapper.CAMERA_VECTOR2_LOCATION.X;
-            int      liTileOffsetY = (int)cameraWrapper.CAMERA_VECTOR2_LOCATION.Y;
+            int liTileOffsetX = (int)cameraWrapper.CAMERA_VECTOR2_LOCATION.X;
+            int liTileOffsetY = (int)cameraWrapper.CAMERA_VECTOR2_LOCATION.Y;
 
             for (int liY = 0; liY < (HexMapEngine.Structures.Global.ACTUAL_MAP_HEIGHT_IN_TILES); liY++)
             {
-                for (int liX = 0; liX <  (HexMapEngine.Structures.Global.ACTUAL_MAP_WIDTH_IN_TILES); liX++)
+                for (int liX = 0; liX < (HexMapEngine.Structures.Global.ACTUAL_MAP_WIDTH_IN_TILES); liX++)
                 {
-                    loHexTile = (HexMapEngine.Structures.HexTile)HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[liY, liX];          
+                    loHexTile = (HexMapEngine.Structures.HexTile)HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[liY, liX];
 
                     if (loHexTile.TILE_COUNT > 0)
                     {
@@ -164,6 +165,7 @@ namespace GlobalConquest.HexMapEngine.Classes
                         {
                             loHexTile.PixelX = liCalculatedMapTileX;
                             loHexTile.PixelY = liCalculatedMapTileY;
+
                             Draw_HexTile(loHexTile,
                                             liCalculatedMapTileX,
                                             liCalculatedMapTileY,
@@ -334,7 +336,7 @@ namespace GlobalConquest.HexMapEngine.Classes
         }
 
 
-        private void Update_HexTileArrayPixelPositions(HexMapEngine.Structures.HexTile poHexTile,
+        public void Update_HexTileArrayPixelPositions(HexMapEngine.Structures.HexTile poHexTile,
                                                         int piCalculatedMapTileX,
                                                         int piCalculatedMapTileY)
         {

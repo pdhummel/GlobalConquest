@@ -56,6 +56,7 @@ namespace GlobalConquest.HexMapEngine.Structures
         public static float X_ZOOM_FACTOR = 1;
         public static float Y_ZOOM_FACTOR = 1;
 
+
         public static int ACTUAL_TILE_HEIGHT_IN_PIXELS
         {
 
