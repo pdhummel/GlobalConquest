@@ -120,7 +120,7 @@ public class Map
             }
         }
     }
-        
+
 
     private string determineBiome(float elevation, float moisture)
     {
@@ -282,6 +282,145 @@ public class Map
             }
         }
         return hashCode;
+    }
+
+
+    public Dictionary<string, MapHex> getSurroundingHexes(MapHex mapHex)
+    {
+        Dictionary<string, MapHex> hexes = new Dictionary<string, MapHex>();
+        // is nw/ne or sw/se on the same row?
+        bool northEastAndWestSameRow = true;
+        // 0,0->S; 1,0->N; 2,1->S; 3,1->N
+        if (mapHex.X % 2 == 0)
+        {
+            northEastAndWestSameRow = false;
+        }
+        if (mapHex.Y - 1 >= 0)
+        {
+            MapHex northHex = Hexes[mapHex.Y - 1, mapHex.X];
+            hexes["north"] = northHex;
+        }
+        if (mapHex.Y + 1 < Y)
+        {
+            MapHex southHex = Hexes[mapHex.Y + 1, mapHex.X];
+            hexes["south"] = southHex;
+        }
+        MapHex northEastHex;
+        MapHex southEastHex;
+        MapHex southWestHex;
+        MapHex northWestHex;
+        if (northEastAndWestSameRow)
+        {
+            if (mapHex.X + 1 < X)
+            {
+                northEastHex = Hexes[mapHex.Y, mapHex.X + 1];
+                hexes["northEast"] = northEastHex;
+            }
+            if (mapHex.Y + 1 < Y && mapHex.X + 1 < X)
+            {
+                southEastHex = Hexes[mapHex.Y + 1, mapHex.X + 1];
+                hexes["southEast"] = southEastHex;
+            }
+            if (mapHex.Y + 1 < Y && mapHex.X - 1 >= 0)
+            {
+                southWestHex = Hexes[mapHex.Y + 1, mapHex.X - 1];
+                hexes["southWest"] = southWestHex;
+            }
+            if (mapHex.X - 1 >= 0)
+            {
+                northWestHex = Hexes[mapHex.Y, mapHex.X - 1];
+                hexes["northWest"] = northWestHex;
+            }
+        }
+        else
+        {
+            if (mapHex.Y - 1 >= 0 && mapHex.X + 1 < X)
+            {
+                northEastHex = Hexes[mapHex.Y - 1, mapHex.X + 1];
+                hexes["northEast"] = northEastHex;
+            }
+            if (mapHex.X + 1 < X)
+            {
+                southEastHex = Hexes[mapHex.Y, mapHex.X + 1];
+                hexes["southEast"] = southEastHex;
+            }
+            if (mapHex.X - 1 >= 0)
+            {
+                southWestHex = Hexes[mapHex.Y, mapHex.X - 1];
+                hexes["southWest"] = southWestHex;
+            }
+            if (mapHex.Y - 1 >= 0 && mapHex.X - 1 >= 0)
+            {
+                northWestHex = Hexes[mapHex.Y - 1, mapHex.X - 1];
+                hexes["northWest"] = northWestHex;
+            }
+        }
+        if (mapHex.X - 1 >= 0)
+        {
+            MapHex westHex = Hexes[mapHex.Y, mapHex.X - 1];
+            hexes["west"] = westHex;
+        }
+        if (mapHex.X + 1 < X)
+        {
+            MapHex eastHex = Hexes[mapHex.Y, mapHex.X + 1];
+            hexes["east"] = eastHex;
+        }
+        return hexes;
+    }
+
+    public List<MapHex> getSurroundingHexesList(MapHex mapHex)
+    {
+        List<MapHex> hexes = new List<MapHex>();
+        Dictionary<string, MapHex> hexesMap = getSurroundingHexes(mapHex);
+        if (hexesMap.ContainsKey("north"))
+            hexes.Add(hexesMap["north"]);
+        if (hexesMap.ContainsKey("south"))
+            hexes.Add(hexesMap["south"]);
+        if (hexesMap.ContainsKey("northEast"))
+            hexes.Add(hexesMap["northEast"]);
+        if (hexesMap.ContainsKey("northWest"))
+            hexes.Add(hexesMap["northWest"]);
+        if (hexesMap.ContainsKey("southEast"))
+            hexes.Add(hexesMap["southEast"]);
+        if (hexesMap.ContainsKey("southWest"))
+            hexes.Add(hexesMap["southWest"]);
+        return hexes;
+    }
+
+    public HashSet<MapHex> getMapHexesInRange(MapHex mapHex, int range)
+    {
+        HashSet<MapHex> hexes = new HashSet<MapHex>();
+        Dictionary<int, HashSet<MapHex>> checkedHexes = new Dictionary<int, HashSet<MapHex>>();
+        return getMapHexesInRange(hexes, checkedHexes, mapHex, range);
+    }
+
+    public HashSet<MapHex> getMapHexesInRange(HashSet<MapHex> hexes, Dictionary<int, HashSet<MapHex>> checkedHexes, MapHex mapHex, int range)
+    {
+        //Console.WriteLine("getMapHexesInRange(): mapHex=" + mapHex.X + "," + mapHex.Y + ", range=" + range + ", count=" + hexes.Count);
+
+        if (range > 0)
+        {
+            if (!checkedHexes.ContainsKey(range))
+            {
+                HashSet<MapHex> setHexes = new HashSet<MapHex>();
+                checkedHexes[range] = setHexes;
+            }
+            List<MapHex> surroundingHexes = getSurroundingHexesList(mapHex);
+            //Console.WriteLine("getMapHexesInRange(): surroundingHexes=" + surroundingHexes.Count);
+            foreach (MapHex nextHex in surroundingHexes)
+            {
+                //Console.WriteLine("getMapHexesInRange(): surroundingHex=" + nextHex.X + "," + nextHex.Y);
+                if (!checkedHexes[range].Contains(nextHex))
+                {
+                    HashSet<MapHex> newHexes = getMapHexesInRange(hexes, checkedHexes, nextHex, range - 1);
+                    hexes.Add(nextHex);
+                }
+            }
+            checkedHexes[range].Add(mapHex);
+            hexes.Add(mapHex);
+        }
+        
+        return hexes;
     }
 
 }

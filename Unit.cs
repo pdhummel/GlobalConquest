@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using GlobalConquest.Actions;
 
@@ -7,7 +8,7 @@ namespace GlobalConquest;
 public class Unit
 {
     public Faction Owner { get; set; }
-    public string UnitType { get; set; } = "infantry";
+    public string UnitType { get; set; }
     public string Color { get; set; }
 
     public int Y { get; set; }
@@ -30,21 +31,36 @@ public class Unit
     public int NormalSteps { get; set; } = 0;
     public int BlitzSteps { get; set; } = 0;
     public int SneakSteps { get; set; } = 0;
-    public Dictionary<string, int> MovementCostThroughTerrain = new Dictionary<string, int>();
+    public Dictionary<string, int> MovementCostThroughTerrain { get; set; } = new Dictionary<string, int>();
     public int AttackDamagePoints { get; set; }
     public int RemainingDamagePoints { get; set; }
 
-    public bool IsVisibleToAmber { get; set; } = true;
-    public bool IsVisibleToOchre { get; set; } = true;
-    public bool IsVisibleToMagenta { get; set; } = true;
-    public bool IsVisibleToCyan { get; set; } = true;
+
+    public Dictionary<string, bool> Visibility { get; set; } = new Dictionary<string, bool>();
 
     public List<UnitAction> ActionQueue { get; set; } = new List<UnitAction>();
 
 
     public Unit()
     {
+    }
 
+    public void setBaseVisibility()
+    {
+        Visibility["amber"] = false;
+        Visibility["magenta"] = false;
+        Visibility["ocher"] = false;
+        Visibility["cyan"] = false;
+        if (Color != null)
+            Visibility[Color] = true;
+    }
+
+    public void setOmniVisibility()
+    {
+        Visibility["amber"] = true;
+        Visibility["magenta"] = true;
+        Visibility["ocher"] = true;
+        Visibility["cyan"] = true;
     }
 
     public UnitAction getNextAction()
@@ -78,10 +94,10 @@ public class Unit
                 Color == other.Color &&
                 Y == other.Y &&
                 X == other.X &&
-                IsVisibleToAmber == other.IsVisibleToAmber &&
-                IsVisibleToCyan == other.IsVisibleToCyan &&
-                IsVisibleToMagenta == other.IsVisibleToMagenta &&
-                IsVisibleToOchre == other.IsVisibleToOchre;
+                Visibility["amber"] == other.Visibility["amber"] &&
+                Visibility["cyan"] == other.Visibility["cyan"] &&
+                Visibility["magenta"] == other.Visibility["magenta"] &&
+                Visibility["ocher"] == other.Visibility["ocher"];
         }
         //Console.WriteLine("Unit.Equals(): false");
         return false;
@@ -90,7 +106,7 @@ public class Unit
     public override int GetHashCode()
     {
         // Combine hash codes of relevant properties
-        return HashCode.Combine(Owner+Color, UnitType, Y, X, IsVisibleToAmber, IsVisibleToCyan, IsVisibleToMagenta, IsVisibleToOchre); 
+        return HashCode.Combine(Owner+Color, UnitType, Y, X, Visibility); 
     }
 
 }

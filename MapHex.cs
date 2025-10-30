@@ -9,10 +9,7 @@ public class MapHex
     public int Y { get; set; }
     public int X { get; set; }
 
-    public bool IsVisibleToAmber { get; set; } = true;
-    public bool IsVisibleToOchre { get; set; } = true;
-    public bool IsVisibleToMagenta { get; set; } = true;
-    public bool IsVisibleToCyan { get; set; } = true;
+    public Dictionary<string, bool> Visibility = new Dictionary<string, bool>();
 
     public List<Unit> Units { get; set; } = new List<Unit>();
 
@@ -20,7 +17,10 @@ public class MapHex
 
     public MapHex()
     {
-
+        Visibility["amber"] = true;
+        Visibility["magenta"] = true;
+        Visibility["ocher"] = true;
+        Visibility["cyan"] = true;
     }
 
     public Unit getUnit()
@@ -57,10 +57,10 @@ public class MapHex
             return Terrain == other.Terrain &&
                 Y == other.Y &&
                 X == other.X &&
-                IsVisibleToAmber == other.IsVisibleToAmber &&
-                IsVisibleToCyan == other.IsVisibleToCyan &&
-                IsVisibleToMagenta == other.IsVisibleToMagenta &&
-                IsVisibleToOchre == other.IsVisibleToOchre;
+                Visibility["amber"] == other.Visibility["amber"] &&
+                Visibility["cyan"] == other.Visibility["cyan"] &&
+                Visibility["magenta"] == other.Visibility["magenta"] &&
+                Visibility["ocher"] == other.Visibility["ocher"];
         }
         //Console.WriteLine("MapHex.Equals(): false");
         return false;
@@ -73,7 +73,7 @@ public class MapHex
         int unitHashCode = 0;
         if (unit != null)
             unitHashCode = unit.GetHashCode();
-        return HashCode.Combine(Terrain, Y, X, IsVisibleToAmber, IsVisibleToCyan, IsVisibleToMagenta, IsVisibleToOchre, unitHashCode); 
+        return HashCode.Combine(Terrain, Y, X, Visibility, unitHashCode); 
     }
 
 }

@@ -17,7 +17,7 @@ public class PlayGameMenu
     Label playGameMenuLabel;
     VerticalMenu playGameVerticalMenu;
     HostGameScreen hostGameScreen;
-    MenuItem omniscientMenuItem;
+    MenuItem customMenuItem;
     MenuItem backToMainConquestMenuItem;
     Image gcImage = new Image();
 
@@ -41,12 +41,12 @@ public class PlayGameMenu
         playGameMenuLabel.Text = "Play Game";
 
         playGameVerticalMenu.Id = "playGameVerticalMenu";
-        omniscientMenuItem = new MenuItem();
-        omniscientMenuItem.Id = "omniscientMenuItem";
-        omniscientMenuItem.Text = "Omniscient";
-        omniscientMenuItem.Selected += omniscientMenuItemSelected;
-        omniscientMenuItem.Menu = playGameVerticalMenu;
-        playGameVerticalMenu.Items.Add(omniscientMenuItem);
+        customMenuItem = new MenuItem();
+        customMenuItem.Id = "customMenuItem";
+        customMenuItem.Text = "Custom Game";
+        customMenuItem.Selected += customMenuItemSelected;
+        customMenuItem.Menu = playGameVerticalMenu;
+        playGameVerticalMenu.Items.Add(customMenuItem);
         backToMainConquestMenuItem = new MenuItem();
         backToMainConquestMenuItem.Id = "backToMainConquestMenuItem";
         backToMainConquestMenuItem.Text = "Back to Main Conquest menu";
@@ -70,7 +70,7 @@ public class PlayGameMenu
         playGameMenuLabel.Visible = true;
         playGameVerticalMenu.Visible = true;
 
-        //omniscientMenuItem.Selected += omniscientMenuItemSelected;
+        //customMenuItem.Selected += customMenuItemSelected;
         //backToMainConquestMenuItem.Selected += backToMainConquestMenuItemSelected;
     }
 
@@ -84,7 +84,7 @@ public class PlayGameMenu
         playGameVerticalMenu.RemoveFromParent();
     }
 
-    private void omniscientMenuItemSelected(object? sender, EventArgs e)
+    private void customMenuItemSelected(object? sender, EventArgs e)
     {
         this.hide();
         hostGameScreen.show();

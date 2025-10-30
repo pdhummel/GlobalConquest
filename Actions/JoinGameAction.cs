@@ -37,6 +37,6 @@ public class JoinGameAction : PlayerAction
             }
         }
         Player newPlayer = gameState.Players.AddPlayer(gameState, JoinGameValues.Name, faction.Color, true);
-        gameState.placeInitialUnit(newPlayer);
+        Unit unit = gameState.placeInitialUnit(newPlayer);
     }
 }

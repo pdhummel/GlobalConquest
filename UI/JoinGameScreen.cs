@@ -223,6 +223,7 @@ public class JoinGameScreen
         joinGameValues.FactionName = ((Label)fightingForceComboView.SelectedItem).Text;
         gcGame.Client.JoinGameValues = joinGameValues;
         gcGame.Client.Connect(joinGameValues, "GlobalConquest");
+        gcGame.MyJoinGameValues = joinGameValues;
         mainGameScreen.show();
 
     }

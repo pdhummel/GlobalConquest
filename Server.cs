@@ -88,7 +88,6 @@ public class Server
         {
             int count = server.ConnectedPeerList.Count;
             for (int i=0; i<count; i++)
-            //foreach (NetPeer peer in server.ConnectedPeerList)
             {
                 NetPeer peer = server.ConnectedPeerList[i];
                 //Console.WriteLine("sendGameState(): players=" + gameState.Players.playerNameToPlayer.Count);
@@ -104,12 +103,9 @@ public class Server
         {
             int count = server.ConnectedPeerList.Count;
             for (int i=0; i<count; i++)
-            //foreach (NetPeer peer in server.ConnectedPeerList)
             {
                 NetPeer peer = server.ConnectedPeerList[i];
                 sendGameStateAndMapHex(peer, x, y);
-                // TODO: fix this -- consider initialSync based on all clients
-                //initialSync = true;
             }
         }
     }
@@ -175,8 +171,6 @@ public class Server
         reader.Recycle(); // Free up the data reader
         PlayerAction? action =
                 JsonSerializer.Deserialize<PlayerAction>(jsonString);
-        //Type type = Type.GetType(action.ClassType);
-        //dynamic subClassAction = Convert.ChangeType(action, type);
         PlayerAction subClassAction = action.makeSubclass();
         subClassAction.MessageAsJson = jsonString;
         MethodInfo executeMethod = subClassAction.GetType().GetMethod("deserializeAndExecute");

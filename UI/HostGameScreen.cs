@@ -32,6 +32,11 @@ public class HostGameScreen
     Button okButton;
     Button cancelButton;
     JoinGameScreen joinGameScreen;
+    Label visibilityLabel = new Label();
+    ComboView visibilityComboView = new ComboView();
+    Label executionLabel = new Label();
+    ComboView executionComboView = new ComboView();
+
 
 
     public HostGameScreen(PlayGameMenu playGameMenu, Game game, Grid grid)
@@ -85,7 +90,7 @@ public class HostGameScreen
 
         humanPlayersTextBox.Id = "humanPlayersTextBox";
         humanPlayersTextBox.Width = 50;
-        humanPlayersTextBox.Text = "2";
+        humanPlayersTextBox.Text = "1";
         humanPlayersTextBox.Border = new SolidBrush("#808000FF");
         humanPlayersTextBox.BorderThickness = new Thickness(2);
 
@@ -113,6 +118,59 @@ public class HostGameScreen
         mapWidthTextBox.Width = 50;
         mapWidthTextBox.Border = new SolidBrush("#808000FF");
         mapWidthTextBox.BorderThickness = new Thickness(2);
+
+        visibilityLabel.Id = "visibilityLabel";
+        visibilityLabel.Text = "visibility:";
+        visibilityLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
+        visibilityComboView.Id = "visibilityComboView";
+        visibilityComboView.Border = new SolidBrush("#808000FF");
+        visibilityComboView.BorderThickness = new Thickness(2);
+
+        Label omniLabel = new Label();
+        omniLabel.Text = "Omniscient";
+        Label chqLabel = new Label();
+        chqLabel.Text = "Command HQ";
+        Label fogLabel = new Label();
+        fogLabel.Text = "Fog of War";
+        Label sharedLabel = new Label();
+        sharedLabel.Text = "Share Terrain";
+        Label alliesLabel = new Label();
+        sharedLabel.Text = "Allies";
+        visibilityComboView.Widgets.Add(omniLabel);
+        visibilityComboView.Widgets.Add(chqLabel);
+        //visibilityComboView.Widgets.Add(fogLabel);
+        //visibilityComboView.Widgets.Add(sharedLabel);
+        //visibilityComboView.Widgets.Add(alliesLabel);
+        visibilityComboView.SelectedIndex = 0;
+
+
+        executionLabel.Id = "executionLabel";
+        executionLabel.Text = "execution:";
+        executionLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
+        executionComboView.Id = "executionComboView";
+        executionComboView.Border = new SolidBrush("#808000FF");
+        executionComboView.BorderThickness = new Thickness(2);
+
+/*
+immediate -- only one player needs to initiate
+timed grace -- timed after one player initiates
+timed -- seconds
+majority -- all but one needs to initiate
+infinite -- all need to initiate
+*/
+        Label immediateiLabel = new Label();
+        immediateiLabel.Text = "Immediate";
+        Label timedGraceLabel = new Label();
+        timedGraceLabel.Text = "Timed Grace";
+        Label TimedLabel = new Label();
+        TimedLabel.Text = "Timed";
+        Label quorumLabel = new Label();
+        quorumLabel.Text = "Quorum";
+        Label infiniteLabel = new Label();
+        infiniteLabel.Text = "Infinite";
+        executionComboView.Widgets.Add(immediateiLabel);
+        executionComboView.Widgets.Add(quorumLabel);
+        executionComboView.SelectedIndex = 0;
 
 
         cancelButton.Click += cancelButtonClicked;
@@ -160,6 +218,20 @@ public class HostGameScreen
         mapWidthPanel.Widgets.Add(mapWidthTextBox);
         mapWidthTextBox.Visible = true;
 
+        var visibilityPanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(visibilityPanel);
+        visibilityPanel.Widgets.Add(visibilityLabel);
+        visibilityLabel.Visible = true;
+        visibilityPanel.Widgets.Add(visibilityComboView);
+        visibilityComboView.Visible = true;
+
+        var executionPanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(executionPanel);
+        executionPanel.Widgets.Add(executionLabel);
+        executionLabel.Visible = true;
+        executionPanel.Widgets.Add(executionComboView);
+        executionComboView.Visible = true;
+
         var buttonsPanel = new HorizontalStackPanel { Spacing = 8 };
         verticalStackPanel.Widgets.Add(buttonsPanel);
         buttonsPanel.Widgets.Add(okButton);
@@ -184,6 +256,10 @@ public class HostGameScreen
         mapHeightTextBox.Visible = false;
         mapWidthLabel.Visible = false;
         mapWidthTextBox.Visible = false;
+        visibilityLabel.Visible = false;
+        visibilityComboView.Visible = false;
+        visibilityLabel.Visible = false;
+        executionComboView.Visible = false;
 
         hostSettingsLabel.RemoveFromParent();
         portLabel.RemoveFromParent();
@@ -198,6 +274,11 @@ public class HostGameScreen
         mapHeightTextBox.RemoveFromParent();
         mapWidthLabel.RemoveFromParent();
         mapWidthTextBox.RemoveFromParent();
+        visibilityLabel.RemoveFromParent();
+        visibilityComboView.RemoveFromParent();
+        executionLabel.RemoveFromParent();
+        executionComboView.RemoveFromParent();
+
 
     }
 
@@ -216,6 +297,8 @@ public class HostGameScreen
         gameSettings.Height = (Int32.Parse(mapHeightTextBox.Text));
         gameSettings.Width = (Int32.Parse(mapWidthTextBox.Text));
         gameSettings.NumberOfHumans = (Int32.Parse(humanPlayersTextBox.Text));
+        gameSettings.Visibility = ((Label)visibilityComboView.SelectedItem).Text;
+        gameSettings.ExecutionMode = ((Label)executionComboView.SelectedItem).Text;
         GlobalConquestGame gcGame = (GlobalConquestGame)game;
         gcGame.Server = new Server();
         gcGame.Server.StartAsHost(gameSettings, "GlobalConquest");

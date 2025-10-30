@@ -30,15 +30,22 @@ public class GameState
         Players = new Players();
     }
 
-    public void placeInitialUnit(Player player)
+    public Unit placeInitialUnit(Player player)
     {
-        //Player player = Client.GameState.Players.playerNameToPlayer[Client.ClientIdentifier];
         int width = GameSettings.Width;
         int height = GameSettings.Height;
 
         Unit unit = new Unit();
         unit.Color = player.FactionColor;
         unit.UnitType = "tank";
+        if ("Omniscient".Equals(GameSettings.Visibility))
+        {
+            unit.setOmniVisibility();
+        }
+        else
+        {
+            unit.setBaseVisibility();
+        }
         if (player.FactionColor.Equals("amber"))
             Map.placeUnit(unit, 0, 0);
         else if (player.FactionColor.Equals("ocher"))
@@ -47,6 +54,7 @@ public class GameState
             Map.placeUnit(unit, width - 1, height - 1);
         else if (player.FactionColor.Equals("magenta"))
             Map.placeUnit(unit, 0, height - 1);
+        return unit;
     }
 
 }

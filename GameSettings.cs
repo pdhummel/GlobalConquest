@@ -12,6 +12,10 @@ public class GameSettings
     public int NumberOfTurnsForGame { get; set; } = -1;
     public int NumberOfRoundsPerTurn { get; set; } = 10;
 
+    public string Visibility { get; set; }
+
+    public string ExecutionMode { get; set; }
+
     public GameSettings()
     {
 

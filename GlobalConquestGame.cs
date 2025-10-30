@@ -38,6 +38,7 @@ public class GlobalConquestGame : Game
     MapHex? lastSelectedHex;
     Unit? lastSelectedUnit;
     public bool MoveMode { get; set; } = false;
+    public JoinGameValues MyJoinGameValues { get; set; }
 
     public GlobalConquestGame()
     {
@@ -117,7 +118,6 @@ public class GlobalConquestGame : Game
         hexMapEngineAdapter.LoadContent();
         miniMapHexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
         miniMapHexMapEngineAdapter.LoadContent();
-        //placeInitialUnit();
         
 
         if (MainGameScreen != null && MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
@@ -132,6 +132,7 @@ public class GlobalConquestGame : Game
         }
     }
 
+    // This logic was moved server side.
     private void placeInitialUnit()
     {
         Player player = Client.GameState.Players.playerNameToPlayer[Client.ClientIdentifier];
@@ -145,7 +146,7 @@ public class GlobalConquestGame : Game
         else if (player.FactionColor.Equals("cyan"))
             hexMapEngineAdapter.placeUnit(width - 1, height - 1, "tank", "cyan");
         else if (player.FactionColor.Equals("magenta"))
-            hexMapEngineAdapter.placeUnit(0, height-1, "tank", "magenta");
+            hexMapEngineAdapter.placeUnit(0, height - 1, "tank", "magenta");
     }
     
     protected override void Update(GameTime gameTime)
@@ -160,7 +161,6 @@ public class GlobalConquestGame : Game
              currentMilliseconds - lastMilliseconds > 50)
         {
             MainGameScreen.HideContextMenu();
-            //MoveMode = false;
             hexMapEngineAdapter?.scrollUp();
         }
         if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down) &&
@@ -168,7 +168,6 @@ public class GlobalConquestGame : Game
              currentMilliseconds - lastMilliseconds > 50)
         {
             MainGameScreen.HideContextMenu();
-            //MoveMode = false;
             hexMapEngineAdapter?.scrollDown();
         }
         if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left) &&
@@ -176,7 +175,6 @@ public class GlobalConquestGame : Game
              currentMilliseconds - lastMilliseconds > 50)
         {
             MainGameScreen.HideContextMenu();
-            //MoveMode = false;
             hexMapEngineAdapter?.scrollLeft();
         }
         if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right) &&
@@ -184,7 +182,6 @@ public class GlobalConquestGame : Game
              currentMilliseconds - lastMilliseconds > 50)
         {
             MainGameScreen.HideContextMenu();
-            //MoveMode = false;
             hexMapEngineAdapter?.scrollRight();
         }
         previousKeyboardState = currentKeyboardState; 
@@ -219,7 +216,6 @@ public class GlobalConquestGame : Game
                     worldPosition.Y -= (int)MainGameScreen.MapPanel.Height/2;
                     Vector2 currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
                     MainGameScreen.HideContextMenu();
-                    //MoveMode = false;
                     hexMapEngineAdapter.scrollToPosition((int)worldPosition.Y, (int)currentPosition.X);
                     currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
                     hexMapEngineAdapter.scrollToPosition((int)currentPosition.Y, (int)worldPosition.X);
@@ -227,7 +223,7 @@ public class GlobalConquestGame : Game
             }
         }
 
-        // TODO: Add your update logic here
+        // Add your update logic here
         if (Client != null && Client.isLoadContentComplete)
         {
             hexMapEngineAdapter?.Process_UpdateEvent(gameTime);
@@ -293,7 +289,6 @@ public class GlobalConquestGame : Game
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Clear(Color.Black);
             Globals.spriteBatch?.Begin(SpriteSortMode.BackToFront, null, null, null, null, null, transformMatrix: camera.GetViewMatrix());
-            //Globals.spriteBatch?.Begin(transformMatrix: camera.GetViewMatrix());
             int maxPixelsX = (int)this.MainGameScreen.MapPanel.Width - 72;
             int maxPixelsY = (int)this.MainGameScreen.MapPanel.Height - 72;
             hexMapEngineAdapter?.Process_DrawEvent(gameTime, maxPixelsX, maxPixelsY);
@@ -310,9 +305,7 @@ public class GlobalConquestGame : Game
             Globals.spriteBatch?.End();
             SpriteBatch miniMapSpriteBatch = new SpriteBatch(GraphicsDevice);
             miniMapSpriteBatch.Begin();
-            //hexMapEngineAdapter.setYPixelOffset(0);
             miniMapSpriteBatch.Draw(miniMapRenderTarget2D, miniMapRectangle, Color.White);
-            //hexMapEngineAdapter.setYPixelOffset(24);
             miniMapSpriteBatch.End();
         }
 

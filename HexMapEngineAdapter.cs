@@ -211,10 +211,21 @@ class HexMapEngineAdapter
                 if (unit != null)
                 {
                     string unitId = unit.Color + "-" + unit.UnitType;
-                    drawUnitAtHex(liY, liX, unitId);
+                    Player player = identifySelf();
+                    if (unit.Visibility[player.FactionColor])
+                    {
+                        drawUnitAtHex(liY, liX, unitId);
+                    }
                 }
             }
         }
+    }
+
+    private Player identifySelf()
+    {
+        //string myName = gcGame.MyJoinGameValues.Name;
+        Player player = gcGame.Client.GameState.Players.playerNameToPlayer[gcGame.Client.ClientIdentifier];
+        return player;
     }
 
     public void adjustZoom(float zoom)
