@@ -37,6 +37,7 @@ public class Unit
 
 
     public Dictionary<string, bool> Visibility { get; set; } = new Dictionary<string, bool>();
+    public Dictionary<string, int> RoundsToBeSeen { get; set; } = new Dictionary<string, int>();
 
     public List<UnitAction> ActionQueue { get; set; } = new List<UnitAction>();
 

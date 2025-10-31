@@ -37,7 +37,7 @@ public class GameState
 
         Unit unit = new Unit();
         unit.Color = player.FactionColor;
-        unit.UnitType = "tank";
+        unit.UnitType = "comcen";
         if ("Omniscient".Equals(GameSettings.Visibility))
         {
             unit.setOmniVisibility();

@@ -102,6 +102,24 @@ class HexMapEngineAdapter
         Texture2D cyanTank = game.Content.Load<Texture2D>("cyan-tank-48x48");
         units["cyan-tank"] = cyanTank;
 
+        Texture2D magentaInfantry = game.Content.Load<Texture2D>("magenta-infantry-48x48");
+        units["magenta-infantry"] = magentaInfantry;
+        Texture2D amberInfantry = game.Content.Load<Texture2D>("amber-infantry-48x48");
+        units["amber-infantry"] = amberInfantry;
+        Texture2D ocherInfantry = game.Content.Load<Texture2D>("ocher-infantry-48x48");
+        units["ocher-infantry"] = ocherInfantry;
+        Texture2D cyanInfantry = game.Content.Load<Texture2D>("cyan-infantry-48x48");
+        units["cyan-infantry"] = cyanInfantry;
+
+        Texture2D magentaComcen = game.Content.Load<Texture2D>("magenta-comcen-48x48");
+        units["magenta-comcen"] = magentaComcen;
+        Texture2D amberComcen = game.Content.Load<Texture2D>("amber-comcen-48x48");
+        units["amber-comcen"] = amberComcen;
+        Texture2D ocherComcen = game.Content.Load<Texture2D>("ocher-comcen-48x48");
+        units["ocher-comcen"] = ocherComcen;
+        Texture2D cyanComcen = game.Content.Load<Texture2D>("cyan-comcen-48x48");
+        units["cyan-comcen"] = cyanComcen;
+
 
         Console.WriteLine("HexMapEngineAdapter.LoadContent(): hexHeight=" + hexHeight + ", hexWidth=" + hexWidth);
         updateMap();

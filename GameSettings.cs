@@ -10,7 +10,8 @@ public class GameSettings
 
     public int Width { get; set; }
     public int NumberOfTurnsForGame { get; set; } = -1;
-    public int NumberOfRoundsPerTurn { get; set; } = 10;
+    // Each turn has eight rounds (each round gives each unit a chance to move and/or fire).
+    public int NumberOfRoundsPerTurn { get; set; } = 8;
 
     public string Visibility { get; set; }
 

@@ -127,8 +127,28 @@ public class ExecuteAction : PlayerAction
             addStepsForUnit(server, unit);
             scanUnits(server, unit);
             scanTerrain(server, unit);
-            moveUnit(server, unit);            
+            moveUnit(server, unit);
+            decrementVisibility(unit);
             server.sendGameStateAndMapHex(unit.X, unit.Y);
+        }
+    }
+    
+    private void decrementVisibility(Unit unit)
+    {
+        List<string> colors = ["amber", "magenta", "cyan", "ocher"];
+        foreach (string color in colors)
+        {
+            if (!unit.RoundsToBeSeen.ContainsKey(color))
+                unit.RoundsToBeSeen[color] = 0;
+            unit.RoundsToBeSeen[color] -= 1;
+            if (unit.RoundsToBeSeen[color] < 0)
+            {
+                unit.RoundsToBeSeen[color] = 0;
+                if (!color.Equals(unit.Color))
+                {
+                    unit.Visibility[color] = false;
+                }
+            }            
         }
     }
 
@@ -169,8 +189,6 @@ public class ExecuteAction : PlayerAction
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
         UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
-        //unitType.DiscoveryRange   // discover terrain
-        //unitType.ScanningRange    // spot enemy units
         HashSet<MapHex> hexesToScanForUnits = map.getMapHexesInRange(mapHex, unitType.ScanningRange);
         //Console.WriteLine("hexes to scan=" + hexesToScanForUnits.Count);
         foreach (MapHex hex in hexesToScanForUnits)
@@ -178,13 +196,25 @@ public class ExecuteAction : PlayerAction
             Unit hexUnit = hex.getUnit();
             if (hexUnit != null)
             {
-                // TODO: unit visibility has a timer
-
+                // Unit visibility has a timer
+                // Subs have special scanning rules. They can't be spotted by planes, spies or 
+                // any other unit until they attack. 
+                // However, once a sub is spotted it stays "seen" 
+                // at the normal range of the "seeing" unit 
+                // (e.g., 6 for carriers and Comcens, 5 for battleships) 
+                // but for a shorter period of time (only 2 rounds, which is 
+                //considerably shorter than the 8 rounds for all other units). 
                 hexUnit.Visibility[unit.Color] = true;
+                hexUnit.RoundsToBeSeen[unit.Color] = 8;
+                if ("sub".Equals(hexUnit.UnitType) || "submarine".Equals(hexUnit.UnitType))
+                {
+                    hexUnit.RoundsToBeSeen[unit.Color] = 2;
+                }
                 // TODO: logic for subs:
                 // Sub scanning range is reduced to 3 if target not moving. 
                 // Subs can only be spotted at a range of 1 if they are stationary or 
-                // if the scanning unit is moving regardless of unit's normal range.                
+                // if the scanning unit is moving regardless of unit's normal range.   
+
             }
         }
 
@@ -195,10 +225,8 @@ public class ExecuteAction : PlayerAction
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
         UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
-        //unitType.DiscoveryRange   // discover terrain
-        //unitType.ScanningRange    // spot enemy units
         HashSet<MapHex> hexesToScan = map.getMapHexesInRange(mapHex, unitType.DiscoveryRange);
-        Console.WriteLine("hexes to scan=" + hexesToScan.Count);
+        //Console.WriteLine("hexes to scan=" + hexesToScan.Count);
         foreach (MapHex hex in hexesToScan)
         {
             hex.Visibility[unit.Color] = true;
