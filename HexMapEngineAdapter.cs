@@ -227,7 +227,7 @@ class HexMapEngineAdapter
             for (int liX = 0; liX < hexWidth; liX++)
             {
                 Unit unit = hexes[liY, liX].getUnit();
-                if (unit != null)
+                if (unit != null && unit.StrengthPoints > 0)
                 {
                     string unitId = unit.Color + "-" + unit.UnitType;
                     Player player = identifySelf();
@@ -443,7 +443,7 @@ class HexMapEngineAdapter
     }
 
 
-    private void drawUnitAtHex(int row, int column, string unit)
+    private void drawUnitAtHex(int row, int column, string unitTypeId)
     {
         Vector2 currentPixelPosition = this.getCurrentPixelPosition();
         Vector2 rowColVector = new Vector2(column, row);
@@ -482,7 +482,7 @@ class HexMapEngineAdapter
         }
 
         coSpriteBatch.Draw(
-                            units[unit],
+                            units[unitTypeId],
                             pixelVector,
                             null,
                             Color.White,

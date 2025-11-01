@@ -27,13 +27,9 @@ public class Unit
     public int RoundsToPause { get; set; } = 0;
 
 
-
     public int NormalSteps { get; set; } = 0;
     public int BlitzSteps { get; set; } = 0;
     public int SneakSteps { get; set; } = 0;
-    public Dictionary<string, int> MovementCostThroughTerrain { get; set; } = new Dictionary<string, int>();
-    public int AttackDamagePoints { get; set; }
-    public int RemainingDamagePoints { get; set; }
 
 
     public Dictionary<string, bool> Visibility { get; set; } = new Dictionary<string, bool>();
@@ -41,6 +37,8 @@ public class Unit
 
     public List<UnitAction> ActionQueue { get; set; } = new List<UnitAction>();
 
+    public int lastTargetUnitX { get; set; } = -1;
+    public int lastTargetUnitY { get; set; } = -1;
 
     public Unit()
     {

@@ -1,21 +1,22 @@
-# Global Conquest
+# Global Conquest 2025
 
-Global Conquest was a multi-player DOS game released in 1992.  
+Global Conquest 2025 is a redo of the multi-player DOS game released in 1992.  
 * https://en.wikipedia.org/wiki/Global_Conquest  
 * https://archive.org/details/globalconquestmanual/GlobalConquest-Manual/
 
-Global Conquest was a follow-up to the game Command HQ, https://en.wikipedia.org/wiki/Command_HQ, and also has its roots in the computer game Empire, https://en.wikipedia.org/wiki/Empire_(1977_video_game).
+The original was a follow-up to the game Command HQ, https://en.wikipedia.org/wiki/Command_HQ, and also has its roots in the computer game Empire, https://en.wikipedia.org/wiki/Empire_(1977_video_game).
 
-It is essentially a 4x game - "explore, expand, exploit, and exterminate".  
-Global Conquest was unique as it provided a modified real-time experience. 
+Global Conquest is essentially a 4x game - "explore, expand, exploit, and exterminate".  
+The original Global Conquest was unique in its game play, as it provided a modified real-time experience. 
 With turn based games, one player makes a move and then resolves their actions. Then the next player, in turn, does the same. Game state is only modified one player at a time. Without any timer constraints, players can take as much time as they like to make their best possible move. I.e., consider chess as an example.
-With real time games, players take actions simultaneously and those actions are resolved in real time. There are rewards for being fast thinking and having quick and efficient interactions with the user interface as this potentially means a player can get more done.
+With real time games, players take actions simultaneously and those actions are resolved in real time. There are rewards for thinking fast and having quick and efficient interactions with the user interface. This potentially means some players can get more done than their opponents if they are more dexterious.
 The Global Conquest hybrid approach allows for players to simultaneously plan their actions, but then action resolution happens separately without further player interaction during an execution phase. Different execution trigger configurations allow the game to more closely resemble a turn-based game or even approach a real-time game experience.
+The planning and execution phase system make it similar to tactical combat games like Baulder's Gate 3 or XCom, but abstracted to a strategic level.
 
-## Designed Deviations
-First off, this game is a Work-In-Progress. It doesn't really do anything at this point. It does not provide a playable experience.
+## Project Goals and Designed Deviations
+To recreate the hybrid, modified real-time experience of Global Conquest, so that is playable on modern computers over the internet.
 
-But, beyond that, the game is being designed with known differences from the original. 
+The game is being designed with known differences from the original. 
 * The use of a hex-based map instead of a square-based grid.
 * Unknown areas appear differently from sea tiles. The original conflated sea tiles and the unknown.
 * Will be playable on a modern operating system over the internet.
@@ -24,34 +25,58 @@ But, beyond that, the game is being designed with known differences from the ori
 ### Milestone 1
 * Combat with a limited number of unit types and a fixed number of units per side.
 * King of the Hill or Elimination victory condition.
-* A simple execution trigger.
+* Simple execution trigger.
 
 ### Milestone 2
-* Ability to produce units.
+* Add Burbs to map.
+* Ability to purchase and produce units.
+* Burb management screen.
 * Add support for all land and sea units.
-* Add support for all execution triggers.
-
+  * Transports with load and unload.
+  * Infantry dig-in.
+  * Submarine visibility handling.
+  * Spies.
+* Ship bombardment.
 
 ### Milestone 3
-* Support for airplanes.
+* Advanced movement -- waypoints.
+* Destinations screen.
+* Add unit repair logic.
+* Add unit attrition logic.
+* Unit context menu - blitz, sneak, pursue, etc.
 
 ### Milestone 4
-* AI opponents
+* Airplanes
+
 
 ### Milestone 5
-* Save and load game.
-* Resign.
+* AI opponents
+* Add natives
+* Add more victory conditions.
+  * Add number of turns game setting.
+  * Calculate victory points.
+* Add support for all execution triggers. (timers, etc.)
 
 ### Milestone 6
+* Host Game and Join Game setting validations.
+* Save and load game.
+* Resign.
+* Playback.
+
+### Milestone 7
 * Improved Economics.
 * Unit production by city.
 * Unit supported by city.
-* Oil and mineral resources.
-
-### Milestone 7
-* Events
+* Add oil and mineral resources.
 
 ### Milestone 8
+* Treaties
+
+### Milestone 9
+* Events
+
+### Milestone 10
+* UI improvements.
 * Network robustness.
 * Steam integration
 * Multi-platform support

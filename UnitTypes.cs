@@ -1,6 +1,6 @@
 public class UnitTypes
 {
-    public Dictionary<string, UnitType> UnitTypeMap = new Dictionary<string, UnitType>();
+    public Dictionary<string, UnitType> UnitTypeMap { get; set; } = new Dictionary<string, UnitType>();
     public UnitTypes()
     {
         defineInfantry();
@@ -103,6 +103,7 @@ public class UnitTypes
         unitType.FiringRangeToDefender["carrier"] = 1;
         unitType.FiringRangeToDefender["spy"] = 2;
         unitType.FiringRangeToDefender["com"] = 2;
+        unitType.FiringRangeToDefender["ComCen"] = 2;
         unitType.FiringRangeToDefender["comcen"] = 2;
         unitType.FiringRangeToDefender["CommandCenter"] = 2;
 
@@ -1306,6 +1307,7 @@ public class UnitTypes
         unitType.BattleDamageFromAttacker["spy"] = 0;
         unitType.BattleDamageFromAttacker["com"] = 10;
         unitType.BattleDamageFromAttacker["ComCen"] = 10;
+        unitType.BattleDamageFromAttacker["comcen"] = 10;
         unitType.BattleDamageFromAttacker["CommandCenter"] = 10;
 
         // row
@@ -1323,6 +1325,7 @@ public class UnitTypes
         unitType.BattleDamageToDefender["spy"] = 34;
         unitType.BattleDamageToDefender["com"] = 10;
         unitType.BattleDamageToDefender["ComCen"] = 10;
+        unitType.BattleDamageToDefender["comcen"] = 10;
         unitType.BattleDamageToDefender["CommandCenter"] = 10;
 
         unitType.NormalStepsAddedPerRound = 20;
@@ -1352,6 +1355,7 @@ public class UnitTypes
         unitType.FiringRangeFromAttacker["spy"] = 0;
         unitType.FiringRangeFromAttacker["com"] = 2;
         unitType.FiringRangeFromAttacker["ComCen"] = 2;
+        unitType.FiringRangeFromAttacker["comcen"] = 2;
         unitType.FiringRangeFromAttacker["CommandCenter"] = 2;
 
         // row
@@ -1369,6 +1373,7 @@ public class UnitTypes
         unitType.FiringRangeToDefender["spy"] = 2;
         unitType.FiringRangeToDefender["com"] = 2;
         unitType.FiringRangeToDefender["ComCen"] = 2;
+        unitType.FiringRangeToDefender["comcen"] = 2;
         unitType.FiringRangeToDefender["CommandCenter"] = 2;
 
         // only applies to infantry
@@ -1446,6 +1451,7 @@ public class UnitTypes
         unitType.BattleDamageFromAttacker["spy"] = 0;
         unitType.BattleDamageFromAttacker["com"] = 0;
         unitType.BattleDamageFromAttacker["ComCen"] = 0;
+        unitType.BattleDamageFromAttacker["comcen"] = 0;
         unitType.BattleDamageFromAttacker["CommandCenter"] = 0;
 
         // row
@@ -1463,6 +1469,7 @@ public class UnitTypes
         unitType.BattleDamageToDefender["spy"] = 0;
         unitType.BattleDamageToDefender["com"] = 0;
         unitType.BattleDamageToDefender["ComCen"] = 0;
+        unitType.BattleDamageToDefender["comcen"] = 0;
         unitType.BattleDamageToDefender["CommandCenter"] = 0;
 
         unitType.NormalStepsAddedPerRound = 0;
@@ -1492,6 +1499,7 @@ public class UnitTypes
         unitType.FiringRangeFromAttacker["spy"] = 0;
         unitType.FiringRangeFromAttacker["com"] = 0;
         unitType.FiringRangeFromAttacker["ComCen"] = 0;
+        unitType.FiringRangeFromAttacker["comcen"] = 0;
         unitType.FiringRangeFromAttacker["CommandCenter"] = 0;
 
         // row
@@ -1509,6 +1517,7 @@ public class UnitTypes
         unitType.FiringRangeToDefender["spy"] = 0;
         unitType.FiringRangeToDefender["com"] = 0;
         unitType.FiringRangeToDefender["ComCen"] = 0;
+        unitType.FiringRangeToDefender["comcen"] = 0;
         unitType.FiringRangeToDefender["CommandCenter"] = 0;
 
         // only applies to infantry

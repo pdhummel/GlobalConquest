@@ -65,8 +65,9 @@ public class Server
             server?.PollEvents();
             if (!initialSync && gameState.PlayerJoined.Count >= gameState.GameSettings.NumberOfHumans)
             {
-                ExecuteAction executeAction = new ExecuteAction();
-                executeAction.startGame(this);
+                GameLogic gameLogic = new GameLogic();
+                gameLogic.server = this;
+                gameLogic.startGame(this);
                 syncAllMapHexes();                
                 initialSync = true;
             }    

@@ -506,11 +506,13 @@ public class GlobalConquestGame : Game
                 if (unit.ActionQueue.Count > 0)
                 {
                     UnitAction unitAction = unit.getNextAction();
-                    Globals.spriteBatch?.DrawString(font, "Action: " + unitAction.Action + " " + unitAction.TargetX + "," + unitAction.TargetY, new Vector2(xPos, yPos + 56), Color.White);
+                    Globals.spriteBatch?.DrawString(font, "StrengthPoints: " + unit.StrengthPoints, new Vector2(xPos, yPos + 56), Color.White);
+                    Globals.spriteBatch?.DrawString(font, "Action: " + unitAction.Action + " " + unitAction.TargetX + "," + unitAction.TargetY, new Vector2(xPos, yPos + 70), Color.White);
                 }
                 else
                 {
-                    Globals.spriteBatch?.DrawString(font, "Action: ", new Vector2(xPos, yPos + 56), Color.White);
+                    Globals.spriteBatch?.DrawString(font, "StrengthPoints: " + unit.StrengthPoints, new Vector2(xPos, yPos + 56), Color.White);
+                    Globals.spriteBatch?.DrawString(font, "Action: ", new Vector2(xPos, yPos + 70), Color.White);
                 }
             }
         }
