@@ -4,11 +4,11 @@ namespace GlobalConquest;
 
 public class Map
 {
-    public MapHex[] FlattenedHexes { get; set; }
     public MapHex[,] Hexes { get; set; }
     public int Y { get; set; }
     public int X { get; set; }
     public string VisibilityMode { get; set; }
+    public Dictionary<string, MapHex> metroLocations { get; set; } = new Dictionary<string, MapHex>();
 
     public Map()
     {
@@ -23,43 +23,51 @@ public class Map
         amberMetro.Name = "Amber Array";
         amberMetro.Type = "metro";
         amberMetro.Color = "amber";
+        amberMetro.OwnerColor = "amber";
         Burb ocherMetro = new Burb();
         ocherMetro.Name = "Ocher Order";
         ocherMetro.Type = "metro";
         ocherMetro.Color = "ocher";
+        ocherMetro.OwnerColor = "ocher";
         Burb magentaMetro = new Burb();
         magentaMetro.Name = "Magenta Mob";
         magentaMetro.Type = "metro";
         magentaMetro.Color = "magenta";
+        magentaMetro.OwnerColor = "magenta";
         Burb cyanMetro = new Burb();
         cyanMetro.Name = "Cyan Circle";
         cyanMetro.Type = "metro";
         cyanMetro.Color = "cyan";
+        cyanMetro.OwnerColor = "cyan";
+
         Burb capital = new Burb();
         capital.Name = "Washington";
         capital.Type = "capital";
+        Hexes[y / 2, x / 2].Burb = capital;
 
-        FlattenedHexes = Utilities.FlattenArray(Hexes);
         Hexes[0, 1].Burb = amberMetro;
         Hexes[0, 1].makeVisibleToAll();
+        metroLocations["amber"] = Hexes[0, 1];
         Hexes[1, x - 2].Burb = ocherMetro;
         Hexes[1, x - 2].makeVisibleToAll();
+        metroLocations["ocher"] = Hexes[1, x - 2];
         Hexes[y - 2, 1].Burb = magentaMetro;
         Hexes[y - 2, 1].makeVisibleToAll();
+        metroLocations["magenta"] = Hexes[y - 2, 1];
         Hexes[y - 1, x - 2].Burb = cyanMetro;
         Hexes[y - 1, x - 2].makeVisibleToAll();
-        Hexes[y / 2, x / 2].Burb = capital;
+        metroLocations["cyan"] = Hexes[y - 1, x - 2];
+        
         
     }
 
-    public MapHex[,] unflattenHexes()
+    public MapHex getCapitalHex()
     {
-        return Utilities.UnflattenArray(FlattenedHexes, Y, X);
+        return Hexes[Y / 2, X / 2];
     }
-
-    public MapHex[,] unflattenHexes(int rows, int cols)
+    public MapHex getMetroHex(string color)
     {
-        return Utilities.UnflattenArray(FlattenedHexes, rows, cols);
+        return metroLocations[color];
     }
 
     public MapHex[,] generateMap(int height, int width)
@@ -101,6 +109,11 @@ public class Map
             unit.X = x;
             unit.Y = y;
         }
+    }
+
+    public void placeUnit(Unit unit, MapHex mapHex)
+    {
+        placeUnit(unit, mapHex.X, mapHex.Y);
     }
 
     public Unit? getUnitAtXY(int x, int y)
@@ -425,8 +438,98 @@ public class Map
             checkedHexes[range].Add(mapHex);
             hexes.Add(mapHex);
         }
-        
+
         return hexes;
     }
+    
+    public void checkBurbsForOwner()
+    {
+
+        for (int liY = 0; liY < Y; liY++)
+        {
+            for (int liX = 0; liX < X; liX++)
+            {
+                MapHex mapHex = Hexes[liY, liX];
+                checkBurbOwner(mapHex);
+            }
+        }
+    }
+    public void checkBurbOwner(MapHex mapHex)
+    {
+        //MapHex mapHex = Hexes[y, x];
+        if (mapHex.Burb != null)
+        {
+            if ("Capital".Equals(mapHex.Burb.Type) || "Metro".Equals(mapHex.Burb.Type) || "City".Equals(mapHex.Burb.Type) ||
+                "capital".Equals(mapHex.Burb.Type) || "metro".Equals(mapHex.Burb.Type) || "city".Equals(mapHex.Burb.Type))
+            {
+                string color = null;
+                Unit unit = mapHex.getUnit();
+                if (unit != null)
+                {
+                    color = unit.Color;
+                }
+                Dictionary<string, MapHex> surroundingHexes = getSurroundingHexes(mapHex);
+                if (surroundingHexes.ContainsKey("northWest"))
+                {
+                    MapHex northWestHex = surroundingHexes["northWest"];
+                    unit = northWestHex.getUnit();
+                    if (unit != null)
+                    {
+                        if (color == null)
+                            color = unit.Color;
+                        if (!color.Equals(unit.Color))
+                            return;
+                    }
+                }
+                if (surroundingHexes.ContainsKey("southWest"))
+                {
+                    MapHex southWestHex = surroundingHexes["southWest"];
+                    unit = southWestHex.getUnit();
+                    if (unit != null)
+                    {
+                        if (color == null)
+                            color = unit.Color;
+                        if (!color.Equals(unit.Color))
+                            return;
+                    }
+                }
+                if (surroundingHexes.ContainsKey("northEast"))
+                {
+                    MapHex northEastHex = surroundingHexes["northEast"];
+                    unit = northEastHex.getUnit();
+                    if (unit != null)
+                    {
+                        if (color == null)
+                            color = unit.Color;
+                        if (!color.Equals(unit.Color))
+                            return;
+                    }
+                }
+                if (surroundingHexes.ContainsKey("southEast"))
+                {
+                    MapHex southEastHex = surroundingHexes["southEast"];
+                    unit = southEastHex.getUnit();
+                    if (unit != null)
+                    {
+                        if (color == null)
+                            color = unit.Color;
+                        if (!color.Equals(unit.Color))
+                            return;
+                    }
+                }
+                if (color != null)
+                    mapHex.Burb.OwnerColor = color;
+            }
+            else
+            {
+                Unit unit = mapHex.getUnit();
+                if (unit != null)
+                {
+                    mapHex.Burb.OwnerColor = unit.Color;
+                }
+            }
+        }
+    }
+
 
 }

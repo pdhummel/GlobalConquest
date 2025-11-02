@@ -2,6 +2,7 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using GlobalConquest.Actions;
+using Microsoft.Xna.Framework;
 
 namespace GlobalConquest;
 
@@ -37,8 +38,9 @@ public class Unit
 
     public List<UnitAction> ActionQueue { get; set; } = new List<UnitAction>();
 
-    public int lastTargetUnitX { get; set; } = -1;
-    public int lastTargetUnitY { get; set; } = -1;
+    //public int lastTargetUnitX { get; set; } = -1;
+    //public int lastTargetUnitY { get; set; } = -1;
+    public Vector2 lastTargetUnitVector { get; set; } = new Vector2(-1, -1);
 
     public Unit()
     {

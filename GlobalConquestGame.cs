@@ -118,7 +118,7 @@ public class GlobalConquestGame : Game
         hexMapEngineAdapter.LoadContent();
         miniMapHexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
         miniMapHexMapEngineAdapter.LoadContent();
-        
+
 
         if (MainGameScreen != null && MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
         {
@@ -148,7 +148,7 @@ public class GlobalConquestGame : Game
         else if (player.FactionColor.Equals("magenta"))
             hexMapEngineAdapter.placeUnit(0, height - 1, "tank", "magenta");
     }
-    
+
     protected override void Update(GameTime gameTime)
     {
         long currentMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
@@ -184,7 +184,7 @@ public class GlobalConquestGame : Game
             MainGameScreen.HideContextMenu();
             hexMapEngineAdapter?.scrollRight();
         }
-        previousKeyboardState = currentKeyboardState; 
+        previousKeyboardState = currentKeyboardState;
 
         previousMouseState = currentMouseState;
         currentMouseState = Mouse.GetState();
@@ -212,8 +212,8 @@ public class GlobalConquestGame : Game
 
                 if (hexMapEngineAdapter != null)
                 {
-                    worldPosition.X -= (int)MainGameScreen.MapPanel.Width/2;
-                    worldPosition.Y -= (int)MainGameScreen.MapPanel.Height/2;
+                    worldPosition.X -= (int)MainGameScreen.MapPanel.Width / 2;
+                    worldPosition.Y -= (int)MainGameScreen.MapPanel.Height / 2;
                     Vector2 currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
                     MainGameScreen.HideContextMenu();
                     hexMapEngineAdapter.scrollToPosition((int)worldPosition.Y, (int)currentPosition.X);
@@ -230,7 +230,7 @@ public class GlobalConquestGame : Game
             handleLeftClickMouseOnMap();
             handleRightClickMouseOnMap();
         }
-        
+
         base.Update(gameTime);
     }
 
@@ -318,7 +318,7 @@ public class GlobalConquestGame : Game
             //Console.WriteLine(Client.ClientIdentifier + ", " + player.FactionColor + " ," + lastSelectedUnit.Color);
             if (lastSelectedUnit != null && lastSelectedUnit.Color == player.FactionColor)
                 MainGameScreen?.ShowContextMenu();
-        }        
+        }
         Desktop.Render();
 
         base.Draw(gameTime);
@@ -406,7 +406,7 @@ public class GlobalConquestGame : Game
 
     private void handleLeftClickMouseOnMap()
     {
-        
+
         if (currentMouseState.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released)
         {
             if (MainGameScreen.IsContextMenuVisible())
@@ -487,50 +487,12 @@ public class GlobalConquestGame : Game
 
     private void drawDetailsPanel()
     {
-        int xPos = MainGameScreen.DetailsPanel.Left + 1;
-        int yPos = MainGameScreen.DetailsPanel.Top + 1;
-        Globals.spriteBatch?.DrawString(font, "Mouse: " + currentMouseState.X.ToString().Trim() + "," + currentMouseState.Y.ToString().Trim(), new Vector2(xPos, yPos), Color.White);
-        if (lastSelectedHex != null && lastSelectedHex?.X != -1 && lastSelectedHex?.Y != -1)
-        {
-            Globals.spriteBatch?.DrawString(font, "Last Hex: " + lastSelectedHex?.X + "," + lastSelectedHex?.Y, new Vector2(xPos, yPos + 14), Color.White);
-            string terrain = lastSelectedHex?.Terrain;
-            if (lastSelectedHex?.Burb != null)
-            {
-                terrain = lastSelectedHex.Burb.Name + " (" + lastSelectedHex.Burb.Type + ")";
-            }
-            Globals.spriteBatch?.DrawString(font, "Terrain: " + terrain, new Vector2(xPos, yPos + 28), Color.White);
-            Unit unit = lastSelectedHex.getUnit();
-            if (unit != null)
-            {
-                Globals.spriteBatch?.DrawString(font, "Unit: " + unit.UnitType + "(" + unit.Color + ")", new Vector2(xPos, yPos + 42), Color.White);
-                if (unit.ActionQueue.Count > 0)
-                {
-                    UnitAction unitAction = unit.getNextAction();
-                    Globals.spriteBatch?.DrawString(font, "StrengthPoints: " + unit.StrengthPoints, new Vector2(xPos, yPos + 56), Color.White);
-                    Globals.spriteBatch?.DrawString(font, "Action: " + unitAction.Action + " " + unitAction.TargetX + "," + unitAction.TargetY, new Vector2(xPos, yPos + 70), Color.White);
-                }
-                else
-                {
-                    Globals.spriteBatch?.DrawString(font, "StrengthPoints: " + unit.StrengthPoints, new Vector2(xPos, yPos + 56), Color.White);
-                    Globals.spriteBatch?.DrawString(font, "Action: ", new Vector2(xPos, yPos + 70), Color.White);
-                }
-            }
-        }
-        else
-        {
-            Globals.spriteBatch?.DrawString(font, "Last Hex: ", new Vector2(xPos, yPos + 14), Color.White);
-            Globals.spriteBatch?.DrawString(font, "Terrain: ", new Vector2(xPos, yPos + 28), Color.White);
-            Globals.spriteBatch?.DrawString(font, "Unit: ", new Vector2(xPos, yPos + 42), Color.White);
-        }
-        if ("plan".Equals(Client.GameState.CurrentPhase))
-        {
-            Globals.spriteBatch?.DrawString(font, "Turn: " + (Client.GameState.CurrentTurn+1) + " " + Client.GameState.CurrentPhase, new Vector2(xPos, yPos + 70), Color.White);
-        }
-        else
-        {
-            Globals.spriteBatch?.DrawString(font, "Turn: " + (Client.GameState.CurrentTurn+1) + " " + Client.GameState.CurrentPhase + " round=" + (Client.GameState.CurrentRound+1), new Vector2(xPos, yPos + 70), Color.White);
-        }
-
+        MainGameScreen.drawDetailsPanel(this, lastSelectedHex, font, currentMouseState);
     }
 
+    public Player identifySelf()
+    {
+        Player player = Client.GameState.Players.playerNameToPlayer[Client.ClientIdentifier];
+        return player;
+    }
 }

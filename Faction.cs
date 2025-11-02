@@ -9,6 +9,7 @@ public class Faction
     public string Color { get; set; }
 
     public Player? Player { get; set; }
+    public bool HasComCen { get; set; } = false;
 
     public Faction(string name, string color)
     {

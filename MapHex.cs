@@ -58,6 +58,7 @@ public class MapHex
     }
 
 
+
     public override bool Equals(object obj)
     {
         if (obj is MapHex other)

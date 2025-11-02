@@ -242,9 +242,7 @@ class HexMapEngineAdapter
 
     private Player identifySelf()
     {
-        //string myName = gcGame.MyJoinGameValues.Name;
-        Player player = gcGame.Client.GameState.Players.playerNameToPlayer[gcGame.Client.ClientIdentifier];
-        return player;
+        return gcGame.identifySelf();
     }
 
     public void adjustZoom(float zoom)

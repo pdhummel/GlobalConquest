@@ -1,4 +1,5 @@
 using GlobalConquest.Actions;
+using Microsoft.Xna.Framework;
 namespace GlobalConquest;
 
 public class GameLogic
@@ -33,10 +34,7 @@ public class GameLogic
                     unit.NormalSteps = 0;
                     unit.BlitzSteps = 0;
                     unit.SneakSteps = 0;
-                    //if (unit.ActionQueue.Count > 0)
-                    //{
-                        units.Add(unit);
-                    //}
+                    units.Add(unit);
                 }
             }
         }
@@ -47,23 +45,31 @@ public class GameLogic
             gameState.CurrentRound = i;
             server.sendGameState();
             processRound(i, server, units);
+            if ("gameOver".Equals(gameState.CurrentPhase))
+                return;
             Thread.Sleep(1000);
         }
+        gameState.Map.checkBurbsForOwner();
+        checkForVictory(server);
 
-        foreach (Unit unit in units)
+        if (!"gameOver".Equals(server.gameState.CurrentPhase))
         {
-            scanUnits(server, unit);
-            scanTerrain(server, unit);
-        }
 
-        foreach (string key in gameState.PlayerExecutionReady.Keys)
-        {
-            gameState.PlayerExecutionReady[key] = false;
+            foreach (Unit unit in units)
+            {
+                scanUnits(server, unit);
+                scanTerrain(server, unit);
+            }
+
+            foreach (string key in gameState.PlayerExecutionReady.Keys)
+            {
+                gameState.PlayerExecutionReady[key] = false;
+            }
+            gameState.CurrentRound = 0;
+            server.gameState.CurrentTurn += 1;
+            server.gameState.CurrentPhase = "plan";
+            server.sendGameState();
         }
-        gameState.CurrentRound = 0;
-        server.gameState.CurrentTurn += 1;
-        server.gameState.CurrentPhase = "plan";
-        server.sendGameState();
     }
 
 
@@ -203,7 +209,7 @@ public class GameLogic
             HashSet<MapHex> hexesToScan = map.getMapHexesInRange(mapHex, scanRange);
             if (unitToAttack == null)
             {
-                Unit lastTargetUnit = map.getUnitAtXY(unit.lastTargetUnitX, unit.lastTargetUnitY);
+                Unit lastTargetUnit = map.getUnitAtXY((int)unit.lastTargetUnitVector.X, (int)unit.lastTargetUnitVector.Y);
                 // if already attacking a unit, keep attacking the same unit.
                 if (lastTargetUnit != null && lastTargetUnit.StrengthPoints > 0 && lastTargetUnit.Color != unit.Color)
                 {
@@ -228,7 +234,7 @@ public class GameLogic
                             UnitType targetUnitType = unitTypes.UnitTypeMap[hexUnit.UnitType];
                             int firingRangeFromAttacker = targetUnitType.FiringRangeFromAttacker[unit.UnitType];
                             int firingRangeToDefender = attackerUnitType.FiringRangeToDefender[hexUnit.UnitType];
-                            
+
                             if (scanRange <= firingRangeFromAttacker && scanRange <= firingRangeToDefender &&
                                 attackerUnitType.BattleDamageToDefender[hexUnit.UnitType] > 0 && hexUnit.Color != unit.Color)
                             {
@@ -238,6 +244,7 @@ public class GameLogic
                         }
 
                     }
+                    // As we expand the range from 1 to 4, we don't need to scan the hexes from the previous ranges.
                     previouslyScannedHexes.UnionWith(hexesToScan);
                 }
 
@@ -250,6 +257,7 @@ public class GameLogic
         }
         if (unitToAttack != null && unit.StrengthPoints > 0)
         {
+            Console.WriteLine("checkForCombat(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " attacking " + unitToAttack.UnitType + " at " + unitToAttack.X + "," + unitToAttack.Y);
             int damage = attackerUnitType.BattleDamageToDefender[unitToAttack.UnitType];
             unitToAttack.StrengthPoints -= damage;
             if (unitToAttack.StrengthPoints <= 0)
@@ -257,15 +265,19 @@ public class GameLogic
                 unitToAttack.StrengthPoints = 0;
                 MapHex deadUnitMapHex = map.Hexes[unitToAttack.Y, unitToAttack.X];
                 deadUnitMapHex.Units.RemoveAt(0);
+                if ("comcen".Equals(unitToAttack.UnitType))
+                {
+                    Faction faction = server.gameState.Factions.colorToFaction[unitToAttack.Color];
+                    faction.HasComCen = false;
+                }
             }
             else
             {
-                unit.lastTargetUnitX = unitToAttack.X;
-                unit.lastTargetUnitY = unitToAttack.Y;
+                unit.lastTargetUnitVector = new Vector2(unitToAttack.X, unitToAttack.Y);
             }
             server.sendGameStateAndMapHex(unitToAttack.X, unitToAttack.Y);
         }
-        
+
     }
 
     private void moveUnit(Server server, Unit unit)
@@ -294,7 +306,7 @@ public class GameLogic
             int fromX = unit.X;
             int fromY = unit.Y;
             MapHex nextMapHex = determineNextHexTowardsDestination(server, unit, unitAction);
-            Console.WriteLine("processRound(): unit at " + unit.X + "," + unit.Y + " to nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
+            Console.WriteLine("processRound(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " to nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
             //Console.WriteLine("processRound(): nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
             if (unit.X != nextMapHex.X || unit.Y != nextMapHex.Y)
             {
@@ -368,22 +380,77 @@ public class GameLogic
             int stepsRequired = unitType.StepsUsedByTerrain[mapHex.Terrain];
             if (unit.NormalSteps > stepsRequired)
             {
-                Console.WriteLine("determineNextHexTowardsDestination(): stepsAvailable=" + unit.NormalSteps + ", stepsRequired=" + stepsRequired);
+                Console.WriteLine("determineNextHexTowardsDestination(): " + unitType.Name + " at " + unit.X + "," + unit.Y + " stepsAvailable=" + unit.NormalSteps + ", stepsRequired=" + stepsRequired);
                 unit.NormalSteps -= stepsRequired;
                 mapHex = tmpMapHex;
             }
             else
             {
-                Console.WriteLine("determineNextHexTowardsDestination(): accumulating movement steps");
+                Console.WriteLine("determineNextHexTowardsDestination(): " + unitType.Name + " at " + unit.X + "," + unit.Y + " accumulating movement steps");
             }
         }
         else
         {
-            Console.WriteLine("determineNextHexTowardsDestination(): hex blocked by another unit");
+            Console.WriteLine("determineNextHexTowardsDestination(): hex " + tmpMapHex.X + "," + tmpMapHex.Y + " blocked by another unit");
         }
-
-
         return mapHex;
     }
 
+    private void checkForVictory(Server server)
+    {
+        //Console.WriteLine("checkForVictory(): enter");
+        GameState gameState = server.gameState;
+        int commandCenters = 0;
+        bool gameOver = false;
+
+        // Only 1 CommandCenter is left.
+        List<string> colors = ["amber", "magenta", "cyan", "ocher"];
+        foreach (string color in colors)
+        {
+            Faction faction = gameState.Factions.colorToFaction[color];
+            if (faction.HasComCen)
+                commandCenters += 1;
+        }
+        if (commandCenters <= 1 && gameState.GameSettings.NumberOfHumans > 1)
+        {
+            gameOver = true;
+            Console.WriteLine("checkForVictory(): commandCenters=" + commandCenters);
+        }
+        
+
+        // TODO: this is a temporary victory condition.
+        // Someone took the Capital.
+        if (!"grey".Equals(gameState.Map.getCapitalHex().Burb.OwnerColor))
+        {
+            gameOver = true;
+            Console.WriteLine("checkForVictory(): capital owner=" + gameState.Map.getCapitalHex().Burb.OwnerColor);
+        }
+
+
+        // Someone took all Metros.
+        Dictionary<string, int> metroOwnerCount = new Dictionary<string, int>();
+        foreach (string color in colors)
+        {
+            if (!metroOwnerCount.ContainsKey(color))
+            {
+                metroOwnerCount[color] = 0;
+            }
+            metroOwnerCount[gameState.Map.getMetroHex(color).Burb.OwnerColor] += 1;
+        }
+        foreach (string color in colors)
+        {
+            if (metroOwnerCount[color] >= 4)
+            {
+                Console.WriteLine("checkForVictory(): + metro owner=" + color);
+                gameOver = true;
+            }
+        }
+
+        if (gameOver)
+        {
+            server.gameState.CurrentPhase = "gameOver";
+            server.sendGameState();
+        }
+
+    }
 }
