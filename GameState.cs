@@ -23,6 +23,7 @@ public class GameState
     public string CurrentPhase { get; set; } = "plan";  // plan, execution, gameOver
     public int CurrentRound { get; set; } = 0;
     public UnitTypes UnitTypes { get; set; }
+    public Burbs Burbs { get; set; }
 
 
     public GameState()
@@ -30,6 +31,7 @@ public class GameState
         Factions = new Factions();
         UnitTypes = new UnitTypes();
         Players = new Players();
+        Burbs = new Burbs();
     }
 
     public Unit placeInitialUnit(Player player)

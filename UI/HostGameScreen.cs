@@ -36,7 +36,9 @@ public class HostGameScreen
     ComboView visibilityComboView = new ComboView();
     Label executionLabel = new Label();
     ComboView executionComboView = new ComboView();
-
+    
+    Label numberOfBurbsLabel = new Label();
+    TextBox numberOfBurbsTextBox= new TextBox();
 
 
     public HostGameScreen(PlayGameMenu playGameMenu, Game game, Grid grid)
@@ -118,6 +120,15 @@ public class HostGameScreen
         mapWidthTextBox.Width = 50;
         mapWidthTextBox.Border = new SolidBrush("#808000FF");
         mapWidthTextBox.BorderThickness = new Thickness(2);
+
+        numberOfBurbsLabel.Id = "numberOfBurbsLabel";
+        numberOfBurbsLabel.Text = "# burbs:";
+        numberOfBurbsLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
+        numberOfBurbsTextBox.Id = "numberOfBurbsTextBox";
+        numberOfBurbsTextBox.Text = "12";
+        numberOfBurbsTextBox.Width = 50;
+        numberOfBurbsTextBox.Border = new SolidBrush("#808000FF");
+        numberOfBurbsTextBox.BorderThickness = new Thickness(2);
 
         visibilityLabel.Id = "visibilityLabel";
         visibilityLabel.Text = "visibility:";
@@ -211,6 +222,13 @@ public class HostGameScreen
         mapWidthPanel.Widgets.Add(mapWidthTextBox);
         mapWidthTextBox.Visible = true;
 
+        var numberOfBurbsPanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(numberOfBurbsPanel);
+        numberOfBurbsPanel.Widgets.Add(numberOfBurbsLabel);
+        numberOfBurbsLabel.Visible = true;
+        numberOfBurbsPanel.Widgets.Add(numberOfBurbsTextBox);
+        numberOfBurbsTextBox.Visible = true;
+
         var visibilityPanel = new HorizontalStackPanel { Spacing = 8 };
         verticalStackPanel.Widgets.Add(visibilityPanel);
         visibilityPanel.Widgets.Add(visibilityLabel);
@@ -249,6 +267,8 @@ public class HostGameScreen
         mapHeightTextBox.Visible = false;
         mapWidthLabel.Visible = false;
         mapWidthTextBox.Visible = false;
+        numberOfBurbsLabel.Visible = false;
+        numberOfBurbsTextBox.Visible = false;
         visibilityLabel.Visible = false;
         visibilityComboView.Visible = false;
         visibilityLabel.Visible = false;
@@ -267,6 +287,8 @@ public class HostGameScreen
         mapHeightTextBox.RemoveFromParent();
         mapWidthLabel.RemoveFromParent();
         mapWidthTextBox.RemoveFromParent();
+        numberOfBurbsLabel.RemoveFromParent();
+        numberOfBurbsTextBox.RemoveFromParent();
         visibilityLabel.RemoveFromParent();
         visibilityComboView.RemoveFromParent();
         executionLabel.RemoveFromParent();
@@ -289,6 +311,7 @@ public class HostGameScreen
         gameSettings.Port = (Int32.Parse(portTextBox.Text));
         gameSettings.Height = (Int32.Parse(mapHeightTextBox.Text));
         gameSettings.Width = (Int32.Parse(mapWidthTextBox.Text));
+        gameSettings.NumberOfBurbs = (Int32.Parse(numberOfBurbsTextBox.Text));
         gameSettings.NumberOfHumans = (Int32.Parse(humanPlayersTextBox.Text));
         gameSettings.Visibility = ((Label)visibilityComboView.SelectedItem).Text;
         gameSettings.ExecutionMode = ((Label)executionComboView.SelectedItem).Text;

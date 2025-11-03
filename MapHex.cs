@@ -5,7 +5,7 @@ namespace GlobalConquest;
 
 public class MapHex
 {
-    public string Terrain { get; set; }
+    public string Terrain { get; set; } // sea, grass, mountain, swamp, forest
     public int Y { get; set; }
     public int X { get; set; }
 

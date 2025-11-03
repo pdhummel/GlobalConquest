@@ -8,7 +8,7 @@ public class Map
     public int Y { get; set; }
     public int X { get; set; }
     public string VisibilityMode { get; set; }
-    public Dictionary<string, MapHex> metroLocations { get; set; } = new Dictionary<string, MapHex>();
+    public Dictionary<string, MapHex> MetroLocations { get; set; } = new Dictionary<string, MapHex>();
 
     public Map()
     {
@@ -19,46 +19,65 @@ public class Map
         Y = y;
         X = x;
         Hexes = generateMap(y, x);
-        Burb amberMetro = new Burb();
-        amberMetro.Name = "Amber Array";
-        amberMetro.Type = "metro";
-        amberMetro.Color = "amber";
-        amberMetro.OwnerColor = "amber";
-        Burb ocherMetro = new Burb();
-        ocherMetro.Name = "Ocher Order";
-        ocherMetro.Type = "metro";
-        ocherMetro.Color = "ocher";
-        ocherMetro.OwnerColor = "ocher";
-        Burb magentaMetro = new Burb();
-        magentaMetro.Name = "Magenta Mob";
-        magentaMetro.Type = "metro";
-        magentaMetro.Color = "magenta";
-        magentaMetro.OwnerColor = "magenta";
-        Burb cyanMetro = new Burb();
-        cyanMetro.Name = "Cyan Circle";
-        cyanMetro.Type = "metro";
-        cyanMetro.Color = "cyan";
-        cyanMetro.OwnerColor = "cyan";
 
-        Burb capital = new Burb();
-        capital.Name = "Washington";
-        capital.Type = "capital";
-        Hexes[y / 2, x / 2].Burb = capital;
+    }
 
-        Hexes[0, 1].Burb = amberMetro;
-        Hexes[0, 1].makeVisibleToAll();
-        metroLocations["amber"] = Hexes[0, 1];
-        Hexes[1, x - 2].Burb = ocherMetro;
-        Hexes[1, x - 2].makeVisibleToAll();
-        metroLocations["ocher"] = Hexes[1, x - 2];
-        Hexes[y - 2, 1].Burb = magentaMetro;
-        Hexes[y - 2, 1].makeVisibleToAll();
-        metroLocations["magenta"] = Hexes[y - 2, 1];
-        Hexes[y - 1, x - 2].Burb = cyanMetro;
-        Hexes[y - 1, x - 2].makeVisibleToAll();
-        metroLocations["cyan"] = Hexes[y - 1, x - 2];
-        
-        
+    public void addBurbs(Burbs burbs, int desiredBurbCount)
+    {
+        addFixedBurbs(burbs);
+        Console.WriteLine("addBurbs(): desiredBurbCount=" + desiredBurbCount);
+        Random random = new Random();
+        int numberOfBurbs = 0;
+        int tries = 0;
+        while (numberOfBurbs < desiredBurbCount && tries < 1000)
+        {
+            int x = random.Next(0, X);
+            int y = random.Next(0, Y);
+            MapHex mapHex = Hexes[y, x];
+            bool burbConflictFound = false;
+            if (mapHex.Burb == null && mapHex.Terrain.Equals("grass"))
+            {
+                HashSet<MapHex> neighborHexes = getMapHexesInRange(mapHex, 5);
+                foreach (MapHex hex in neighborHexes)
+                {
+                    if (hex.Burb != null)
+                    {
+                        burbConflictFound = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                burbConflictFound = true;
+            }
+            if (!burbConflictFound)
+            {
+                string type = "village";
+                int typeRange = random.Next(0, 100);
+                if (typeRange < 50)      // 50%
+                    type = "village";
+                else if (typeRange < 80) // 30%
+                    type = "town";
+                else
+                    type = "city";       // 20%
+                Burb burb = burbs.addBurb(random, type, this, mapHex);
+                Console.WriteLine("addBurbs(): added burb " + burb.Name + " at " + mapHex.X + "," + mapHex.Y);
+                numberOfBurbs += 1;
+            }
+            tries += 1;
+        }
+        Console.WriteLine("addBurbs(): numberOfBurbs=" + numberOfBurbs);
+    }
+
+    private void addFixedBurbs(Burbs burbs)
+    {
+        burbs.addBurb("Amber Array", "metro", this, Hexes[0, 1], "amber");
+        burbs.addBurb("Ocher Order", "metro", this, Hexes[1, X - 2], "ocher");
+        burbs.addBurb("Magenta Mob", "metro", this, Hexes[Y - 2, 1], "magenta");
+        burbs.addBurb("Cyan Circle", "metro", this, Hexes[Y - 1, X - 2], "cyan");
+
+        burbs.addBurb("Washington", "capital", this, Hexes[Y / 2, X / 2]);
     }
 
     public MapHex getCapitalHex()
@@ -67,7 +86,7 @@ public class Map
     }
     public MapHex getMetroHex(string color)
     {
-        return metroLocations[color];
+        return MetroLocations[color];
     }
 
     public MapHex[,] generateMap(int height, int width)

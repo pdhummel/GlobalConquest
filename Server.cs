@@ -28,6 +28,7 @@ public class Server
         this.key = key;
         gameState.GameSettings = gameSettings;
         Map map = new Map(gameSettings.Height, gameSettings.Width);
+        map.addBurbs(gameState.Burbs, gameState.GameSettings.NumberOfBurbs);
         map.VisibilityMode = gameSettings.Visibility;
         gameState.Map = map;
         listener = new EventBasedNetListener();

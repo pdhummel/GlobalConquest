@@ -85,7 +85,7 @@
 /processorParam:TextureFormat=Color
 /build:capital-72x72.png
 
-#begin city-hex-72xx72.png
+#begin city-hex-72x72.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -95,7 +95,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:city-hex-72xx72.png
+/build:city-hex-72x72.png
 
 #begin cyan-comcen-48x48.png
 /importer:TextureImporter

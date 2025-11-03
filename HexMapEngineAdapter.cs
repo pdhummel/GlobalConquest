@@ -91,6 +91,13 @@ class HexMapEngineAdapter
         burbs["cyan-metro"] = cyanMetro;
         Texture2D capitalTile = game.Content.Load<Texture2D>("capital-72x72");
         burbs["capital"] = capitalTile;
+        Texture2D cityTile = game.Content.Load<Texture2D>("city-hex-72x72");
+        burbs["city"] = cityTile;
+        Texture2D townTile = game.Content.Load<Texture2D>("town-hex-72x72");
+        burbs["town"] = townTile;
+        Texture2D villageTile = game.Content.Load<Texture2D>("village-hex-72x72");
+        burbs["village"] = villageTile;
+
 
 
         Texture2D magentaTank = game.Content.Load<Texture2D>("magenta-tank-48x48");
@@ -207,7 +214,7 @@ class HexMapEngineAdapter
             for (int liX = 0; liX < hexWidth; liX++)
             {
                 Burb? burb = hexes[liY, liX].Burb;
-                if (burb != null)
+                if (burb != null && !"suburb".Equals(burb.Type) && !"dock".Equals(burb.Type))
                 {
                     string burbId = burb.Type;
                     if ("metro".Equals(burb.Type))

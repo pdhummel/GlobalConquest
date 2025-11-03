@@ -225,7 +225,14 @@ public class MainGameScreen
             if (lastSelectedHex?.Burb != null)
             {
                 terrain = lastSelectedHex.Burb.Name + " (" + lastSelectedHex.Burb.Type + ")";
-                Globals.spriteBatch?.DrawString(font, "Burb Owner: " + lastSelectedHex.Burb.OwnerColor, new Vector2(xPos, yPos + 42), Color.White);
+                if (!"suburb".Equals(lastSelectedHex.Burb.Type) && !"dock".Equals(lastSelectedHex.Burb.Type))
+                {
+                    Globals.spriteBatch?.DrawString(font, "Burb Owner: " + lastSelectedHex.Burb.OwnerColor, new Vector2(xPos, yPos + 42), Color.White);
+                }
+                else
+                {
+                    terrain = lastSelectedHex?.Terrain + " (" + lastSelectedHex.Burb.Type + ")";
+                }
             }
             Globals.spriteBatch?.DrawString(font, "Terrain: " + terrain, new Vector2(xPos, yPos + 28), Color.White);
             Unit unit = lastSelectedHex.getUnit();
