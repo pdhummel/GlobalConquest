@@ -361,7 +361,7 @@ public class GameLogic
                         unit.RoundsToPause = 8;
                         return;
                     }
-                    
+
                 }
                 else if ("land".Equals(unitType.LandOrSea) &&
                    ("infantry".Equals(unitType.Name) || "dug-in-infantry".Equals(unitType.Name) || "tank".Equals(unitType.Name) || "armor".Equals(unitType.Name)) &&
@@ -392,13 +392,13 @@ public class GameLogic
                         return;
                     }
                 }
-
                 else if ("sea".Equals(unitType.LandOrSea) &&
                    ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
                 {
                     Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " cannot move on land.");
                     return;
                 }
+
                 gameState.Map.moveUnit(unit, nextMapHex.X, nextMapHex.Y);
                 unit.X = nextMapHex.X;
                 unit.Y = nextMapHex.Y;

@@ -40,6 +40,9 @@ public class HostGameScreen
     Label numberOfBurbsLabel = new Label();
     TextBox numberOfBurbsTextBox= new TextBox();
 
+    Label startingMoneyLabel = new Label();
+    TextBox startingMoneyTextBox= new TextBox();
+
 
     public HostGameScreen(PlayGameMenu playGameMenu, Game game, Grid grid)
     {
@@ -129,6 +132,15 @@ public class HostGameScreen
         numberOfBurbsTextBox.Width = 50;
         numberOfBurbsTextBox.Border = new SolidBrush("#808000FF");
         numberOfBurbsTextBox.BorderThickness = new Thickness(2);
+
+        startingMoneyLabel.Id = "startingMoneyLabel";
+        startingMoneyLabel.Text = "money:";
+        startingMoneyLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
+        startingMoneyTextBox.Id = "startingMoneyTextBox";
+        startingMoneyTextBox.Text = "50";
+        startingMoneyTextBox.Width = 50;
+        startingMoneyTextBox.Border = new SolidBrush("#808000FF");
+        startingMoneyTextBox.BorderThickness = new Thickness(2);
 
         visibilityLabel.Id = "visibilityLabel";
         visibilityLabel.Text = "visibility:";
@@ -229,6 +241,13 @@ public class HostGameScreen
         numberOfBurbsPanel.Widgets.Add(numberOfBurbsTextBox);
         numberOfBurbsTextBox.Visible = true;
 
+        var startingMoneyPanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(startingMoneyPanel);
+        startingMoneyPanel.Widgets.Add(startingMoneyLabel);
+        startingMoneyLabel.Visible = true;
+        startingMoneyPanel.Widgets.Add(startingMoneyTextBox);
+        startingMoneyTextBox.Visible = true;
+
         var visibilityPanel = new HorizontalStackPanel { Spacing = 8 };
         verticalStackPanel.Widgets.Add(visibilityPanel);
         visibilityPanel.Widgets.Add(visibilityLabel);
@@ -269,6 +288,8 @@ public class HostGameScreen
         mapWidthTextBox.Visible = false;
         numberOfBurbsLabel.Visible = false;
         numberOfBurbsTextBox.Visible = false;
+        startingMoneyLabel.Visible = false;
+        startingMoneyTextBox.Visible = false;
         visibilityLabel.Visible = false;
         visibilityComboView.Visible = false;
         visibilityLabel.Visible = false;
@@ -289,6 +310,8 @@ public class HostGameScreen
         mapWidthTextBox.RemoveFromParent();
         numberOfBurbsLabel.RemoveFromParent();
         numberOfBurbsTextBox.RemoveFromParent();
+        startingMoneyLabel.RemoveFromParent();
+        startingMoneyTextBox.RemoveFromParent();
         visibilityLabel.RemoveFromParent();
         visibilityComboView.RemoveFromParent();
         executionLabel.RemoveFromParent();
@@ -312,6 +335,7 @@ public class HostGameScreen
         gameSettings.Height = (Int32.Parse(mapHeightTextBox.Text));
         gameSettings.Width = (Int32.Parse(mapWidthTextBox.Text));
         gameSettings.NumberOfBurbs = (Int32.Parse(numberOfBurbsTextBox.Text));
+        gameSettings.StartingMoney = (Int32.Parse(startingMoneyTextBox.Text));
         gameSettings.NumberOfHumans = (Int32.Parse(humanPlayersTextBox.Text));
         gameSettings.Visibility = ((Label)visibilityComboView.SelectedItem).Text;
         gameSettings.ExecutionMode = ((Label)executionComboView.SelectedItem).Text;

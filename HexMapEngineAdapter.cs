@@ -154,6 +154,24 @@ class HexMapEngineAdapter
         Texture2D cyanTransportInfantry = game.Content.Load<Texture2D>("cyan-transport-infantry-48x48");
         units["cyan-transport-infantry"] = cyanTransportInfantry;
 
+        Texture2D magentaBattleship = game.Content.Load<Texture2D>("magenta-battleship-48x48");
+        units["magenta-battleship"] = magentaBattleship;
+        Texture2D amberBattleship = game.Content.Load<Texture2D>("amber-battleship-48x48");
+        units["amber-battleship"] = amberBattleship;
+        Texture2D ocherBattleship = game.Content.Load<Texture2D>("ocher-battleship-48x48");
+        units["ocher-battleship"] = ocherBattleship;
+        Texture2D cyanBattleship = game.Content.Load<Texture2D>("cyan-battleship-48x48");
+        units["cyan-battleship"] = cyanBattleship;
+
+        Texture2D magentaCarrier = game.Content.Load<Texture2D>("magenta-carrier-48x48");
+        units["magenta-carrier"] = magentaCarrier;
+        Texture2D amberCarrier = game.Content.Load<Texture2D>("amber-carrier-48x48");
+        units["amber-carrier"] = amberCarrier;
+        Texture2D ocherCarrier = game.Content.Load<Texture2D>("ocher-carrier-48x48");
+        units["ocher-carrier"] = ocherCarrier;
+        Texture2D cyanCarrier = game.Content.Load<Texture2D>("cyan-carrier-48x48");
+        units["cyan-carrier"] = cyanCarrier;
+
         Console.WriteLine("HexMapEngineAdapter.LoadContent(): hexHeight=" + hexHeight + ", hexWidth=" + hexWidth);
         updateMap();
         Console.WriteLine("HexMapEngineAdapter.LoadContent(): hex count=" + Global.MAP_HEX_TILE_ARRAY.Length);

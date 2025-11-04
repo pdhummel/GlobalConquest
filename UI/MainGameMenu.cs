@@ -138,7 +138,7 @@ public class MainGameMenu
             button.Click += (s, a) =>
             {
                 window.Close();
-                purchaseUnit(mainGameScreen, burb);
+                showPurchaseUnit(mainGameScreen, mapHex, burb);
             };
         }
 
@@ -155,13 +155,61 @@ public class MainGameMenu
 
     }
 
-    private void purchaseUnit(MainGameScreen mainGameScreen, Burb burb)
+    private void showPurchaseUnit(MainGameScreen mainGameScreen,  MapHex mapHex, Burb burb)
     {
-        Console.WriteLine("purchaseUnit(): enter");
+        Console.WriteLine("showPurchaseUnit(): enter");
         GameState gameState = mainGameScreen.gcGame.Client.GameState;
+        Map map = gameState.Map;
         Player player = mainGameScreen.gcGame.identifySelf();
         Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
 
+        List<string> dockDirections = new List<string>();
+        List<string> landDirections = new List<string>();
+        List<string> openSpaceDirections = new List<string>();
+        bool burbHasOpenSpace = false;
+        bool burbHasOpenDock = false;
+        bool burbHasOpenLand = false;
+        if (mapHex.getUnit() == null)
+        {
+            burbHasOpenSpace = true;
+            burbHasOpenLand = true;
+            openSpaceDirections.Add("center");
+            landDirections.Add("center");
+        }
+
+        if ("city".Equals(burb.Type) || "capital".Equals(burb.Type) || "metro".Equals(burb.Type))
+        {
+            Dictionary<string, MapHex> neighbors = map.getSurroundingHexes(mapHex);
+            List<string> directions = ["northEast", "southEast", "northWest", "southWest"];
+            foreach (string direction in directions)
+            {
+                if (neighbors.ContainsKey(direction))
+                {
+                    MapHex neighbor = neighbors[direction];
+                    if (neighbor.getUnit() == null)
+                    {
+                        burbHasOpenSpace = true;
+                        //Console.WriteLine("showPurchaseUnit(): " + neighbor.Burb.Type);
+                        if ("dock".Equals(neighbor.Burb.Type))
+                        {
+                            burbHasOpenDock = true;
+                            dockDirections.Add(direction);
+                            openSpaceDirections.Add(direction);
+                        }
+                            
+                        if ("suburb".Equals(neighbor.Burb.Type))
+                        {
+                            burbHasOpenLand = true;
+                            landDirections.Add(direction);
+                            openSpaceDirections.Add(direction);
+                        }
+                            
+                    }
+                }
+            }
+            
+        }
+        
         Window window = new Window
         {
             Title = "Build Unit"
@@ -173,24 +221,54 @@ public class MainGameMenu
             RowSpacing = 8,
         };
         window.Content = grid;
-        // Burb Name    Location       Type    Owner    Action
-        addLabelToGrid(grid, 0, 0, "Balance");
-        addLabelToGrid(grid, 0, 1, "" + faction.Money);
+        addLabelToGrid(grid, 0, 0, "Burb:");
+        addLabelToGrid(grid, 0, 1, burb.Name);
+        addLabelToGrid(grid, 1, 0, "Balance:");
+        addLabelToGrid(grid, 1, 1, "" + faction.Money);
 
-        addLabelToGrid(grid, 2, 0, "Infantry");
-        addLabelToGrid(grid, 3, 0, "Armor");
-        addLabelToGrid(grid, 4, 0, "Sub");
-        addLabelToGrid(grid, 5, 0, "Battleship");
-        addLabelToGrid(grid, 6, 0, "Carrier");
-        addLabelToGrid(grid, 7, 0, "Spy");
-        addLabelToGrid(grid, 8, 0, "Plane");
-        addLabelToGrid(grid, 2, 1, "25");
-        addLabelToGrid(grid, 3, 1, "35");
-        addLabelToGrid(grid, 4, 1, "25");
-        addLabelToGrid(grid, 5, 1, "35");
-        addLabelToGrid(grid, 6, 1, "45");
-        addLabelToGrid(grid, 7, 1, "85");
-        addLabelToGrid(grid, 8, 1, "35");
+        addLabelToGrid(grid, 3, 0, "Infantry");
+        addLabelToGrid(grid, 3, 1, "25");
+        addLabelToGrid(grid, 4, 0, "Armor");
+        addLabelToGrid(grid, 4, 1, "35");
+        addLabelToGrid(grid, 5, 0, "Sub");
+        addLabelToGrid(grid, 5, 1, "25");
+        addLabelToGrid(grid, 6, 0, "Battleship");
+        addLabelToGrid(grid, 6, 1, "35");
+        addLabelToGrid(grid, 7, 0, "Carrier");
+        addLabelToGrid(grid, 7, 1, "45");
+        addLabelToGrid(grid, 8, 0, "Spy");
+        addLabelToGrid(grid, 8, 1, "85");
+        addLabelToGrid(grid, 9, 0, "Plane");
+        addLabelToGrid(grid, 9, 1, "35");
+
+        List<int> rows = [];
+        List<int> landUnitRows = [3, 4, 8, 9];
+        landUnitRows = [3, 4];
+        List<int> seaUnitRows = [5, 6, 7, 8, 9];
+        seaUnitRows = [5, 6, 7];
+        Dictionary<int, int> costByRow = new Dictionary<int, int>();
+        costByRow[3] = 25;
+        costByRow[4] = 35;
+        costByRow[5] = 25;
+        costByRow[6] = 35;
+        costByRow[7] = 45;
+        costByRow[8] = 85;
+        costByRow[9] = 35;
+
+        foreach (int row in landUnitRows)
+        {
+            if (costByRow[row] <= faction.Money)
+            {
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, openSpaceDirections);
+            }
+        }
+        foreach (int row in seaUnitRows)
+        {
+            if (costByRow[row] <= faction.Money)
+            {
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, dockDirections);
+            }
+        }
 
         window.Closed += (s, a) =>
         {
@@ -199,7 +277,83 @@ public class MainGameMenu
         window.ShowModal(mainGameScreen.grid.Desktop);
 
     }
-    
 
+    private void addPurchaseBuildButton(Window window, Grid grid, int row, MainGameScreen mainGameScreen,  MapHex mapHex, Burb burb, List<string> directions)
+    {
+        int count = 0;
+        foreach (string direction in directions)
+        {
+            var button = new Button()
+            {
+                Id = "buildButton" + row + direction,
+                Content = new Label
+                {
+                    Text = "Build " + direction,
+                    Width = 150,
+                    Border = new SolidBrush("#808000FF"),
+                    BorderThickness = new Thickness(2)
+                }
+            };
+            Grid.SetRow(button, row);
+            Grid.SetColumn(button, 2 + count);
+            grid.Widgets.Add(button);
+            button.Click += (s, a) =>
+            {
+                Dictionary<int, string> unitTypeByRow = new Dictionary<int, string>();
+                unitTypeByRow[3] = "infantry";
+                unitTypeByRow[4] = "tank";
+                unitTypeByRow[5] = "sub";
+                unitTypeByRow[6] = "battleship";
+                unitTypeByRow[7] = "carrier";
+                unitTypeByRow[8] = "spy";
+                unitTypeByRow[9] = "plane";
+                window.Close();
+                purchaseUnit(mainGameScreen, unitTypeByRow[row], mapHex, direction);
+            };
+            Console.WriteLine("addPurchaseBuildButton(): " + "Build " + direction + ", row=" + row + ", column=" + "" + (2 + count));
+            count += 1;
+        }
+    }
+    
+    private void purchaseUnit(MainGameScreen mainGameScreen,  string unitTypeName, MapHex mapHex, string direction)
+    {
+        GameState gameState = mainGameScreen.gcGame.Client.GameState;
+        UnitType unitType = gameState.UnitTypes.UnitTypeMap[unitTypeName];
+        Map map = gameState.Map;
+        Player player = mainGameScreen.gcGame.identifySelf();
+        Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
+        Dictionary<string, MapHex> neighbors = map.getSurroundingHexes(mapHex);
+        MapHex targetHex = mapHex;
+        if (!"center".Equals(direction))
+        {
+            targetHex = neighbors[direction];
+        }
+
+        PurchaseUnitAction action = new PurchaseUnitAction();
+        action.ClassType = "GlobalConquest.Actions.PurchaseUnitAction";
+        action.ClientIdentifier = player.Name;
+        action.Unit = new Unit();
+        action.Unit.Owner = faction;
+        action.Unit.Color = faction.Color;
+        if ("infantry".Equals(unitTypeName) &&  ("dock".Equals(targetHex.Burb.Type)))
+            unitTypeName = "transport-infantry";
+        if (("tank".Equals(unitTypeName)  || "armor".Equals(unitTypeName)) && ("dock".Equals(targetHex.Burb.Type)))
+            unitTypeName = "transport-tank";
+        action.Unit.UnitType = unitTypeName;
+        action.Unit.X = targetHex.X;
+        action.Unit.Y = targetHex.Y;
+        if ("Omniscient".Equals(gameState.GameSettings.Visibility))
+        {
+            action.Unit.setOmniVisibility();
+        }
+        else
+        {
+            action.Unit.setBaseVisibility();
+        }
+        action.X = targetHex.X;
+        action.Y = targetHex.Y;
+        action.Cost = unitType.Cost;
+        mainGameScreen.gcGame.Client.SendAction(player.Name, action);
+    }
 
 }
