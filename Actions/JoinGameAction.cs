@@ -22,7 +22,8 @@ public class JoinGameAction : PlayerAction
         Console.WriteLine("JoinGameAction.execute()");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
-        Faction faction = gameState.Factions.nameToFaction[JoinGameValues.FactionName];
+        Faction faction = gameState.Factions.NameToFaction[JoinGameValues.FactionName];
+        faction.Money = gameState.GameSettings.StartingMoney;
         if (gameState.Players.playerNameToPlayer.ContainsKey(JoinGameValues.Name))
         {
             return;

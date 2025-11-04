@@ -16,6 +16,6 @@ public class Player
 
     public Faction getFaction(GameState gameState)
     {
-        return gameState.Factions.colorToFaction[FactionColor];
+        return gameState.Factions.ColorToFaction[FactionColor];
     }
 }

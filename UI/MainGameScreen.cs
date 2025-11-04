@@ -19,7 +19,7 @@ public class MainGameScreen
 {
     Game game;
     public GlobalConquestGame gcGame;
-    Grid grid;
+    public Grid grid;
 
     public Panel MapPanel { get; } = new Panel();
     public Panel FactionsPanel { get; } = new Panel();

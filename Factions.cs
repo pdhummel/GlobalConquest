@@ -3,9 +3,9 @@ namespace GlobalConquest;
 public class Factions
 {
     public Faction[] FactionArray { get; }
-    public Dictionary<string, Faction> nameToFaction  { get; set; }= new Dictionary<string, Faction>();
+    public Dictionary<string, Faction> NameToFaction  { get; set; }= new Dictionary<string, Faction>();
 
-    public Dictionary<string, Faction> colorToFaction  { get; set; } = new Dictionary<string, Faction>();
+    public Dictionary<string, Faction> ColorToFaction  { get; set; } = new Dictionary<string, Faction>();
 
     public Factions()
     {
@@ -20,8 +20,8 @@ public class Factions
     {
         Faction faction = new(name, color);
         FactionArray[index] = faction;
-        nameToFaction[faction.Name] = faction;
-        colorToFaction[faction.Color] = faction;
+        NameToFaction[faction.Name] = faction;
+        ColorToFaction[faction.Color] = faction;
         
     }
 }

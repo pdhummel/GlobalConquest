@@ -18,6 +18,7 @@ public class GameSettings
     public string Visibility { get; set; }
 
     public string ExecutionMode { get; set; }
+    public int StartingMoney { get; set; } = 0;
 
     public GameSettings()
     {

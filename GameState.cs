@@ -78,7 +78,7 @@ public class GameState
             Map.placeUnit(tank1, southWest);
             MapHex northEast = surroundingHexes["northEast"];
             Map.placeUnit(tank2, northEast);
-            Faction faction = Factions.colorToFaction[unit.Color];
+            Faction faction = Factions.ColorToFaction[unit.Color];
             faction.HasComCen = true;
         }
         else if (player.FactionColor.Equals("ocher"))
@@ -92,7 +92,7 @@ public class GameState
             Map.placeUnit(tank1, northWest);
             MapHex southEast = surroundingHexes["southEast"];
             Map.placeUnit(tank2, southEast);
-            Faction faction = Factions.colorToFaction[unit.Color];
+            Faction faction = Factions.ColorToFaction[unit.Color];
             faction.HasComCen = true;
         }
         else if (player.FactionColor.Equals("cyan"))
@@ -106,7 +106,7 @@ public class GameState
             Map.placeUnit(tank1, northEast);
             MapHex southWest = surroundingHexes["southWest"];
             Map.placeUnit(tank2, southWest);
-            Faction faction = Factions.colorToFaction[unit.Color];
+            Faction faction = Factions.ColorToFaction[unit.Color];
             faction.HasComCen = true;
         }
         else if (player.FactionColor.Equals("magenta"))
@@ -120,7 +120,7 @@ public class GameState
             Map.placeUnit(tank1, northWest);
             MapHex southEast = surroundingHexes["southEast"];
             Map.placeUnit(tank2, southEast);
-            Faction faction = Factions.colorToFaction[unit.Color];
+            Faction faction = Factions.ColorToFaction[unit.Color];
             faction.HasComCen = true;
         }
         return unit;

@@ -21,7 +21,7 @@ public class Players
         player.IsHuman = isHuman;
         playerNameToPlayer[name] = player;
         colorToPlayer[color] = player;
-        factionNameToPlayer[gameState.Factions.colorToFaction[color].Name] = player;
+        factionNameToPlayer[gameState.Factions.ColorToFaction[color].Name] = player;
         gameState.PlayerJoined[name] = true;
         return player;
     }

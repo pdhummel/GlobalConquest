@@ -61,15 +61,36 @@ public class GameLogic
                 scanTerrain(server, unit);
             }
 
-            foreach (string key in gameState.PlayerExecutionReady.Keys)
-            {
-                gameState.PlayerExecutionReady[key] = false;
-            }
-            gameState.CurrentRound = 0;
-            server.gameState.CurrentTurn += 1;
-            server.gameState.CurrentPhase = "plan";
-            server.sendGameState();
+            endTurn(server);
         }
+        server.sendGameState();
+    }
+
+    public void endTurn(Server server)
+    {
+        Console.WriteLine("endTurn(): enter");
+        GameState gameState = server.gameState;
+        foreach (string key in gameState.PlayerExecutionReady.Keys)
+        {
+            gameState.PlayerExecutionReady[key] = false;
+        }
+        
+        foreach (string key in gameState.Burbs.NameToBurb.Keys)
+        {
+            Burb burb = gameState.Burbs.NameToBurb[key];
+            int income = gameState.Burbs.IncomeMap[burb.Type];
+            //Console.WriteLine("endTurn(): burb=" + burb.Name);
+            if (burb.OwnerColor != null && !"grey".Equals(burb.OwnerColor))
+            {
+                Faction faction = gameState.Factions.ColorToFaction[burb.OwnerColor];
+                faction.Money += income;
+                Console.WriteLine("endTurn(): added " + income + " to " + burb.OwnerColor);
+            }
+        }
+        gameState.CurrentRound = 0;
+        server.gameState.CurrentTurn += 1;
+        server.gameState.CurrentPhase = "plan";
+        server.sendGameState();        
     }
 
 
@@ -267,7 +288,7 @@ public class GameLogic
                 deadUnitMapHex.Units.RemoveAt(0);
                 if ("comcen".Equals(unitToAttack.UnitType))
                 {
-                    Faction faction = server.gameState.Factions.colorToFaction[unitToAttack.Color];
+                    Faction faction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
                     faction.HasComCen = false;
                 }
             }
@@ -407,7 +428,7 @@ public class GameLogic
         List<string> colors = ["amber", "magenta", "cyan", "ocher"];
         foreach (string color in colors)
         {
-            Faction faction = gameState.Factions.colorToFaction[color];
+            Faction faction = gameState.Factions.ColorToFaction[color];
             if (faction.HasComCen)
                 commandCenters += 1;
         }
