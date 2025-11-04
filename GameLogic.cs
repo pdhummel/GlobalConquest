@@ -331,6 +331,74 @@ public class GameLogic
             //Console.WriteLine("processRound(): nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
             if (unit.X != nextMapHex.X || unit.Y != nextMapHex.Y)
             {
+                UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+                if ("sea".Equals(unitType.LandOrSea) && (unitType.Name.Contains("transport")) &&
+                   ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
+                {
+                    // When going from transport to land (unloading), it will take eight rounds. 
+                    // TODO: If the beach square has a friendly dug-in infantry unit squatting in it, this loading/unloading takes only one round.
+                    if (unit.RoundsToPause > 0)
+                    {
+                        Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " is unloading.");
+                        unit.RoundsToPause -= 1;
+                        if (unit.RoundsToPause > 0)
+                        {
+                            return;
+                        }
+                        Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " has unloaded.");
+                        if ("transport-tank".Equals(unit.UnitType) || "transport-armor".Equals(unit.UnitType))
+                        {
+                            unit.UnitType = "tank";
+                        }
+                        else if ("transport-infantry".Equals(unit.UnitType))
+                        {
+                            unit.UnitType = "infantry";
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " needs to unload.");
+                        unit.RoundsToPause = 8;
+                        return;
+                    }
+                    
+                }
+                else if ("land".Equals(unitType.LandOrSea) &&
+                   ("infantry".Equals(unitType.Name) || "dug-in-infantry".Equals(unitType.Name) || "tank".Equals(unitType.Name) || "armor".Equals(unitType.Name)) &&
+                   "sea".Equals(nextMapHex.Terrain))
+                {
+                    if (unit.RoundsToPause > 0)
+                    {
+                        Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " is loading into a transport.");
+                        unit.RoundsToPause -= 1;
+                        if (unit.RoundsToPause > 0)
+                        {
+                            return;
+                        }
+                        Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " has loaded into a transport.");
+                        if ("tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
+                        {
+                            unit.UnitType = "transport-tank";
+                        }
+                        else if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
+                        {
+                            unit.UnitType = "transport-infantry";
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " needs to load into a transport.");
+                        unit.RoundsToPause = 4;
+                        return;
+                    }
+                }
+
+                else if ("sea".Equals(unitType.LandOrSea) &&
+                   ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
+                {
+                    Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " cannot move on land.");
+                    return;
+                }
                 gameState.Map.moveUnit(unit, nextMapHex.X, nextMapHex.Y);
                 unit.X = nextMapHex.X;
                 unit.Y = nextMapHex.Y;

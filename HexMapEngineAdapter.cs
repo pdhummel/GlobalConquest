@@ -127,6 +127,32 @@ class HexMapEngineAdapter
         Texture2D cyanComcen = game.Content.Load<Texture2D>("cyan-comcen-48x48");
         units["cyan-comcen"] = cyanComcen;
 
+        Texture2D magentaSub = game.Content.Load<Texture2D>("magenta-sub-48x48");
+        units["magenta-sub"] = magentaSub;
+        Texture2D amberSub = game.Content.Load<Texture2D>("amber-sub-48x48");
+        units["amber-sub"] = amberSub;
+        Texture2D ocherSub = game.Content.Load<Texture2D>("ocher-sub-48x48");
+        units["ocher-sub"] = ocherSub;
+        Texture2D cyanSub = game.Content.Load<Texture2D>("cyan-sub-48x48");
+        units["cyan-sub"] = cyanSub;
+
+        Texture2D magentaTransportTank = game.Content.Load<Texture2D>("magenta-transport-tank-48x48");
+        units["magenta-transport-tank"] = magentaTransportTank;
+        Texture2D amberTransportTank = game.Content.Load<Texture2D>("amber-transport-tank-48x48");
+        units["amber-transport-tank"] = amberTransportTank;
+        Texture2D ocherTransportTank = game.Content.Load<Texture2D>("ocher-transport-tank-48x48");
+        units["ocher-transport-tank"] = ocherTransportTank;
+        Texture2D cyanTransportTank = game.Content.Load<Texture2D>("cyan-transport-tank-48x48");
+        units["cyan-transport-tank"] = cyanTransportTank;
+
+        Texture2D magentaTransportInfantry = game.Content.Load<Texture2D>("magenta-transport-infantry-48x48");
+        units["magenta-transport-infantry"] = magentaTransportInfantry;
+        Texture2D amberTransportInfantry = game.Content.Load<Texture2D>("amber-transport-infantry-48x48");
+        units["amber-transport-infantry"] = amberTransportInfantry;
+        Texture2D ocherTransportInfantry = game.Content.Load<Texture2D>("ocher-transport-infantry-48x48");
+        units["ocher-transport-infantry"] = ocherTransportInfantry;
+        Texture2D cyanTransportInfantry = game.Content.Load<Texture2D>("cyan-transport-infantry-48x48");
+        units["cyan-transport-infantry"] = cyanTransportInfantry;
 
         Console.WriteLine("HexMapEngineAdapter.LoadContent(): hexHeight=" + hexHeight + ", hexWidth=" + hexWidth);
         updateMap();

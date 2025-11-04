@@ -440,7 +440,7 @@ public class UnitTypes
     private void defineTransportArmor()
     {
         UnitType unitType = new UnitType();
-        unitType.Name = "transport-armor";
+        unitType.Name = "transport-tank";
         unitType.LandOrSea = "sea";
 
         unitType.AttritionByTerrain["forest"] = 0;
@@ -721,7 +721,7 @@ public class UnitTypes
     private void defineSub()
     {
         UnitType unitType = new UnitType();
-        unitType.Name = "submarine";
+        unitType.Name = "sub";
         unitType.LandOrSea = "sea";
 
         // can't become dug-in infantry in swamp
@@ -860,6 +860,7 @@ public class UnitTypes
 
         UnitTypeMap[unitType.Name] = unitType;
         UnitTypeMap["sub"] = unitType;
+        UnitTypeMap["submarine"] = unitType;
     }
 
     private void defineBattleship()

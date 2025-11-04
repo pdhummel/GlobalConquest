@@ -75,8 +75,12 @@ public class GameState
             Map.placeUnit(unit, northWest);
             Map.placeUnit(infantry, metroHex);
             MapHex southWest = surroundingHexes["southWest"];
+            if ("sea".Equals(southWest.Terrain))
+                tank1.UnitType = "transport-tank";
             Map.placeUnit(tank1, southWest);
             MapHex northEast = surroundingHexes["northEast"];
+            if ("sea".Equals(northEast.Terrain))
+                tank2.UnitType = "transport-tank";
             Map.placeUnit(tank2, northEast);
             Faction faction = Factions.ColorToFaction[unit.Color];
             faction.HasComCen = true;
@@ -89,8 +93,12 @@ public class GameState
             Map.placeUnit(unit, northEast);
             Map.placeUnit(infantry, metroHex);
             MapHex northWest = surroundingHexes["northWest"];
+            if ("sea".Equals(northWest.Terrain))
+                tank1.UnitType = "transport-tank";
             Map.placeUnit(tank1, northWest);
             MapHex southEast = surroundingHexes["southEast"];
+            if ("sea".Equals(southEast.Terrain))
+                tank1.UnitType = "transport-tank";            
             Map.placeUnit(tank2, southEast);
             Faction faction = Factions.ColorToFaction[unit.Color];
             faction.HasComCen = true;
@@ -103,8 +111,12 @@ public class GameState
             Map.placeUnit(unit, southEast);
             Map.placeUnit(infantry, metroHex);
             MapHex northEast = surroundingHexes["northEast"];
+            if ("sea".Equals(northEast.Terrain))
+                tank1.UnitType = "transport-tank";
             Map.placeUnit(tank1, northEast);
             MapHex southWest = surroundingHexes["southWest"];
+            if ("sea".Equals(southWest.Terrain))
+                tank1.UnitType = "transport-tank";
             Map.placeUnit(tank2, southWest);
             Faction faction = Factions.ColorToFaction[unit.Color];
             faction.HasComCen = true;
@@ -117,8 +129,12 @@ public class GameState
             Map.placeUnit(unit, southWest);
             Map.placeUnit(infantry, metroHex);
             MapHex northWest = surroundingHexes["northWest"];
+            if ("sea".Equals(northWest.Terrain))
+                tank1.UnitType = "transport-tank";
             Map.placeUnit(tank1, northWest);
             MapHex southEast = surroundingHexes["southEast"];
+            if ("sea".Equals(southEast.Terrain))
+                tank2.UnitType = "transport-tank";
             Map.placeUnit(tank2, southEast);
             Faction faction = Factions.ColorToFaction[unit.Color];
             faction.HasComCen = true;
