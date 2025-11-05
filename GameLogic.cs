@@ -123,6 +123,8 @@ public class GameLogic
             addStepsForUnit(server, unit);
             scanUnits(server, unit);
             scanTerrain(server, unit);
+            sufferAttrition(server, unit);
+            repair(server, unit);
             moveUnit(server, unit);
             checkForCombat(server, unit);
             if (!("Omniscient".Equals(gameState.GameSettings.Visibility) || "Command HQ".Equals(gameState.GameSettings.Visibility)))
@@ -212,6 +214,32 @@ public class GameLogic
             hex.Visibility[unit.Color] = true;
             server.sendGameStateAndMapHex(hex.X, hex.Y);
         }
+    }
+
+    private void sufferAttrition(Server server, Unit unit)
+    {
+        Map map = server.gameState.Map;
+        MapHex mapHex = map.Hexes[unit.Y, unit.X];
+        UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+        if (unitType.AttritionByTerrain.ContainsKey(mapHex.Terrain))
+        {
+            if (unit.StrengthPoints > 20)
+            {
+                unit.StrengthPoints -= unitType.AttritionByTerrain[mapHex.Terrain];
+                if (unit.StrengthPoints < 20)
+                    unit.StrengthPoints = 20;
+                server.sendGameStateAndMapHex(unit.X, unit.Y);
+            }
+        }
+    }
+
+    private void repair(Server server, Unit unit)
+    {
+        Map map = server.gameState.Map;
+        MapHex mapHex = map.Hexes[unit.Y, unit.X];
+        UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+        // TODO: use RepairRateByFacility
+
     }
 
     private void checkForCombat(Server server, Unit unit)
@@ -509,11 +537,11 @@ public class GameLogic
 
         // TODO: this is a temporary victory condition.
         // Someone took the Capital.
-        if (!"grey".Equals(gameState.Map.getCapitalHex().Burb.OwnerColor))
-        {
-            gameOver = true;
-            Console.WriteLine("checkForVictory(): capital owner=" + gameState.Map.getCapitalHex().Burb.OwnerColor);
-        }
+        //if (!"grey".Equals(gameState.Map.getCapitalHex().Burb.OwnerColor))
+        //{
+        //    gameOver = true;
+        //    Console.WriteLine("checkForVictory(): capital owner=" + gameState.Map.getCapitalHex().Burb.OwnerColor);
+        //}
 
 
         // Someone took all Metros.

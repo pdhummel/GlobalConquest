@@ -23,26 +23,28 @@ The game is being designed with known differences from the original.
 
 ## Roadmap
 ### Milestone 1
-* Combat with a limited number of unit types and a fixed number of units per side.
-* King of the Hill or Elimination victory condition.
-* Simple execution trigger.
+x Combat with a limited number of unit types and a fixed number of units per side.
+x Capture metros and Elimination victory condition.
+x Simple execution trigger.
 
 ### Milestone 2
-* Add Burbs to map.
-* Ability to purchase and produce units.
-* Burb management screen.
-* Add support for all land and sea units.
-  * Transports with load and unload.
-  * Infantry dig-in.
-  * Submarine visibility handling.
-  * Spies.
-* Ship bombardment.
+x Add Burbs to map.
+x Ability to purchase and produce units.
+x Burb management screen.
+* Add unit repair logic.
+x Add unit attrition logic.
+x Add support for all land and sea units.
+  x Transports with load and unload.
+  x Spies, subs, battleships, carriers.
+
 
 ### Milestone 3
 * Advanced movement -- waypoints.
 * Destinations screen.
-* Add unit repair logic.
-* Add unit attrition logic.
+* Add unit special handling.
+  * Infantry dig-in.
+  * Submarine visibility handling.
+  * Ship bombardment.
 * Unit context menu - blitz, sneak, pursue, etc.
 
 ### Milestone 4
