@@ -342,6 +342,7 @@ public class MainGameMenu
         action.Unit.UnitType = unitTypeName;
         action.Unit.X = targetHex.X;
         action.Unit.Y = targetHex.Y;
+        action.FactionColor = faction.Color;
         if ("Omniscient".Equals(gameState.GameSettings.Visibility))
         {
             action.Unit.setOmniVisibility();

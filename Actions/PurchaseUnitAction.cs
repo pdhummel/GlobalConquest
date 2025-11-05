@@ -16,8 +16,8 @@ public class PurchaseUnitAction : PlayerAction
         //Console.WriteLine("PurchaseUnitAction.deserializeAndExecute()");
         if (MessageAsJson != null)
         {
-            PlaceUnitAction? action =
-                    JsonSerializer.Deserialize<PlaceUnitAction>(this.MessageAsJson);
+            PurchaseUnitAction? action =
+                    JsonSerializer.Deserialize<PurchaseUnitAction>(this.MessageAsJson);
             action?.execute(serverObj);
         }
     }
