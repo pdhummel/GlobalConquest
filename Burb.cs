@@ -6,7 +6,7 @@ public class Burb
     public string Name { get; set; }
     public string? Color { get; set; } = "grey";
     public string? OwnerColor { get; set; } = "grey";
-
+    public string? ParentBurbName { get; set; }
 
 
     public Burb()

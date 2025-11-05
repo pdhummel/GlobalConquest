@@ -235,11 +235,31 @@ public class GameLogic
 
     private void repair(Server server, Unit unit)
     {
+        // TODO: handle resources
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
         UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
-        // TODO: use RepairRateByFacility
-
+        int repairPoints = 0;
+        if (mapHex.Burb != null && mapHex.Burb.OwnerColor.Equals(unit.Color))
+        {
+            string facility;
+            if (mapHex.Burb.ParentBurbName != null)
+            {
+                Burb burb = server.gameState.Burbs.NameToBurb[mapHex.Burb.ParentBurbName];
+                facility = burb.Type;
+            }
+            else
+            {
+                facility = mapHex.Burb.Type;
+            }
+            repairPoints = unitType.RepairRateByFacility[facility];
+        }
+        if (unit.getNextAction() == null)
+        {
+            unit.StrengthPoints += repairPoints;
+            if (unit.StrengthPoints > 100)
+                unit.StrengthPoints = 100;
+        }
     }
 
     private void checkForCombat(Server server, Unit unit)

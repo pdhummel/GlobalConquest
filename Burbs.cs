@@ -86,10 +86,12 @@ public class Burbs
                     if ("sea".Equals(suburbHex.Terrain) || "ocean".Equals(suburbHex.Terrain) || "swamp".Equals(suburbHex.Terrain) || "marsh".Equals(suburbHex.Terrain))
                     {
                         suburb.Type = "dock";
+                        suburb.ParentBurbName = mapHex.Burb.Name;
                     }
                     else
                     {
                         suburb.Type = "suburb";
+                        suburb.ParentBurbName = mapHex.Burb.Name;
                     }                    
                     suburbHex.Burb = suburb;
                 }                

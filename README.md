@@ -31,7 +31,7 @@ x Simple execution trigger.
 x Add Burbs to map.
 x Ability to purchase and produce units.
 x Burb management screen.
-* Add unit repair logic.
+x Add unit repair logic.
 x Add unit attrition logic.
 x Add support for all land and sea units.
   x Transports with load and unload.
