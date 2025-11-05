@@ -6,6 +6,7 @@ using GlobalConquest.HexMapEngine.Classes;
 using GlobalConquest.HexMapEngine.Structures;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using GlobalConquest.Actions;
+using GlobalConquest.Units;
 using System.Numerics;
 
 namespace GlobalConquest;

@@ -1,5 +1,6 @@
 using GlobalConquest;
 using GlobalConquest.Actions;
+using GlobalConquest.Units;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;

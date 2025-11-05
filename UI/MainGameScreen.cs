@@ -1,6 +1,7 @@
 using System.Windows;
 using GlobalConquest.HexMapEngine.Structures;
 using GlobalConquest.Actions;
+using GlobalConquest.Units;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Myra;

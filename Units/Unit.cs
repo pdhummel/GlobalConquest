@@ -4,7 +4,7 @@ using System.Text.Json;
 using GlobalConquest.Actions;
 using Microsoft.Xna.Framework;
 
-namespace GlobalConquest;
+namespace GlobalConquest.Units;
 
 public class Unit
 {

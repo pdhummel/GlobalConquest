@@ -9,6 +9,7 @@ using Myra.Graphics2D.UI;
 using GlobalConquest.Actions;
 using GlobalConquest.UI;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
+using GlobalConquest.Units;
 
 namespace GlobalConquest;
 
@@ -231,8 +232,17 @@ public class GlobalConquestGame : Game
         if (Client != null && Client.isLoadContentComplete)
         {
             hexMapEngineAdapter?.Process_UpdateEvent(gameTime);
-            handleLeftClickMouseOnMap(gameTime);
-            handleRightClickMouseOnMap();
+            // Make sure the mouse is in the map panel
+            if (
+                currentMouseState.X >= 0 && currentMouseState.X >= MainGameScreen.MapPanel.Left &&
+                currentMouseState.X <= MainGameScreen.MapPanel.Left + MainGameScreen.MapPanel.Width &&
+                currentMouseState.Y >= 0 && currentMouseState.Y >= MainGameScreen.MapPanel.Top &&
+                currentMouseState.Y <= MainGameScreen.MapPanel.Top + MainGameScreen.MapPanel.Height
+            )
+            {
+                handleLeftClickMouseOnMap(gameTime);
+                handleRightClickMouseOnMap();
+            }
         }
 
         base.Update(gameTime);

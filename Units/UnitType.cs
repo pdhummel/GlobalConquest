@@ -1,3 +1,4 @@
+namespace GlobalConquest.Units;
 public class UnitType
 {
     // infantry, tank, plane, ComCen, carrier, battleship, spy

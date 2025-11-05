@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Numerics;
 using System.Text.Json.Serialization;
-
+using GlobalConquest.Units;
 namespace GlobalConquest;
 
 public class GameState

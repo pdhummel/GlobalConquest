@@ -1,5 +1,5 @@
 using System.Text.Json;
-
+using GlobalConquest.Units;
 namespace GlobalConquest.Actions;
 
 public class MoveUnitAction : PlayerAction
@@ -33,7 +33,7 @@ public class MoveUnitAction : PlayerAction
         unitAction.TargetY = ToY;
         MapHex mapHex = gameState.Map.Hexes[Unit.Y, Unit.X];
         Unit existingUnit = mapHex.getUnit();
-        Console.WriteLine("execute(): actions before " + existingUnit?.ActionQueue.Count);
+        //Console.WriteLine("execute(): actions before " + existingUnit?.ActionQueue.Count);
         if (IsMultiHexMove)
         {
             existingUnit?.ActionQueue.Add(unitAction);
@@ -42,7 +42,7 @@ public class MoveUnitAction : PlayerAction
         {
             existingUnit?.setUnitAction(unitAction);
         }
-        Console.WriteLine("execute(): actions after " + existingUnit?.ActionQueue.Count);
+        //Console.WriteLine("execute(): actions after " + existingUnit?.ActionQueue.Count);
         if (Unit != null)
         {
             server.sendGameStateAndMapHex(Unit.X, Unit.Y);

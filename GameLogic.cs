@@ -1,5 +1,6 @@
 using GlobalConquest.Actions;
 using Microsoft.Xna.Framework;
+using GlobalConquest.Units;
 namespace GlobalConquest;
 
 public class GameLogic
@@ -459,9 +460,9 @@ public class GameLogic
             }
             if (nextMapHex.X == unitAction.TargetX && nextMapHex.Y == unitAction.TargetY)
             {
-                Console.WriteLine("moveUnit(): before " + unit.ActionQueue.Count);
+                //Console.WriteLine("moveUnit(): actions before " + unit.ActionQueue.Count);
                 unit.ActionQueue.RemoveAt(0);
-                Console.WriteLine("moveUnit(): after " + unit.ActionQueue.Count);
+                //Console.WriteLine("moveUnit(): actions after " + unit.ActionQueue.Count);
             }
             server.sendGameStateAndMapHex(nextMapHex.X, nextMapHex.Y);
             server.sendGameStateAndMapHex(fromX, fromY);
