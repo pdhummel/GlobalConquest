@@ -150,10 +150,10 @@ public class Map
         if (unit.X != destinationX || unit.Y != destinationY)
         {
             MapHex targetMapHex = Hexes[destinationY, destinationX];
-            targetMapHex.setUnit(unit);
             MapHex sourceMapHex = Hexes[unit.Y, unit.X];
             if (sourceMapHex.Units.Count > 0)
             {
+                targetMapHex.setUnit(unit);
                 Hexes[unit.Y, unit.X].Units.RemoveAt(0);
             }
         }

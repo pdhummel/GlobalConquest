@@ -172,6 +172,16 @@ class HexMapEngineAdapter
         Texture2D cyanCarrier = game.Content.Load<Texture2D>("cyan-carrier-48x48");
         units["cyan-carrier"] = cyanCarrier;
 
+        Texture2D magentaSpy = game.Content.Load<Texture2D>("magenta-spy-48x48");
+        units["magenta-spy"] = magentaSpy;
+        Texture2D amberSpy = game.Content.Load<Texture2D>("amber-spy-48x48");
+        units["amber-spy"] = amberSpy;
+        Texture2D ocherSpy = game.Content.Load<Texture2D>("ocher-spy-48x48");
+        units["ocher-spy"] = ocherSpy;
+        Texture2D cyanSpy = game.Content.Load<Texture2D>("cyan-spy-48x48");
+        units["cyan-spy"] = cyanSpy;
+
+
         Console.WriteLine("HexMapEngineAdapter.LoadContent(): hexHeight=" + hexHeight + ", hexWidth=" + hexWidth);
         updateMap();
         Console.WriteLine("HexMapEngineAdapter.LoadContent(): hex count=" + Global.MAP_HEX_TILE_ARRAY.Length);
