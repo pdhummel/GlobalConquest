@@ -67,7 +67,7 @@ x Add support for all land and sea units.
 
 ### Milestone 7
 * Improved Economics.
-* Unit production by city.
+* Unit production automation by city.
 * Unit supported by city.
 * Add oil and mineral resources.
 
@@ -78,10 +78,12 @@ x Add support for all land and sea units.
 * Events
 
 ### Milestone 10
+* Game controller support.
 * UI improvements.
 * Network robustness.
 * Steam integration
 * Multi-platform support
+
 
 
 

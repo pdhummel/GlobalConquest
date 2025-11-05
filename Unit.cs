@@ -38,9 +38,10 @@ public class Unit
 
     public List<UnitAction> ActionQueue { get; set; } = new List<UnitAction>();
 
-    //public int lastTargetUnitX { get; set; } = -1;
-    //public int lastTargetUnitY { get; set; } = -1;
     public Vector2 lastTargetUnitVector { get; set; } = new Vector2(-1, -1);
+
+    public bool IsUnloading { get; set; } = false;
+    public bool IsLoading { get; set; } = false;
 
     public Unit()
     {
@@ -80,10 +81,8 @@ public class Unit
 
     public void setUnitAction(UnitAction unitAction)
     {
-        if (ActionQueue.Count < 1)
-            ActionQueue.Add(unitAction);
-        else
-            ActionQueue[0] = unitAction;
+        ActionQueue.Clear();
+        ActionQueue.Add(unitAction);
     }
 
     public override bool Equals(object obj)

@@ -388,12 +388,14 @@ public class GameLogic
                     if (unit.RoundsToPause > 0)
                     {
                         Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " is unloading.");
+                        unit.IsUnloading = true;
                         unit.RoundsToPause -= 1;
                         if (unit.RoundsToPause > 0)
                         {
                             return;
                         }
                         Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " has unloaded.");
+                        unit.IsUnloading = false;
                         if ("transport-tank".Equals(unit.UnitType) || "transport-armor".Equals(unit.UnitType))
                         {
                             unit.UnitType = "tank";
@@ -406,6 +408,7 @@ public class GameLogic
                     else
                     {
                         Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " needs to unload.");
+                        unit.IsUnloading = true;
                         unit.RoundsToPause = 8;
                         return;
                     }
@@ -418,12 +421,14 @@ public class GameLogic
                     if (unit.RoundsToPause > 0)
                     {
                         Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " is loading into a transport.");
+                        unit.IsLoading = true;
                         unit.RoundsToPause -= 1;
                         if (unit.RoundsToPause > 0)
                         {
                             return;
                         }
                         Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " has loaded into a transport.");
+                        unit.IsLoading = false;
                         if ("tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
                         {
                             unit.UnitType = "transport-tank";
@@ -436,6 +441,7 @@ public class GameLogic
                     else
                     {
                         Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " needs to load into a transport.");
+                        unit.IsLoading = true;
                         unit.RoundsToPause = 4;
                         return;
                     }
@@ -453,7 +459,9 @@ public class GameLogic
             }
             if (nextMapHex.X == unitAction.TargetX && nextMapHex.Y == unitAction.TargetY)
             {
+                Console.WriteLine("moveUnit(): before " + unit.ActionQueue.Count);
                 unit.ActionQueue.RemoveAt(0);
+                Console.WriteLine("moveUnit(): after " + unit.ActionQueue.Count);
             }
             server.sendGameStateAndMapHex(nextMapHex.X, nextMapHex.Y);
             server.sendGameStateAndMapHex(fromX, fromY);

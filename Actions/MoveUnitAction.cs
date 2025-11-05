@@ -9,6 +9,7 @@ public class MoveUnitAction : PlayerAction
     public int FromY { get; set; }
     public int ToX { get; set; }
     public int ToY { get; set; }
+    public bool IsMultiHexMove { get; set; } = false;
 
 
     public new void deserializeAndExecute(Object serverObj)
@@ -30,11 +31,20 @@ public class MoveUnitAction : PlayerAction
         unitAction.Action = "move";
         unitAction.TargetX = ToX;
         unitAction.TargetY = ToY;
-        //Unit?.ActionQueue.Add(unitAction);
-        Unit?.setUnitAction(unitAction);
+        MapHex mapHex = gameState.Map.Hexes[Unit.Y, Unit.X];
+        Unit existingUnit = mapHex.getUnit();
+        Console.WriteLine("execute(): actions before " + existingUnit?.ActionQueue.Count);
+        if (IsMultiHexMove)
+        {
+            existingUnit?.ActionQueue.Add(unitAction);
+        }
+        else
+        {
+            existingUnit?.setUnitAction(unitAction);
+        }
+        Console.WriteLine("execute(): actions after " + existingUnit?.ActionQueue.Count);
         if (Unit != null)
         {
-            gameState.Map.Hexes[FromY, FromX].setUnit(Unit);
             server.sendGameStateAndMapHex(Unit.X, Unit.Y);
         }    
     }

@@ -40,6 +40,10 @@ public class GlobalConquestGame : Game
     public bool MoveMode { get; set; } = false;
     public JoinGameValues MyJoinGameValues { get; set; }
 
+    float clickStartTime;
+    bool isMouseDown = false;
+    bool isMultiHexMove = false;
+
     public GlobalConquestGame()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -227,7 +231,7 @@ public class GlobalConquestGame : Game
         if (Client != null && Client.isLoadContentComplete)
         {
             hexMapEngineAdapter?.Process_UpdateEvent(gameTime);
-            handleLeftClickMouseOnMap();
+            handleLeftClickMouseOnMap(gameTime);
             handleRightClickMouseOnMap();
         }
 
@@ -404,11 +408,34 @@ public class GlobalConquestGame : Game
         return v;
     }
 
-    private void handleLeftClickMouseOnMap()
+    private void handleLeftClickMouseOnMap(GameTime gameTime)
     {
-
-        if (currentMouseState.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released)
+        if (currentMouseState.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released && !isMouseDown)
         {
+            isMouseDown = true;
+            clickStartTime = (float)gameTime.TotalGameTime.TotalSeconds; // Or use DateTime.Now.Ticks
+        }
+        // Check if enough time has passed for a long click
+        else if (isMouseDown && currentMouseState.LeftButton == ButtonState.Pressed &&
+                 ((float)gameTime.TotalGameTime.TotalSeconds - clickStartTime >= 1.0f))
+        {
+
+            // long-press logic here
+            Console.WriteLine("handleLeftClickMouseOnMap(): long click");
+            isMouseDown = false;
+            MainGameScreen.HideContextMenu();
+            if (MoveMode)
+            {
+                isMultiHexMove = true;
+                MapHex previousSelectedHex = lastSelectedHex;
+                Unit previousSelectedUnit = lastSelectedUnit;
+                handleClickMouseOnMap();
+                sendMoveAction(previousSelectedHex, previousSelectedUnit);
+            }
+        }
+        else if (currentMouseState.LeftButton == ButtonState.Released && isMouseDown)
+        {
+            isMouseDown = false;
             if (MainGameScreen.IsContextMenuVisible())
             {
                 return;
@@ -418,19 +445,29 @@ public class GlobalConquestGame : Game
             handleClickMouseOnMap();
             if (MoveMode)
             {
-                if (lastSelectedHex.X >= 0 && lastSelectedHex.Y >= 0 && !previousSelectedHex.Equals(lastSelectedHex))
-                {
-                    MoveMode = false;
-                    MoveUnitAction action = new MoveUnitAction();
-                    action.Unit = previousSelectedUnit;
-                    action.FromX = previousSelectedHex.X;
-                    action.FromY = previousSelectedHex.Y;
-                    action.ToX = lastSelectedHex.X;
-                    action.ToY = lastSelectedHex.Y;
-                    action.ClassType = "GlobalConquest.Actions.MoveUnitAction";
-                    Client?.SendAction("Paul", action);
-                }
+                sendMoveAction(previousSelectedHex, previousSelectedUnit);
+                MoveMode = false;
+                isMultiHexMove = false;
             }
+        }
+    }
+
+    private void sendMoveAction(MapHex previousSelectedHex, Unit previousSelectedUnit)
+    {
+        if (lastSelectedHex.X >= 0 && lastSelectedHex.Y >= 0 && !previousSelectedHex.Equals(lastSelectedHex))
+        {
+            if (!isMultiHexMove)
+                MoveMode = false;
+            MoveUnitAction action = new MoveUnitAction();
+            action.Unit = previousSelectedUnit;
+            action.FromX = previousSelectedHex.X;
+            action.FromY = previousSelectedHex.Y;
+            action.ToX = lastSelectedHex.X;
+            action.ToY = lastSelectedHex.Y;
+            action.ClassType = "GlobalConquest.Actions.MoveUnitAction";
+            action.IsMultiHexMove = isMultiHexMove;
+            Client?.SendAction(Client.ClientIdentifier, action);
+            Console.WriteLine("sendMoveAction(): action sent");
         }
     }
 
