@@ -54,9 +54,9 @@ The game is being designed with known differences from the original.
 ### Milestone 5
 - [ ] AI opponents
 - [ ] Add natives
-- [ ] Add more victory conditions.
-  - [ ] Add number of turns game setting.
-  - [ ] Calculate victory points.
+- [x] Add more victory conditions.
+  - [x] Add number of turns game setting.
+  - [x] Calculate victory points.
 - [ ] Add support for all execution triggers. (timers, etc.)
 
 ### Milestone 6

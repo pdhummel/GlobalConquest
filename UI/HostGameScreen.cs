@@ -36,6 +36,8 @@ public class HostGameScreen
     ComboView visibilityComboView = new ComboView();
     Label executionLabel = new Label();
     ComboView executionComboView = new ComboView();
+    Label scoringOptionLabel = new Label();
+    ComboView scoringOptionComboView = new ComboView();
     
     Label numberOfBurbsLabel = new Label();
     TextBox numberOfBurbsTextBox= new TextBox();
@@ -185,8 +187,15 @@ public class HostGameScreen
         executionComboView.Border = new SolidBrush("#808000FF");
         executionComboView.BorderThickness = new Thickness(2);
 
-        Label immediateiLabel = new Label();
-        immediateiLabel.Text = "Immediate";
+        scoringOptionLabel.Id = "scoringOptionLabel";
+        scoringOptionLabel.Text = "Scoring:";
+        scoringOptionLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
+        scoringOptionComboView.Id = "scoringOptionComboView";
+        scoringOptionComboView.Border = new SolidBrush("#808000FF");
+        scoringOptionComboView.BorderThickness = new Thickness(2);
+
+        Label immediateLabel = new Label();
+        immediateLabel.Text = "Immediate";
         Label timedGraceLabel = new Label();
         timedGraceLabel.Text = "Timed Grace";
         Label TimedLabel = new Label();
@@ -195,9 +204,23 @@ public class HostGameScreen
         quorumLabel.Text = "Quorum";
         Label infiniteLabel = new Label();
         infiniteLabel.Text = "Infinite";
-        executionComboView.Widgets.Add(immediateiLabel);
+        executionComboView.Widgets.Add(immediateLabel);
         executionComboView.Widgets.Add(quorumLabel);
         executionComboView.SelectedIndex = 0;
+
+        Label combinationScoringLabel = new Label();
+        combinationScoringLabel.Text = "Combined";
+        Label capitalScoringLabel = new Label();
+        capitalScoringLabel.Text = "Capital";
+        Label incomeScoringLabel = new Label();
+        incomeScoringLabel.Text = "Income";
+        Label headCountScoringLabel = new Label();
+        headCountScoringLabel.Text = "Head-Count";
+        scoringOptionComboView.Widgets.Add(combinationScoringLabel);
+        scoringOptionComboView.Widgets.Add(capitalScoringLabel);
+        scoringOptionComboView.Widgets.Add(incomeScoringLabel);
+        scoringOptionComboView.Widgets.Add(headCountScoringLabel);
+        scoringOptionComboView.SelectedIndex = 0;
 
 
         cancelButton.Click += cancelButtonClicked;
@@ -280,6 +303,13 @@ public class HostGameScreen
         executionPanel.Widgets.Add(executionComboView);
         executionComboView.Visible = true;
 
+        var scoringOptionPanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(scoringOptionPanel);
+        scoringOptionPanel.Widgets.Add(scoringOptionLabel);
+        scoringOptionLabel.Visible = true;
+        scoringOptionPanel.Widgets.Add(scoringOptionComboView);
+        scoringOptionComboView.Visible = true;
+
         var buttonsPanel = new HorizontalStackPanel { Spacing = 8 };
         verticalStackPanel.Widgets.Add(buttonsPanel);
         buttonsPanel.Widgets.Add(okButton);
@@ -312,8 +342,10 @@ public class HostGameScreen
         numberOfTurnsTextBox.Visible = false;
         visibilityLabel.Visible = false;
         visibilityComboView.Visible = false;
-        visibilityLabel.Visible = false;
+        executionLabel.Visible = false;
         executionComboView.Visible = false;
+        scoringOptionLabel.Visible = false;
+        scoringOptionComboView.Visible = false;
 
         hostSettingsLabel.RemoveFromParent();
         portLabel.RemoveFromParent();
@@ -338,7 +370,8 @@ public class HostGameScreen
         visibilityComboView.RemoveFromParent();
         executionLabel.RemoveFromParent();
         executionComboView.RemoveFromParent();
-
+        scoringOptionLabel.RemoveFromParent();
+        scoringOptionComboView.RemoveFromParent();
 
     }
 
@@ -362,6 +395,7 @@ public class HostGameScreen
         gameSettings.NumberOfHumans = (Int32.Parse(humanPlayersTextBox.Text));
         gameSettings.Visibility = ((Label)visibilityComboView.SelectedItem).Text;
         gameSettings.ExecutionMode = ((Label)executionComboView.SelectedItem).Text;
+        gameSettings.ScoringOption = ((Label)scoringOptionComboView.SelectedItem).Text;
         GlobalConquestGame gcGame = (GlobalConquestGame)game;
         gcGame.Server = new Server();
         gcGame.Server.StartAsHost(gameSettings, "GlobalConquest");

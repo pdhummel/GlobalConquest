@@ -62,6 +62,7 @@ public class DetailsPanelView
         string unitStrength = lastSelectedUnit == null ?
                "Strength: " :
                "Strength: " + lastSelectedUnit.StrengthPoints;
+       drawMessage(unitStrength);
         string unitStatus = lastSelectedUnit == null ?
                "Status: " :
                lastSelectedUnit.IsLoading ? "Status: loading" : lastSelectedUnit.IsUnloading ? "Status: unloading" : "Status: ";
