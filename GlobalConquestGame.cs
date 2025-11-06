@@ -157,8 +157,8 @@ public class GlobalConquestGame : Game
     protected override void Update(GameTime gameTime)
     {
         long currentMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
-            Exit();
+        //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
+        //    Exit();
         currentKeyboardState = Keyboard.GetState();
 
         if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up) &&
