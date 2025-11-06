@@ -39,7 +39,7 @@ x Add support for all land and sea units.
 
 
 ### Milestone 3
-* Advanced movement -- waypoints.
+x Advanced movement -- waypoints.
 * Destinations screen.
 * Add unit special handling.
   * Infantry dig-in.

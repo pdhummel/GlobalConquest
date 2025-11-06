@@ -35,9 +35,9 @@ public class GlobalConquestGame : Game
     public MouseState currentMouseState = Mouse.GetState();
     KeyboardState currentKeyboardState = Keyboard.GetState();
     KeyboardState previousKeyboardState = Keyboard.GetState();
-    SpriteFont? font;
-    MapHex? lastSelectedHex;
-    Unit? lastSelectedUnit;
+    public SpriteFont? font;
+    public MapHex? lastSelectedHex;
+    public Unit? lastSelectedUnit;
     public bool MoveMode { get; set; } = false;
     public JoinGameValues MyJoinGameValues { get; set; }
 
@@ -315,6 +315,10 @@ public class GlobalConquestGame : Game
             if (MainGameScreen.DetailsPanel != null)
             {
                 drawDetailsPanel();
+            }
+            if (MainGameScreen.FactionsPanel != null)
+            {
+                MainGameScreen.drawFactionsPanel();
             }
             Globals.spriteBatch?.End();
             SpriteBatch miniMapSpriteBatch = new SpriteBatch(GraphicsDevice);

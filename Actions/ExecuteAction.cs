@@ -27,6 +27,7 @@ public class ExecuteAction : PlayerAction
         if (ClientIdentifier != null)
         {
             gameState.PlayerExecutionReady[ClientIdentifier] = true;
+            server.sendGameState();
         }
 
         // TODO: evaluate whether the execution phase should occur.
