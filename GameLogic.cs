@@ -51,6 +51,7 @@ public class GameLogic
             Thread.Sleep(1000);
         }
         gameState.Map.checkBurbsForOwner();
+        calculateScore(server, units);
         checkForEndOfGame(server);
 
         if (!"gameOver".Equals(server.gameState.CurrentPhase))
@@ -562,17 +563,29 @@ public class GameLogic
         GameState gameState = server.gameState;
         int commandCenters = 0;
         bool gameOver = false;
-        string victor = null;
+        string victor = "grey";
         string candidate = null;
+        List<string> colors = ["amber", "magenta", "cyan", "ocher"];
 
         // number of turns has passed
-        if (server.gameState.GameSettings.NumberOfTurnsForGame > 0 && server.gameState.CurrentTurn+1 >= server.gameState.GameSettings.NumberOfTurnsForGame)
+        if (server.gameState.GameSettings.NumberOfTurnsForGame > 0 && server.gameState.CurrentTurn + 1 >= server.gameState.GameSettings.NumberOfTurnsForGame)
         {
+            string maxColor = "grey";
+            int maxPointValue = 0;
+            foreach (string color in colors)
+            {
+                Faction faction = gameState.Factions.ColorToFaction[color];
+                if (faction.CombinedScore > maxPointValue)
+                {
+                    maxPointValue = faction.CombinedScore;
+                    maxColor = color;
+                }
+            }
+            victor = maxColor;
             gameOver = true;
         }
 
-        // Only 1 CommandCenter is left.
-        List<string> colors = ["amber", "magenta", "cyan", "ocher"];
+        // Only 1 CommandCenter is left.        
         foreach (string color in colors)
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
@@ -582,7 +595,7 @@ public class GameLogic
                 // TODO: Right now only humans should be candidates for victory
                 if (gameState.Players.colorToPlayer.ContainsKey(color))
                     candidate = color;
-            }    
+            }
         }
         if (commandCenters <= 1 && gameState.GameSettings.NumberOfHumans > 1)
         {
@@ -590,7 +603,7 @@ public class GameLogic
             gameOver = true;
             Console.WriteLine("checkForVictory(): commandCenters=" + commandCenters);
         }
-        
+
 
 
         // Someone took all Metros and the capital.
@@ -619,9 +632,103 @@ public class GameLogic
         if (gameOver)
         {
             server.gameState.CurrentPhase = "gameOver";
+            gameState.VictoriousColor = victor;
             server.sendGameState();
         }
 
         return victor;
     }
+
+    private void calculateScore(Server server, List<Unit> units)
+    {
+        GameState gameState = server.gameState;
+        GameSettings gameSettings = gameState.GameSettings;
+        List<string> colors = ["amber", "magenta", "cyan", "ocher"];
+        foreach (string color in colors)
+        {
+            Faction faction = gameState.Factions.ColorToFaction[color];
+            if ("Head-Count".Equals(gameSettings.ScoringOption))
+            {
+                faction.CombinedScore = calculateHeadCountScore(faction);
+            }
+            else if ("Income".Equals(gameSettings.ScoringOption))
+            {
+                faction.CombinedScore = calculateIncomeScore(server, faction, units);
+            }
+            else if ("Capital".Equals(gameSettings.ScoringOption))
+            {
+                gameState.Burbs.PointMap["capital"] = 2500;
+                faction.CombinedScore = calculateCapitalScore(server, faction);
+            }
+            else if ("Combined".Equals(gameSettings.ScoringOption))
+            {
+                faction.CombinedScore = calculateHeadCountScore(faction);
+                faction.CombinedScore += calculateIncomeScore(server, faction, units);
+                faction.CombinedScore += calculateCapitalScore(server, faction);
+            }
+        }
+
+    }
+
+    // Points are awarded for each hit of damage to all opponents EXCEPT the native forces.
+    // The points you receive depend upon the value of the unit you are damaging. 
+    // Hitting an opponent's Comcen gets you 16 points per hit, 
+    // while damaging an infantry will give you only two points per hit.
+    // Native unit damages one of your units, you will LOSE points for each hit. 
+    // no player can ever get below a score of zero. 
+    private int calculateHeadCountScore(Faction faction)
+    {
+        int score = faction.HeadCountScore;
+        return score;
+    }
+
+    // The scoring of this type of Conquest is calculated as (get ready for this) 
+    // the total of one-half the money in your Treasury, 
+    // TODO: plus the sum of the balance of all your burbs, 
+    // plus the sum of income per turn of all your burbs and resources, 
+    // plus the "scrap value" of all your units (one tenth their cost).
+    private int calculateIncomeScore(Server server, Faction faction, List<Unit> units)
+    {
+        GameState gameState = server.gameState;
+        int score = 0;
+        score += faction.Money / 2;
+
+        foreach (string key in gameState.Burbs.HexXyToBurb.Keys)
+        {
+            Burb burb = gameState.Burbs.HexXyToBurb[key];
+            if (burb.OwnerColor.Equals(faction.Color))
+            {
+                score += gameState.Burbs.IncomeMap[burb.Type];
+            }
+        }
+        foreach (Unit unit in units)
+        {
+            if (unit.Color.Equals(faction.Color))
+            {
+                UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+                score += unitType.Cost / 10;
+            }
+        }
+
+        return score;
+    }
+    
+    // You get points in this one for each burb you own. Villages are worth 20, towns 
+    // 30, cities 40, metroplexes 50, and the native capital 2500. 
+    private int calculateCapitalScore(Server server, Faction faction)
+    {
+        int score = 0;
+        GameState gameState = server.gameState;
+        foreach (string key in gameState.Burbs.HexXyToBurb.Keys)
+        {
+            Burb burb = gameState.Burbs.HexXyToBurb[key];
+            if (burb.OwnerColor.Equals(faction.Color))
+            {
+                score += gameState.Burbs.PointMap[burb.Type];
+            }
+        }
+
+        return score;
+    }
+
 }

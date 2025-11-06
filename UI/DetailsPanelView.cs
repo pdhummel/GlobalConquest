@@ -55,10 +55,13 @@ public class DetailsPanelView
                lastSelectedBurb.Type + " " + lastSelectedBurb.Name +  " (" + lastSelectedBurb.OwnerColor + ")";
         drawMessage(burb);
         drawMessage("");
-        string unit = lastSelectedUnit == null ?
-               "Unit: " :
-               "Unit: " + lastSelectedUnit.UnitType + ", " + lastSelectedUnit.Color + ", " + lastSelectedUnit.StrengthPoints;
-        drawMessage(unit);
+              string unit = lastSelectedUnit == null ?
+                     "Unit: " :
+                     "Unit: " + lastSelectedUnit.UnitType + ", " + lastSelectedUnit.Color;
+              drawMessage(unit);
+        string unitStrength = lastSelectedUnit == null ?
+               "Strength: " :
+               "Strength: " + lastSelectedUnit.StrengthPoints;
         string unitStatus = lastSelectedUnit == null ?
                "Status: " :
                lastSelectedUnit.IsLoading ? "Status: loading" : lastSelectedUnit.IsUnloading ? "Status: unloading" : "Status: ";

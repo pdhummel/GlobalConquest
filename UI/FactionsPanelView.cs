@@ -46,7 +46,8 @@ public class FactionsPanelView
         //Console.WriteLine("drawMessageForColor()");
         GameState gameState = gcGame.Client.GameState;
         // Amber Array:  Paul  planning|ready
-        string factionName = gameState.Factions.ColorToFaction[color].Name;
+        Faction faction = gameState.Factions.ColorToFaction[color];
+        string factionName = faction.Name;
         string message = factionName.Split(" ")[0] + ": ";
         if (gameState.Players.colorToPlayer.ContainsKey(color))
         {
@@ -65,6 +66,8 @@ public class FactionsPanelView
             }
 
         }
+        drawMessage(message);
+        message = "" + faction.CombinedScore;
         drawMessage(message);
 
 

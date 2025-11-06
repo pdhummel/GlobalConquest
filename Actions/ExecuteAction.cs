@@ -23,14 +23,27 @@ public class ExecuteAction : PlayerAction
         Console.WriteLine("ExecuteAction.execute()");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
-        // TODO: is ClientIdentifier the right key? color? faction?
         if (ClientIdentifier != null)
         {
+            bool first = true;
+            foreach (string key in gameState.PlayerExecutionReady.Keys)
+            {
+                if (gameState.PlayerExecutionReady[key])
+                    first = false;
+            }
             gameState.PlayerExecutionReady[ClientIdentifier] = true;
+            // first player to execute gets a $5 reward.
+            if (first)
+            {
+                Player player = gameState.Players.playerNameToPlayer[ClientIdentifier];
+                Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
+                faction.Money += 5;
+            }
+                
             server.sendGameState();
         }
 
-        // TODO: evaluate whether the execution phase should occur.
+
         bool startExecution = false;
         if ("Immediate".Equals(gameState.GameSettings.ExecutionMode))
         {
