@@ -63,6 +63,7 @@ public class InfantryUnitType : UnitType
 
         unitType.DiscoveryRange = 3;
         unitType.ScanningRange = 5;
+        unitType.PointsPerHit = 2;
 
         // column
         unitType.FiringRangeFromAttacker["infantry"] = 2;
@@ -203,6 +204,7 @@ public class InfantryUnitType : UnitType
 
         unitType.DiscoveryRange = 2;
         unitType.ScanningRange = 3;
+        unitType.PointsPerHit = 2;
 
         // column
         unitType.FiringRangeFromAttacker["infantry"] = 2;
@@ -343,6 +345,7 @@ public class InfantryUnitType : UnitType
 
         unitType.DiscoveryRange = 3;
         unitType.ScanningRange = 5;
+        unitType.PointsPerHit = 2;
 
         // column
         unitType.FiringRangeFromAttacker["infantry"] = 2;

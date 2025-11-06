@@ -67,6 +67,7 @@ public class SubUnitType : UnitType
         // Subs can only be spotted at a range of 1 if they are stationary or if the scanning unit 
         // is moving regardless of unit's normal range.
         unitType.ScanningRange = 4;
+        unitType.PointsPerHit = 5;
 
         // column
         unitType.FiringRangeFromAttacker["infantry"] = 1;

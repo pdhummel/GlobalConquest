@@ -15,10 +15,11 @@ public class GameSettings
     // Each turn has eight rounds (each round gives each unit a chance to move and/or fire).
     public int NumberOfRoundsPerTurn { get; set; } = 8;
 
-    public string Visibility { get; set; }
+    public string Visibility { get; set; } = "Fog of War";
 
-    public string ExecutionMode { get; set; }
+    public string ExecutionMode { get; set; } = "Quorum";
     public int StartingMoney { get; set; } = 0;
+    public string ScoringOption { get; set; } = "Combined"; // Income, Capital, Head-Count, Combined
 
     public GameSettings()
     {

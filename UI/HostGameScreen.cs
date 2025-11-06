@@ -41,7 +41,9 @@ public class HostGameScreen
     TextBox numberOfBurbsTextBox= new TextBox();
 
     Label startingMoneyLabel = new Label();
-    TextBox startingMoneyTextBox= new TextBox();
+    TextBox startingMoneyTextBox = new TextBox();
+    Label numberOfTurnsLabel = new Label();
+    TextBox numberOfTurnsTextBox = new TextBox();
 
 
     public HostGameScreen(PlayGameMenu playGameMenu, Game game, Grid grid)
@@ -141,6 +143,15 @@ public class HostGameScreen
         startingMoneyTextBox.Width = 50;
         startingMoneyTextBox.Border = new SolidBrush("#808000FF");
         startingMoneyTextBox.BorderThickness = new Thickness(2);
+
+        numberOfTurnsLabel.Id = "numberOfTurnsLabel";
+        numberOfTurnsLabel.Text = "turns:";
+        numberOfTurnsLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
+        numberOfTurnsTextBox.Id = "numberOfTurnsTextBox";
+        numberOfTurnsTextBox.Text = "-1";
+        numberOfTurnsTextBox.Width = 50;
+        numberOfTurnsTextBox.Border = new SolidBrush("#808000FF");
+        numberOfTurnsTextBox.BorderThickness = new Thickness(2);
 
         visibilityLabel.Id = "visibilityLabel";
         visibilityLabel.Text = "visibility:";
@@ -248,6 +259,13 @@ public class HostGameScreen
         startingMoneyPanel.Widgets.Add(startingMoneyTextBox);
         startingMoneyTextBox.Visible = true;
 
+        var numberOfTurnsPanel = new HorizontalStackPanel { Spacing = 8 };
+        verticalStackPanel.Widgets.Add(numberOfTurnsPanel);
+        numberOfTurnsPanel.Widgets.Add(numberOfTurnsLabel);
+        numberOfTurnsLabel.Visible = true;
+        numberOfTurnsPanel.Widgets.Add(numberOfTurnsTextBox);
+        numberOfTurnsTextBox.Visible = true;
+
         var visibilityPanel = new HorizontalStackPanel { Spacing = 8 };
         verticalStackPanel.Widgets.Add(visibilityPanel);
         visibilityPanel.Widgets.Add(visibilityLabel);
@@ -290,6 +308,8 @@ public class HostGameScreen
         numberOfBurbsTextBox.Visible = false;
         startingMoneyLabel.Visible = false;
         startingMoneyTextBox.Visible = false;
+        numberOfTurnsLabel.Visible = false;
+        numberOfTurnsTextBox.Visible = false;
         visibilityLabel.Visible = false;
         visibilityComboView.Visible = false;
         visibilityLabel.Visible = false;
@@ -312,6 +332,8 @@ public class HostGameScreen
         numberOfBurbsTextBox.RemoveFromParent();
         startingMoneyLabel.RemoveFromParent();
         startingMoneyTextBox.RemoveFromParent();
+        numberOfTurnsLabel.RemoveFromParent();
+        numberOfTurnsTextBox.RemoveFromParent();
         visibilityLabel.RemoveFromParent();
         visibilityComboView.RemoveFromParent();
         executionLabel.RemoveFromParent();
@@ -336,6 +358,7 @@ public class HostGameScreen
         gameSettings.Width = (Int32.Parse(mapWidthTextBox.Text));
         gameSettings.NumberOfBurbs = (Int32.Parse(numberOfBurbsTextBox.Text));
         gameSettings.StartingMoney = (Int32.Parse(startingMoneyTextBox.Text));
+        gameSettings.NumberOfTurnsForGame = (Int32.Parse(numberOfTurnsTextBox.Text));
         gameSettings.NumberOfHumans = (Int32.Parse(humanPlayersTextBox.Text));
         gameSettings.Visibility = ((Label)visibilityComboView.SelectedItem).Text;
         gameSettings.ExecutionMode = ((Label)executionComboView.SelectedItem).Text;

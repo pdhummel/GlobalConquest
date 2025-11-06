@@ -64,6 +64,7 @@ public class CarrierUnitType : UnitType
 
         unitType.DiscoveryRange = 5;
         unitType.ScanningRange = 6;
+        unitType.PointsPerHit = 12;
 
         // column
         unitType.FiringRangeFromAttacker["infantry"] = 1;

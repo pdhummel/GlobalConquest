@@ -51,7 +51,7 @@ public class GameLogic
             Thread.Sleep(1000);
         }
         gameState.Map.checkBurbsForOwner();
-        checkForVictory(server);
+        checkForEndOfGame(server);
 
         if (!"gameOver".Equals(server.gameState.CurrentPhase))
         {
@@ -330,6 +330,20 @@ public class GameLogic
             Console.WriteLine("checkForCombat(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " attacking " + unitToAttack.UnitType + " at " + unitToAttack.X + "," + unitToAttack.Y);
             int damage = attackerUnitType.BattleDamageToDefender[unitToAttack.UnitType];
             unitToAttack.StrengthPoints -= damage;
+            if (!"grey".Equals(unitToAttack.Color))
+            {
+                Faction faction = server.gameState.Factions.ColorToFaction[unit.Color];
+                UnitType unitTypeAttacked = server.gameState.UnitTypes.UnitTypeMap[unitToAttack.UnitType];
+                faction.HeadCountScore += unitTypeAttacked.PointsPerHit;
+            }
+            if (! "grey".Equals(unit.Color) && !"grey".Equals(unitToAttack.Color))
+            {
+                Faction faction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
+                UnitType unitTypeAttacked = server.gameState.UnitTypes.UnitTypeMap[unitToAttack.UnitType];
+                faction.HeadCountScore -= unitTypeAttacked.PointsPerHit;
+                if (faction.HeadCountScore < 0)
+                    faction.HeadCountScore = 0;
+            }
             if (unitToAttack.StrengthPoints <= 0)
             {
                 unitToAttack.StrengthPoints = 0;
@@ -542,12 +556,20 @@ public class GameLogic
         return mapHex;
     }
 
-    private void checkForVictory(Server server)
+    private string checkForEndOfGame(Server server)
     {
         //Console.WriteLine("checkForVictory(): enter");
         GameState gameState = server.gameState;
         int commandCenters = 0;
         bool gameOver = false;
+        string victor = null;
+        string candidate = null;
+
+        // number of turns has passed
+        if (server.gameState.GameSettings.NumberOfTurnsForGame > 0 && server.gameState.CurrentTurn+1 >= server.gameState.GameSettings.NumberOfTurnsForGame)
+        {
+            gameOver = true;
+        }
 
         // Only 1 CommandCenter is left.
         List<string> colors = ["amber", "magenta", "cyan", "ocher"];
@@ -555,25 +577,23 @@ public class GameLogic
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
             if (faction.HasComCen)
+            {
                 commandCenters += 1;
+                // TODO: Right now only humans should be candidates for victory
+                if (gameState.Players.colorToPlayer.ContainsKey(color))
+                    candidate = color;
+            }    
         }
         if (commandCenters <= 1 && gameState.GameSettings.NumberOfHumans > 1)
         {
+            victor = candidate;
             gameOver = true;
             Console.WriteLine("checkForVictory(): commandCenters=" + commandCenters);
         }
         
 
-        // TODO: this is a temporary victory condition.
-        // Someone took the Capital.
-        //if (!"grey".Equals(gameState.Map.getCapitalHex().Burb.OwnerColor))
-        //{
-        //    gameOver = true;
-        //    Console.WriteLine("checkForVictory(): capital owner=" + gameState.Map.getCapitalHex().Burb.OwnerColor);
-        //}
 
-
-        // Someone took all Metros.
+        // Someone took all Metros and the capital.
         Dictionary<string, int> metroOwnerCount = new Dictionary<string, int>();
         foreach (string color in colors)
         {
@@ -587,8 +607,12 @@ public class GameLogic
         {
             if (metroOwnerCount[color] >= 4)
             {
-                Console.WriteLine("checkForVictory(): + metro owner=" + color);
-                gameOver = true;
+                if (color.Equals(gameState.Map.getCapitalHex().Burb.OwnerColor))
+                {
+                    Console.WriteLine("checkForVictory(): + metro owner=" + color);
+                    victor = color;
+                    gameOver = true;
+                }
             }
         }
 
@@ -598,5 +622,6 @@ public class GameLogic
             server.sendGameState();
         }
 
+        return victor;
     }
 }

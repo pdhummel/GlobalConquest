@@ -64,6 +64,7 @@ public class ComCenUnitType : UnitType
 
         unitType.DiscoveryRange = 8;
         unitType.ScanningRange = 6;
+        unitType.PointsPerHit = 16;
 
         // column
         unitType.FiringRangeFromAttacker["infantry"] = 2;

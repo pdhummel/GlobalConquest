@@ -18,6 +18,8 @@ public class UnitType
 
     public int DiscoveryRange { get; set; }
 
+    public int PointsPerHit { get; set; }
+
 
     // Units can accumulate steps as they are moving (up to a maximum of 100).
     // Infantry and armor when on land may move only once per round 

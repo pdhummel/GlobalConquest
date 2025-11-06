@@ -64,6 +64,7 @@ public class BattleshipUnitType : UnitType
 
         unitType.DiscoveryRange = 4;
         unitType.ScanningRange = 5;
+        unitType.PointsPerHit = 10;
 
         // column
         unitType.FiringRangeFromAttacker["infantry"] = 1;

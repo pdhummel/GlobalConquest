@@ -64,6 +64,7 @@ public class PlaneUnitType : UnitType
 
         unitType.DiscoveryRange = 0;
         unitType.ScanningRange = 0;
+        unitType.PointsPerHit = 10;
 
         // column
         unitType.FiringRangeFromAttacker["infantry"] = 0;

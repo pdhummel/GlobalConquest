@@ -2,6 +2,7 @@ namespace GlobalConquest;
 public class Burbs
 {
     public Dictionary<string, int> IncomeMap { get; set; } = new Dictionary<string, int>();
+    public Dictionary<string, int> PointMap  { get; set; } = new Dictionary<string, int>();
     public Dictionary<string, Burb> NameToBurb { get; set; } = new Dictionary<string, Burb>();
     public Dictionary<string, Burb> HexXyToBurb { get; set; } = new Dictionary<string, Burb>();
     HashSet<string> cities = new HashSet<string>
@@ -26,6 +27,14 @@ public class Burbs
         IncomeMap["capital"] = 10;
         IncomeMap["suburb"] = 0;
         IncomeMap["dock"] = 0;
+
+        PointMap["village"] = 20;
+        PointMap["town"] = 30;
+        PointMap["city"] = 40;
+        PointMap["metro"] = 50;
+        PointMap["capital"] = 250;  // Combined Scoring = 250; Capital Scoring == 2500
+        PointMap["suburb"] = 0;
+        PointMap["dock"] = 0;
     }
 
     public Burb addBurb(Random random, string type, Map map, MapHex mapHex)

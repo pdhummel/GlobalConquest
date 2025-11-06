@@ -11,6 +11,8 @@ public class Faction
     public Player? Player { get; set; }
     public bool HasComCen { get; set; } = false;
     public int Money { get; set; } = 0;
+    public int HeadCountScore { get; set; } = 0;
+    public int CombinedScore { get; set; } = 0;
 
     public Faction(string name, string color)
     {

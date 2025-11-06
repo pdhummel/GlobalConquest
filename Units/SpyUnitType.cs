@@ -64,6 +64,7 @@ public class SpyUnitType : UnitType
 
         unitType.DiscoveryRange = 1;
         unitType.ScanningRange = 10;
+        unitType.PointsPerHit = 12;
 
         // column
         unitType.FiringRangeFromAttacker["infantry"] = 2;
