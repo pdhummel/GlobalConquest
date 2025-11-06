@@ -23,66 +23,66 @@ The game is being designed with known differences from the original.
 
 ## Roadmap
 ### Milestone 1
-x Combat with a limited number of unit types and a fixed number of units per side.
-x Capture metros and Elimination victory condition.
-x Simple execution trigger.
+- [x] Combat with a limited number of unit types and a fixed number of units per side.
+- [x] Capture metros and Elimination victory condition.
+- [x] Simple execution trigger.
 
 ### Milestone 2
-x Add Burbs to map.
-x Ability to purchase and produce units.
-x Burb management screen.
-x Add unit repair logic.
-x Add unit attrition logic.
-x Add support for all land and sea units.
-  x Transports with load and unload.
-  x Spies, subs, battleships, carriers.
+- [x] Add Burbs to map.
+- [x] Ability to purchase and produce units.
+- [x] Burb management screen.
+- [x] Add unit repair logic.
+- [x] Add unit attrition logic.
+- [x] Add support for all land and sea units.
+  - [x] Transports with load and unload.
+  - [x] Spies, subs, battleships, carriers.
 
 
 ### Milestone 3
-x Advanced movement -- waypoints.
-* Destinations screen.
-* Add unit special handling.
-  * Infantry dig-in.
-  * Submarine visibility handling.
-  * Ship bombardment.
-* Unit context menu - blitz, sneak, pursue, etc.
+- [x] Advanced movement -- waypoints.
+- [ ] Destinations screen.
+- [ ] Add unit special handling.
+  - [ ] Infantry dig-in.
+  - [ ] Submarine visibility handling.
+  - [ ] Ship bombardment.
+- [ ] Unit context menu - blitz, sneak, pursue, etc.
 
 ### Milestone 4
-* Airplanes
+- [ ] Airplanes
 
 
 ### Milestone 5
-* AI opponents
-* Add natives
-* Add more victory conditions.
-  * Add number of turns game setting.
-  * Calculate victory points.
-* Add support for all execution triggers. (timers, etc.)
+- [ ] AI opponents
+- [ ] Add natives
+- [ ] Add more victory conditions.
+  - [ ] Add number of turns game setting.
+  - [ ] Calculate victory points.
+- [ ] Add support for all execution triggers. (timers, etc.)
 
 ### Milestone 6
-* Host Game and Join Game setting validations.
-* Save and load game.
-* Resign.
-* Playback.
+- [ ] Host Game and Join Game setting validations.
+- [ ] Save and load game.
+- [ ] Resign.
+- [ ] Playback.
 
 ### Milestone 7
-* Improved Economics.
-* Unit production automation by city.
-* Unit supported by city.
-* Add oil and mineral resources.
+- [ ] Improved Economics.
+- [ ] Unit production automation by city.
+- [ ] Unit supported by city.
+- [ ] Add oil and mineral resources.
 
 ### Milestone 8
-* Treaties
+- [ ] Treaties
 
 ### Milestone 9
-* Events
+- [ ] Events
 
 ### Milestone 10
-* Game controller support.
-* UI improvements.
-* Network robustness.
-* Steam integration
-* Multi-platform support
+- [ ] Game controller support.
+- [ ] UI improvements.
+- [ ] Network robustness.
+- [ ] Steam integration
+- [ ] Multi-platform support
 
 
 
