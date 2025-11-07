@@ -489,7 +489,10 @@ public class GlobalConquestGame : Game
         if (lastSelectedHex.X >= 0 && lastSelectedHex.Y >= 0 && !previousSelectedHex.Equals(lastSelectedHex))
         {
             if (!isMultiHexMove)
+            {
                 MoveMode = false;
+            }
+
             MoveUnitAction action = new MoveUnitAction();
             action.Unit = previousSelectedUnit;
             action.FromX = previousSelectedHex.X;

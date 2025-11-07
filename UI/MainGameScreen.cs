@@ -196,8 +196,35 @@ public class MainGameScreen
         moveMenuItem.Text = "Move";
         moveMenuItem.Selected += (s, a) =>
         {
+            if (gcGame.lastSelectedHex != null)
+            {
+                Unit unit = gcGame.lastSelectedHex.getUnit();
+                if (unit != null)
+                {
+                    DeleteMoveUnitAction deleteAction = new DeleteMoveUnitAction();
+                    deleteAction.ClassType = "GlobalConquest.Actions.DeleteMoveUnitAction";
+                    deleteAction.ClientIdentifier = gcGame.Client.ClientIdentifier;
+                    deleteAction.Unit = unit;
+                    gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, deleteAction);
+                }
+            }
             gcGame.MoveMode = true;
         };
+        var deleteMoveMenuItem = new MenuItem();
+        deleteMoveMenuItem.Text = "Delete Moves";
+        deleteMoveMenuItem.Selected += (s, a) =>
+        {
+            if (gcGame.lastSelectedUnit != null)
+            {
+                DeleteMoveUnitAction deleteAction = new DeleteMoveUnitAction();
+                deleteAction.ClassType = "GlobalConquest.Actions.DeleteMoveUnitAction";
+                deleteAction.ClientIdentifier = gcGame.Client.ClientIdentifier;
+                deleteAction.Unit = gcGame.lastSelectedUnit;
+                gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, deleteAction);
+            }
+            HideContextMenu();
+        };
+
         var refreshMenuItem = new MenuItem();
         refreshMenuItem.Text = "Refresh";
         refreshMenuItem.Selected += (s, a) =>
@@ -215,6 +242,7 @@ public class MainGameScreen
         var verticalMenu = new VerticalMenu();
 
         verticalMenu.Items.Add(moveMenuItem);
+        verticalMenu.Items.Add(deleteMoveMenuItem);
         verticalMenu.Items.Add(refreshMenuItem);
 
         container.Widgets.Add(verticalMenu);

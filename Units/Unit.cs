@@ -79,6 +79,11 @@ public class Unit
         return unitAction;
     }
 
+    public void DeleteMoveUnitActions()
+    {
+        ActionQueue.Clear();
+    }
+
     public void setUnitAction(UnitAction unitAction)
     {
         if (ActionQueue.Count < 1 || unitAction.Ticks > ActionQueue[0].Ticks)

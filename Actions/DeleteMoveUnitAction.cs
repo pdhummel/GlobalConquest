@@ -1,0 +1,34 @@
+using System.Text.Json;
+using GlobalConquest.Units;
+using LiteNetLib;
+namespace GlobalConquest.Actions;
+
+public class DeleteMoveUnitAction : PlayerAction
+{
+    public Unit? Unit { get; set; }
+
+
+    public new void deserializeAndExecute(NetPeer peer, Object serverObj)
+    {
+        if (MessageAsJson != null)
+        {
+            DeleteMoveUnitAction? action =
+                    JsonSerializer.Deserialize<DeleteMoveUnitAction>(this.MessageAsJson);
+            action?.execute(peer, serverObj);
+        }
+    }
+    
+    public new void execute(NetPeer peer, Object serverObj)
+    {
+        Console.WriteLine("DeleteMoveUnitAction.execute()");
+        Server server = (Server)serverObj;
+        GameState gameState = server.gameState;
+        MapHex mapHex = gameState.Map.Hexes[Unit.Y, Unit.X];
+        Unit existingUnit = mapHex.getUnit();
+        existingUnit.DeleteMoveUnitActions();
+        if (Unit != null)
+        {
+            server.sendGameStateAndMapHex(Unit.X, Unit.Y);
+        }    
+    }
+}
