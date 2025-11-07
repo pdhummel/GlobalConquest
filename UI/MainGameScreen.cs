@@ -196,13 +196,26 @@ public class MainGameScreen
         moveMenuItem.Text = "Move";
         moveMenuItem.Selected += (s, a) =>
         {
-            Console.WriteLine("move");
             gcGame.MoveMode = true;
+        };
+        var refreshMenuItem = new MenuItem();
+        refreshMenuItem.Text = "Refresh";
+        refreshMenuItem.Selected += (s, a) =>
+        {
+            Player player = gcGame.identifySelf();
+            RefreshGameStateAction action = new RefreshGameStateAction();
+            action.ClassType = "GlobalConquest.Actions.RefreshGameStateAction";
+            action.ClientIdentifier = player.Name;
+            action.X = unit.X;
+            action.Y = unit.Y;
+            gcGame.Client.SendAction(player.Name, action);
+            HideContextMenu();
         };
 
         var verticalMenu = new VerticalMenu();
 
         verticalMenu.Items.Add(moveMenuItem);
+        verticalMenu.Items.Add(refreshMenuItem);
 
         container.Widgets.Add(verticalMenu);
 
@@ -249,9 +262,25 @@ public class MainGameScreen
             }
         };
 
+        var refreshMenuItem = new MenuItem();
+        refreshMenuItem.Text = "Refresh";
+        refreshMenuItem.Selected += (s, a) =>
+        {
+            Player player = gcGame.identifySelf();
+            RefreshGameStateAction action = new RefreshGameStateAction();
+            action.ClassType = "GlobalConquest.Actions.RefreshGameStateAction";
+            action.ClientIdentifier = player.Name;
+            action.X = mapHex.X;
+            action.Y = mapHex.Y;
+            gcGame.Client.SendAction(player.Name, action);
+            HideContextMenu();
+        };
+
+
         var verticalMenu = new VerticalMenu();
 
         verticalMenu.Items.Add(buildMenuItem);
+        verticalMenu.Items.Add(refreshMenuItem);
 
         container.Widgets.Add(verticalMenu);
 
