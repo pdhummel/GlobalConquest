@@ -164,7 +164,7 @@ public class MainGameScreen
         }
     }
 
-    public void ShowContextMenu()
+    public void ShowContextMenu(Unit unit)
     {
         if (!IsShowContextMenu)
         {
@@ -203,6 +203,55 @@ public class MainGameScreen
         var verticalMenu = new VerticalMenu();
 
         verticalMenu.Items.Add(moveMenuItem);
+
+        container.Widgets.Add(verticalMenu);
+
+        MapPanel.Widgets.Add(container);
+        container.Left = gcGame.currentMouseState.X;
+        container.Top = gcGame.currentMouseState.Y;
+        container.Visible = true;
+        IsShowContextMenu = false;
+
+    }
+
+    public void ShowContextMenu(MapHex mapHex)
+    {
+        if (!IsShowContextMenu)
+        {
+            return;
+        }
+        //Console.WriteLine("ShowContextMenu(): " + IsShowContextMenu);
+        HideContextMenu();
+
+        var container = new VerticalStackPanel
+        {
+            Spacing = 4
+        };
+
+        var buildMenuItem = new MenuItem();
+        buildMenuItem.Text = "Build";
+        buildMenuItem.Selected += (s, a) =>
+        {
+            Console.WriteLine("build");
+            BurbWindow burbWindow = new BurbWindow();
+            Burb burb = mapHex.Burb;
+            if (burb != null && burb.Name != null)
+            {
+                burbWindow.showPurchaseUnit(this, mapHex, burb);
+                HideContextMenu();
+            }
+            else if (burb != null && burb.ParentBurbName != null)
+            {
+                Burb parentBurb = gcGame.Client.GameState.Burbs.NameToBurb[burb.ParentBurbName];
+                MapHex parentMapHex = gcGame.Client.GameState.Map.Hexes[parentBurb.Y, parentBurb.X];
+                burbWindow.showPurchaseUnit(this, parentMapHex, parentBurb);
+                HideContextMenu();
+            }
+        };
+
+        var verticalMenu = new VerticalMenu();
+
+        verticalMenu.Items.Add(buildMenuItem);
 
         container.Widgets.Add(verticalMenu);
 

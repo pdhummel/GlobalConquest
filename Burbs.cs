@@ -70,6 +70,8 @@ public class Burbs
     public Burb addBurb(string name, string type, Map map, MapHex mapHex, string color, string ownerColor)
     {
         Burb burb = new Burb();
+        burb.X = mapHex.X;
+        burb.Y = mapHex.Y;
         burb.Name = name;
         burb.Type = type;
         burb.Color = color;
@@ -96,11 +98,15 @@ public class Burbs
                     {
                         suburb.Type = "dock";
                         suburb.ParentBurbName = mapHex.Burb.Name;
+                        suburb.X = suburbHex.X;
+                        suburb.Y = suburbHex.Y;
                     }
                     else
                     {
                         suburb.Type = "suburb";
                         suburb.ParentBurbName = mapHex.Burb.Name;
+                        suburb.X = suburbHex.X;
+                        suburb.Y = suburbHex.Y;
                     }                    
                     suburbHex.Burb = suburb;
                 }                

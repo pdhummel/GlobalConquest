@@ -116,7 +116,7 @@ public class BurbWindow
 
     }
 
-    private void showPurchaseUnit(MainGameScreen mainGameScreen, MapHex mapHex, Burb burb)
+    public void showPurchaseUnit(MainGameScreen mainGameScreen, MapHex mapHex, Burb burb)
     {
         Console.WriteLine("showPurchaseUnit(): enter");
         GameState gameState = mainGameScreen.gcGame.Client.GameState;

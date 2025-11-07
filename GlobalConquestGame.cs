@@ -38,6 +38,7 @@ public class GlobalConquestGame : Game
     public SpriteFont? font;
     public MapHex? lastSelectedHex;
     public Unit? lastSelectedUnit;
+    public Burb? lastSelectedBurb;
     public bool MoveMode { get; set; } = false;
     public JoinGameValues MyJoinGameValues { get; set; }
 
@@ -336,9 +337,23 @@ public class GlobalConquestGame : Game
         if (lastSelectedUnit != null && Client != null && Client.ClientIdentifier != null && Client.GameState.Players.playerNameToPlayer.ContainsKey(Client.ClientIdentifier))
         {
             Player player = Client.GameState.Players.playerNameToPlayer[Client.ClientIdentifier];
-            //Console.WriteLine(Client.ClientIdentifier + ", " + player.FactionColor + " ," + lastSelectedUnit.Color);
+            //Console.WriteLine("Draw(): unit context: " + Client.ClientIdentifier + ", " + player.FactionColor + " ," + lastSelectedUnit.Color);
             if (lastSelectedUnit != null && lastSelectedUnit.Color == player.FactionColor && "plan".Equals(Server.gameState.CurrentPhase))
-                MainGameScreen?.ShowContextMenu();
+                MainGameScreen?.ShowContextMenu(lastSelectedUnit);
+        }
+        else if (lastSelectedHex != null && lastSelectedBurb != null && Client != null && Client.ClientIdentifier != null && Client.GameState.Players.playerNameToPlayer.ContainsKey(Client.ClientIdentifier))
+        {
+            Player player = identifySelf();
+            Burb parentBurb = null;
+            if (lastSelectedBurb.Name == null && lastSelectedBurb.ParentBurbName != null)
+            {
+                parentBurb = Client.GameState.Burbs.NameToBurb[lastSelectedBurb.ParentBurbName];
+            }
+            //Console.WriteLine("Draw(): burb context: " + lastSelectedBurb.Type + " ," + lastSelectedBurb.OwnerColor);
+            if (lastSelectedHex != null && lastSelectedBurb != null &&
+                (lastSelectedBurb.OwnerColor.Equals(player.FactionColor) || parentBurb.OwnerColor.Equals(player.FactionColor)) && 
+                "plan".Equals(Server.gameState.CurrentPhase))
+                MainGameScreen?.ShowContextMenu(lastSelectedHex);
         }
         Desktop.Render();
 
@@ -497,16 +512,35 @@ public class GlobalConquestGame : Game
             MainGameScreen.HideContextMenu();
             MoveMode = false;
             Vector2 selectedHexVector = handleClickMouseOnMap();
+            Player player = identifySelf();
             if (selectedHexVector.X >= 0 && selectedHexVector.Y >= 0 &&
                 selectedHexVector.X < Client.GameState.GameSettings.Width && selectedHexVector.Y < Client.GameState.GameSettings.Height)
             {
                 // lastSelectedHex already set by handleClickMouseOnMap()
                 Unit unit = lastSelectedHex.getUnit();
-                if (unit != null)
+                lastSelectedUnit = unit;
+                if (unit != null && unit.Color.Equals(player.FactionColor))
                 {
                     lastSelectedUnit = unit;
                     MainGameScreen.IsShowContextMenu = true;
                 }
+                Burb burb = lastSelectedHex.Burb;
+                lastSelectedBurb = burb;
+                if (burb != null)
+                {
+                    //Console.WriteLine("handleRightClickMouseOnMap(): lastSelectedBurb=" + burb.Type);
+                    lastSelectedBurb = burb;
+                    Burb parentBurb = null;
+                    if (burb.Name == null && burb.ParentBurbName != null)
+                    {
+                        parentBurb = Client.GameState.Burbs.NameToBurb[burb.ParentBurbName];
+                    }
+                    if (burb.OwnerColor.Equals(player.FactionColor) || (parentBurb != null && parentBurb.OwnerColor.Equals(player.FactionColor)))
+                    {
+                        MainGameScreen.IsShowContextMenu = true;    
+                    }
+                }
+
             }
         }
 
