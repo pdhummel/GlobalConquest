@@ -41,29 +41,42 @@ public class GameState
 
     public void updateTicks()
     {
-        Ticks =  DateTime.Now.Ticks;
+        Ticks = DateTime.Now.Ticks;
     }
-    
+
+    public void placeInitialUnits()
+    {
+        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        foreach (string color in colors)
+        {
+            placeInitialUnits(color);
+        }
+    }
     public void placeInitialUnits(Player player)
+    {
+        String color = player.FactionColor;
+        placeInitialUnits(color);
+    }
+    public void placeInitialUnits(string color)
     {
         int width = GameSettings.Width;
         int height = GameSettings.Height;
 
         Unit comcen = new Unit();
         comcen.UnitType = "comcen";
-        comcen.Color = player.FactionColor;
+        comcen.Color = color;
         Unit tank1 = new Unit();
         tank1.UnitType = "tank";
-        tank1.Color = player.FactionColor;
+        tank1.Color = color;
         Unit tank2 = new Unit();
         tank2.UnitType = "tank";
-        tank2.Color = player.FactionColor;
+        tank2.Color = color;
         Unit infantry = new Unit();
         infantry.UnitType = "infantry";
-        infantry.Color = player.FactionColor;
+        infantry.Color = color;
         Unit spy = new Unit();
         spy.UnitType = "spy";
-        spy.Color = player.FactionColor;
+        spy.Color = color;
 
 
         if ("Omniscient".Equals(GameSettings.Visibility))
@@ -82,7 +95,7 @@ public class GameState
             infantry.setBaseVisibility();
             spy.setBaseVisibility();
         }
-        if (player.FactionColor.Equals("amber"))
+        if (color.Equals("amber"))
         {
             MapHex metroHex = Map.getMetroHex("amber");
             Dictionary<string, MapHex> surroundingHexes = Map.getSurroundingHexes(metroHex);
@@ -100,7 +113,7 @@ public class GameState
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
-        else if (player.FactionColor.Equals("ocher"))
+        else if (color.Equals("ocher"))
         {
             MapHex metroHex = Map.getMetroHex("ocher");
             Dictionary<string, MapHex> surroundingHexes = Map.getSurroundingHexes(metroHex);
@@ -118,7 +131,7 @@ public class GameState
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
-        else if (player.FactionColor.Equals("cyan"))
+        else if (color.Equals("cyan"))
         {
             MapHex metroHex = Map.getMetroHex("cyan");
             Dictionary<string, MapHex> surroundingHexes = Map.getSurroundingHexes(metroHex);
@@ -136,7 +149,7 @@ public class GameState
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
-        else if (player.FactionColor.Equals("magenta"))
+        else if (color.Equals("magenta"))
         {
             MapHex metroHex = Map.getMetroHex("magenta");
             Dictionary<string, MapHex> surroundingHexes = Map.getSurroundingHexes(metroHex);

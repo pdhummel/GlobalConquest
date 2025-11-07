@@ -59,6 +59,7 @@ public class Server
 
     private void ServerLoop()
     {
+        gameState.placeInitialUnits();
         GameLogic gameLogic = new GameLogic();
         gameLogic.server = this;
         gameLogic.startGame(this);
