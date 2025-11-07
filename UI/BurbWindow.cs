@@ -240,6 +240,8 @@ public class BurbWindow
 
     private void addPurchaseBuildButton(Window window, Grid grid, int row, MainGameScreen mainGameScreen, MapHex mapHex, Burb burb, List<string> directions)
     {
+        if (!"plan".Equals(mainGameScreen.gcGame.Client.GameState.CurrentPhase))
+            return;
         int count = 0;
         foreach (string direction in directions)
         {
@@ -270,7 +272,7 @@ public class BurbWindow
                 window.Close();
                 purchaseUnit(mainGameScreen, unitTypeByRow[row], mapHex, direction);
             };
-            Console.WriteLine("addPurchaseBuildButton(): " + "Build " + direction + ", row=" + row + ", column=" + "" + (2 + count));
+            //Console.WriteLine("addPurchaseBuildButton(): " + "Build " + direction + ", row=" + row + ", column=" + "" + (2 + count));
             count += 1;
         }
     }

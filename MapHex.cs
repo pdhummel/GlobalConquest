@@ -14,6 +14,7 @@ public class MapHex
     public List<Unit> Units { get; set; } = new List<Unit>();
 
     public Burb? Burb { get; set; }
+    public long Ticks { get; set; } = DateTime.Now.Ticks;
 
     public MapHex()
     {

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using GlobalConquest.Units;
+using LiteNetLib;
 namespace GlobalConquest.Actions;
 
 public class MoveUnitAction : PlayerAction
@@ -12,17 +13,17 @@ public class MoveUnitAction : PlayerAction
     public bool IsMultiHexMove { get; set; } = false;
 
 
-    public new void deserializeAndExecute(Object serverObj)
+    public new void deserializeAndExecute(NetPeer peer, Object serverObj)
     {
         if (MessageAsJson != null)
         {
             MoveUnitAction? action =
                     JsonSerializer.Deserialize<MoveUnitAction>(this.MessageAsJson);
-            action?.execute(serverObj);
+            action?.execute(peer, serverObj);
         }
     }
     
-    public new void execute(Object serverObj)
+    public new void execute(NetPeer peer, Object serverObj)
     {
         Console.WriteLine("MoveUnitAction.execute()");
         Server server = (Server)serverObj;
@@ -36,7 +37,7 @@ public class MoveUnitAction : PlayerAction
         //Console.WriteLine("execute(): actions before " + existingUnit?.ActionQueue.Count);
         if (IsMultiHexMove)
         {
-            existingUnit?.ActionQueue.Add(unitAction);
+            existingUnit?.addUnitAction(unitAction);
         }
         else
         {
@@ -45,6 +46,7 @@ public class MoveUnitAction : PlayerAction
         //Console.WriteLine("execute(): actions after " + existingUnit?.ActionQueue.Count);
         if (Unit != null)
         {
+            //gameState.updateTicks();
             server.sendGameStateAndMapHex(Unit.X, Unit.Y);
         }    
     }

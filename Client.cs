@@ -49,7 +49,7 @@ public class Client
             IsBackground = true // Ensures thread closes with the main app
         };
         clientThread.Start();
-        PlayerAction action = new(ClientIdentifier, "connect");
+        PlayerAction action = new(serverPeer, ClientIdentifier, "connect");
     }
 
 
@@ -118,7 +118,7 @@ public class Client
         //Console.WriteLine($"OnNetworkReceive(): Client [Received] from {peer.Address}: {jsonString}");
         GameState oldGameState = GameState;
         GameState? newGameState = JsonSerializer.Deserialize<GameState>(jsonString);
-        if (newGameState != null)
+        if (newGameState != null && newGameState.Ticks > oldGameState.Ticks)
         {
             if (newGameState.Map == null)
             {
@@ -136,9 +136,10 @@ public class Client
                 {
                     for (int liX = 0; liX < newGameState.GameSettings.Width; liX++)
                     {
-                        if (newGameState.MapHex.Y.Equals(liY) && newGameState.MapHex.X.Equals(liX))
+                        if (newGameState.MapHex != null && newGameState.MapHex.Y.Equals(liY) && newGameState.MapHex.X.Equals(liX))
                         {
-                            newGameState.Map.Hexes[newGameState.MapHex.Y, newGameState.MapHex.X] = newGameState.MapHex;
+                            if (newGameState.Map.Hexes[newGameState.MapHex.Y, newGameState.MapHex.X] == null || newGameState.Map.Hexes[newGameState.MapHex.Y, newGameState.MapHex.X].Ticks < newGameState.MapHex.Ticks)
+                                newGameState.Map.Hexes[newGameState.MapHex.Y, newGameState.MapHex.X] = newGameState.MapHex;
                         }
                         else if (oldGameState.Map != null && oldGameState.Map.Hexes != null && oldGameState.Map.Hexes[liY, liX] != null)
                         {
@@ -146,18 +147,17 @@ public class Client
                         }
                         else
                         {
+                            //Console.WriteLine("OnNetworkReceive(): new MapHex");
                             MapHex mapHex = new MapHex();
                             mapHex.Y = liY;
                             mapHex.X = liX;
-                            // TODO: unknnown terrain
-                            // mapHex.Terrain = "unknown";
-                            mapHex.Terrain = "sea";
+                            mapHex.Terrain = "sea";     // this is temporary so should not matter
                             newGameState.Map.Hexes[liY, liX] = mapHex;
                         }
                     }
                 }
             }
-            newGameState.Map.Hexes[newGameState.MapHex.Y, newGameState.MapHex.X] = newGameState.MapHex;
+
             GameState = newGameState;
             if (!isLoadContentComplete)
             {
@@ -169,6 +169,21 @@ public class Client
                 //Console.WriteLine(oldGameState.Map.GetHashCode() + " " + newGameState.Map.GetHashCode());
                 GlobalConquestGame?.updateMap();
             }
+        }
+        else
+        {
+            Console.WriteLine("OnNetworkReceive(): Discarding message b/c Ticks are older");
+            Player player = GlobalConquestGame.identifySelf();
+            RefreshGameStateAction action = new RefreshGameStateAction();
+            action.ClassType = "GlobalConquest.Actions.RefreshGameStateAction";
+            action.ClientIdentifier = player.Name;
+
+            if (newGameState != null && newGameState.MapHex != null)
+            {
+                action.X = newGameState.MapHex.X;
+                action.Y = newGameState.MapHex.Y;
+            }
+            SendAction(player.Name, action);
         }
         reader.Recycle(); // Free up the data reader
     }

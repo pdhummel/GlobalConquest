@@ -1,5 +1,6 @@
 using System.Text.Json;
 using GlobalConquest.Units;
+using LiteNetLib;
 namespace GlobalConquest.Actions;
 
 public class PurchaseUnitAction : PlayerAction
@@ -11,18 +12,18 @@ public class PurchaseUnitAction : PlayerAction
     public string FactionColor { get; set; }
 
 
-    public new void deserializeAndExecute(Object serverObj)
+    public new void deserializeAndExecute(NetPeer peer, Object serverObj)
     {
         //Console.WriteLine("PurchaseUnitAction.deserializeAndExecute()");
         if (MessageAsJson != null)
         {
             PurchaseUnitAction? action =
                     JsonSerializer.Deserialize<PurchaseUnitAction>(this.MessageAsJson);
-            action?.execute(serverObj);
+            action?.execute(peer, serverObj);
         }
     }
     
-    public new void execute(Object serverObj)
+    public new void execute(NetPeer peer, Object serverObj)
     {
         Console.WriteLine("PurchaseUnitAction.execute()");
         Server server = (Server)serverObj;
@@ -36,6 +37,7 @@ public class PurchaseUnitAction : PlayerAction
             faction.Money -= Cost;
             if (faction.Money < 0)
                 faction.Money = 0;
+            //gameState.updateTicks();
             server.sendGameStateAndMapHex(X, Y);
         }    
     }

@@ -119,21 +119,24 @@ public class GlobalConquestGame : Game
 
     public void HexMapLoadContent()
     {
-        hexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
-        hexMapEngineAdapter.LoadContent();
-        miniMapHexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
-        miniMapHexMapEngineAdapter.LoadContent();
-
-
-        if (MainGameScreen != null && MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
+        if (Client != null && Client.GameState != null && Client.GameState.Map != null)
         {
-            miniMapRenderTarget2D = new RenderTarget2D(
-                GraphicsDevice,
-                (int)MainGameScreen.MiniMapPanel.Width,
-                (int)MainGameScreen.MiniMapPanel.Height,
-                false,
-                SurfaceFormat.Color,
-                DepthFormat.None);
+            hexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
+            hexMapEngineAdapter.LoadContent();
+            miniMapHexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
+            miniMapHexMapEngineAdapter.LoadContent();
+
+
+            if (MainGameScreen != null && MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
+            {
+                miniMapRenderTarget2D = new RenderTarget2D(
+                    GraphicsDevice,
+                    (int)MainGameScreen.MiniMapPanel.Width,
+                    (int)MainGameScreen.MiniMapPanel.Height,
+                    false,
+                    SurfaceFormat.Color,
+                    DepthFormat.None);
+            }
         }
     }
 
@@ -334,7 +337,7 @@ public class GlobalConquestGame : Game
         {
             Player player = Client.GameState.Players.playerNameToPlayer[Client.ClientIdentifier];
             //Console.WriteLine(Client.ClientIdentifier + ", " + player.FactionColor + " ," + lastSelectedUnit.Color);
-            if (lastSelectedUnit != null && lastSelectedUnit.Color == player.FactionColor)
+            if (lastSelectedUnit != null && lastSelectedUnit.Color == player.FactionColor && "plan".Equals(Server.gameState.CurrentPhase))
                 MainGameScreen?.ShowContextMenu();
         }
         Desktop.Render();

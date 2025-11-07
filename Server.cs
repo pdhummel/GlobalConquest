@@ -95,12 +95,12 @@ public class Server
     {
         if (server != null)
         {
+            gameState.updateTicks();
             int count = server.ConnectedPeerList.Count;
             for (int i=0; i<count; i++)
             {
                 NetPeer peer = server.ConnectedPeerList[i];
-                //Console.WriteLine("sendGameState(): players=" + gameState.Players.playerNameToPlayer.Count);
-                sendGameStateAndMapHex(peer, 0, 0);
+                sendGameState(peer);
             }
         }
     }
@@ -110,6 +110,7 @@ public class Server
     {
         if (server != null)
         {
+            gameState.updateTicks();
             int count = server.ConnectedPeerList.Count;
             for (int i=0; i<count; i++)
             {
@@ -125,6 +126,19 @@ public class Server
         if (server != null)
         {
             gameState.MapHex = gameState.Map.Hexes[y, x];
+            string jsonString = JsonSerializer.Serialize(this.gameState);
+            writer.Put(jsonString);
+            peer.Send(writer, DeliveryMethod.ReliableOrdered);
+            writer.Reset();
+        }
+    }
+
+    public void sendGameState(NetPeer peer)
+    {
+        NetDataWriter writer = new NetDataWriter();
+        if (server != null)
+        {
+            gameState.MapHex = null;
             string jsonString = JsonSerializer.Serialize(this.gameState);
             writer.Put(jsonString);
             peer.Send(writer, DeliveryMethod.ReliableOrdered);
@@ -183,7 +197,7 @@ public class Server
         PlayerAction subClassAction = action.makeSubclass();
         subClassAction.MessageAsJson = jsonString;
         MethodInfo executeMethod = subClassAction.GetType().GetMethod("deserializeAndExecute");
-        object[] parameters = new object[] { this };
+        object[] parameters = new object[] { peer, this };
         if ("plan".Equals(gameState.CurrentPhase))
         {
             executeMethod?.Invoke(subClassAction, parameters);

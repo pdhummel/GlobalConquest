@@ -81,8 +81,27 @@ public class Unit
 
     public void setUnitAction(UnitAction unitAction)
     {
-        ActionQueue.Clear();
-        ActionQueue.Add(unitAction);
+        if (ActionQueue.Count < 1 || unitAction.Ticks > ActionQueue[0].Ticks)
+        {
+            ActionQueue.Clear();
+            ActionQueue.Add(unitAction);
+        }
+    }
+    
+    public void addUnitAction(UnitAction unitAction)
+    {
+        if (ActionQueue.Count > 0)
+        {
+            UnitAction lastAction = ActionQueue[ActionQueue.Count - 1];
+            if (unitAction.Ticks >= lastAction.Ticks)
+            {
+                ActionQueue.Add(unitAction);    
+            }
+        }
+        else
+        {
+            ActionQueue.Add(unitAction);
+        }
     }
 
     public override bool Equals(object obj)

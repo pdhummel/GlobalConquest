@@ -25,6 +25,17 @@ public class MainGameMenu
         fileMenuItem.Items.Add(new MenuItem("Restart", "Restart"));
 
         // View - Burbs, Destinations, Airplanes, Treaties
+        MenuItem refreshMenuItem = new MenuItem("Refresh", "Refresh");
+        viewMenuItem.Items.Add(refreshMenuItem);
+        refreshMenuItem.Selected += (s, a) =>
+        {
+            Player player = mainGameScreen.gcGame.identifySelf();
+            RefreshGameStateAction action = new RefreshGameStateAction();
+            action.ClassType = "GlobalConquest.Actions.RefreshGameStateAction";
+            action.ClientIdentifier = player.Name;
+            mainGameScreen.gcGame.Client.SendAction(player.Name, action);
+        };
+
         MenuItem burbMenuItem = new MenuItem("Burbs", "Burbs");
         viewMenuItem.Items.Add(burbMenuItem);
         burbMenuItem.Selected += (s, a) =>

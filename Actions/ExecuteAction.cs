@@ -1,4 +1,5 @@
 using System.Text.Json;
+using LiteNetLib;
 
 namespace GlobalConquest.Actions;
 
@@ -7,18 +8,18 @@ public class ExecuteAction : PlayerAction
     Server? server;
 
 
-    public new void deserializeAndExecute(Object serverObj)
+    public new void deserializeAndExecute(NetPeer peer, Object serverObj)
     {
         //Console.WriteLine("ExecuteAction.deserializeAndExecute()");
         if (MessageAsJson != null)
         {
             ExecuteAction? action =
                     JsonSerializer.Deserialize<ExecuteAction>(this.MessageAsJson);
-            action?.execute(serverObj);
+            action?.execute(peer, serverObj);
         }
     }
 
-    public new void execute(Object serverObj)
+    public new void execute(NetPeer peer, Object serverObj)
     {
         Console.WriteLine("ExecuteAction.execute()");
         Server server = (Server)serverObj;
@@ -39,7 +40,7 @@ public class ExecuteAction : PlayerAction
                 Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
                 faction.Money += 5;
             }
-                
+            //gameState.updateTicks();
             server.sendGameState();
         }
 

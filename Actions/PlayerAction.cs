@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using LiteNetLib;
 using Microsoft.Xna.Framework;
 namespace GlobalConquest.Actions;
 
@@ -9,13 +10,14 @@ public class PlayerAction
     public string? ClassType { get; set; }
 
     public string? MessageAsJson { get; set; }
+    public long Ticks { get; set; } = DateTime.Now.Ticks;
 
     public PlayerAction()
     {
 
     }
 
-    public PlayerAction(string clientIdentifier, string classType)
+    public PlayerAction(NetPeer peer, string clientIdentifier, string classType)
     {
         ClientIdentifier = clientIdentifier; // this is the player name
         ClassType = classType;
@@ -36,13 +38,13 @@ public class PlayerAction
         return null;
     }
 
-    public void deserializeAndExecute(Object serverObj)
+    public void deserializeAndExecute(NetPeer peer, Object serverObj)
     {
         
     }
 
 
-    public void execute(Object serverObj)
+    public void execute(NetPeer peer, Object serverObj)
     {
         Console.WriteLine("PlayerAction.execute();");
     }

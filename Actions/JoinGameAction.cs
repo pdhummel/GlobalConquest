@@ -1,4 +1,5 @@
 using System.Text.Json;
+using LiteNetLib;
 
 namespace GlobalConquest.Actions;
 
@@ -6,18 +7,18 @@ public class JoinGameAction : PlayerAction
 {
     public JoinGameValues? JoinGameValues { get; set; }
 
-    public new void deserializeAndExecute(Object serverObj)
+    public new void deserializeAndExecute(NetPeer peer, Object serverObj)
     {
         //Console.WriteLine("JoinGameAction.deserializeAndExecute()");
         if (MessageAsJson != null)
         {
             JoinGameAction? action =
                     JsonSerializer.Deserialize<JoinGameAction>(this.MessageAsJson);
-            action?.execute(serverObj);
+            action?.execute(peer, serverObj);
         }
     }
     
-    public new void execute(Object serverObj)
+    public new void execute(NetPeer peer, Object serverObj)
     {
         Console.WriteLine("JoinGameAction.execute()");
         Server server = (Server)serverObj;

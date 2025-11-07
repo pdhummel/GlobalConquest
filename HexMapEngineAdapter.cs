@@ -318,10 +318,10 @@ class HexMapEngineAdapter
     {
         //Console.WriteLine("HexMapEngineAdapter.Process_UpdateEvent(): enter");
         // user-defined update logic here
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
-        {
-            game.Exit();
-        }
+        //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
+        //{
+        //    game.Exit();
+        //}
 
         mouseScroll(false);
     }

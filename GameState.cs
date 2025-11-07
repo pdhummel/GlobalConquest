@@ -25,6 +25,10 @@ public class GameState
     public UnitTypes UnitTypes { get; set; }
     public Burbs Burbs { get; set; }
     public string VictoriousColor { get; set; } = "grey";
+    public long Ticks { get; set; } = 0;
+
+    // if any of the data elements in the entities change above, then this version should be bumped.
+    public string Version { get; set; } = "v0.3.2.0";
 
 
     public GameState()
@@ -35,6 +39,11 @@ public class GameState
         Burbs = new Burbs();
     }
 
+    public void updateTicks()
+    {
+        Ticks =  DateTime.Now.Ticks;
+    }
+    
     public void placeInitialUnits(Player player)
     {
         int width = GameSettings.Width;
@@ -56,7 +65,7 @@ public class GameState
         spy.UnitType = "spy";
         spy.Color = player.FactionColor;
 
-        
+
         if ("Omniscient".Equals(GameSettings.Visibility))
         {
             comcen.setOmniVisibility();
@@ -104,7 +113,7 @@ public class GameState
             //Map.placeUnit(tank1, northWest);
             MapHex southEast = surroundingHexes["southEast"];
             if ("sea".Equals(southEast.Terrain))
-                tank1.UnitType = "transport-tank";            
+                tank1.UnitType = "transport-tank";
             //Map.placeUnit(tank2, southEast);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
