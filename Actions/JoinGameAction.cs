@@ -24,13 +24,12 @@ public class JoinGameAction : PlayerAction
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         Faction faction = gameState.Factions.NameToFaction[JoinGameValues.FactionName];
-        faction.Money = gameState.GameSettings.StartingMoney;
         if (gameState.Players.playerNameToPlayer.ContainsKey(JoinGameValues.Name))
         {
             return;
         }
         List<string> playerNames = gameState.Players.playerNameToPlayer.Keys.ToList<string>();
-        for (int i=0; i< gameState.Players.playerNameToPlayer.Count; i++)
+        for (int i = 0; i < gameState.Players.playerNameToPlayer.Count; i++)
         {
             Player player = gameState.Players.playerNameToPlayer[playerNames[i]];
             if (player.FactionColor.Equals(faction.Color))
@@ -38,6 +37,8 @@ public class JoinGameAction : PlayerAction
                 return;
             }
         }
+        server.PlayerNameToPeer[JoinGameValues.Name] = peer;
+        server.PeerToPlayerName[peer] = JoinGameValues.Name;
         Player newPlayer = gameState.Players.AddPlayer(gameState, JoinGameValues.Name, faction.Color, true);
         gameState.placeInitialUnits(newPlayer);
     }

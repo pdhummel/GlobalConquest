@@ -11,7 +11,7 @@ public class Players
     {
 
     }
-    
+
     public Player AddPlayer(GameState gameState, String name, string color, bool isHuman)
     {
         Console.WriteLine("AddPlayer(): " + name + ", " + color);
@@ -24,5 +24,22 @@ public class Players
         factionNameToPlayer[gameState.Factions.ColorToFaction[color].Name] = player;
         gameState.PlayerJoined[name] = true;
         return player;
+    }
+    
+    public void RemovePlayer(GameState gameState, String name)
+    {
+        if (playerNameToPlayer.ContainsKey(name))
+        {
+            Player player = playerNameToPlayer[name];
+            playerNameToPlayer.Remove(name);
+            if (colorToPlayer.ContainsKey(player.FactionColor))
+            {
+                colorToPlayer.Remove(player.FactionColor);
+            }
+            if (gameState.PlayerJoined.ContainsKey(name))
+            {
+                gameState.PlayerJoined.Remove(name);
+            }
+        }
     }
 }

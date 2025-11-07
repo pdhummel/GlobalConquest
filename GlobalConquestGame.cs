@@ -338,7 +338,8 @@ public class GlobalConquestGame : Game
         {
             Player player = Client.GameState.Players.playerNameToPlayer[Client.ClientIdentifier];
             //Console.WriteLine("Draw(): unit context: " + Client.ClientIdentifier + ", " + player.FactionColor + " ," + lastSelectedUnit.Color);
-            if (lastSelectedUnit != null && lastSelectedUnit.Color == player.FactionColor && "plan".Equals(Server.gameState.CurrentPhase))
+            if (lastSelectedUnit != null && lastSelectedUnit.Color.Equals(player.FactionColor) && Client != null &&
+                "plan".Equals(Client.GameState.CurrentPhase))
                 MainGameScreen?.ShowContextMenu(lastSelectedUnit);
         }
         else if (lastSelectedHex != null && lastSelectedBurb != null && Client != null && Client.ClientIdentifier != null && Client.GameState.Players.playerNameToPlayer.ContainsKey(Client.ClientIdentifier))

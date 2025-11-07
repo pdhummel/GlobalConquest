@@ -113,6 +113,12 @@ public class GameLogic
                 }
             }
         }
+        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        foreach (string color in colors)
+        {
+            Faction faction = gameState.Factions.ColorToFaction[color];
+            faction.Money = gameState.GameSettings.StartingMoney;
+        }
     }
 
     public void processRound(int round, Server server, List<Unit> units)

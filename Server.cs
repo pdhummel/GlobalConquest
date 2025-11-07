@@ -11,7 +11,8 @@ public class Server
 {
     private NetManager? server;
 
-    //Dictionary<string, NetPeer> peers = new Dictionary<string, NetPeer>();
+    public Dictionary<NetPeer, string> PeerToPlayerName { get; set; } = new Dictionary<NetPeer, string>();
+    public Dictionary<string, NetPeer> PlayerNameToPeer { get; set; } = new Dictionary<string, NetPeer>();
 
     private EventBasedNetListener? listener;
     private Thread? serverThread;
@@ -58,20 +59,22 @@ public class Server
 
     private void ServerLoop()
     {
+        GameLogic gameLogic = new GameLogic();
+        gameLogic.server = this;
+        gameLogic.startGame(this);
+
         int sleepTime = 1000;
         Console.WriteLine("ServerLoop(): Server polling");
         // This is the server's polling loop, which runs continuously on its own thread.
         while (isRunning)
         {
+
             server?.PollEvents();
             if (!initialSync && gameState.PlayerJoined.Count >= gameState.GameSettings.NumberOfHumans)
             {
-                GameLogic gameLogic = new GameLogic();
-                gameLogic.server = this;
-                gameLogic.startGame(this);
                 syncAllMapHexes();                
                 initialSync = true;
-            }    
+            }
             Thread.Sleep(sleepTime); // Adjust sleep time to control CPU usage.
         }
     }
@@ -213,6 +216,15 @@ public class Server
     private void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
     {
         Console.WriteLine($"OnPeerDisconnected(): Peer disconnected: {peer.Address} from Server. Reason: {disconnectInfo.Reason}");
+        if (PeerToPlayerName.ContainsKey(peer))
+        {
+            string playerName = PeerToPlayerName[peer];
+            Console.WriteLine("Player " + playerName + " disconnected");
+            PeerToPlayerName.Remove(peer);
+            PlayerNameToPeer.Remove(playerName);
+            gameState.Players.RemovePlayer(gameState, playerName);
+            initialSync = false;            
+        }
     }
 
 
