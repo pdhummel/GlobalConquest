@@ -117,15 +117,16 @@ public class Client
         var jsonString = reader.GetString();
         //Console.WriteLine($"OnNetworkReceive(): Client [Received] from {peer.Address}: {jsonString}");
         GameState oldGameState = GameState;
+        // Note that the full Map is never sent from the server to the client b/c the content is too large.
         GameState? newGameState = JsonSerializer.Deserialize<GameState>(jsonString);
-        if (newGameState != null && newGameState.Ticks > oldGameState.Ticks)
+        if (newGameState != null && oldGameState != null && newGameState.Ticks > oldGameState.Ticks)
         {
             Console.WriteLine("OnNetworkReceive(): Updating game state");
-            newGameState.Map = GameState.Map;
+            if (GameState.Map != null && GameState.Map.IsMapReady)
+                newGameState.Map = GameState.Map;
             if (newGameState.Map == null)
             {
-                
-                Console.WriteLine("OnNetworkReceive(): Creating map in new game state");
+                //Console.WriteLine("OnNetworkReceive(): Creating map in new game state");
                 newGameState.Map = new Map();
                 newGameState.Map.Y = newGameState.GameSettings.Height;
                 newGameState.Map.X = newGameState.GameSettings.Width;
@@ -133,7 +134,7 @@ public class Client
             }
             if (newGameState.Map.Hexes == null)
             {
-                Console.WriteLine("OnNetworkReceive(): Updating map hexes in new game state");
+                //Console.WriteLine("OnNetworkReceive(): Updating map hexes in new game state");
                 newGameState.Map.Y = newGameState.GameSettings.Height;
                 newGameState.Map.X = newGameState.GameSettings.Width;
                 newGameState.Map.Hexes = new MapHex[newGameState.GameSettings.Height, newGameState.GameSettings.Width];
@@ -161,6 +162,7 @@ public class Client
                         }
                     }
                 }
+                //newGameState.Map.IsMapReady = true;
             }
             if (newGameState.MapHex != null)
             {
@@ -177,7 +179,7 @@ public class Client
             }
             if (oldGameState != null && oldGameState.Map != null && !newGameState.Map.Equals(oldGameState.Map))
             {
-                Console.WriteLine("OnNetworkReceive(): Updating map");
+                //Console.WriteLine("OnNetworkReceive(): Updating map display");
                 GlobalConquestGame?.updateMap();
             }
         }

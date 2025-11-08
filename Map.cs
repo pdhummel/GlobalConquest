@@ -9,6 +9,7 @@ public class Map
     public int X { get; set; }
     public string VisibilityMode { get; set; }
     public Dictionary<string, MapHex> MetroLocations { get; set; } = new Dictionary<string, MapHex>();
+    public bool IsMapReady { get; set; } = false;
 
     public Map()
     {
@@ -19,7 +20,7 @@ public class Map
         Y = y;
         X = x;
         Hexes = generateMap(y, x);
-
+        IsMapReady = true;
     }
 
     public void addBurbs(Burbs burbs, int desiredBurbCount)

@@ -172,9 +172,9 @@ public class HostGameScreen
         sharedLabel.Text = "Share Terrain";
         Label alliesLabel = new Label();
         sharedLabel.Text = "Allies";
+        visibilityComboView.Widgets.Add(fogLabel);
         visibilityComboView.Widgets.Add(omniLabel);
         visibilityComboView.Widgets.Add(chqLabel);
-        visibilityComboView.Widgets.Add(fogLabel);
         //visibilityComboView.Widgets.Add(sharedLabel);
         //visibilityComboView.Widgets.Add(alliesLabel);
         visibilityComboView.SelectedIndex = 0;
@@ -204,8 +204,8 @@ public class HostGameScreen
         quorumLabel.Text = "Quorum";
         Label infiniteLabel = new Label();
         infiniteLabel.Text = "Infinite";
-        executionComboView.Widgets.Add(immediateLabel);
         executionComboView.Widgets.Add(quorumLabel);
+        executionComboView.Widgets.Add(immediateLabel);
         executionComboView.SelectedIndex = 0;
 
         Label combinationScoringLabel = new Label();

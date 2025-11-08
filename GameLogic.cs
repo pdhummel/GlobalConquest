@@ -288,12 +288,17 @@ public class GameLogic
                 // (e.g., 6 for carriers and Comcens, 5 for battleships) 
                 // but for a shorter period of time (only 2 rounds, which is 
                 //considerably shorter than the 8 rounds for all other units). 
+                bool previousVisibility = false;
+                if (hexUnit.Visibility.ContainsKey(unit.Color))
+                    previousVisibility = hexUnit.Visibility[unit.Color];
                 hexUnit.Visibility[unit.Color] = true;
                 hexUnit.RoundsToBeSeen[unit.Color] = 8;
                 if ("sub".Equals(hexUnit.UnitType) || "submarine".Equals(hexUnit.UnitType))
                 {
                     hexUnit.RoundsToBeSeen[unit.Color] = 2;
                 }
+                if (!previousVisibility)
+                    server.sendGameStateAndMapHex(hex.X, hex.Y);
                 // TODO: logic for subs:
                 // Sub scanning range is reduced to 3 if target not moving. 
                 // Subs can only be spotted at a range of 1 if they are stationary or 
@@ -313,8 +318,14 @@ public class GameLogic
         //Console.WriteLine("hexes to scan=" + hexesToScan.Count);
         foreach (MapHex hex in hexesToScan)
         {
-            hex.Visibility[unit.Color] = true;
-            server.sendGameStateAndMapHex(hex.X, hex.Y);
+            bool previousVisibility = false;
+            if (hex.Visibility.ContainsKey(unit.Color))
+                previousVisibility = hex.Visibility[unit.Color];
+            if (!previousVisibility)
+            {
+                hex.Visibility[unit.Color] = true;
+                server.sendGameStateAndMapHex(hex.X, hex.Y);
+            }
         }
     }
 
