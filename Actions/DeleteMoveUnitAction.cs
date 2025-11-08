@@ -26,6 +26,9 @@ public class DeleteMoveUnitAction : PlayerAction
         MapHex mapHex = gameState.Map.Hexes[Unit.Y, Unit.X];
         Unit existingUnit = mapHex.getUnit();
         existingUnit.DeleteMoveUnitActions();
+        existingUnit.IsLoading = false;
+        existingUnit.IsUnloading = false;
+        existingUnit.RoundsToPause = 0;
         if (Unit != null)
         {
             server.sendGameStateAndMapHex(Unit.X, Unit.Y);

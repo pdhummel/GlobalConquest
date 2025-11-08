@@ -28,7 +28,7 @@ public class GameState
     public long Ticks { get; set; } = 0;
 
     // if any of the data elements in the entities change above, then this version should be bumped.
-    public string Version { get; set; } = "v0.3.3";
+    public string Version { get; set; } = "v0.3.4";
 
 
     public GameState()
@@ -98,74 +98,52 @@ public class GameState
         if (color.Equals("amber"))
         {
             MapHex metroHex = Map.getMetroHex("amber");
-            Dictionary<string, MapHex> surroundingHexes = Map.getSurroundingHexes(metroHex);
-            MapHex northWest = surroundingHexes["northWest"];
-            Map.placeUnit(spy, northWest);
+            List<string> directions = ["northWest", "northEast", "southWest", "southEast"];
+            placeUnit(metroHex, directions, spy);
             Map.placeUnit(comcen, metroHex);
-            MapHex southWest = surroundingHexes["southWest"];
-            if ("sea".Equals(southWest.Terrain))
-                tank1.UnitType = "transport-tank";
-            //Map.placeUnit(tank1, southWest);
-            MapHex northEast = surroundingHexes["northEast"];
-            if ("sea".Equals(northEast.Terrain))
-                tank2.UnitType = "transport-tank";
-            //Map.placeUnit(tank2, northEast);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
         else if (color.Equals("ocher"))
         {
             MapHex metroHex = Map.getMetroHex("ocher");
-            Dictionary<string, MapHex> surroundingHexes = Map.getSurroundingHexes(metroHex);
-            MapHex northEast = surroundingHexes["northEast"];
-            Map.placeUnit(spy, northEast);
+            List<string> directions = ["northEast", "northWest", "southWest", "southEast"];
+            placeUnit(metroHex, directions, spy);
             Map.placeUnit(comcen, metroHex);
-            MapHex northWest = surroundingHexes["northWest"];
-            if ("sea".Equals(northWest.Terrain))
-                tank1.UnitType = "transport-tank";
-            //Map.placeUnit(tank1, northWest);
-            MapHex southEast = surroundingHexes["southEast"];
-            if ("sea".Equals(southEast.Terrain))
-                tank1.UnitType = "transport-tank";
-            //Map.placeUnit(tank2, southEast);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
         else if (color.Equals("cyan"))
         {
             MapHex metroHex = Map.getMetroHex("cyan");
-            Dictionary<string, MapHex> surroundingHexes = Map.getSurroundingHexes(metroHex);
-            MapHex southEast = surroundingHexes["southEast"];
-            Map.placeUnit(spy, southEast);
+            List<string> directions = ["southEast", "northWest", "southWest", "northEast"];
+            placeUnit(metroHex, directions, spy);
             Map.placeUnit(comcen, metroHex);
-            MapHex northEast = surroundingHexes["northEast"];
-            if ("sea".Equals(northEast.Terrain))
-                tank1.UnitType = "transport-tank";
-            //Map.placeUnit(tank1, northEast);
-            MapHex southWest = surroundingHexes["southWest"];
-            if ("sea".Equals(southWest.Terrain))
-                tank1.UnitType = "transport-tank";
-            //Map.placeUnit(tank2, southWest);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
         else if (color.Equals("magenta"))
         {
             MapHex metroHex = Map.getMetroHex("magenta");
-            Dictionary<string, MapHex> surroundingHexes = Map.getSurroundingHexes(metroHex);
-            MapHex southWest = surroundingHexes["southWest"];
-            Map.placeUnit(spy, southWest);
+            List<string> directions = ["southWest", "northWest", "southEast", "northEast"];
+            placeUnit(metroHex, directions, spy);
             Map.placeUnit(comcen, metroHex);
-            MapHex northWest = surroundingHexes["northWest"];
-            if ("sea".Equals(northWest.Terrain))
-                tank1.UnitType = "transport-tank";
-            //Map.placeUnit(tank1, northWest);
-            MapHex southEast = surroundingHexes["southEast"];
-            if ("sea".Equals(southEast.Terrain))
-                tank2.UnitType = "transport-tank";
-            //Map.placeUnit(tank2, southEast);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
+        }
+    }
+
+    private void placeUnit(MapHex metroHex, List<string> directions, Unit unit)
+    {
+        Dictionary<string, MapHex> surroundingHexes = Map.getSurroundingHexes(metroHex);
+        foreach (string direction in directions)
+        {
+            if (surroundingHexes.ContainsKey(direction))
+            {
+                MapHex mapHex = surroundingHexes[direction];
+                Map.placeUnit(unit, mapHex);
+                break;
+            }
         }
     }
 

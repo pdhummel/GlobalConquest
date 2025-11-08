@@ -44,7 +44,7 @@ The game is being designed with known differences from the original.
 - [ ] Add unit special handling.
   - [ ] Infantry dig-in.
   - [ ] Submarine visibility handling.
-  - [ ] Ship bombardment.
+  - [x] Ship bombardment.
 - [ ] Unit context menu - blitz, sneak, pursue, etc.
 
 ### Milestone 4

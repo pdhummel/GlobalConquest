@@ -41,6 +41,8 @@ public class UnitType
     public int SneakStepsAddedPerRound { get; set; }
 
     public Dictionary<string, float> DamageReductionForDefenderByTerrain = new Dictionary<string, float>();
+    //Battleships and carriers can "bombard" land units once they are within range.
+    // However, this type of combat cannot reduce the land unit below 30% strength.
     public Dictionary<string, int> BattleDamageToDefender = new Dictionary<string, int>();
     public Dictionary<string, int> BattleDamageFromAttacker = new Dictionary<string, int>();
     public Dictionary<string, int> FiringRangeToDefender = new Dictionary<string, int>();

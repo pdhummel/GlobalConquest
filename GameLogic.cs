@@ -414,7 +414,6 @@ public class GameLogic
                         {
                             MapHex targetMapHex = map.Hexes[hex.Y, hex.X];
                             UnitType targetUnitType = unitTypes.UnitTypeMap[hexUnit.UnitType];
-                            //Console.WriteLine("***** " + targetUnitType.Name + " " + unit.UnitType);
                             int firingRangeFromAttacker = targetUnitType.FiringRangeFromAttacker[unit.UnitType];
                             int firingRangeToDefender = attackerUnitType.FiringRangeToDefender[hexUnit.UnitType];
 
@@ -441,8 +440,23 @@ public class GameLogic
         if (unitToAttack != null && unit.StrengthPoints > 0)
         {
             Console.WriteLine("checkForCombat(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " attacking " + unitToAttack.UnitType + " at " + unitToAttack.X + "," + unitToAttack.Y);
+            int previousStrength = unitToAttack.StrengthPoints;
             int damage = attackerUnitType.BattleDamageToDefender[unitToAttack.UnitType];
             unitToAttack.StrengthPoints -= damage;
+            // Battleships and carriers can "bombard" land units once they are within range.
+            // However, this type of combat cannot reduce the land unit below 30% strength.
+            if (("carrier".Equals(unit.UnitType) || "battleship".Equals(unit.UnitType)) &&
+                 ("tank".Equals(unitToAttack.UnitType) || "armor".Equals(unitToAttack.UnitType) || "infantry".Equals(unitToAttack.UnitType) || "dug-in-infantry".Equals(unitToAttack.UnitType)))
+            {
+                if (unitToAttack.StrengthPoints <= 30 && previousStrength >= 30)
+                {
+                    unitToAttack.StrengthPoints = 30;
+                }
+                else if (unitToAttack.StrengthPoints <= 30 && previousStrength <= 30)
+                {
+                    unitToAttack.StrengthPoints = previousStrength;
+                }
+            }
             if (!"grey".Equals(unitToAttack.Color))
             {
                 Faction faction = server.gameState.Factions.ColorToFaction[unit.Color];
@@ -459,6 +473,7 @@ public class GameLogic
             }
             if (unitToAttack.StrengthPoints <= 0)
             {
+                Console.WriteLine("checkForCombat(): unit destoryed " + unitToAttack.UnitType + " at " + unitToAttack.X + "," + unitToAttack.Y);
                 unitToAttack.StrengthPoints = 0;
                 MapHex deadUnitMapHex = map.Hexes[unitToAttack.Y, unitToAttack.X];
                 deadUnitMapHex.Units.RemoveAt(0);
