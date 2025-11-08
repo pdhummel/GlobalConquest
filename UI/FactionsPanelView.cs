@@ -53,7 +53,11 @@ public class FactionsPanelView
         {
             Player player = gameState.Players.colorToPlayer[color];
             message += " " + player.Name;
-            if (gameState.PlayerExecutionReady.ContainsKey(player.Name))
+            if ("disconnected".Equals(gameState.CurrentPhase))
+            {
+                message += " - disconnected";
+            }
+            else if (gameState.PlayerExecutionReady.ContainsKey(player.Name))
             {
                 if (gameState.PlayerExecutionReady[player.Name] && !"gameOver".Equals(gameState.CurrentPhase))
                 {

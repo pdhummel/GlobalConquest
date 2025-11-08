@@ -20,11 +20,12 @@ public class Server
     private string? key;
     private int maxPeers;
     long lastMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-    public readonly GameState gameState = new();
+    public GameState gameState { get; set; } = new();
     private bool initialSync = false;
 
     public void StartAsHost(GameSettings gameSettings, string key)
     {
+        Console.WriteLine("StartAsHost(): enter");
         this.maxPeers = gameSettings.NumberOfHumans;
         this.key = key;
         gameState.GameSettings = gameSettings;
@@ -32,6 +33,7 @@ public class Server
         map.addBurbs(gameState.Burbs, gameState.GameSettings.NumberOfBurbs);
         map.VisibilityMode = gameSettings.Visibility;
         gameState.Map = map;
+        gameState.placeInitialUnits();
         listener = new EventBasedNetListener();
 
         // Set up event handlers for connection/data
@@ -57,9 +59,39 @@ public class Server
         serverThread.Start();
     }
 
+    public void RestoreHost(GameSettings gameSettings, string key)
+    {
+        Console.WriteLine("RestoreHost(): enter");
+        this.maxPeers = gameSettings.NumberOfHumans;
+        this.key = key;
+        listener = new EventBasedNetListener();
+
+        // Set up event handlers for connection/data
+        listener.ConnectionRequestEvent += OnConnectionRequest;
+        listener.PeerConnectedEvent += OnPeerConnected;
+        listener.NetworkReceiveEvent += OnNetworkReceive;
+        listener.PeerDisconnectedEvent += OnPeerDisconnected;
+
+        server = new NetManager(listener)
+        {
+            UnsyncedEvents = true
+        };
+
+        // Start the server manager
+        server.Start(gameSettings.Port);
+        isRunning = true;
+
+        // Create and start the new thread for the server's polling loop
+        serverThread = new Thread(new ThreadStart(ServerLoop))
+        {
+            IsBackground = true // Ensures thread closes with the main app
+        };
+        serverThread.Start();
+    }
+
+
     private void ServerLoop()
     {
-        gameState.placeInitialUnits();
         GameLogic gameLogic = new GameLogic();
         gameLogic.server = this;
         gameLogic.startGame(this);
@@ -73,7 +105,7 @@ public class Server
             server?.PollEvents();
             if (!initialSync && gameState.PlayerJoined.Count >= gameState.GameSettings.NumberOfHumans)
             {
-                syncAllMapHexes();                
+                syncAllMapHexes();
                 initialSync = true;
             }
             Thread.Sleep(sleepTime); // Adjust sleep time to control CPU usage.

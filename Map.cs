@@ -70,7 +70,7 @@ public class Map
         Console.WriteLine("addBurbs(): numberOfBurbs=" + numberOfBurbs);
     }
 
-    private void addFixedBurbs(Burbs burbs)
+    public void addFixedBurbs(Burbs burbs)
     {
         burbs.addBurb("Amber Array", "metro", this, Hexes[0, 1], "amber");
         burbs.addBurb("Ocher Order", "metro", this, Hexes[1, X - 2], "ocher");

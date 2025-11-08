@@ -19,6 +19,7 @@ public class PlayGameMenu
     HostGameScreen hostGameScreen;
     MenuItem customMenuItem;
     MenuItem backToMainConquestMenuItem;
+    MenuItem restoreMenuItem;
     Image gcImage = new Image();
 
 
@@ -47,6 +48,13 @@ public class PlayGameMenu
         customMenuItem.Selected += customMenuItemSelected;
         customMenuItem.Menu = playGameVerticalMenu;
         playGameVerticalMenu.Items.Add(customMenuItem);
+
+        restoreMenuItem = new MenuItem();
+        restoreMenuItem.Text = "Restore Game";
+        restoreMenuItem.Selected += restoreMenuItemSelected;
+        restoreMenuItem.Menu = playGameVerticalMenu;
+        playGameVerticalMenu.Items.Add(restoreMenuItem);
+
         backToMainConquestMenuItem = new MenuItem();
         backToMainConquestMenuItem.Id = "backToMainConquestMenuItem";
         backToMainConquestMenuItem.Text = "Back to Main Conquest menu";
@@ -88,6 +96,21 @@ public class PlayGameMenu
     {
         this.hide();
         hostGameScreen.show();
+    }
+
+    private void restoreMenuItemSelected(object? sender, EventArgs e)
+    {
+        GlobalConquestGame gcGame = (GlobalConquestGame)game;
+        Server server = new Server();
+        gcGame.Server = server;
+        GameLogic gameLogic = new GameLogic();
+        gameLogic.restoreGame(server);
+        gcGame.Server.RestoreHost(server.gameState.GameSettings, "GlobalConquest");
+        Window window = new Window
+        {
+            Title = "Game Restored"
+        };
+        window.ShowModal(grid.Desktop);
     }
 
     private void backToMainConquestMenuItemSelected(object? sender, EventArgs e)

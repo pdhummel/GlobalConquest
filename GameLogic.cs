@@ -1,6 +1,9 @@
 using GlobalConquest.Actions;
 using Microsoft.Xna.Framework;
 using GlobalConquest.Units;
+using System.Text.Json;
+using System.IO;
+using System.IO.Compression;
 namespace GlobalConquest;
 
 public class GameLogic
@@ -90,12 +93,98 @@ public class GameLogic
             }
         }
         gameState.CurrentRound = 0;
-        server.gameState.CurrentTurn += 1;
         server.gameState.CurrentPhase = "plan";
+        string jsonString = JsonSerializer.Serialize(server.gameState);
+        string currentUser = Environment.UserName;
+        string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\";
+        if (!Directory.Exists(gcDirectory))
+        {
+            Directory.CreateDirectory(gcDirectory);
+        }
+        string directory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\Data\\";
+        if (!Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        if (gameState.CurrentTurn > 0)
+        {
+            string zipFilePath = gcDirectory + "GameState-" + (gameState.CurrentTurn) + ".zip";
+            if (!File.Exists(zipFilePath))
+                ZipFile.CreateFromDirectory(directory, zipFilePath, CompressionLevel.Optimal, true);
+            Directory.Delete(directory, true);
+            Directory.CreateDirectory(directory);
+        }
+        else
+        {
+            Directory.Delete(gcDirectory, true);
+            Directory.CreateDirectory(gcDirectory);
+            Directory.CreateDirectory(directory);
+        }
+        string file = "GameState-" + gameState.Version + "-" + gameState.CurrentTurn + ".json";
+        string filePath = directory + file;
+        File.WriteAllText(filePath, jsonString);
+        for (int y = 0; y < gameState.Map.Y; y++)
+        {
+            for (int x = 0; x < gameState.Map.X; x++)
+            {
+                MapHex mapHex = gameState.Map.Hexes[y, x];
+                jsonString = JsonSerializer.Serialize(mapHex);
+                file = "MapHex-" + gameState.Version + "-" + gameState.CurrentTurn + "-" + x + "." + y + ".json";
+                filePath = directory + file;
+                File.WriteAllText(filePath, jsonString);
+
+            }
+        }
+        server.gameState.CurrentTurn += 1;
         server.sendGameState();        
     }
 
-
+    public void restoreGame(Server server)
+    {
+        string currentUser = Environment.UserName;
+        string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\";
+        string directory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\Data\\";
+        string searchPattern = "GameState-*.json";
+        string[] files = Directory.GetFiles(directory, searchPattern);
+        string file = files[0];
+        string filePath = file;
+        string jsonString = File.ReadAllText(filePath);
+        GameState? newGameState = JsonSerializer.Deserialize<GameState>(jsonString);
+        searchPattern = "MapHex-*.json";
+        files = Directory.GetFiles(directory, searchPattern);
+        if (newGameState.Map == null)
+        {
+            newGameState.Map = new Map();
+            newGameState.Map.X = newGameState.GameSettings.Width;
+            newGameState.Map.Y = newGameState.GameSettings.Height;
+            newGameState.Map.VisibilityMode = newGameState.GameSettings.Visibility;
+        }
+        if (newGameState.Map.Hexes == null)
+        {
+            MapHex[,] hexes = new MapHex[newGameState.GameSettings.Height, newGameState.GameSettings.Width];
+            newGameState.Map.Hexes = hexes;
+        }
+        foreach (string mapHexFile in files)
+        {
+            filePath = mapHexFile;
+            jsonString = File.ReadAllText(filePath);
+            MapHex mapHex = JsonSerializer.Deserialize<MapHex>(jsonString);
+            newGameState.Map.Hexes[mapHex.Y, mapHex.X] = mapHex;
+        }
+        newGameState.Map.addFixedBurbs(newGameState.Burbs);
+        newGameState.UnitTypes.defineUnitTypes();
+        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        foreach (string color in colors)
+        {
+            if (newGameState.Players.colorToPlayer.ContainsKey(color))
+            {
+                Player player = newGameState.Players.colorToPlayer[color];
+                newGameState.Players.RemovePlayer(newGameState, player.Name);
+            }
+        }
+        server.gameState = newGameState;
+    }
 
     public void startGame(Server server)
     {
@@ -309,6 +398,7 @@ public class GameLogic
                         {
                             MapHex targetMapHex = map.Hexes[hex.Y, hex.X];
                             UnitType targetUnitType = unitTypes.UnitTypeMap[hexUnit.UnitType];
+                            //Console.WriteLine("***** " + targetUnitType.Name + " " + unit.UnitType);
                             int firingRangeFromAttacker = targetUnitType.FiringRangeFromAttacker[unit.UnitType];
                             int firingRangeToDefender = attackerUnitType.FiringRangeToDefender[hexUnit.UnitType];
 

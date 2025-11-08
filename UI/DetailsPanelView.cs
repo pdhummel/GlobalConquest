@@ -40,8 +40,9 @@ public class DetailsPanelView
         MapHex lastSelectedHex = gcGame.lastSelectedHex;
         Unit lastSelectedUnit = lastSelectedHex == null ? null : lastSelectedHex.getUnit();
         Burb lastSelectedBurb = lastSelectedHex == null ? null : lastSelectedHex.Burb;
+        string currentPhase = "disconnected".Equals(gameState.CurrentPhase) ? "plan" : gameState.CurrentPhase;
         drawMessage("Turn: " + (gameState.CurrentTurn + 1));
-        drawMessage("Phase: " + gameState.CurrentPhase + ", round: " + (gameState.CurrentRound + 1));
+        drawMessage("Phase: " + currentPhase + ", round: " + (gameState.CurrentRound + 1));
         drawMessage("");
         drawMessage("Mouse: " + currentMouseState.X.ToString().Trim() + "," + currentMouseState.Y.ToString().Trim());
         string lastHex = lastSelectedHex == null ?
@@ -62,7 +63,7 @@ public class DetailsPanelView
         string unitStrength = lastSelectedUnit == null ?
                "Strength: " :
                "Strength: " + lastSelectedUnit.StrengthPoints;
-       drawMessage(unitStrength);
+        drawMessage(unitStrength);
         string unitStatus = lastSelectedUnit == null ?
                "Status: " :
                lastSelectedUnit.IsLoading ? "Status: loading" : lastSelectedUnit.IsUnloading ? "Status: unloading" : "Status: ";

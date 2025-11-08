@@ -5,6 +5,10 @@ public class UnitTypes
     public Dictionary<string, UnitType> UnitTypeMap { get; set; } = new Dictionary<string, UnitType>();
     public UnitTypes()
     {
+        defineUnitTypes();
+    }
+    public void defineUnitTypes()
+    {
         InfantryUnitType infantryUnitType = new InfantryUnitType();
         UnitType unitTypeInfantry = infantryUnitType.defineInfantry();
         UnitTypeMap[unitTypeInfantry.Name] = unitTypeInfantry;

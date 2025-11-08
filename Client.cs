@@ -191,6 +191,33 @@ public class Client
     private void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
     {
         Console.WriteLine($"OnPeerDisconnected(): Client peer disconnected: {peer.Address}. Reason: {disconnectInfo.Reason}");
+        GameState.CurrentPhase = "disconnected";
+        Thread localThread = new Thread(new ThreadStart(ReConnect))
+        {
+            IsBackground = true // Ensures thread closes with the main app
+        };
+        localThread.Start();
+
+    }
+
+    private void ReConnect()
+    {
+        long originalMilliseconds = DateTime.Now.Ticks;
+        long retryUntil = 3000;
+        while (DateTime.Now.Ticks < originalMilliseconds + retryUntil)
+        {
+            if ("disconnected".Equals(GameState.CurrentPhase))
+            {
+                Console.WriteLine("ReConnect(): retry");
+                Connect(JoinGameValues, "GlobalConquest");
+                Thread.Sleep(300);
+            }
+            else
+            {
+                break;
+            }
+        }
+        Console.WriteLine("ReConnect(): exit");
     }
 
 }

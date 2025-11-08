@@ -351,9 +351,11 @@ public class GlobalConquestGame : Game
                 parentBurb = Client.GameState.Burbs.NameToBurb[lastSelectedBurb.ParentBurbName];
             }
             //Console.WriteLine("Draw(): burb context: " + lastSelectedBurb.Type + " ," + lastSelectedBurb.OwnerColor);
-            if (lastSelectedHex != null && lastSelectedBurb != null &&
-                (lastSelectedBurb.OwnerColor.Equals(player.FactionColor) || parentBurb.OwnerColor.Equals(player.FactionColor)) && 
-                "plan".Equals(Server.gameState.CurrentPhase))
+            if (lastSelectedHex != null && lastSelectedBurb != null && lastSelectedBurb.OwnerColor != null &&
+                player  != null &&
+                (lastSelectedBurb.OwnerColor.Equals(player.FactionColor) ||
+                (parentBurb != null && parentBurb.OwnerColor != null && parentBurb.OwnerColor.Equals(player.FactionColor))) && 
+                "plan".Equals(Client.GameState.CurrentPhase))
                 MainGameScreen?.ShowContextMenu(lastSelectedHex);
         }
         Desktop.Render();

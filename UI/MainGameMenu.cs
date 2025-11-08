@@ -19,10 +19,12 @@ public class MainGameMenu
     {
         executeMenuItem.Color = Color.Yellow;
         // File - Save, Load, Resign, Restart
-        fileMenuItem.Items.Add(new MenuItem("Save", "Save"));
-        fileMenuItem.Items.Add(new MenuItem("Load", "Load"));
-        fileMenuItem.Items.Add(new MenuItem("Resign", "Resign"));
-        fileMenuItem.Items.Add(new MenuItem("Restart", "Restart"));
+        MenuItem todoMenuItem = new MenuItem("TODO", "TODO");
+        fileMenuItem.Items.Add(todoMenuItem);
+        //fileMenuItem.Items.Add(new MenuItem("Save", "Save"));
+        //fileMenuItem.Items.Add(new MenuItem("Load", "Load"));
+        //fileMenuItem.Items.Add(new MenuItem("Resign", "Resign"));
+        //fileMenuItem.Items.Add(new MenuItem("Restart", "Restart"));
 
         // View - Burbs, Destinations, Airplanes, Treaties
         MenuItem refreshMenuItem = new MenuItem("Refresh", "Refresh");
@@ -44,9 +46,9 @@ public class MainGameMenu
             burbWindow.showBurbWindow(mainGameScreen);
         };
 
-        viewMenuItem.Items.Add(new MenuItem("Destinations", "Destinations"));
-        viewMenuItem.Items.Add(new MenuItem("Airplanes", "Airplanes"));
-        viewMenuItem.Items.Add(new MenuItem("Treaties", "Treaties"));
+        //viewMenuItem.Items.Add(new MenuItem("Destinations", "Destinations"));
+        //viewMenuItem.Items.Add(new MenuItem("Airplanes", "Airplanes"));
+        //viewMenuItem.Items.Add(new MenuItem("Treaties", "Treaties"));
 
         horizontalMenu.Items.Add(executeMenuItem);
         horizontalMenu.Items.Add(fileMenuItem);
