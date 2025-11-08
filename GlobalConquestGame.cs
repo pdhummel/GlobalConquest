@@ -586,7 +586,43 @@ public class GlobalConquestGame : Game
 
     public Player identifySelf()
     {
-        Player player = Client.GameState.Players.playerNameToPlayer[Client.ClientIdentifier];
+        Player player;
+        if (Client.GameState.Players.playerNameToPlayer.ContainsKey(Client.ClientIdentifier))
+        {
+            player = Client.GameState.Players.playerNameToPlayer[Client.ClientIdentifier];
+        }
+        else
+        {
+            Console.WriteLine("identifySelf(): could not find player");
+            player = new Player();
+            HashSet<string> colors = ["amber", "ocher", "magenta", "cyan"];
+            foreach (string key in Client.GameState.Players.colorToPlayer.Keys)
+            {
+                Console.WriteLine("identifySelf(): color " + key + " already assigned.");
+                colors.Remove(key);
+            }
+            foreach (string color in colors)
+            {
+                Faction faction = Client.GameState.Factions.ColorToFaction[color];
+                if ("disconnected".Equals(faction.Status))
+                {
+                    Console.WriteLine("identifySelf(): found disconnected color " + color);
+                    player.FactionColor = color;
+                    break;
+                }
+            }
+            if (player.FactionColor == null && colors.Count > 0)
+            {
+                player.FactionColor = colors.ToList<string>()[0];
+                Console.WriteLine("identifySelf(): color assigned=" + player.FactionColor);
+            }
+            if (player.FactionColor == null)
+            {
+                player.FactionColor = "grey";
+                Console.WriteLine("identifySelf(): color assigned=grey");
+            }
+
+        }
         return player;
     }
 }

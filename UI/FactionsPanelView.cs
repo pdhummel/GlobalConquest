@@ -53,29 +53,20 @@ public class FactionsPanelView
         {
             Player player = gameState.Players.colorToPlayer[color];
             message += " " + player.Name;
-            if ("disconnected".Equals(gameState.CurrentPhase))
-            {
-                message += " - disconnected";
-            }
-            else if (gameState.PlayerExecutionReady.ContainsKey(player.Name))
-            {
-                if (gameState.PlayerExecutionReady[player.Name] && !"gameOver".Equals(gameState.CurrentPhase))
-                {
-                    message += " - ready";
-                }
-                else
-                {
-                    message += " - " + gameState.CurrentPhase;
-                }
-            }
-
+        }
+        if ("disconnected".Equals(gameState.CurrentPhase))
+        {
+            message += " - disconnected";
+        }
+        else
+        {
+            message += " - " + faction.Status;
         }
         drawMessage(message);
         message = "" + faction.CombinedScore;
         drawMessage(message);
-
-
     }
+
     private void drawMessage(string message)
     {
         //Console.WriteLine("drawMessage(): " + xPos + ", " + Y);

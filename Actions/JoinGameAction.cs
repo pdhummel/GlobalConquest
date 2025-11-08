@@ -40,6 +40,21 @@ public class JoinGameAction : PlayerAction
         server.PlayerNameToPeer[JoinGameValues.Name] = peer;
         server.PeerToPlayerName[peer] = JoinGameValues.Name;
         Player newPlayer = gameState.Players.AddPlayer(gameState, JoinGameValues.Name, faction.Color, true);
-        //gameState.placeInitialUnits(newPlayer);
+        if (gameState.PlayerExecutionReady.ContainsKey(newPlayer.Name))
+        {
+            if (gameState.PlayerExecutionReady[newPlayer.Name])
+            {
+                faction.Status = "ready";
+            }
+            else
+            {
+                faction.Status = "planning";
+            }
+        }
+        else
+        {
+            faction.Status = "planning";
+        }
+        server.sendGameState();
     }
 }

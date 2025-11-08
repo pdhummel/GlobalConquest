@@ -7,6 +7,7 @@ public class RefreshGameStateAction : PlayerAction
 {
     public int X { get; set; } = -1;
     public int Y { get; set; } = -1;
+    public bool RefreshMap { get; set; } = false;
 
 
     public new void deserializeAndExecute(NetPeer peer, Object serverObj)
@@ -26,7 +27,9 @@ public class RefreshGameStateAction : PlayerAction
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         gameState.updateTicks();
-        if (X > -1)
+        if (RefreshMap)
+            server.syncAllMapHexes();
+        else if (X > -1 && Y > -1)
             server.sendGameStateAndMapHex(peer, X, Y);
         else
             server.sendGameState(peer);

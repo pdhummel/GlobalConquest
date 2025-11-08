@@ -120,8 +120,12 @@ public class Client
         GameState? newGameState = JsonSerializer.Deserialize<GameState>(jsonString);
         if (newGameState != null && newGameState.Ticks > oldGameState.Ticks)
         {
+            Console.WriteLine("OnNetworkReceive(): Updating game state");
+            newGameState.Map = GameState.Map;
             if (newGameState.Map == null)
             {
+                
+                Console.WriteLine("OnNetworkReceive(): Creating map in new game state");
                 newGameState.Map = new Map();
                 newGameState.Map.Y = newGameState.GameSettings.Height;
                 newGameState.Map.X = newGameState.GameSettings.Width;
@@ -129,6 +133,7 @@ public class Client
             }
             if (newGameState.Map.Hexes == null)
             {
+                Console.WriteLine("OnNetworkReceive(): Updating map hexes in new game state");
                 newGameState.Map.Y = newGameState.GameSettings.Height;
                 newGameState.Map.X = newGameState.GameSettings.Width;
                 newGameState.Map.Hexes = new MapHex[newGameState.GameSettings.Height, newGameState.GameSettings.Width];
@@ -157,16 +162,22 @@ public class Client
                     }
                 }
             }
+            if (newGameState.MapHex != null)
+            {
+                Console.WriteLine("OnNetworkReceive(): updating MapHex " + newGameState.MapHex.X + "," + newGameState.MapHex.Y);
+                newGameState.Map.Hexes[newGameState.MapHex.Y, newGameState.MapHex.X] = newGameState.MapHex;
+            }
 
             GameState = newGameState;
             if (!isLoadContentComplete)
             {
+                Console.WriteLine("OnNetworkReceive(): Loading map content");
                 GlobalConquestGame?.HexMapLoadContent();
                 isLoadContentComplete = true;
             }
             if (oldGameState != null && oldGameState.Map != null && !newGameState.Map.Equals(oldGameState.Map))
             {
-                //Console.WriteLine(oldGameState.Map.GetHashCode() + " " + newGameState.Map.GetHashCode());
+                Console.WriteLine("OnNetworkReceive(): Updating map");
                 GlobalConquestGame?.updateMap();
             }
         }

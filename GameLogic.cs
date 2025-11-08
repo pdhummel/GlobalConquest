@@ -79,7 +79,12 @@ public class GameLogic
         {
             gameState.PlayerExecutionReady[key] = false;
         }
-        
+        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        foreach (string color in colors)
+        {
+            Faction faction = gameState.Factions.ColorToFaction[color];
+            faction.Status = "planning";
+        }
         foreach (string key in gameState.Burbs.NameToBurb.Keys)
         {
             Burb burb = gameState.Burbs.NameToBurb[key];

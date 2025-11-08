@@ -27,14 +27,26 @@ public class MainGameMenu
         //fileMenuItem.Items.Add(new MenuItem("Restart", "Restart"));
 
         // View - Burbs, Destinations, Airplanes, Treaties
-        MenuItem refreshMenuItem = new MenuItem("Refresh", "Refresh");
-        viewMenuItem.Items.Add(refreshMenuItem);
-        refreshMenuItem.Selected += (s, a) =>
+        MenuItem refreshStateMenuItem = new MenuItem("Refresh State", "Refresh State");
+        viewMenuItem.Items.Add(refreshStateMenuItem);
+        refreshStateMenuItem.Selected += (s, a) =>
         {
             Player player = mainGameScreen.gcGame.identifySelf();
             RefreshGameStateAction action = new RefreshGameStateAction();
             action.ClassType = "GlobalConquest.Actions.RefreshGameStateAction";
             action.ClientIdentifier = player.Name;
+            mainGameScreen.gcGame.Client.SendAction(player.Name, action);
+        };
+
+        MenuItem refreshMapMenuItem = new MenuItem("Refresh Map", "Refresh Map");
+        viewMenuItem.Items.Add(refreshMapMenuItem);
+        refreshMapMenuItem.Selected += (s, a) =>
+        {
+            Player player = mainGameScreen.gcGame.identifySelf();
+            RefreshGameStateAction action = new RefreshGameStateAction();
+            action.ClassType = "GlobalConquest.Actions.RefreshGameStateAction";
+            action.ClientIdentifier = player.Name;
+            action.RefreshMap = true;
             mainGameScreen.gcGame.Client.SendAction(player.Name, action);
         };
 
