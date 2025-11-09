@@ -572,6 +572,8 @@ class HexMapEngineAdapter
     // A row is like a snake, it goes up or down per column
     public Vector2 ConvertHexToPixels(Vector2 hexVector)
     {
+        if (coHexTileMap == null)
+            return new Vector2(-1, -1);
         Vector2 pixelVector = coHexTileMap.hexToPixel(hexVector);
         return new Vector2(pixelVector.X, pixelVector.Y);
     }

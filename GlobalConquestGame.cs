@@ -37,6 +37,7 @@ public class GlobalConquestGame : Game
     KeyboardState previousKeyboardState = Keyboard.GetState();
     public SpriteFont? font;
     public MapHex? lastSelectedHex;
+    public Vector2 mouseOverVector = new Vector2(-1, -1);
     public Unit? lastSelectedUnit;
     public Burb? lastSelectedBurb;
     public bool MoveMode { get; set; } = false;
@@ -204,6 +205,7 @@ public class GlobalConquestGame : Game
 
         if (Client != null && Client.isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible)
         {
+            mouseOverVector = findHexFromPixels(currentMouseState.X, currentMouseState.Y);
             // Check for a left mouse button click within the minimap's boundaries
             if (currentMouseState.LeftButton == ButtonState.Pressed &&
                 miniMapRectangle.Contains(mousePosition))
@@ -507,12 +509,16 @@ public class GlobalConquestGame : Game
         return hexMapEngineAdapter.ConvertPixelsToHex(position);
     }
 
-    public Vector2 findClickedHex(int mouseX, int mouseY)
+    private Vector2 findClickedHex(int mouseX, int mouseY)
     {
-        Vector2 v = hexMapEngineAdapter.ConvertPixelsToHex(new Vector2(mouseX, mouseY));
-        //Console.WriteLine("findClickedHex(): " + v.X + " " + v.Y);
+        return findHexFromPixels(mouseX, mouseY);
+    }
+    private Vector2 findHexFromPixels(int x, int y)
+    {
+        Vector2 v = hexMapEngineAdapter.ConvertPixelsToHex(new Vector2(x, y));
         return v;
     }
+
 
     private void handleLeftClickMouseOnMap(GameTime gameTime)
     {
@@ -633,29 +639,29 @@ public class GlobalConquestGame : Game
     private Vector2 handleClickMouseOnMap()
     {
         Vector2 selectedHexVector = new Vector2(-1, -1);
-        if (
-            currentMouseState.X >= 0 && currentMouseState.X >= MainGameScreen.MapPanel.Left &&
-            currentMouseState.X <= MainGameScreen.MapPanel.Left + MainGameScreen.MapPanel.Width &&
-            currentMouseState.Y >= 0 && currentMouseState.Y >= MainGameScreen.MapPanel.Top &&
-            currentMouseState.Y <= MainGameScreen.MapPanel.Top + MainGameScreen.MapPanel.Height
-        )
+        selectedHexVector = findHexVectorFromPixels(currentMouseState.X, currentMouseState.Y);
+        if (selectedHexVector.X >= 0 && selectedHexVector.Y >= 0 &&
+            selectedHexVector.X < Client.GameState.GameSettings.Width && selectedHexVector.Y < Client.GameState.GameSettings.Height)
         {
-            //  find which hex mouse clicked
-            selectedHexVector = findClickedHex(currentMouseState.X, currentMouseState.Y);
-            if (selectedHexVector.X >= 0 && selectedHexVector.Y >= 0 &&
-                selectedHexVector.X < Client.GameState.GameSettings.Width && selectedHexVector.Y < Client.GameState.GameSettings.Height)
-            {
-                lastSelectedHex = Client?.GameState.Map.Hexes[(int)selectedHexVector.Y, (int)selectedHexVector.X];
-            }
-        }
-        if (selectedHexVector.X == -1 || selectedHexVector.Y == -1)
-        {
-            //Console.WriteLine("handleClickMouseOnMap(): selectedHex == -1");
+            lastSelectedHex = Client?.GameState.Map.Hexes[(int)selectedHexVector.Y, (int)selectedHexVector.X];
         }
         return selectedHexVector;
     }
 
-
+    private Vector2 findHexVectorFromPixels(int x, int y)
+    {
+        Vector2 selectedHexVector = new Vector2(-1, -1);
+        if (
+            x >= 0 && x >= MainGameScreen.MapPanel.Left &&
+            x <= MainGameScreen.MapPanel.Left + MainGameScreen.MapPanel.Width &&
+            y >= 0 && y >= MainGameScreen.MapPanel.Top &&
+            y <= MainGameScreen.MapPanel.Top + MainGameScreen.MapPanel.Height
+        )
+        {
+            selectedHexVector = findHexFromPixels(x, y);
+        }
+        return selectedHexVector;        
+    }
 
     private void drawDetailsPanel()
     {
