@@ -12,12 +12,14 @@ public class MainGameMenu
 {
     HorizontalMenu horizontalMenu = new HorizontalMenu();
     MenuItem executeMenuItem = new MenuItem("Execute", "Execute!");
+    MenuItem destinationsMenuItem = new MenuItem("Destinations", "Destinations");
     MenuItem fileMenuItem = new MenuItem("File", "File");
     MenuItem viewMenuItem = new MenuItem("View", "View");
 
     public MainGameMenu(MainGameScreen mainGameScreen)
     {
         executeMenuItem.Color = Color.Yellow;
+        destinationsMenuItem.Color = Color.Yellow;
         // File - Save, Load, Resign, Restart
         MenuItem todoMenuItem = new MenuItem("TODO", "TODO");
         fileMenuItem.Items.Add(todoMenuItem);
@@ -63,6 +65,7 @@ public class MainGameMenu
         //viewMenuItem.Items.Add(new MenuItem("Treaties", "Treaties"));
 
         horizontalMenu.Items.Add(executeMenuItem);
+        horizontalMenu.Items.Add(destinationsMenuItem);
         horizontalMenu.Items.Add(fileMenuItem);
         horizontalMenu.Items.Add(viewMenuItem);
         mainGameScreen.MainGameMenuPanel.Widgets.Add(horizontalMenu);
@@ -75,6 +78,12 @@ public class MainGameMenu
             executeAction.ClientIdentifier = client.ClientIdentifier;
             client.SendAction(client.ClientIdentifier, executeAction);
         };
+
+        destinationsMenuItem.Selected += (s, a) =>
+        {
+            mainGameScreen.gcGame.IsShowDestinations = !mainGameScreen.gcGame.IsShowDestinations;
+        };
+
     }
 
 }

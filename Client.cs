@@ -167,7 +167,7 @@ public class Client
             }
             if (newGameState.MapHex != null)
             {
-                //Console.WriteLine("OnNetworkReceive(): updating MapHex " + newGameState.MapHex.X + "," + newGameState.MapHex.Y);
+                Console.WriteLine("OnNetworkReceive(): updating MapHex " + newGameState.MapHex.X + "," + newGameState.MapHex.Y);
                 newGameState.Map.Hexes[newGameState.MapHex.Y, newGameState.MapHex.X] = newGameState.MapHex;
             }
 

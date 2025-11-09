@@ -42,7 +42,7 @@ The game is being designed with known differences from the original.
 - [] Advanced movement -- waypoints.
   - [x] waypoints
   - [ ] patrol
-- [ ] Destinations screen.
+- [x] Destinations view.
 - [ ] Add unit special handling.
   - [ ] Infantry dig-in.
   - [ ] Submarine visibility handling.

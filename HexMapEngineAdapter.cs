@@ -557,6 +557,16 @@ class HexMapEngineAdapter
                             SpriteEffects.None,
                             0.5f
                             );
+        if (gcGame.IsShowDestinations)
+        {
+            Player player = identifySelf();
+            MapHex mapHex = gcGame.Client.GameState.Map.Hexes[row, column];
+            Unit unit = mapHex.getUnit();
+            if (unit != null && unit.Color.Equals(player.FactionColor))
+            {
+                gcGame.DrawPathForUnit(unit);
+            }
+        }
     }
 
     // A row is like a snake, it goes up or down per column

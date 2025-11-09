@@ -45,6 +45,7 @@ public class GlobalConquestGame : Game
     float clickStartTime;
     bool isMouseDown = false;
     bool isMultiHexMove = false;
+    public bool IsShowDestinations { get; set; }
 
     public GlobalConquestGame()
     {
@@ -55,6 +56,7 @@ public class GlobalConquestGame : Game
         _graphics.ApplyChanges();
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
+        IsShowDestinations = false;
         Window.AllowUserResizing = true;
         Client = new Client(this);
     }
@@ -385,12 +387,15 @@ public class GlobalConquestGame : Game
         MapHex mapHex = Client.GameState.Map.Hexes[unit.Y, unit.X];
         unit = mapHex.getUnit();
         //Console.WriteLine("DrawPathForUnit(): unit " + unit.UnitType + " at " + unit.X + "," + unit.Y);
-        Vector2 startHex = new Vector2(unit.X, unit.Y);
-        for (int i = 0; i < unit.ActionQueue.Count; i++)
+        if (unit != null)
         {
-            Vector2 endHex = new Vector2(unit.ActionQueue[i].TargetX, unit.ActionQueue[i].TargetY);
-            DrawLine(startHex, endHex, color);
-            startHex = endHex;
+            Vector2 startHex = new Vector2(unit.X, unit.Y);
+            for (int i = 0; i < unit.ActionQueue.Count; i++)
+            {
+                Vector2 endHex = new Vector2(unit.ActionQueue[i].TargetX, unit.ActionQueue[i].TargetY);
+                DrawLine(startHex, endHex, color);
+                startHex = endHex;
+            }
         }
     }
 
