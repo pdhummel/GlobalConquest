@@ -121,7 +121,8 @@ public class Client
         GameState? newGameState = JsonSerializer.Deserialize<GameState>(jsonString);
         if (newGameState != null && oldGameState != null && newGameState.Ticks > oldGameState.Ticks)
         {
-            Console.WriteLine("OnNetworkReceive(): Updating game state");
+            if (newGameState.MapHex == null)
+                Console.WriteLine("OnNetworkReceive(): Updating game state");
             if (GameState.Map != null && GameState.Map.IsMapReady)
                 newGameState.Map = GameState.Map;
             if (newGameState.Map == null)

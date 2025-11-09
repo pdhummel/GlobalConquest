@@ -119,6 +119,12 @@ class HexMapEngineAdapter
         Texture2D cyanInfantry = game.Content.Load<Texture2D>("cyan-infantry-48x48");
         units["cyan-infantry"] = cyanInfantry;
 
+        // TODO: create new icon for dug-in infantry
+        units["magenta-dug-in-infantry"] = magentaInfantry;
+        units["amber-dug-in-infantry"] = amberInfantry;
+        units["ocher-dug-in-infantry"] = ocherInfantry;
+        units["cyan-dug-in-infantry"] = cyanInfantry;
+
         Texture2D magentaComcen = game.Content.Load<Texture2D>("magenta-comcen-48x48");
         units["magenta-comcen"] = magentaComcen;
         Texture2D amberComcen = game.Content.Load<Texture2D>("amber-comcen-48x48");

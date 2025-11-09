@@ -39,13 +39,20 @@ The game is being designed with known differences from the original.
 
 
 ### Milestone 3
-- [x] Advanced movement -- waypoints.
+- [] Advanced movement -- waypoints.
+  - [x] waypoints
+  - [ ] patrol
 - [ ] Destinations screen.
 - [ ] Add unit special handling.
   - [ ] Infantry dig-in.
   - [ ] Submarine visibility handling.
   - [x] Ship bombardment.
-- [ ] Unit context menu - blitz, sneak, pursue, etc.
+- [ ] Unit context menu
+  - [ ] blitz
+  - [ ] sneak
+  - [ ] wait
+  - [ ] pursue
+  - [ ] home
 
 ### Milestone 4
 - [ ] Airplanes
@@ -70,6 +77,8 @@ The game is being designed with known differences from the original.
 - [ ] Unit production automation by city.
 - [ ] Unit supported by city.
 - [ ] Add oil and mineral resources.
+- [ ] Exploit
+- [ ] Spy sabotage
 
 ### Milestone 8
 - [ ] Treaties

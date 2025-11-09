@@ -9,6 +9,10 @@ namespace GlobalConquest;
 public class GameLogic
 {
     public Server server;
+    private HashSet<string> infantryUnitsXy = new HashSet<string>();
+    private HashSet<string> movingUnitsXy = new HashSet<string>();
+    private HashSet<string> attackedUnitsXy = new HashSet<string>();
+    private HashSet<string> attackingUnitsXy = new HashSet<string>();
 
     public GameLogic()
     {
@@ -24,6 +28,12 @@ public class GameLogic
         gameState.CurrentPhase = "execution";
         server.sendGameState();
 
+        infantryUnitsXy.Clear();
+        movingUnitsXy.Clear();
+        attackedUnitsXy.Clear();
+        attackingUnitsXy.Clear();
+
+
         // Find all units with stuff to do.
         // TODO: Consider some units will be in combat without explicit orders.
         List<Unit> units = new List<Unit>();
@@ -35,6 +45,10 @@ public class GameLogic
                 Unit unit = mapHex.getUnit();
                 if (unit != null)
                 {
+                    if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
+                    {
+                        infantryUnitsXy.Add(makeXyString(unit.X, unit.Y));
+                    }
                     unit.NormalSteps = 0;
                     unit.BlitzSteps = 0;
                     unit.SneakSteps = 0;
@@ -229,6 +243,7 @@ public class GameLogic
             repair(server, unit);
             moveUnit(server, unit);
             checkForCombat(server, unit);
+            digInInfantry(server, unit);
             if (!("Omniscient".Equals(gameState.GameSettings.Visibility) || "Command HQ".Equals(gameState.GameSettings.Visibility)))
                 decrementVisibility(unit);
             server.sendGameStateAndMapHex(unit.X, unit.Y);
@@ -440,6 +455,7 @@ public class GameLogic
         if (unitToAttack != null && unit.StrengthPoints > 0)
         {
             Console.WriteLine("checkForCombat(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " attacking " + unitToAttack.UnitType + " at " + unitToAttack.X + "," + unitToAttack.Y);
+            attackingUnitsXy.Add(makeXyString(unit.X, unit.Y));
             int previousStrength = unitToAttack.StrengthPoints;
             int damage = attackerUnitType.BattleDamageToDefender[unitToAttack.UnitType];
             unitToAttack.StrengthPoints -= damage;
@@ -463,7 +479,7 @@ public class GameLogic
                 UnitType unitTypeAttacked = server.gameState.UnitTypes.UnitTypeMap[unitToAttack.UnitType];
                 faction.HeadCountScore += unitTypeAttacked.PointsPerHit;
             }
-            if (! "grey".Equals(unit.Color) && !"grey".Equals(unitToAttack.Color))
+            if (!"grey".Equals(unit.Color) && !"grey".Equals(unitToAttack.Color))
             {
                 Faction faction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
                 UnitType unitTypeAttacked = server.gameState.UnitTypes.UnitTypeMap[unitToAttack.UnitType];
@@ -486,10 +502,16 @@ public class GameLogic
             else
             {
                 unit.lastTargetUnitVector = new Vector2(unitToAttack.X, unitToAttack.Y);
+                attackedUnitsXy.Add(makeXyString(unitToAttack.X, unitToAttack.Y));
             }
             server.sendGameStateAndMapHex(unitToAttack.X, unitToAttack.Y);
         }
 
+    }
+    
+    private string makeXyString(int x, int y)
+    {
+        return x + "," + y;
     }
 
     private void moveUnit(Server server, Unit unit)
@@ -599,6 +621,8 @@ public class GameLogic
                 gameState.Map.moveUnit(unit, nextMapHex.X, nextMapHex.Y);
                 unit.X = nextMapHex.X;
                 unit.Y = nextMapHex.Y;
+                movingUnitsXy.Add(makeXyString(unit.X, unit.Y));
+
             }
             if (nextMapHex.X == unitAction.TargetX && nextMapHex.Y == unitAction.TargetY)
             {
@@ -682,6 +706,26 @@ public class GameLogic
             Console.WriteLine("determineNextHexTowardsDestination(): hex " + tmpMapHex.X + "," + tmpMapHex.Y + " blocked by another unit");
         }
         return mapHex;
+    }
+
+    private void digInInfantry(Server server, Unit unit)
+    {
+        string unitXy = makeXyString(unit.X, unit.Y);
+        if (infantryUnitsXy.Contains(unitXy))
+        {
+            // TODO: infantry probably does not dig-in instantaneously.
+            // Consider handling like transports.
+            if (!(attackedUnitsXy.Contains(unitXy) || attackingUnitsXy.Contains(unitXy) || unit.getNextAction() != null))
+            {
+                unit.UnitType = "dug-in-infantry";
+                server.sendGameStateAndMapHex(unit.X, unit.Y);
+            }
+            else if ("dug-in-infantry".Equals(unit.UnitType) && unit.getNextAction() != null)
+            {
+                unit.UnitType = "infantry";
+                server.sendGameStateAndMapHex(unit.X, unit.Y);
+            }
+        }
     }
 
     private string checkForEndOfGame(Server server)
