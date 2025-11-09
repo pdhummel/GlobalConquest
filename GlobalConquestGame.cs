@@ -30,7 +30,7 @@ public class GlobalConquestGame : Game
     HexMapEngineAdapter hexMapEngineAdapter;
     HexMapEngineAdapter miniMapHexMapEngineAdapter;
     Texture2D viewPortBox;
-    Texture2D pixel;
+    Texture2D drawPixel;
     public MouseState previousMouseState = Mouse.GetState();
     public MouseState currentMouseState = Mouse.GetState();
     KeyboardState currentKeyboardState = Keyboard.GetState();
@@ -107,6 +107,7 @@ public class GlobalConquestGame : Game
         camera = new OrthographicCamera(GraphicsDevice);
         miniMapCamera = new Custom2dCamera(GraphicsDevice);
         // create a new SpriteBatch, which can be used to draw textures.
+        //GraphicsDevice.SetRenderTarget(screenRenderTarget2D);
         Globals.spriteBatch = new SpriteBatch(GraphicsDevice);
         //coBitmapFont = Myra.DefaultAssets.Font;
         font = Content.Load<SpriteFont>("gcDetailsPanel");
@@ -114,8 +115,8 @@ public class GlobalConquestGame : Game
         viewPortBox = new Texture2D(GraphicsDevice, 1, 1);
         viewPortBox.SetData(new[] { Color.White });
 
-        pixel = new Texture2D(GraphicsDevice, 1, 1);
-        pixel.SetData(new[] { Color.White });
+        drawPixel = new Texture2D(GraphicsDevice, 1, 1);
+        drawPixel.SetData(new[] { Color.White });
     }
 
     public void HexMapLoadContent()
@@ -302,9 +303,9 @@ public class GlobalConquestGame : Game
             Globals.spriteBatch?.Draw(viewPortBox, viewportRectangle, null, Color.White * 0.25f);
             Globals.spriteBatch.Tag = "";
             Globals.spriteBatch?.End();
+            GraphicsDevice.SetRenderTarget(null);
 
             // Create the map on the mapPanel and place the minimap on the miniMapPanel
-            GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Clear(Color.Black);
             Globals.spriteBatch?.Begin(SpriteSortMode.BackToFront, null, null, null, null, null, transformMatrix: camera.GetViewMatrix());
             int maxPixelsX = (int)this.MainGameScreen.MapPanel.Width - 72;
@@ -316,6 +317,11 @@ public class GlobalConquestGame : Game
                 MainGameScreen.HideContextMenu();
                 DrawLine(hexPixelVector);
             }
+            if (lastSelectedUnit != null)
+            {
+                DrawPathForUnit(lastSelectedUnit);
+            }
+
             if (MainGameScreen.DetailsPanel != null)
             {
                 drawDetailsPanel();
@@ -325,10 +331,14 @@ public class GlobalConquestGame : Game
                 MainGameScreen.drawFactionsPanel();
             }
             Globals.spriteBatch?.End();
+            GraphicsDevice.SetRenderTarget(null);
+
             SpriteBatch miniMapSpriteBatch = new SpriteBatch(GraphicsDevice);
             miniMapSpriteBatch.Begin();
             miniMapSpriteBatch.Draw(miniMapRenderTarget2D, miniMapRectangle, Color.White);
             miniMapSpriteBatch.End();
+            GraphicsDevice.SetRenderTarget(null);
+
         }
 
         // Draw menus and screens.
@@ -363,18 +373,74 @@ public class GlobalConquestGame : Game
         base.Draw(gameTime);
     }
 
-    private void DrawLine(Vector2 hexOrigin)
+    public void DrawPathForUnit(Unit unit)
     {
-        Point startPoint = new Point((int)hexOrigin.X, (int)hexOrigin.Y);
+        DrawPathForUnit(unit, Color.Red);
+    }
+
+    public void DrawPathForUnit(Unit unit, Color color)
+    {
+        if (unit == null)
+            return;
+        MapHex mapHex = Client.GameState.Map.Hexes[unit.Y, unit.X];
+        unit = mapHex.getUnit();
+        //Console.WriteLine("DrawPathForUnit(): unit " + unit.UnitType + " at " + unit.X + "," + unit.Y);
+        Vector2 startHex = new Vector2(unit.X, unit.Y);
+        for (int i = 0; i < unit.ActionQueue.Count; i++)
+        {
+            Vector2 endHex = new Vector2(unit.ActionQueue[i].TargetX, unit.ActionQueue[i].TargetY);
+            DrawLine(startHex, endHex, color);
+            startHex = endHex;
+        }
+    }
+
+    private void DrawLine(Vector2 hexPixelOrigin)
+    {
+        Point startPoint = new Point((int)hexPixelOrigin.X, (int)hexPixelOrigin.Y);
         Point resultingPoint = currentMouseState.Position - startPoint;
         Vector2 direction = new Vector2(resultingPoint.X, resultingPoint.Y);
         float distance = direction.Length();
         float angle = (float)Math.Atan2(direction.Y, direction.X);
         Globals.spriteBatch.Draw(
-            pixel,
+            drawPixel,
             new Vector2(startPoint.X, startPoint.Y),
             null,
             Color.Red, // Color of the line
+            angle,
+            Vector2.Zero, // Origin for rotation (top-left of the 1x1 pixel)
+            new Vector2(distance, 1), // Scale: x-axis for length, y-axis for thickness
+            SpriteEffects.None,
+            0f
+        );
+    }
+
+
+    private void DrawLine(Vector2 hexStart, Vector2 hexEnd)
+    {
+        DrawLine(hexStart, hexEnd, Color.Red);
+    }
+    
+    private void DrawLine(Vector2 hexStart, Vector2 hexEnd, Color color)
+    {
+        //Console.WriteLine("DrawLine(): from " + hexStart.X + "," + hexStart.Y + " to " + hexEnd.X + "," + hexEnd.Y);
+        Vector2 startPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(hexStart.X, hexStart.Y));
+        Vector2 endPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(hexEnd.X, hexEnd.Y));
+        Point startPoint = new Point((int)startPixelVector.X, (int)startPixelVector.Y);
+        Point endPoint = new Point((int)endPixelVector.X, (int)endPixelVector.Y);
+        float distance = (float)Math.Sqrt(Math.Pow(startPoint.X - endPoint.X, 2) + Math.Pow(startPoint.Y - endPoint.Y, 2));
+        double angleInRadians = Math.Atan2(endPoint.Y - startPoint.Y, endPoint.X - startPoint.X);
+        double angleInDegrees = angleInRadians * (180 / Math.PI);
+        // Normalize angle to be within 0-360 degrees
+        if (angleInDegrees < 0)
+        {
+            angleInDegrees += 360;
+        }
+        float angle = (float)angleInRadians;
+        Globals.spriteBatch.Draw(
+            drawPixel,
+            new Vector2(startPoint.X, startPoint.Y),
+            null,
+            color, // Color of the line
             angle,
             Vector2.Zero, // Origin for rotation (top-left of the 1x1 pixel)
             new Vector2(distance, 1), // Scale: x-axis for length, y-axis for thickness
@@ -485,6 +551,12 @@ public class GlobalConquestGame : Game
                 isMultiHexMove = false;
             }
         }
+        if (!MoveMode && lastSelectedHex != null)
+        {
+            Unit unit = lastSelectedHex.getUnit();
+            lastSelectedUnit = unit;            
+        }
+
     }
 
     private void sendMoveAction(MapHex previousSelectedHex, Unit previousSelectedUnit)
@@ -498,6 +570,7 @@ public class GlobalConquestGame : Game
 
             MoveUnitAction action = new MoveUnitAction();
             action.Unit = previousSelectedUnit;
+
             action.FromX = previousSelectedHex.X;
             action.FromY = previousSelectedHex.Y;
             action.ToX = lastSelectedHex.X;
@@ -522,14 +595,8 @@ public class GlobalConquestGame : Game
             if (selectedHexVector.X >= 0 && selectedHexVector.Y >= 0 &&
                 selectedHexVector.X < Client.GameState.GameSettings.Width && selectedHexVector.Y < Client.GameState.GameSettings.Height)
             {
-                // lastSelectedHex already set by handleClickMouseOnMap()
                 Unit unit = lastSelectedHex.getUnit();
                 lastSelectedUnit = unit;
-                if (unit != null && unit.Color.Equals(player.FactionColor))
-                {
-                    lastSelectedUnit = unit;
-                    MainGameScreen.IsShowContextMenu = true;
-                }
                 Burb burb = lastSelectedHex.Burb;
                 lastSelectedBurb = burb;
                 if (burb != null)

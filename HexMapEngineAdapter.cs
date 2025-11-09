@@ -546,7 +546,6 @@ class HexMapEngineAdapter
         {
             return;
         }
-
         coSpriteBatch.Draw(
                             units[unitTypeId],
                             pixelVector,
