@@ -39,7 +39,7 @@ The game is being designed with known differences from the original.
 
 
 ### Milestone 3
-- [] Advanced movement -- waypoints.
+- [ ] Advanced movement -- waypoints.
   - [x] waypoints
   - [ ] patrol
 - [x] Destinations view.
