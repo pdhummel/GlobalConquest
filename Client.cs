@@ -183,6 +183,13 @@ public class Client
                 //Console.WriteLine("OnNetworkReceive(): Updating map display");
                 GlobalConquestGame?.updateMap();
             }
+            if ("plan".Equals(GameState.CurrentPhase) && GameState.PlayerPlanningReady.ContainsKey(ClientIdentifier) && GameState.PlayerPlanningReady[ClientIdentifier] == false)
+            {
+                PlanningReadyAction action = new PlanningReadyAction();
+                action.ClassType = "GlobalConquest.Actions.PlanningReadyAction";  //executeAction.GetType().FullName
+                action.ClientIdentifier = ClientIdentifier;
+                SendAction(ClientIdentifier, action);
+            }
         }
         else
         {

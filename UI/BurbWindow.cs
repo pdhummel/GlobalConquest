@@ -240,7 +240,7 @@ public class BurbWindow
 
     private void addPurchaseBuildButton(Window window, Grid grid, int row, MainGameScreen mainGameScreen, MapHex mapHex, Burb burb, List<string> directions)
     {
-        if (!"plan".Equals(mainGameScreen.gcGame.Client.GameState.CurrentPhase))
+        if (!mainGameScreen.gcGame.IsAllowedToPlan())
             return;
         int count = 0;
         foreach (string direction in directions)

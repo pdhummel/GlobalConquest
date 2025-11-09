@@ -346,15 +346,15 @@ public class GlobalConquestGame : Game
         // Draw menus and screens.
         // Myra desktop and widgets need to come after other spritebatch draws for correct screen layer ordering
         // otherwise things like the context menu will be hidden.
-        if (lastSelectedUnit != null && Client != null && Client.ClientIdentifier != null && Client.GameState.Players.playerNameToPlayer.ContainsKey(Client.ClientIdentifier))
+        if (lastSelectedUnit != null)
         {
-            Player player = Client.GameState.Players.playerNameToPlayer[Client.ClientIdentifier];
+            Player player = identifySelf();
             //Console.WriteLine("Draw(): unit context: " + Client.ClientIdentifier + ", " + player.FactionColor + " ," + lastSelectedUnit.Color);
-            if (lastSelectedUnit != null && lastSelectedUnit.Color.Equals(player.FactionColor) && Client != null &&
-                "plan".Equals(Client.GameState.CurrentPhase))
+            if (player != null && lastSelectedUnit != null && lastSelectedUnit.Color.Equals(player.FactionColor) && Client != null &&
+                MainGameScreen.IsShowContextMenu && IsAllowedToPlan())
                 MainGameScreen?.ShowContextMenu(lastSelectedUnit);
         }
-        else if (lastSelectedHex != null && lastSelectedBurb != null && Client != null && Client.ClientIdentifier != null && Client.GameState.Players.playerNameToPlayer.ContainsKey(Client.ClientIdentifier))
+        else if (lastSelectedHex != null && lastSelectedBurb != null)
         {
             Player player = identifySelf();
             Burb parentBurb = null;
@@ -367,7 +367,7 @@ public class GlobalConquestGame : Game
                 player  != null &&
                 (lastSelectedBurb.OwnerColor.Equals(player.FactionColor) ||
                 (parentBurb != null && parentBurb.OwnerColor != null && parentBurb.OwnerColor.Equals(player.FactionColor))) && 
-                "plan".Equals(Client.GameState.CurrentPhase))
+                MainGameScreen.IsShowContextMenu && IsAllowedToPlan())
                 MainGameScreen?.ShowContextMenu(lastSelectedHex);
         }
         Desktop.Render();
@@ -559,7 +559,7 @@ public class GlobalConquestGame : Game
         if (!MoveMode && lastSelectedHex != null)
         {
             Unit unit = lastSelectedHex.getUnit();
-            lastSelectedUnit = unit;            
+            lastSelectedUnit = unit;  
         }
 
     }
@@ -604,10 +604,16 @@ public class GlobalConquestGame : Game
                 lastSelectedUnit = unit;
                 Burb burb = lastSelectedHex.Burb;
                 lastSelectedBurb = burb;
-                if (burb != null)
+                if (unit != null)
+                {
+                    if (unit.Color.Equals(player.FactionColor))
+                    {
+                        MainGameScreen.IsShowContextMenu = true;
+                    }
+                }
+                else if (burb != null)
                 {
                     //Console.WriteLine("handleRightClickMouseOnMap(): lastSelectedBurb=" + burb.Type);
-                    lastSelectedBurb = burb;
                     Burb parentBurb = null;
                     if (burb.Name == null && burb.ParentBurbName != null)
                     {
@@ -615,7 +621,7 @@ public class GlobalConquestGame : Game
                     }
                     if (burb.OwnerColor.Equals(player.FactionColor) || (parentBurb != null && parentBurb.OwnerColor.Equals(player.FactionColor)))
                     {
-                        MainGameScreen.IsShowContextMenu = true;    
+                        MainGameScreen.IsShowContextMenu = true;
                     }
                 }
 
@@ -696,5 +702,40 @@ public class GlobalConquestGame : Game
 
         }
         return player;
+    }
+
+    public bool IsAllowedToPlan()
+    {
+        Console.WriteLine("IsAllowedToPlan(): enter");
+        bool canPlan = false;
+        if ("plan".Equals(Client.GameState.CurrentPhase))
+        {
+            Console.WriteLine("IsAllowedToPlan(): currentPhase=" + Client.GameState.CurrentPhase);
+            canPlan = true;
+        }
+        if (canPlan)
+        {
+            Player player = identifySelf();
+            Faction faction = Client.GameState.Factions.ColorToFaction[player.FactionColor];
+            Console.WriteLine("IsAllowedToPlan(): faction status=" + faction.Status);
+            if (!"planning".Equals(faction.Status))
+            {
+                canPlan = false;
+                Console.WriteLine("IsAllowedToPlan(): canPlan=" + canPlan);
+                return canPlan;
+            }
+        }
+        foreach (string key in Client.GameState.PlayerPlanningReady.Keys)
+        {
+            if (!Client.GameState.PlayerPlanningReady[key])
+            {
+                Console.WriteLine("IsAllowedToPlan(): PlayerPlanningReady=" + key + " " + Client.GameState.PlayerPlanningReady[key]);
+                canPlan = false;
+                Console.WriteLine("IsAllowedToPlan(): canPlan=" + canPlan);
+                return canPlan;
+            }
+        }
+        Console.WriteLine("IsAllowedToPlan(): canPlan=" + canPlan);
+        return canPlan;
     }
 }
