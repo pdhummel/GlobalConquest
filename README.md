@@ -49,9 +49,8 @@ The game is being designed with known differences from the original.
 - [ ] Unit context menu
   - [x] blitz
   - [ ] sneak
-  - [ ] wait
+  - [x] wait
   - [ ] pursue
-  - [ ] home
 
 ### Milestone 4
 - [ ] Airplanes
@@ -71,7 +70,8 @@ The game is being designed with known differences from the original.
 - [ ] Playback.
 
 ### Milestone 7
-- [ ] Improved Economics.
+- [ ] Improved Economics
+- [ ] Unit Context Menu - home
 - [ ] Unit production automation by city.
 - [ ] Unit supported by city.
 - [ ] Add oil and mineral resources.

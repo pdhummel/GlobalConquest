@@ -123,6 +123,7 @@ public class ContextMenu
                     action.Unit = unit;
                     action.IsBlitzing = false;
                     action.IsSneaking = unit.IsSneaking;
+                    action.RoundsToWait = unit.RoundsToWait;
                     gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
                 }
                 HideContextMenu();
@@ -141,10 +142,65 @@ public class ContextMenu
                 action.Unit = unit;
                 action.IsBlitzing = true;
                 action.IsSneaking = unit.IsSneaking;
+                action.RoundsToWait = unit.RoundsToWait;
                 gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
                 HideContextMenu();
             };
             verticalMenu.Items.Add(blitzMenuItem);
+        }
+        if (unit != null && unit.RoundsToWait > 0)
+        {
+            var waitZeroMenuItem = new MenuItem();
+            waitZeroMenuItem.Text = "Wait 0";
+            waitZeroMenuItem.Selected += (s, a) =>
+            {
+                ChangeUnitContextAction action = new ChangeUnitContextAction();
+                action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
+                action.ClientIdentifier = gcGame.Client.ClientIdentifier;
+                action.Unit = unit;
+                action.IsBlitzing = unit.IsBlitzing;
+                action.IsSneaking = unit.IsSneaking;
+                action.RoundsToWait = 0;
+                gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+                HideContextMenu();
+            };
+            verticalMenu.Items.Add(waitZeroMenuItem);
+        }
+        if (unit != null && unit.RoundsToWait > 1)
+        {
+            var waitMinusOneMenuItem = new MenuItem();
+            waitMinusOneMenuItem.Text = "Wait -1 (" + (unit.RoundsToWait - 1) + ")";
+            waitMinusOneMenuItem.Selected += (s, a) =>
+            {
+                ChangeUnitContextAction action = new ChangeUnitContextAction();
+                action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
+                action.ClientIdentifier = gcGame.Client.ClientIdentifier;
+                action.Unit = unit;
+                action.IsBlitzing = unit.IsBlitzing;
+                action.IsSneaking = unit.IsSneaking;
+                action.RoundsToWait = unit.RoundsToWait - 1;
+                gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+                HideContextMenu();
+            };
+            verticalMenu.Items.Add(waitMinusOneMenuItem);
+        }
+        if (unit != null)
+        {
+            var waitPlusOneMenuItem = new MenuItem();
+            waitPlusOneMenuItem.Text = "Wait +1 (" + (unit.RoundsToWait + 1) + ")";
+            waitPlusOneMenuItem.Selected += (s, a) =>
+            {
+                ChangeUnitContextAction action = new ChangeUnitContextAction();
+                action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
+                action.ClientIdentifier = gcGame.Client.ClientIdentifier;
+                action.Unit = unit;
+                action.IsBlitzing = unit.IsBlitzing;
+                action.IsSneaking = unit.IsSneaking;
+                action.RoundsToWait = unit.RoundsToWait + 1;
+                gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+                HideContextMenu();
+            };
+            verticalMenu.Items.Add(waitPlusOneMenuItem);
         }
 
         container.Widgets.Add(verticalMenu);

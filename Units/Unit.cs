@@ -26,6 +26,7 @@ public class Unit
     // If the beach square has a friendly dug-in infantry unit squatting in it,
     // this loading/unloading takes only one round.
     public int RoundsToPause { get; set; } = 0;
+    public int RoundsToWait { get; set; } = 0;
 
     public int MoveSteps { get; set; } = 0;
 

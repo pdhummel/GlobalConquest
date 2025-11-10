@@ -550,6 +550,12 @@ public class GameLogic
             bool isMovingDone = false;
             while (movesMade < 2 && !isMovingDone)
             {
+                if (unit.RoundsToWait > 0)
+                {
+                    unit.RoundsToWait -= 1;
+                    return;
+                }
+
                 int fromX = unit.X;
                 int fromY = unit.Y;
                 MapHex mapHex = gameState.Map.Hexes[unit.Y, unit.X];

@@ -9,6 +9,7 @@ public class ChangeUnitContextAction : PlayerAction
     public Unit? Unit { get; set; }
     public bool IsBlitzing { get; set; }
     public bool IsSneaking { get; set; }
+    public int RoundsToWait { get; set; }
 
 
     public new void deserializeAndExecute(NetPeer peer, Object serverObj)
@@ -33,6 +34,7 @@ public class ChangeUnitContextAction : PlayerAction
             Unit existingUnit = mapHex.getUnit();
             existingUnit.IsBlitzing = IsBlitzing;
             existingUnit.IsSneaking = IsSneaking;
+            existingUnit.RoundsToWait = RoundsToWait;
             server.sendGameStateAndMapHex(Unit.X, Unit.Y);
         }
     }
