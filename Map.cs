@@ -155,7 +155,8 @@ public class Map
             if (sourceMapHex.Units.Count > 0)
             {
                 targetMapHex.setUnit(unit);
-                Hexes[unit.Y, unit.X].Units.RemoveAt(0);
+                if (Hexes[unit.Y, unit.X].Units.Count > 0)
+                    Hexes[unit.Y, unit.X].Units.RemoveAt(0);
             }
         }
     }
@@ -461,7 +462,7 @@ public class Map
 
         return hexes;
     }
-    
+
     public void checkBurbsForOwner()
     {
 

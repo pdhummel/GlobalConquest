@@ -33,9 +33,8 @@ public class GameLogic
         attackedUnitsXy.Clear();
         attackingUnitsXy.Clear();
 
-
         // Find all units with stuff to do.
-        // TODO: Consider some units will be in combat without explicit orders.
+        // Some units will be in combat without explicit orders.
         List<Unit> units = new List<Unit>();
         for (int liY = 0; liY < gameState.Map.Y; liY++)
         {
@@ -49,9 +48,30 @@ public class GameLogic
                     {
                         infantryUnitsXy.Add(makeXyString(unit.X, unit.Y));
                     }
-                    unit.NormalSteps = 0;
-                    unit.BlitzSteps = 0;
-                    unit.SneakSteps = 0;
+
+                    // When not moving, a land unit's accumulation of steps returns to 0,
+                    // while a ship's value returns to its steps available per round
+                    // (thus ships are quick to make an initial move while land units are not).
+                    if (unit.ActionQueue.Count <= 0)
+                    {
+                        if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) ||
+                            "tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
+                        {
+                            unit.MoveSteps = 0;
+                        }
+                        else
+                        {
+                            if (unit.StrengthPoints <= 20)
+                                unit.IsBlitzing = false;
+                            UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+                            if (unit.IsBlitzing)
+                                unit.MoveSteps = unitType.BlitzStepsAddedPerRound;
+                            else if (unit.IsSneaking)
+                                unit.MoveSteps = unitType.SneakStepsAddedPerRound;
+                            else
+                                unit.MoveSteps = unitType.NormalStepsAddedPerRound;
+                        }
+                    }
                     units.Add(unit);
                 }
             }
@@ -157,54 +177,9 @@ public class GameLogic
             }
         }
         server.gameState.CurrentTurn += 1;
-        server.sendGameState();        
+        server.sendGameState();
     }
 
-    public void restoreGame(Server server)
-    {
-        string currentUser = Environment.UserName;
-        string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\";
-        string directory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\Data\\";
-        string searchPattern = "GameState-*.json";
-        string[] files = Directory.GetFiles(directory, searchPattern);
-        string file = files[0];
-        string filePath = file;
-        string jsonString = File.ReadAllText(filePath);
-        GameState? newGameState = JsonSerializer.Deserialize<GameState>(jsonString);
-        searchPattern = "MapHex-*.json";
-        files = Directory.GetFiles(directory, searchPattern);
-        if (newGameState.Map == null)
-        {
-            newGameState.Map = new Map();
-            newGameState.Map.X = newGameState.GameSettings.Width;
-            newGameState.Map.Y = newGameState.GameSettings.Height;
-            newGameState.Map.VisibilityMode = newGameState.GameSettings.Visibility;
-        }
-        if (newGameState.Map.Hexes == null)
-        {
-            MapHex[,] hexes = new MapHex[newGameState.GameSettings.Height, newGameState.GameSettings.Width];
-            newGameState.Map.Hexes = hexes;
-        }
-        foreach (string mapHexFile in files)
-        {
-            filePath = mapHexFile;
-            jsonString = File.ReadAllText(filePath);
-            MapHex mapHex = JsonSerializer.Deserialize<MapHex>(jsonString);
-            newGameState.Map.Hexes[mapHex.Y, mapHex.X] = mapHex;
-        }
-        newGameState.Map.addFixedBurbs(newGameState.Burbs);
-        newGameState.UnitTypes.defineUnitTypes();
-        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
-        foreach (string color in colors)
-        {
-            if (newGameState.Players.colorToPlayer.ContainsKey(color))
-            {
-                Player player = newGameState.Players.colorToPlayer[color];
-                newGameState.Players.RemovePlayer(newGameState, player.Name);
-            }
-        }
-        server.gameState = newGameState;
-    }
 
     public void startGame(Server server)
     {
@@ -237,13 +212,13 @@ public class GameLogic
 
         foreach (Unit unit in units)
         {
-            addStepsForUnit(server, unit);
             scanUnits(server, unit);
             scanTerrain(server, unit);
             sufferAttrition(server, unit);
             repair(server, unit);
-            moveUnit(server, unit);
             checkForCombat(server, unit);
+            addStepsForUnit(server, unit);
+            moveUnit(server, unit);
             digInInfantry(server, unit);
             if (!("Omniscient".Equals(gameState.GameSettings.Visibility) || "Command HQ".Equals(gameState.GameSettings.Visibility)))
                 decrementVisibility(unit);
@@ -272,16 +247,27 @@ public class GameLogic
 
     private void addStepsForUnit(Server server, Unit unit)
     {
+        // Units can accumulate steps as they are moving (up to amaximum of 100).
+        // When not moving, a land unit's accumulation of steps returns to 0,
+        //  while a ship's value returns to its steps available per round
+        // (thus ships are quick to make an initial move while land units are not).
         UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
-        unit.NormalSteps += unitType.NormalStepsAddedPerRound;
-        if (unit.NormalSteps > 100)
-            unit.NormalSteps = 100;
-        unit.BlitzSteps += unitType.BlitzStepsAddedPerRound;
-        if (unit.BlitzSteps > 100)
-            unit.BlitzSteps = 100;
-        unit.SneakSteps += unitType.SneakStepsAddedPerRound;
-        if (unit.SneakSteps > 100)
-            unit.SneakSteps = 100;
+        if (unit.ActionQueue.Count <= 0 &&
+           ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) ||
+            "tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType)))
+        {
+            return;
+        }
+        if (unit.StrengthPoints <= 20)
+            unit.IsBlitzing = false;
+        if (unit.IsBlitzing)
+            unit.MoveSteps += unitType.BlitzStepsAddedPerRound;
+        else if (unit.IsSneaking)
+            unit.MoveSteps += unitType.SneakStepsAddedPerRound;
+        else
+            unit.MoveSteps += unitType.NormalStepsAddedPerRound;
+        if (unit.MoveSteps > 100)
+            unit.MoveSteps = 100;
     }
 
     private void scanUnits(Server server, Unit unit)
@@ -297,13 +283,13 @@ public class GameLogic
             if (hexUnit != null)
             {
                 // Unit visibility has a timer
-                // Subs have special scanning rules. They can't be spotted by planes, spies or 
-                // any other unit until they attack. 
-                // However, once a sub is spotted it stays "seen" 
-                // at the normal range of the "seeing" unit 
-                // (e.g., 6 for carriers and Comcens, 5 for battleships) 
-                // but for a shorter period of time (only 2 rounds, which is 
-                //considerably shorter than the 8 rounds for all other units). 
+                // Subs have special scanning rules. They can't be spotted by planes, spies or
+                // any other unit until they attack.
+                // However, once a sub is spotted it stays "seen"
+                // at the normal range of the "seeing" unit
+                // (e.g., 6 for carriers and Comcens, 5 for battleships)
+                // but for a shorter period of time (only 2 rounds, which is
+                //considerably shorter than the 8 rounds for all other units).
                 bool previousVisibility = false;
                 if (hexUnit.Visibility.ContainsKey(unit.Color))
                     previousVisibility = hexUnit.Visibility[unit.Color];
@@ -316,9 +302,9 @@ public class GameLogic
                 if (!previousVisibility)
                     server.sendGameStateAndMapHex(hex.X, hex.Y);
                 // TODO: logic for subs:
-                // Sub scanning range is reduced to 3 if target not moving. 
-                // Subs can only be spotted at a range of 1 if they are stationary or 
-                // if the scanning unit is moving regardless of unit's normal range.   
+                // Sub scanning range is reduced to 3 if target not moving.
+                // Subs can only be spotted at a range of 1 if they are stationary or
+                // if the scanning unit is moving regardless of unit's normal range.
 
             }
         }
@@ -460,6 +446,8 @@ public class GameLogic
             int previousStrength = unitToAttack.StrengthPoints;
             int damage = attackerUnitType.BattleDamageToDefender[unitToAttack.UnitType];
             unitToAttack.StrengthPoints -= damage;
+
+
             // Battleships and carriers can "bombard" land units once they are within range.
             // However, this type of combat cannot reduce the land unit below 30% strength.
             if (("carrier".Equals(unit.UnitType) || "battleship".Equals(unit.UnitType)) &&
@@ -474,6 +462,36 @@ public class GameLogic
                     unitToAttack.StrengthPoints = previousStrength;
                 }
             }
+
+            // Infantry units lose steps equal to the damage done when either
+            // attacking or defending. Armor lose steps equal to 1/2 the damage. This
+            // effect can reduce the steps to a deficit of -25 (when steps are negative
+            // the unit is pinned.)
+            if ("infantry".Equals(unitToAttack.UnitType) || "dug-in-infantry".Equals(unitToAttack.UnitType))
+            {
+
+                unitToAttack.MoveSteps -= damage;
+            }
+            if ("tank".Equals(unitToAttack.UnitType) || "armor".Equals(unitToAttack.UnitType))
+            {
+
+                unitToAttack.MoveSteps -= damage / 2;
+            }
+            if (unitToAttack.MoveSteps < -25)
+                unitToAttack.MoveSteps = -25;
+
+            if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
+            {
+                unit.MoveSteps -= damage;
+            }
+            if ("tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
+            {
+                unit.MoveSteps -= damage / 2;
+            }
+            if (unit.MoveSteps < -25)
+                unit.MoveSteps = -25;
+
+            // Head-Count scoring point calcs for fighting
             if (!"grey".Equals(unitToAttack.Color))
             {
                 Faction faction = server.gameState.Factions.ColorToFaction[unit.Color];
@@ -488,12 +506,16 @@ public class GameLogic
                 if (faction.HeadCountScore < 0)
                     faction.HeadCountScore = 0;
             }
+
+            if (unitToAttack.StrengthPoints <= 20)
+                unitToAttack.IsBlitzing = false;
             if (unitToAttack.StrengthPoints <= 0)
             {
                 Console.WriteLine("checkForCombat(): unit destoryed " + unitToAttack.UnitType + " at " + unitToAttack.X + "," + unitToAttack.Y);
                 unitToAttack.StrengthPoints = 0;
                 MapHex deadUnitMapHex = map.Hexes[unitToAttack.Y, unitToAttack.X];
-                deadUnitMapHex.Units.RemoveAt(0);
+                if (deadUnitMapHex.Units.Count > 0)
+                    deadUnitMapHex.Units.RemoveAt(0);
                 if ("comcen".Equals(unitToAttack.UnitType))
                 {
                     Faction faction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
@@ -509,7 +531,7 @@ public class GameLogic
         }
 
     }
-    
+
     private string makeXyString(int x, int y)
     {
         return x + "," + y;
@@ -517,122 +539,150 @@ public class GameLogic
 
     private void moveUnit(Server server, Unit unit)
     {
-
-        // TODO: Consider these points.
-        // Infantry and armor when on land may move only once per round 
-        // while sea units (including infantry and armor transports) may move as 
-        // many times as their accumulated steps will allow when they are 
-        // outside the range of enemy units (usually twice per round). Spies and 
-        // Comcens move on land like they do at sea.
-        // Infantry units lose steps equal to the damage done when either 
-        // attacking or defending. Armor lose steps equal to 1/2 the damage. This 
-        // effect can reduce the steps to a deficit of -25 (when steps are negative 
-        // the unit is "pinned.0)
-        // When not moving, a land unit's accumulation of steps returns to 
-        // 0 while a ship's value returns to its steps available per round 
-        //  (thus ships are quick to make an initial move while land units are not).
-
+        // Spies and Comcens move on land like they do at sea.
 
         // Console.WriteLine("processRound(): unit at " + unit.X + "," + unit.Y);
         GameState gameState = server.gameState;
         UnitAction unitAction = unit.getNextAction();
         if (unitAction != null && "move".Equals(unitAction.Action))
         {
-            int fromX = unit.X;
-            int fromY = unit.Y;
-            MapHex nextMapHex = determineNextHexTowardsDestination(server, unit, unitAction);
-            Console.WriteLine("processRound(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " to nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
-            //Console.WriteLine("processRound(): nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
-            if (unit.X != nextMapHex.X || unit.Y != nextMapHex.Y)
+            int movesMade = 0;
+            bool isMovingDone = false;
+            while (movesMade < 3 && !isMovingDone)
             {
-                UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
-                if ("sea".Equals(unitType.LandOrSea) && (unitType.Name.Contains("transport")) &&
-                   ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
+                int fromX = unit.X;
+                int fromY = unit.Y;
+                MapHex mapHex = gameState.Map.Hexes[unit.Y, unit.X];
+                MapHex nextMapHex = determineNextHexTowardsDestination(server, unit, unitAction);
+                UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+                int stepsRequired = unitType.StepsUsedByTerrain[mapHex.Terrain];
+                int stepsAvailable = unit.MoveSteps;
+                if (stepsAvailable > stepsRequired)
                 {
-                    // When going from transport to land (unloading), it will take eight rounds. 
-                    // TODO: If the beach square has a friendly dug-in infantry unit squatting in it, this loading/unloading takes only one round.
-                    if (unit.RoundsToPause > 0)
-                    {
-                        Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " is unloading.");
-                        unit.IsUnloading = true;
-                        unit.RoundsToPause -= 1;
-                        if (unit.RoundsToPause > 0)
-                        {
-                            return;
-                        }
-                        Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " has unloaded.");
-                        unit.IsUnloading = false;
-                        if ("transport-tank".Equals(unit.UnitType) || "transport-armor".Equals(unit.UnitType))
-                        {
-                            unit.UnitType = "tank";
-                        }
-                        else if ("transport-infantry".Equals(unit.UnitType))
-                        {
-                            unit.UnitType = "infantry";
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " needs to unload.");
-                        unit.IsUnloading = true;
-                        unit.RoundsToPause = 8;
-                        return;
-                    }
-
+                    unit.MoveSteps -= stepsRequired;
                 }
-                else if ("land".Equals(unitType.LandOrSea) &&
-                   ("infantry".Equals(unitType.Name) || "dug-in-infantry".Equals(unitType.Name) || "tank".Equals(unitType.Name) || "armor".Equals(unitType.Name)) &&
-                   "sea".Equals(nextMapHex.Terrain))
+                else
                 {
-                    if (unit.RoundsToPause > 0)
-                    {
-                        Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " is loading into a transport.");
-                        unit.IsLoading = true;
-                        unit.RoundsToPause -= 1;
-                        if (unit.RoundsToPause > 0)
-                        {
-                            return;
-                        }
-                        Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " has loaded into a transport.");
-                        unit.IsLoading = false;
-                        if ("tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
-                        {
-                            unit.UnitType = "transport-tank";
-                        }
-                        else if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
-                        {
-                            unit.UnitType = "transport-infantry";
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " needs to load into a transport.");
-                        unit.IsLoading = true;
-                        unit.RoundsToPause = 4;
-                        return;
-                    }
-                }
-                else if ("sea".Equals(unitType.LandOrSea) &&
-                   ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
-                {
-                    Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " cannot move on land.");
+                    Console.WriteLine("moveUnit(): " + unitType.Name + " at " + unit.X + "," + unit.Y + " accumulating movement steps");
+                    Console.WriteLine("moveUnit(): " + unitType.Name + " at " + unit.X + "," + unit.Y + " stepsAvailable=" + stepsAvailable + ", stepsRequired=" + stepsRequired);
+                    isMovingDone = true;
                     return;
                 }
 
-                gameState.Map.moveUnit(unit, nextMapHex.X, nextMapHex.Y);
-                unit.X = nextMapHex.X;
-                unit.Y = nextMapHex.Y;
-                movingUnitsXy.Add(makeXyString(unit.X, unit.Y));
+                Console.WriteLine("processRound(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " to nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
+                //Console.WriteLine("processRound(): nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
+                if (unit.X != nextMapHex.X || unit.Y != nextMapHex.Y)
+                {
+                    if ("sea".Equals(unitType.LandOrSea) && (unitType.Name.Contains("transport")) &&
+                       ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
+                    {
+                        // When going from transport to land (unloading), it will take eight rounds.
+                        // TODO: If the beach square has a friendly dug-in infantry unit squatting in it,
+                        // this loading/unloading takes only one round.
+                        if (unit.RoundsToPause > 0)
+                        {
+                            Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " is unloading.");
+                            unit.IsUnloading = true;
+                            unit.RoundsToPause -= 1;
+                            if (unit.RoundsToPause > 0)
+                            {
+                                return;
+                            }
+                            Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " has unloaded.");
+                            unit.IsUnloading = false;
+                            if ("transport-tank".Equals(unit.UnitType) || "transport-armor".Equals(unit.UnitType))
+                            {
+                                unit.UnitType = "tank";
+                            }
+                            else if ("transport-infantry".Equals(unit.UnitType))
+                            {
+                                unit.UnitType = "infantry";
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " needs to unload.");
+                            unit.IsUnloading = true;
+                            unit.RoundsToPause = 8;
+                            return;
+                        }
 
+                    }
+                    else if ("land".Equals(unitType.LandOrSea) &&
+                       ("infantry".Equals(unitType.Name) || "dug-in-infantry".Equals(unitType.Name) || "tank".Equals(unitType.Name) || "armor".Equals(unitType.Name)) &&
+                       "sea".Equals(nextMapHex.Terrain))
+                    {
+                        if (unit.RoundsToPause > 0)
+                        {
+                            Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " is loading into a transport.");
+                            unit.IsLoading = true;
+                            unit.RoundsToPause -= 1;
+                            if (unit.RoundsToPause > 0)
+                            {
+                                return;
+                            }
+                            Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " has loaded into a transport.");
+                            unit.IsLoading = false;
+                            if ("tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
+                            {
+                                unit.UnitType = "transport-tank";
+                            }
+                            else if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
+                            {
+                                unit.UnitType = "transport-infantry";
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " needs to load into a transport.");
+                            unit.IsLoading = true;
+                            unit.RoundsToPause = 4;
+                            return;
+                        }
+                    }
+                    else if ("sea".Equals(unitType.LandOrSea) &&
+                       ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
+                    {
+                        Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " cannot move on land.");
+                        return;
+                    }
+
+                    gameState.Map.moveUnit(unit, nextMapHex.X, nextMapHex.Y);
+                    unit.X = nextMapHex.X;
+                    unit.Y = nextMapHex.Y;
+                    movingUnitsXy.Add(makeXyString(unit.X, unit.Y));
+
+                }
+                if (nextMapHex.X == unitAction.TargetX && nextMapHex.Y == unitAction.TargetY && unit.ActionQueue.Count > 0)
+                {
+                    unit.ActionQueue.RemoveAt(0);
+                }
+                if (unit.IsBlitzing)
+                {
+                    unit.StrengthPoints -= 2;
+                    if (unit.StrengthPoints <= 20)
+                        unit.IsBlitzing = false;
+                }
+
+
+                server.sendGameStateAndMapHex(nextMapHex.X, nextMapHex.Y);
+                server.sendGameStateAndMapHex(fromX, fromY);
+                // Infantry and armor when on land may move only once per round.
+                if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) ||
+                    "tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
+                {
+                    isMovingDone = true;
+                }
+                // Sea units (including infantry and armor transports) may move as
+                // many times as their accumulated steps will allow when they are
+                // outside the range of enemy units (usually twice per round).
+                string unitXy = makeXyString(unit.X, unit.Y);
+                if (attackedUnitsXy.Contains(unitXy) || attackingUnitsXy.Contains(unitXy))
+                {
+                    isMovingDone = true;
+                }
+                movesMade += 1;
             }
-            if (nextMapHex.X == unitAction.TargetX && nextMapHex.Y == unitAction.TargetY)
-            {
-                //Console.WriteLine("moveUnit(): actions before " + unit.ActionQueue.Count);
-                unit.ActionQueue.RemoveAt(0);
-                //Console.WriteLine("moveUnit(): actions after " + unit.ActionQueue.Count);
-            }
-            server.sendGameStateAndMapHex(nextMapHex.X, nextMapHex.Y);
-            server.sendGameStateAndMapHex(fromX, fromY);
         }
     }
 
@@ -689,18 +739,7 @@ public class GameLogic
 
         if (tmpMapHex.getUnit() == null)
         {
-            UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
-            int stepsRequired = unitType.StepsUsedByTerrain[mapHex.Terrain];
-            if (unit.NormalSteps > stepsRequired)
-            {
-                Console.WriteLine("determineNextHexTowardsDestination(): " + unitType.Name + " at " + unit.X + "," + unit.Y + " stepsAvailable=" + unit.NormalSteps + ", stepsRequired=" + stepsRequired);
-                unit.NormalSteps -= stepsRequired;
-                mapHex = tmpMapHex;
-            }
-            else
-            {
-                Console.WriteLine("determineNextHexTowardsDestination(): " + unitType.Name + " at " + unit.X + "," + unit.Y + " accumulating movement steps");
-            }
+            mapHex = tmpMapHex;
         }
         else
         {
@@ -757,7 +796,7 @@ public class GameLogic
             gameOver = true;
         }
 
-        // Only 1 CommandCenter is left.        
+        // Only 1 CommandCenter is left.
         foreach (string color in colors)
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
@@ -843,21 +882,21 @@ public class GameLogic
     }
 
     // Points are awarded for each hit of damage to all opponents EXCEPT the native forces.
-    // The points you receive depend upon the value of the unit you are damaging. 
-    // Hitting an opponent's Comcen gets you 16 points per hit, 
+    // The points you receive depend upon the value of the unit you are damaging.
+    // Hitting an opponent's Comcen gets you 16 points per hit,
     // while damaging an infantry will give you only two points per hit.
-    // Native unit damages one of your units, you will LOSE points for each hit. 
-    // no player can ever get below a score of zero. 
+    // Native unit damages one of your units, you will LOSE points for each hit.
+    // no player can ever get below a score of zero.
     private int calculateHeadCountScore(Faction faction)
     {
         int score = faction.HeadCountScore;
         return score;
     }
 
-    // The scoring of this type of Conquest is calculated as (get ready for this) 
-    // the total of one-half the money in your Treasury, 
-    // TODO: plus the sum of the balance of all your burbs, 
-    // plus the sum of income per turn of all your burbs and resources, 
+    // The scoring of this type of Conquest is calculated as (get ready for this)
+    // the total of one-half the money in your Treasury,
+    // TODO: plus the sum of the balance of all your burbs,
+    // plus the sum of income per turn of all your burbs and resources,
     // plus the "scrap value" of all your units (one tenth their cost).
     private int calculateIncomeScore(Server server, Faction faction, List<Unit> units)
     {
@@ -884,9 +923,9 @@ public class GameLogic
 
         return score;
     }
-    
-    // You get points in this one for each burb you own. Villages are worth 20, towns 
-    // 30, cities 40, metroplexes 50, and the native capital 2500. 
+
+    // You get points in this one for each burb you own. Villages are worth 20, towns
+    // 30, cities 40, metroplexes 50, and the native capital 2500.
     private int calculateCapitalScore(Server server, Faction faction)
     {
         int score = 0;
@@ -901,6 +940,52 @@ public class GameLogic
         }
 
         return score;
+    }
+
+    public void restoreGame(Server server)
+    {
+        string currentUser = Environment.UserName;
+        string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\";
+        string directory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\Data\\";
+        string searchPattern = "GameState-*.json";
+        string[] files = Directory.GetFiles(directory, searchPattern);
+        string file = files[0];
+        string filePath = file;
+        string jsonString = File.ReadAllText(filePath);
+        GameState? newGameState = JsonSerializer.Deserialize<GameState>(jsonString);
+        searchPattern = "MapHex-*.json";
+        files = Directory.GetFiles(directory, searchPattern);
+        if (newGameState.Map == null)
+        {
+            newGameState.Map = new Map();
+            newGameState.Map.X = newGameState.GameSettings.Width;
+            newGameState.Map.Y = newGameState.GameSettings.Height;
+            newGameState.Map.VisibilityMode = newGameState.GameSettings.Visibility;
+        }
+        if (newGameState.Map.Hexes == null)
+        {
+            MapHex[,] hexes = new MapHex[newGameState.GameSettings.Height, newGameState.GameSettings.Width];
+            newGameState.Map.Hexes = hexes;
+        }
+        foreach (string mapHexFile in files)
+        {
+            filePath = mapHexFile;
+            jsonString = File.ReadAllText(filePath);
+            MapHex mapHex = JsonSerializer.Deserialize<MapHex>(jsonString);
+            newGameState.Map.Hexes[mapHex.Y, mapHex.X] = mapHex;
+        }
+        newGameState.Map.addFixedBurbs(newGameState.Burbs);
+        newGameState.UnitTypes.defineUnitTypes();
+        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        foreach (string color in colors)
+        {
+            if (newGameState.Players.colorToPlayer.ContainsKey(color))
+            {
+                Player player = newGameState.Players.colorToPlayer[color];
+                newGameState.Players.RemovePlayer(newGameState, player.Name);
+            }
+        }
+        server.gameState = newGameState;
     }
 
 }

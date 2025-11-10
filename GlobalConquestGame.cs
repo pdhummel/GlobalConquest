@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Color = Microsoft.Xna.Framework.Color;
@@ -353,7 +353,7 @@ public class GlobalConquestGame : Game
             Player player = identifySelf();
             //Console.WriteLine("Draw(): unit context: " + Client.ClientIdentifier + ", " + player.FactionColor + " ," + lastSelectedUnit.Color);
             if (player != null && lastSelectedUnit != null && lastSelectedUnit.Color.Equals(player.FactionColor) && Client != null &&
-                MainGameScreen.IsShowContextMenu && IsAllowedToPlan())
+                MainGameScreen.IsShowContextMenu() && IsAllowedToPlan())
                 MainGameScreen?.ShowContextMenu(lastSelectedUnit);
         }
         else if (lastSelectedHex != null && lastSelectedBurb != null)
@@ -366,10 +366,10 @@ public class GlobalConquestGame : Game
             }
             //Console.WriteLine("Draw(): burb context: " + lastSelectedBurb.Type + " ," + lastSelectedBurb.OwnerColor);
             if (lastSelectedHex != null && lastSelectedBurb != null && lastSelectedBurb.OwnerColor != null &&
-                player  != null &&
+                player != null &&
                 (lastSelectedBurb.OwnerColor.Equals(player.FactionColor) ||
-                (parentBurb != null && parentBurb.OwnerColor != null && parentBurb.OwnerColor.Equals(player.FactionColor))) && 
-                MainGameScreen.IsShowContextMenu && IsAllowedToPlan())
+                (parentBurb != null && parentBurb.OwnerColor != null && parentBurb.OwnerColor.Equals(player.FactionColor))) &&
+                MainGameScreen.IsShowContextMenu() && IsAllowedToPlan())
                 MainGameScreen?.ShowContextMenu(lastSelectedHex);
         }
         Desktop.Render();
@@ -426,7 +426,7 @@ public class GlobalConquestGame : Game
     {
         DrawLine(hexStart, hexEnd, Color.Red);
     }
-    
+
     private void DrawLine(Vector2 hexStart, Vector2 hexEnd, Color color)
     {
         //Console.WriteLine("DrawLine(): from " + hexStart.X + "," + hexStart.Y + " to " + hexEnd.X + "," + hexEnd.Y);
@@ -565,7 +565,7 @@ public class GlobalConquestGame : Game
         if (!MoveMode && lastSelectedHex != null)
         {
             Unit unit = lastSelectedHex.getUnit();
-            lastSelectedUnit = unit;  
+            lastSelectedUnit = unit;
         }
 
     }
@@ -614,7 +614,7 @@ public class GlobalConquestGame : Game
                 {
                     if (unit.Color.Equals(player.FactionColor))
                     {
-                        MainGameScreen.IsShowContextMenu = true;
+                        MainGameScreen.ContextMenu.IsShowContextMenu = true;
                     }
                 }
                 else if (burb != null)
@@ -627,7 +627,7 @@ public class GlobalConquestGame : Game
                     }
                     if (burb.OwnerColor.Equals(player.FactionColor) || (parentBurb != null && parentBurb.OwnerColor.Equals(player.FactionColor)))
                     {
-                        MainGameScreen.IsShowContextMenu = true;
+                        MainGameScreen.ContextMenu.IsShowContextMenu = true;
                     }
                 }
 
@@ -660,7 +660,7 @@ public class GlobalConquestGame : Game
         {
             selectedHexVector = findHexFromPixels(x, y);
         }
-        return selectedHexVector;        
+        return selectedHexVector;
     }
 
     private void drawDetailsPanel()

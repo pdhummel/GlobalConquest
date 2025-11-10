@@ -641,11 +641,11 @@ class HexMapEngineAdapter
         }
         if (returnVector.X < 0 || returnVector.Y < 0)
         {
-            Console.WriteLine("HexMapEngineAdapter.ConvertPixelsToHex(): pixelY=" + pixelY +
-                ", currentY=" + currentPixelPosition.Y +
-                ", hexX=" + hexX + ", hexY=" + hexY + ", hexY2=" + hexY2 +
-                ", tmpPixelY=" + tmpPixelVector.Y +
-                ", tmpPixelY2=" + tmpPixelVector2.Y);
+            //Console.WriteLine("HexMapEngineAdapter.ConvertPixelsToHex(): pixelY=" + pixelY +
+            //    ", currentY=" + currentPixelPosition.Y +
+            //    ", hexX=" + hexX + ", hexY=" + hexY + ", hexY2=" + hexY2 +
+            //    ", tmpPixelY=" + tmpPixelVector.Y +
+            //    ", tmpPixelY2=" + tmpPixelVector2.Y);
         }
         return returnVector;
     }
@@ -712,8 +712,9 @@ class HexMapEngineAdapter
                                 int piCalculatedMapTileX,
                                 int piCalculatedMapTileY,
                                 int piMapTileHexWidthInPixels,
-                                int piMapTileHexHeightInPixels) {
-        Microsoft.Xna.Framework.Graphics.Texture2D  loTexture2DTile;
+                                int piMapTileHexHeightInPixels)
+    {
+        Microsoft.Xna.Framework.Graphics.Texture2D loTexture2DTile;
         Map map = gcGame.Client.GameState.Map;
 
         if (poHexTile.texture2D != null)
@@ -730,7 +731,7 @@ class HexMapEngineAdapter
         Rectangle source = new Rectangle(0, 0, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels);
         Player player = identifySelf();
         bool visibility = map.Hexes[poHexTile.ROW_ID, poHexTile.COLUMN_ID].Visibility[player.FactionColor];
-        if (! visibility)
+        if (!visibility)
         {
             coSpriteBatch.Draw(
                                 terrain["unknown"].TEXTURE2D_IMAGE_TILE,
