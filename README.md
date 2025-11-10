@@ -37,11 +37,10 @@ The game is being designed with known differences from the original.
   - [x] Transports with load and unload.
   - [x] Spies, subs, battleships, carriers.
 
-
 ### Milestone 3
-- [ ] Advanced movement -- waypoints.
+- [x] Advanced movement
   - [x] waypoints
-  - [ ] patrol
+  - [x] patrol
 - [x] Destinations view.
 - [ ] Add unit special handling.
   - [ ] Infantry dig-in.
@@ -56,7 +55,6 @@ The game is being designed with known differences from the original.
 
 ### Milestone 4
 - [ ] Airplanes
-
 
 ### Milestone 5
 - [ ] AI opponents
@@ -92,8 +90,6 @@ The game is being designed with known differences from the original.
 - [ ] Network robustness.
 - [ ] Steam integration
 - [ ] Multi-platform support
-
-
 
 
 ## Technical Notes

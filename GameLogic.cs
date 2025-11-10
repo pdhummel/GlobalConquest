@@ -548,31 +548,32 @@ public class GameLogic
         {
             int movesMade = 0;
             bool isMovingDone = false;
-            while (movesMade < 3 && !isMovingDone)
+            while (movesMade < 2 && !isMovingDone)
             {
                 int fromX = unit.X;
                 int fromY = unit.Y;
                 MapHex mapHex = gameState.Map.Hexes[unit.Y, unit.X];
                 MapHex nextMapHex = determineNextHexTowardsDestination(server, unit, unitAction);
-                UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
-                int stepsRequired = unitType.StepsUsedByTerrain[mapHex.Terrain];
-                int stepsAvailable = unit.MoveSteps;
-                if (stepsAvailable > stepsRequired)
-                {
-                    unit.MoveSteps -= stepsRequired;
-                }
-                else
-                {
-                    Console.WriteLine("moveUnit(): " + unitType.Name + " at " + unit.X + "," + unit.Y + " accumulating movement steps");
-                    Console.WriteLine("moveUnit(): " + unitType.Name + " at " + unit.X + "," + unit.Y + " stepsAvailable=" + stepsAvailable + ", stepsRequired=" + stepsRequired);
-                    isMovingDone = true;
-                    return;
-                }
 
                 Console.WriteLine("processRound(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " to nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
                 //Console.WriteLine("processRound(): nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
                 if (unit.X != nextMapHex.X || unit.Y != nextMapHex.Y)
                 {
+                    UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+                    int stepsRequired = unitType.StepsUsedByTerrain[mapHex.Terrain];
+                    int stepsAvailable = unit.MoveSteps;
+                    if (stepsAvailable > stepsRequired)
+                    {
+                        unit.MoveSteps -= stepsRequired;
+                    }
+                    else
+                    {
+                        Console.WriteLine("moveUnit(): " + unitType.Name + " at " + unit.X + "," + unit.Y + " accumulating movement steps");
+                        Console.WriteLine("moveUnit(): " + unitType.Name + " at " + unit.X + "," + unit.Y + " stepsAvailable=" + stepsAvailable + ", stepsRequired=" + stepsRequired);
+                        isMovingDone = true;
+                        return;
+                    }
+
                     if ("sea".Equals(unitType.LandOrSea) && (unitType.Name.Contains("transport")) &&
                        ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
                     {
@@ -652,10 +653,19 @@ public class GameLogic
                     unit.Y = nextMapHex.Y;
                     movingUnitsXy.Add(makeXyString(unit.X, unit.Y));
 
-                }
-                if (nextMapHex.X == unitAction.TargetX && nextMapHex.Y == unitAction.TargetY && unit.ActionQueue.Count > 0)
-                {
-                    unit.ActionQueue.RemoveAt(0);
+                    if (nextMapHex.X == unitAction.TargetX && nextMapHex.Y == unitAction.TargetY && unit.ActionQueue.Count > 0)
+                    {
+                        unit.ActionQueue.RemoveAt(0);
+                        if (unit.ActionQueue.Count <= 0 && unit.Patrol.Count > 0)
+                        {
+                            foreach (UnitAction moveAction in unit.Patrol)
+                            {
+                                unit.ActionQueue.Add(moveAction);
+                            }
+                            Console.WriteLine("moveUnit(): patrol resuming for " + unit.UnitType + " at " + unit.X + "," + unit.Y);
+                        }
+                    }
+
                 }
                 if (unit.IsBlitzing)
                 {
@@ -695,6 +705,7 @@ public class GameLogic
         int toY = unitAction.TargetY;
         MapHex mapHex = map.Hexes[fromY, fromX];
         MapHex tmpMapHex = map.Hexes[fromY, fromX];
+        bool destinationReached = false;
 
         Dictionary<string, MapHex> hexesMap = map.getSurroundingHexes(mapHex);
 
@@ -702,6 +713,7 @@ public class GameLogic
         {
             // destination reached
             tmpMapHex = map.Hexes[fromY, fromX];
+            destinationReached = true;
         }
         else if (fromX == toX && fromY > toY && hexesMap.ContainsKey("north"))
         {
@@ -741,7 +753,7 @@ public class GameLogic
         {
             mapHex = tmpMapHex;
         }
-        else
+        else if (!destinationReached)
         {
             Console.WriteLine("determineNextHexTowardsDestination(): hex " + tmpMapHex.X + "," + tmpMapHex.Y + " blocked by another unit");
         }

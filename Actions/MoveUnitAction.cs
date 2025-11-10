@@ -22,7 +22,7 @@ public class MoveUnitAction : PlayerAction
             action?.execute(peer, serverObj);
         }
     }
-    
+
     public new void execute(NetPeer peer, Object serverObj)
     {
         Console.WriteLine("MoveUnitAction.execute()");
@@ -32,22 +32,38 @@ public class MoveUnitAction : PlayerAction
         unitAction.Action = "move";
         unitAction.TargetX = ToX;
         unitAction.TargetY = ToY;
-        MapHex mapHex = gameState.Map.Hexes[Unit.Y, Unit.X];
-        Unit existingUnit = mapHex.getUnit();
-        //Console.WriteLine("execute(): actions before " + existingUnit?.ActionQueue.Count);
-        if (IsMultiHexMove)
-        {
-            existingUnit?.addUnitAction(unitAction);
-        }
-        else
-        {
-            existingUnit?.setUnitAction(unitAction);
-        }
-        //Console.WriteLine("execute(): actions after " + existingUnit?.ActionQueue.Count);
         if (Unit != null)
         {
-            //gameState.updateTicks();
+            MapHex mapHex = gameState.Map.Hexes[Unit.Y, Unit.X];
+            Unit existingUnit = mapHex.getUnit();
+            //Console.WriteLine("execute(): actions before " + existingUnit?.ActionQueue.Count);
+            if (IsMultiHexMove)
+            {
+                existingUnit?.addUnitAction(unitAction);
+            }
+            else
+            {
+                existingUnit?.setUnitAction(unitAction);
+            }
+            //Console.WriteLine("execute(): actions after " + existingUnit?.ActionQueue.Count);
+            int maxIndex = (int)(existingUnit.ActionQueue.Count) - 1;
+            if (existingUnit.ActionQueue.Count > 1 &&
+                Unit.X == existingUnit?.ActionQueue[maxIndex].TargetX &&
+                Unit.Y == existingUnit?.ActionQueue[maxIndex].TargetY)
+            {
+                existingUnit.Patrol.Clear();
+                foreach (UnitAction action in existingUnit.ActionQueue)
+                {
+                    existingUnit.Patrol.Add(action);
+                }
+                Console.WriteLine("execute(): patrol created");
+            }
+            else
+            {
+                existingUnit?.Patrol.Clear();
+            }
+
             server.sendGameStateAndMapHex(Unit.X, Unit.Y);
-        }    
+        }
     }
 }

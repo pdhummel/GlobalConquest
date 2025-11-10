@@ -34,6 +34,7 @@ public class Unit
     public Dictionary<string, int> RoundsToBeSeen { get; set; } = new Dictionary<string, int>();
 
     public List<UnitAction> ActionQueue { get; set; } = new List<UnitAction>();
+    public List<UnitAction> Patrol { get; set; } = new List<UnitAction>();
 
     public Vector2 lastTargetUnitVector { get; set; } = new Vector2(-1, -1);
 
