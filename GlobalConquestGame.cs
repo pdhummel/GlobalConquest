@@ -41,6 +41,7 @@ public class GlobalConquestGame : Game
     public Unit? lastSelectedUnit;
     public Burb? lastSelectedBurb;
     public bool MoveMode { get; set; } = false;
+    public bool PursueMode { get; set; } = false;
     public JoinGameValues MyJoinGameValues { get; set; }
 
     float clickStartTime;
@@ -321,6 +322,12 @@ public class GlobalConquestGame : Game
                 MainGameScreen.HideContextMenu();
                 DrawLine(hexPixelVector);
             }
+            else if (PursueMode && lastSelectedUnit != null)
+            {
+                Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
+                MainGameScreen.HideContextMenu();
+                DrawLine(hexPixelVector);
+            }
             if (lastSelectedUnit != null)
             {
                 DrawPathForUnit(lastSelectedUnit);
@@ -531,7 +538,6 @@ public class GlobalConquestGame : Game
         else if (isMouseDown && currentMouseState.LeftButton == ButtonState.Pressed &&
                  ((float)gameTime.TotalGameTime.TotalSeconds - clickStartTime >= 1.0f))
         {
-
             // long-press logic here
             Console.WriteLine("handleLeftClickMouseOnMap(): long click");
             isMouseDown = false;
@@ -561,8 +567,23 @@ public class GlobalConquestGame : Game
                 MoveMode = false;
                 isMultiHexMove = false;
             }
+            else if (PursueMode && previousSelectedUnit != null && lastSelectedUnit != null && lastSelectedUnit.Id != null)
+            {
+                PursueUnitAction pursueAction = new PursueUnitAction();
+                pursueAction.ClassType = "GlobalConquest.Actions.PursueUnitAction";
+                pursueAction.Unit = previousSelectedUnit;
+                Unit unitToPursue = lastSelectedHex.getUnit();
+                if (unitToPursue != null)
+                {
+                    pursueAction.UnitToPursueX = unitToPursue.X;
+                    pursueAction.UnitToPursueY = unitToPursue.Y;
+                    Client?.SendAction(Client.ClientIdentifier, pursueAction);
+                    Console.WriteLine("handleLeftClickMouseOnMap(): pursueAction sent");
+                }
+                PursueMode = false;
+            }
         }
-        if (!MoveMode && lastSelectedHex != null)
+        if (!PursueMode && !MoveMode && lastSelectedHex != null)
         {
             Unit unit = lastSelectedHex.getUnit();
             lastSelectedUnit = unit;

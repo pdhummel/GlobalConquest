@@ -9,6 +9,7 @@ public class Map
     public int X { get; set; }
     public string VisibilityMode { get; set; }
     public Dictionary<string, MapHex> MetroLocations { get; set; } = new Dictionary<string, MapHex>();
+    public Dictionary<string, Unit> UnitIdToUnit { get; set; } = new Dictionary<string, Unit>();
     public bool IsMapReady { get; set; } = false;
 
     public Map()
@@ -121,19 +122,25 @@ public class Map
         return hexes;
     }
 
-    public void placeUnit(Unit unit, int x, int y)
+    public void placeNewUnit(Unit unit, MapHex mapHex)
+    {
+        placeNewUnit(unit, mapHex.X, mapHex.Y);
+    }
+
+    public void placeNewUnit(Unit unit, int x, int y)
     {
         if (x >= 0 && x < X && y >= 0 && y < Y)
         {
             Hexes[y, x].setUnit(unit);
+            unit.HomeBurbX = x;
+            unit.HomeBurbY = y;
+            unit.OriginalBurbX = x;
+            unit.OriginalBurbY = y;
             unit.X = x;
             unit.Y = y;
+            string id = unit.generateId();
+            UnitIdToUnit[id] = unit;
         }
-    }
-
-    public void placeUnit(Unit unit, MapHex mapHex)
-    {
-        placeUnit(unit, mapHex.X, mapHex.Y);
     }
 
     public Unit? getUnitAtXY(int x, int y)

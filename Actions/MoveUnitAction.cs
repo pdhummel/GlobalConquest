@@ -36,6 +36,13 @@ public class MoveUnitAction : PlayerAction
         {
             MapHex mapHex = gameState.Map.Hexes[Unit.Y, Unit.X];
             Unit existingUnit = mapHex.getUnit();
+            if (existingUnit.UnitIdToPursue != null)
+            {
+                existingUnit.UnitToPursueX = -1;
+                existingUnit.UnitToPursueY = -1;
+                existingUnit.UnitIdToPursue = null;
+                existingUnit.ActionQueue.Clear();
+            }
             //Console.WriteLine("execute(): actions before " + existingUnit?.ActionQueue.Count);
             if (IsMultiHexMove)
             {

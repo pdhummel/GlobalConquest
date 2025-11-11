@@ -1,6 +1,7 @@
 using LiteNetLib;
 using LiteNetLib.Utils;
 using System.Text.Json;
+using GlobalConquest.Units;
 using GlobalConquest.Actions;
 
 namespace GlobalConquest;
@@ -18,7 +19,7 @@ public class Client
     public bool isLoadContentComplete { get; set; } = false;
 
     public GameState GameState { get; set; } = new GameState();
-    public JoinGameValues JoinGameValues {get; set; }
+    public JoinGameValues JoinGameValues { get; set; }
 
     public Client(GlobalConquestGame gcGame)
     {
@@ -169,6 +170,11 @@ public class Client
             {
                 Console.WriteLine("OnNetworkReceive(): updating MapHex " + newGameState.MapHex.X + "," + newGameState.MapHex.Y);
                 newGameState.Map.Hexes[newGameState.MapHex.Y, newGameState.MapHex.X] = newGameState.MapHex;
+                if (newGameState.UnitAtMapHex != null)
+                {
+                    Unit unit = newGameState.UnitAtMapHex;
+                    newGameState.Map.Hexes[newGameState.MapHex.Y, newGameState.MapHex.X].setUnit(unit);
+                }
             }
 
             GameState = newGameState;

@@ -16,6 +16,7 @@ public class GameState
     public Map Map { get; set; }
 
     public MapHex MapHex { get; set; }
+    public Unit UnitAtMapHex { get; set; }
 
     public Dictionary<string, bool> PlayerExecutionReady { get; set; } = new Dictionary<string, bool>();
     public Dictionary<string, bool> PlayerPlanningReady { get; set; } = new Dictionary<string, bool>();
@@ -101,7 +102,7 @@ public class GameState
             MapHex metroHex = Map.getMetroHex("amber");
             List<string> directions = ["northWest", "northEast", "southWest", "southEast"];
             placeUnit(metroHex, directions, spy);
-            Map.placeUnit(comcen, metroHex);
+            Map.placeNewUnit(comcen, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
@@ -110,7 +111,7 @@ public class GameState
             MapHex metroHex = Map.getMetroHex("ocher");
             List<string> directions = ["northEast", "northWest", "southWest", "southEast"];
             placeUnit(metroHex, directions, spy);
-            Map.placeUnit(comcen, metroHex);
+            Map.placeNewUnit(comcen, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
@@ -119,7 +120,7 @@ public class GameState
             MapHex metroHex = Map.getMetroHex("cyan");
             List<string> directions = ["southEast", "northWest", "southWest", "northEast"];
             placeUnit(metroHex, directions, spy);
-            Map.placeUnit(comcen, metroHex);
+            Map.placeNewUnit(comcen, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
@@ -128,7 +129,7 @@ public class GameState
             MapHex metroHex = Map.getMetroHex("magenta");
             List<string> directions = ["southWest", "northWest", "southEast", "northEast"];
             placeUnit(metroHex, directions, spy);
-            Map.placeUnit(comcen, metroHex);
+            Map.placeNewUnit(comcen, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
@@ -142,7 +143,7 @@ public class GameState
             if (surroundingHexes.ContainsKey(direction))
             {
                 MapHex mapHex = surroundingHexes[direction];
-                Map.placeUnit(unit, mapHex);
+                Map.placeNewUnit(unit, mapHex);
                 break;
             }
         }

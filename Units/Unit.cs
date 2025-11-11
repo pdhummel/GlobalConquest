@@ -8,9 +8,17 @@ namespace GlobalConquest.Units;
 
 public class Unit
 {
+    public string Id { get; set; }
     public Faction Owner { get; set; }
     public string UnitType { get; set; }
     public string Color { get; set; }
+    public int OriginalBurbX { get; set; }
+    public int OriginalBurbY { get; set; }
+    public int HomeBurbX { get; set; }
+    public int HomeBurbY { get; set; }
+    public int UnitToPursueX { get; set; } = -1;
+    public int UnitToPursueY { get; set; } = -1;
+    public string UnitIdToPursue { get; set; }
 
     public int Y { get; set; }
     public int X { get; set; }
@@ -48,6 +56,13 @@ public class Unit
 
     public Unit()
     {
+    }
+
+    public string generateId()
+    {
+        string newId = Color + "." + UnitType + "." + OriginalBurbX + "." + OriginalBurbX + "." + DateTime.Now.Ticks;
+        this.Id = newId;
+        return newId;
     }
 
     public void setBaseVisibility()

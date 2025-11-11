@@ -3,6 +3,7 @@ using GlobalConquest.Units;
 using LiteNetLib;
 namespace GlobalConquest.Actions;
 
+// Deprecated
 public class PlaceUnitAction : PlayerAction
 {
     public Unit? Unit { get; set; }
@@ -20,7 +21,7 @@ public class PlaceUnitAction : PlayerAction
             action?.execute(peer, serverObj);
         }
     }
-    
+
     public new void execute(NetPeer peer, Object serverObj)
     {
         Console.WriteLine("PlaceUnitAction.execute()");
@@ -28,11 +29,11 @@ public class PlaceUnitAction : PlayerAction
         GameState gameState = server.gameState;
         if (Unit != null)
         {
-            gameState.Map.placeUnit(Unit, X, Y);
+            gameState.Map.placeNewUnit(Unit, X, Y);
             Unit.X = X;
             Unit.Y = Y;
             //gameState.updateTicks();
             server.sendGameStateAndMapHex(X, Y);
-        }    
+        }
     }
 }

@@ -31,6 +31,9 @@ public class DeleteMoveUnitAction : PlayerAction
             existingUnit.IsLoading = false;
             existingUnit.IsUnloading = false;
             existingUnit.RoundsToPause = 0;
+            existingUnit.UnitToPursueX = -1;
+            existingUnit.UnitToPursueY = -1;
+            existingUnit.UnitIdToPursue = null;
             server.sendGameStateAndMapHex(Unit.X, Unit.Y);
         }
     }

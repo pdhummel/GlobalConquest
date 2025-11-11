@@ -3,6 +3,7 @@ using LiteNetLib.Utils;
 using System.DirectoryServices.ActiveDirectory;
 using System.Reflection;
 using System.Text.Json;
+using GlobalConquest.Units;
 using GlobalConquest.Actions;
 
 namespace GlobalConquest;
@@ -133,7 +134,7 @@ public class Server
         {
             gameState.updateTicks();
             int count = server.ConnectedPeerList.Count;
-            for (int i=0; i<count; i++)
+            for (int i = 0; i < count; i++)
             {
                 NetPeer peer = server.ConnectedPeerList[i];
                 sendGameState(peer);
@@ -148,7 +149,7 @@ public class Server
         {
             gameState.updateTicks();
             int count = server.ConnectedPeerList.Count;
-            for (int i=0; i<count; i++)
+            for (int i = 0; i < count; i++)
             {
                 NetPeer peer = server.ConnectedPeerList[i];
                 sendGameStateAndMapHex(peer, x, y);
@@ -162,6 +163,8 @@ public class Server
         if (server != null)
         {
             gameState.MapHex = gameState.Map.Hexes[y, x];
+            Unit unit = gameState.MapHex.getUnit();
+            gameState.UnitAtMapHex = unit;
             string jsonString = JsonSerializer.Serialize(this.gameState);
             writer.Put(jsonString);
             peer.Send(writer, DeliveryMethod.ReliableOrdered);
@@ -242,7 +245,7 @@ public class Server
         {
             Console.WriteLine("Skipping action, currentPhase=" + gameState.CurrentPhase);
         }
-        
+
 
     }
 
@@ -256,18 +259,16 @@ public class Server
             Player player = gameState.Players.playerNameToPlayer[playerName];
             Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
             faction.Status = "disconnected";
-            
+
             Console.WriteLine("Player " + playerName + " disconnected");
             PeerToPlayerName.Remove(peer);
             PlayerNameToPeer.Remove(playerName);
             gameState.Players.RemovePlayer(gameState, playerName);
             initialSync = false;
-            sendGameState();           
+            sendGameState();
         }
     }
 
 
 
 }
-
-

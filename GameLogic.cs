@@ -16,7 +16,6 @@ public class GameLogic
 
     public GameLogic()
     {
-
     }
 
 
@@ -540,6 +539,24 @@ public class GameLogic
     private void moveUnit(Server server, Unit unit)
     {
         // Spies and Comcens move on land like they do at sea.
+
+        if (unit != null && unit.UnitIdToPursue != null && server.gameState.Map.UnitIdToUnit.ContainsKey(unit.UnitIdToPursue))
+        {
+            Unit unitToPursue = server.gameState.Map.UnitIdToUnit[unit.UnitIdToPursue];
+            if (unitToPursue.Visibility[unit.Color])
+            {
+                UnitAction pursueAction = new UnitAction();
+                pursueAction.Action = "move";
+                pursueAction.TargetX = unitToPursue.X;
+                pursueAction.TargetY = unitToPursue.Y;
+                unit.setUnitAction(pursueAction);
+            }
+            else
+            {
+                Console.WriteLine("moveUnit(): " + unit.UnitIdToPursue + " is not visible to " + unit.Id);
+                unit.UnitIdToPursue = null;
+            }
+        }
 
         // Console.WriteLine("processRound(): unit at " + unit.X + "," + unit.Y);
         GameState gameState = server.gameState;

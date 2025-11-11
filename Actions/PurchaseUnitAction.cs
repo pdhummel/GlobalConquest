@@ -22,7 +22,7 @@ public class PurchaseUnitAction : PlayerAction
             action?.execute(peer, serverObj);
         }
     }
-    
+
     public new void execute(NetPeer peer, Object serverObj)
     {
         Console.WriteLine("PurchaseUnitAction.execute()");
@@ -30,7 +30,7 @@ public class PurchaseUnitAction : PlayerAction
         GameState gameState = server.gameState;
         if (Unit != null)
         {
-            gameState.Map.placeUnit(Unit, X, Y);
+            gameState.Map.placeNewUnit(Unit, X, Y);
             Unit.X = X;
             Unit.Y = Y;
             Faction faction = gameState.Factions.ColorToFaction[FactionColor];
@@ -39,6 +39,6 @@ public class PurchaseUnitAction : PlayerAction
                 faction.Money = 0;
             //gameState.updateTicks();
             server.sendGameStateAndMapHex(X, Y);
-        }    
+        }
     }
 }

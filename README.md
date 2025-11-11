@@ -50,7 +50,7 @@ The game is being designed with known differences from the original.
   - [x] blitz
   - [ ] sneak
   - [x] wait
-  - [ ] pursue
+  - [x] pursue
 
 ### Milestone 4
 - [ ] Airplanes
