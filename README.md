@@ -46,9 +46,9 @@ The game is being designed with known differences from the original.
   - [ ] Infantry dig-in.
   - [ ] Submarine visibility handling.
   - [x] Ship bombardment.
-- [ ] Unit context menu
+- [x] Unit context menu
   - [x] blitz
-  - [ ] sneak
+  - [x] sneak
   - [x] wait
   - [x] pursue
 

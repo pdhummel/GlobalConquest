@@ -271,6 +271,10 @@ public class GameLogic
 
     private void scanUnits(Server server, Unit unit)
     {
+        // A sneaking unit can't see other units at all. 
+        if (unit.IsSneaking)
+            return;
+
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
         UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
@@ -281,6 +285,19 @@ public class GameLogic
             Unit hexUnit = hex.getUnit();
             if (hexUnit != null)
             {
+                // The sneaking posture causes your unit to conceal itself. 
+                // This can be done by moving or stationary units. 
+                // The opposing forces must be three times closer than normal to spot your sneaky unit.
+                // Units in this mode are half-concealed on the game board. 
+                HashSet<MapHex> hexesToScanForSneakyUnits = map.getMapHexesInRange(mapHex, unitType.ScanningRange / 3);
+                if (hexUnit.IsSneaking && !hexesToScanForSneakyUnits.Contains(hex))
+                {
+                    Console.WriteLine("scanUnits(): skipping sneaking unit " + hexUnit.Id);
+                    continue;
+                }
+                    
+
+
                 // Unit visibility has a timer
                 // Subs have special scanning rules. They can't be spotted by planes, spies or
                 // any other unit until they attack.
@@ -379,6 +396,9 @@ public class GameLogic
     private void checkForCombat(Server server, Unit unit)
     {
         if (unit.StrengthPoints <= 0)
+            return;
+        // A sneaking unit can't fire at other units at all. 
+        if (unit.IsSneaking)
             return;
         Unit unitToAttack = null;
         Map map = server.gameState.Map;
