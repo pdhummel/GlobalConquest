@@ -319,7 +319,7 @@ public class GameLogic
                     (isUnitMoving || !isHexUnitMoving) &&
                     !hexesToScanForStationarySubs.Contains(hex))
                 {
-                    Console.WriteLine("scanUnits(): " + unit.Id + "could not see not see sub " + hexUnit.Id + " from this range.");
+                    Console.WriteLine("scanUnits(): " + unit.Id + " could not see not see sub " + hexUnit.Id + " from this range.");
                     continue;
                 }
 

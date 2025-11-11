@@ -185,7 +185,7 @@ public class Server
             }
             else
             {
-                Console.WriteLine("sendGameStateAndMapHex(): NetPeer not found for " + color);
+                //Console.WriteLine("sendGameStateAndMapHex(): NetPeer not found for " + color);
             }
         }
     }
