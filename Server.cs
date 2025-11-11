@@ -172,6 +172,24 @@ public class Server
         }
     }
 
+    public void sendGameStateAndMapHex(string color, int x, int y)
+    {
+        NetDataWriter writer = new NetDataWriter();
+        if (server != null)
+        {
+            if (gameState.Players.colorToPlayer.ContainsKey(color))
+            {
+                Player player = gameState.Players.colorToPlayer[color];
+                NetPeer peer = PlayerNameToPeer[player.Name];
+                sendGameStateAndMapHex(peer, x, y);
+            }
+            else
+            {
+                Console.WriteLine("sendGameStateAndMapHex(): NetPeer not found for " + color);
+            }
+        }
+    }
+
     public void sendGameState(NetPeer peer)
     {
         NetDataWriter writer = new NetDataWriter();

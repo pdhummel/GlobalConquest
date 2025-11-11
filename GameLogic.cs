@@ -211,6 +211,8 @@ public class GameLogic
 
         foreach (Unit unit in units)
         {
+            if (!("Omniscient".Equals(gameState.GameSettings.Visibility)))
+                decrementVisibility(unit);
             scanUnits(server, unit);
             scanTerrain(server, unit);
             sufferAttrition(server, unit);
@@ -219,8 +221,6 @@ public class GameLogic
             addStepsForUnit(server, unit);
             moveUnit(server, unit);
             digInInfantry(server, unit);
-            if (!("Omniscient".Equals(gameState.GameSettings.Visibility) || "Command HQ".Equals(gameState.GameSettings.Visibility)))
-                decrementVisibility(unit);
             server.sendGameStateAndMapHex(unit.X, unit.Y);
         }
     }
@@ -271,34 +271,59 @@ public class GameLogic
 
     private void scanUnits(Server server, Unit unit)
     {
-        // A sneaking unit can't see other units at all. 
+        // A sneaking unit can't see other units at all.
         if (unit.IsSneaking)
             return;
 
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
         UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+        bool isUnitMoving = false;
+        if (unit.ActionQueue.Count > 0)
+            isUnitMoving = true;
         HashSet<MapHex> hexesToScanForUnits = map.getMapHexesInRange(mapHex, unitType.ScanningRange);
-        //Console.WriteLine("hexes to scan=" + hexesToScanForUnits.Count);
+        HashSet<MapHex> hexesToScanForSneakyUnits = map.getMapHexesInRange(mapHex, unitType.ScanningRange / 3);
+        HashSet<MapHex> hexesToScanBySubForNonMovingUnits = map.getMapHexesInRange(mapHex, 3);
+        HashSet<MapHex> hexesToScanForStationarySubs = map.getMapHexesInRange(mapHex, 1);
         foreach (MapHex hex in hexesToScanForUnits)
         {
             Unit hexUnit = hex.getUnit();
             if (hexUnit != null)
             {
-                // The sneaking posture causes your unit to conceal itself. 
-                // This can be done by moving or stationary units. 
+                bool isHexUnitMoving = false;
+                if (hexUnit.ActionQueue.Count > 0)
+                    isHexUnitMoving = true;
+
+                // The sneaking posture causes your unit to conceal itself.
+                // This can be done by moving or stationary units.
                 // The opposing forces must be three times closer than normal to spot your sneaky unit.
-                // Units in this mode are half-concealed on the game board. 
-                HashSet<MapHex> hexesToScanForSneakyUnits = map.getMapHexesInRange(mapHex, unitType.ScanningRange / 3);
+                // Units in this mode are half-concealed on the game board.
                 if (hexUnit.IsSneaking && !hexesToScanForSneakyUnits.Contains(hex))
                 {
-                    Console.WriteLine("scanUnits(): skipping sneaking unit " + hexUnit.Id);
+                    Console.WriteLine("scanUnits(): " + unit.Id + " cannot see sneaking unit " + hexUnit.Id);
                     continue;
                 }
-                    
 
+                // Sub scanning range is reduced to 3 if target not moving.
+                if (("sub".Equals(unit.UnitType) || "submarine".Equals(unit.UnitType)) &&
+                    !isHexUnitMoving &&
+                    !hexesToScanBySubForNonMovingUnits.Contains(hex))
+                {
+                    Console.WriteLine("scanUnits(): " + unit.Id + " could not see not moving unit " + hexUnit.Id + " from this range.");
+                    continue;
+                }
 
-                // Unit visibility has a timer
+                // Subs can only be spotted at a range of 1 if they are stationary or
+                // if the scanning unit is moving regardless of unit's normal range.
+                if (("sub".Equals(hexUnit.UnitType) || "submarine".Equals(hexUnit.UnitType)) &&
+                    (isUnitMoving || !isHexUnitMoving) &&
+                    !hexesToScanForStationarySubs.Contains(hex))
+                {
+                    Console.WriteLine("scanUnits(): " + unit.Id + "could not see not see sub " + hexUnit.Id + " from this range.");
+                    continue;
+                }
+
+                // Unit visibility has a timer.
                 // Subs have special scanning rules. They can't be spotted by planes, spies or
                 // any other unit until they attack.
                 // However, once a sub is spotted it stays "seen"
@@ -316,12 +341,10 @@ public class GameLogic
                     hexUnit.RoundsToBeSeen[unit.Color] = 2;
                 }
                 if (!previousVisibility)
-                    server.sendGameStateAndMapHex(hex.X, hex.Y);
-                // TODO: logic for subs:
-                // Sub scanning range is reduced to 3 if target not moving.
-                // Subs can only be spotted at a range of 1 if they are stationary or
-                // if the scanning unit is moving regardless of unit's normal range.
-
+                {
+                    server.sendGameStateAndMapHex(hexUnit.Color, hex.X, hex.Y);
+                    server.sendGameStateAndMapHex(unit.Color, hex.X, hex.Y);
+                }
             }
         }
 
@@ -342,7 +365,8 @@ public class GameLogic
             if (!previousVisibility)
             {
                 hex.Visibility[unit.Color] = true;
-                server.sendGameStateAndMapHex(hex.X, hex.Y);
+                server.sendGameStateAndMapHex(unit.Color, hex.X, hex.Y);
+                //server.sendGameStateAndMapHex(hex.X, hex.Y);
             }
         }
     }
@@ -397,7 +421,7 @@ public class GameLogic
     {
         if (unit.StrengthPoints <= 0)
             return;
-        // A sneaking unit can't fire at other units at all. 
+        // A sneaking unit can't fire at other units at all.
         if (unit.IsSneaking)
             return;
         Unit unitToAttack = null;
@@ -420,7 +444,7 @@ public class GameLogic
                     UnitType targetUnitType = unitTypes.UnitTypeMap[lastTargetUnit.UnitType];
                     int firingRangeFromAttacker = targetUnitType.FiringRangeFromAttacker[unit.UnitType];
                     int firingRangeToDefender = attackerUnitType.FiringRangeToDefender[lastTargetUnit.UnitType];
-                    if (scanRange <= firingRangeFromAttacker && scanRange <= firingRangeToDefender && hexesToScan.Contains(targetMapHex))
+                    if (lastTargetUnit.Visibility[unit.Color] && scanRange <= firingRangeFromAttacker && scanRange <= firingRangeToDefender && hexesToScan.Contains(targetMapHex))
                     {
                         unitToAttack = lastTargetUnit;
                     }
@@ -438,7 +462,7 @@ public class GameLogic
                             int firingRangeFromAttacker = targetUnitType.FiringRangeFromAttacker[unit.UnitType];
                             int firingRangeToDefender = attackerUnitType.FiringRangeToDefender[hexUnit.UnitType];
 
-                            if (scanRange <= firingRangeFromAttacker && scanRange <= firingRangeToDefender &&
+                            if (hexUnit.Visibility[unit.Color] && scanRange <= firingRangeFromAttacker && scanRange <= firingRangeToDefender &&
                                 attackerUnitType.BattleDamageToDefender[hexUnit.UnitType] > 0 && hexUnit.Color != unit.Color)
                             {
                                 unitToAttack = hexUnit;
@@ -458,14 +482,29 @@ public class GameLogic
 
             }
         }
-        if (unitToAttack != null && unit.StrengthPoints > 0)
+        if (unitToAttack != null && unitToAttack.Visibility[unit.Color] && unit.StrengthPoints > 0)
         {
-            Console.WriteLine("checkForCombat(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " attacking " + unitToAttack.UnitType + " at " + unitToAttack.X + "," + unitToAttack.Y);
+            Console.WriteLine("checkForCombat(): " + unit.Id + " at " + unit.X + "," + unit.Y + " attacking " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
             attackingUnitsXy.Add(makeXyString(unit.X, unit.Y));
             int previousStrength = unitToAttack.StrengthPoints;
             int damage = attackerUnitType.BattleDamageToDefender[unitToAttack.UnitType];
             unitToAttack.StrengthPoints -= damage;
 
+            // Make yourself known to your enemy
+            bool previousVisibility = false;
+            if (unit.Visibility.ContainsKey(unitToAttack.Color))
+                previousVisibility = unit.Visibility[unitToAttack.Color];
+            unit.Visibility[unitToAttack.Color] = true;
+            unit.RoundsToBeSeen[unitToAttack.Color] = 8;
+            if ("sub".Equals(unit.UnitType) || "submarine".Equals(unit.UnitType))
+            {
+                unit.RoundsToBeSeen[unitToAttack.Color] = 2;
+            }
+            if (!previousVisibility)
+            {
+                server.sendGameStateAndMapHex(unitToAttack.Color, unit.X, unit.Y);
+                server.sendGameStateAndMapHex(unit.Color, unit.X, unit.Y);
+            }
 
             // Battleships and carriers can "bombard" land units once they are within range.
             // However, this type of combat cannot reduce the land unit below 30% strength.
@@ -530,7 +569,7 @@ public class GameLogic
                 unitToAttack.IsBlitzing = false;
             if (unitToAttack.StrengthPoints <= 0)
             {
-                Console.WriteLine("checkForCombat(): unit destoryed " + unitToAttack.UnitType + " at " + unitToAttack.X + "," + unitToAttack.Y);
+                Console.WriteLine("checkForCombat(): destroyed unit" + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
                 unitToAttack.StrengthPoints = 0;
                 MapHex deadUnitMapHex = map.Hexes[unitToAttack.Y, unitToAttack.X];
                 if (deadUnitMapHex.Units.Count > 0)
@@ -548,7 +587,6 @@ public class GameLogic
             }
             server.sendGameStateAndMapHex(unitToAttack.X, unitToAttack.Y);
         }
-
     }
 
     private string makeXyString(int x, int y)
@@ -598,7 +636,7 @@ public class GameLogic
                 MapHex mapHex = gameState.Map.Hexes[unit.Y, unit.X];
                 MapHex nextMapHex = determineNextHexTowardsDestination(server, unit, unitAction);
 
-                Console.WriteLine("processRound(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " to nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
+                Console.WriteLine("processRound(): " + unit.Id + " at " + unit.X + "," + unit.Y + " to nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
                 //Console.WriteLine("processRound(): nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
                 if (unit.X != nextMapHex.X || unit.Y != nextMapHex.Y)
                 {
@@ -611,8 +649,7 @@ public class GameLogic
                     }
                     else
                     {
-                        Console.WriteLine("moveUnit(): " + unitType.Name + " at " + unit.X + "," + unit.Y + " accumulating movement steps");
-                        Console.WriteLine("moveUnit(): " + unitType.Name + " at " + unit.X + "," + unit.Y + " stepsAvailable=" + stepsAvailable + ", stepsRequired=" + stepsRequired);
+                        Console.WriteLine("moveUnit(): accumulating movement steps: " + unit.Id + " at " + unit.X + "," + unit.Y + " stepsAvailable=" + stepsAvailable + ", stepsRequired=" + stepsRequired);
                         isMovingDone = true;
                         return;
                     }
@@ -625,14 +662,14 @@ public class GameLogic
                         // this loading/unloading takes only one round.
                         if (unit.RoundsToPause > 0)
                         {
-                            Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " is unloading.");
+                            Console.WriteLine("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " is unloading.");
                             unit.IsUnloading = true;
                             unit.RoundsToPause -= 1;
                             if (unit.RoundsToPause > 0)
                             {
                                 return;
                             }
-                            Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " has unloaded.");
+                            Console.WriteLine("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " has unloaded.");
                             unit.IsUnloading = false;
                             if ("transport-tank".Equals(unit.UnitType) || "transport-armor".Equals(unit.UnitType))
                             {
@@ -645,7 +682,7 @@ public class GameLogic
                         }
                         else
                         {
-                            Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " needs to unload.");
+                            Console.WriteLine("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " needs to unload.");
                             unit.IsUnloading = true;
                             unit.RoundsToPause = 8;
                             return;
@@ -658,14 +695,14 @@ public class GameLogic
                     {
                         if (unit.RoundsToPause > 0)
                         {
-                            Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " is loading into a transport.");
+                            Console.WriteLine("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " is loading into a transport.");
                             unit.IsLoading = true;
                             unit.RoundsToPause -= 1;
                             if (unit.RoundsToPause > 0)
                             {
                                 return;
                             }
-                            Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " has loaded into a transport.");
+                            Console.WriteLine("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " has loaded into a transport.");
                             unit.IsLoading = false;
                             if ("tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
                             {
@@ -678,7 +715,7 @@ public class GameLogic
                         }
                         else
                         {
-                            Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " needs to load into a transport.");
+                            Console.WriteLine("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " needs to load into a transport.");
                             unit.IsLoading = true;
                             unit.RoundsToPause = 4;
                             return;
@@ -687,7 +724,7 @@ public class GameLogic
                     else if ("sea".Equals(unitType.LandOrSea) &&
                        ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
                     {
-                        Console.WriteLine("moveUnit(): " + unit.UnitType + " at " + unit.X + "," + unit.Y + " cannot move on land.");
+                        Console.WriteLine("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " cannot move on land.");
                         return;
                     }
 
@@ -705,7 +742,7 @@ public class GameLogic
                             {
                                 unit.ActionQueue.Add(moveAction);
                             }
-                            Console.WriteLine("moveUnit(): patrol resuming for " + unit.UnitType + " at " + unit.X + "," + unit.Y);
+                            Console.WriteLine("moveUnit(): patrol resuming for " + unit.Id + " at " + unit.X + "," + unit.Y);
                         }
                     }
 

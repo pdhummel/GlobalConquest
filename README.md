@@ -44,7 +44,7 @@ The game is being designed with known differences from the original.
 - [x] Destinations view.
 - [ ] Add unit special handling.
   - [ ] Infantry dig-in.
-  - [ ] Submarine visibility handling.
+  - [x] Submarine visibility handling.
   - [x] Ship bombardment.
 - [x] Unit context menu
   - [x] blitz
@@ -85,6 +85,7 @@ The game is being designed with known differences from the original.
 - [ ] Events
 
 ### Milestone 10
+- [ ] Make server headless.
 - [ ] Game controller support.
 - [ ] UI improvements.
 - [ ] Network robustness.

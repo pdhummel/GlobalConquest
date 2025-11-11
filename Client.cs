@@ -120,7 +120,7 @@ public class Client
         GameState oldGameState = GameState;
         // Note that the full Map is never sent from the server to the client b/c the content is too large.
         GameState? newGameState = JsonSerializer.Deserialize<GameState>(jsonString);
-        if (newGameState != null && oldGameState != null && newGameState.Ticks > oldGameState.Ticks)
+        if (newGameState != null && oldGameState != null && (newGameState.Ticks > oldGameState.Ticks || newGameState.MapHex != null))
         {
             if (newGameState.MapHex == null)
                 Console.WriteLine("OnNetworkReceive(): Updating game state");
