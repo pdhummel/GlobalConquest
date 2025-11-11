@@ -42,8 +42,8 @@ The game is being designed with known differences from the original.
   - [x] waypoints
   - [x] patrol
 - [x] Destinations view.
-- [ ] Add unit special handling.
-  - [ ] Infantry dig-in.
+- [x] Add unit special handling.
+  - [x] Infantry dig-in.
   - [x] Submarine visibility handling.
   - [x] Ship bombardment.
 - [x] Unit context menu

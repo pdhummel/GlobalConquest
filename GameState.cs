@@ -30,7 +30,7 @@ public class GameState
     public long Ticks { get; set; } = 0;
 
     // if any of the data elements in the entities change above, then this version should be bumped.
-    public string Version { get; set; } = "v0.3.5";
+    public string Version { get; set; } = "v0.4.0";
 
 
     public GameState()
