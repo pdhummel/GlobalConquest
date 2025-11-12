@@ -244,8 +244,6 @@ public class HostGameScreen
         verticalStackPanel.Widgets.Add(gcImage);
         gcImage.Visible = true;
 
-        verticalStackPanel.Widgets.Add(hostSettingsLabel);
-        hostSettingsLabel.Visible = true;
         var hostSettingsPanel = new Panel();
         hostSettingsPanel.Width = 300;
         hostSettingsPanel.MaxWidth = 300;

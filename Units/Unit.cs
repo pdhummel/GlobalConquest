@@ -71,6 +71,7 @@ public class Unit
         Visibility["magenta"] = false;
         Visibility["ocher"] = false;
         Visibility["cyan"] = false;
+        Visibility["grey"] = false;
         if (Color != null)
             Visibility[Color] = true;
     }
@@ -81,6 +82,7 @@ public class Unit
         Visibility["magenta"] = true;
         Visibility["ocher"] = true;
         Visibility["cyan"] = true;
+        Visibility["grey"] = true;
     }
 
     public UnitAction getNextAction()
