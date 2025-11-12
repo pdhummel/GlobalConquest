@@ -20,6 +20,7 @@ public class GameSettings
     public string ExecutionMode { get; set; } = "Quorum";
     public int StartingMoney { get; set; } = 0;
     public string ScoringOption { get; set; } = "Combined"; // Income, Capital, Head-Count, Combined
+    public bool HasNatives { get; set; } = false;
 
     public GameSettings()
     {

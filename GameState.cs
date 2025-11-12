@@ -31,6 +31,7 @@ public class GameState
 
     // if any of the data elements in the entities change above, then this version should be bumped.
     public string Version { get; set; } = "v0.4.0";
+    private Random rand = new System.Random();
 
 
     public GameState()
@@ -53,6 +54,8 @@ public class GameState
         {
             placeInitialUnits(color);
         }
+        if (GameSettings.HasNatives)
+            placeNatives();
     }
     public void placeInitialUnits(Player player)
     {
@@ -146,6 +149,69 @@ public class GameState
                 Map.placeNewUnit(unit, mapHex);
                 break;
             }
+        }
+    }
+
+    private void placeUnit(MapHex mapHex, Unit unit)
+    {
+        if (mapHex.getUnit() == null)
+            Map.placeNewUnit(unit, mapHex);
+    }
+
+    private void placeNatives()
+    {
+        foreach (string key in Burbs.NameToBurb.Keys)
+        {
+            Burb burb = Burbs.NameToBurb[key];
+            MapHex mapHex = Map.Hexes[burb.Y, burb.X];
+            Unit unit = new Unit();
+            unit.Color = "grey";
+            unit.UnitType = "infantry";
+            if ("Omniscient".Equals(GameSettings.Visibility))
+            {
+                unit.setOmniVisibility();
+            }
+            else
+            {
+                unit.setBaseVisibility();
+            }
+            // villages 50% with a native
+            // towns    100% with a native
+            // cities   center + random surrounding natives
+            // capital  natives in center and all surrounding spaces
+            if ("village".Equals(burb.Type))
+            {
+                bool hasUnit = rand.NextDouble() >= 0.5;
+                if (hasUnit)
+                    placeUnit(mapHex, unit);
+            }
+            else if ("town".Equals(burb.Type))
+            {
+                placeUnit(mapHex, unit);
+            }
+            else if ("city".Equals(burb.Type))
+            {
+                placeUnit(mapHex, unit);
+                List<MapHex> neighbors = Map.getSurroundingHexesList(mapHex);
+                foreach (MapHex neighbor in neighbors)
+                {
+                    bool hasUnit = rand.NextDouble() >= 0.5;
+                    if (neighbor.Burb != null && hasUnit)
+                        placeUnit(neighbor, unit);                    
+                }
+
+            }
+            else if ("capital".Equals(burb.Type))
+            {
+                placeUnit(mapHex, unit);
+                List<MapHex> neighbors = Map.getSurroundingHexesList(mapHex);
+                foreach (MapHex neighbor in neighbors)
+                {
+                    placeUnit(neighbor, unit);                    
+                }
+
+            }
+
         }
     }
 

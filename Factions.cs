@@ -9,11 +9,12 @@ public class Factions
 
     public Factions()
     {
-        FactionArray = new Faction[4];
+        FactionArray = new Faction[5];
         AddFaction(0, "Amber Array", "amber");
         AddFaction(1, "Ochre Order", "ocher");
         AddFaction(2, "Magenta Mob", "magenta");
         AddFaction(3, "Cyan Circle", "cyan");
+        AddFaction(4, "Native", "grey");
     }
 
     private void AddFaction(int index, String name, string color)

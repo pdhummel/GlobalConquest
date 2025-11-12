@@ -500,7 +500,7 @@ public class GameLogic
             {
                 unit.RoundsToBeSeen[unitToAttack.Color] = 2;
             }
-            if (!previousVisibility)
+            if (!previousVisibility || previousStrength != unitToAttack.StrengthPoints)
             {
                 server.sendGameStateAndMapHex(unitToAttack.Color, unit.X, unit.Y);
                 server.sendGameStateAndMapHex(unit.Color, unit.X, unit.Y);

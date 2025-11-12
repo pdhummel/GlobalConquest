@@ -371,6 +371,10 @@ public class HostGameScreen
         gameSettings.Visibility = ((Label)visibilityComboView.SelectedItem).Text;
         gameSettings.ExecutionMode = ((Label)executionComboView.SelectedItem).Text;
         gameSettings.ScoringOption = ((Label)scoringOptionComboView.SelectedItem).Text;
+        if (nativesCheckButton.IsChecked)
+            gameSettings.HasNatives = true;
+        else
+            gameSettings.HasNatives = false;
         GlobalConquestGame gcGame = (GlobalConquestGame)game;
         gcGame.Server = new Server();
         gcGame.Server.StartAsHost(gameSettings, "GlobalConquest");

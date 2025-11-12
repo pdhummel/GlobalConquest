@@ -60,7 +60,7 @@ public class Unit
 
     public string generateId()
     {
-        string newId = Color + "." + UnitType + "." + OriginalBurbX + "." + OriginalBurbX + "." + DateTime.Now.Ticks;
+        string newId = Color + "." + UnitType + "." + OriginalBurbX + "." + OriginalBurbY + "." + DateTime.Now.Ticks;
         this.Id = newId;
         return newId;
     }

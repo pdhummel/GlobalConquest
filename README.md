@@ -54,7 +54,7 @@ The game is being designed with known differences from the original.
 
 ### Milestone 4
 - [ ] AI opponents
-- [ ] Add natives
+- [x] Add natives
 - [x] Add more victory conditions.
   - [x] Add number of turns game setting.
   - [x] Calculate victory points.

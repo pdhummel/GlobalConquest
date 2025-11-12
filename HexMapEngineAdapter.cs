@@ -118,12 +118,15 @@ class HexMapEngineAdapter
         units["ocher-infantry"] = ocherInfantry;
         Texture2D cyanInfantry = game.Content.Load<Texture2D>("cyan-infantry-48x48");
         units["cyan-infantry"] = cyanInfantry;
+        Texture2D greyInfantry = game.Content.Load<Texture2D>("grey-infantry-48x48");
+        units["grey-infantry"] = greyInfantry;
 
         // TODO: create new icon for dug-in infantry
         units["magenta-dug-in-infantry"] = magentaInfantry;
         units["amber-dug-in-infantry"] = amberInfantry;
         units["ocher-dug-in-infantry"] = ocherInfantry;
         units["cyan-dug-in-infantry"] = cyanInfantry;
+        units["grey-dug-in-infantry"] = greyInfantry;
 
         Texture2D magentaComcen = game.Content.Load<Texture2D>("magenta-comcen-48x48");
         units["magenta-comcen"] = magentaComcen;
@@ -160,6 +163,8 @@ class HexMapEngineAdapter
         units["ocher-transport-infantry"] = ocherTransportInfantry;
         Texture2D cyanTransportInfantry = game.Content.Load<Texture2D>("cyan-transport-infantry-48x48");
         units["cyan-transport-infantry"] = cyanTransportInfantry;
+        Texture2D greyTransportInfantry = game.Content.Load<Texture2D>("grey-transport-infantry-48x48");
+        units["grey-transport-infantry"] = greyTransportInfantry;
 
         Texture2D magentaBattleship = game.Content.Load<Texture2D>("magenta-battleship-48x48");
         units["magenta-battleship"] = magentaBattleship;
@@ -299,7 +304,7 @@ class HexMapEngineAdapter
                 {
                     string unitId = unit.Color + "-" + unit.UnitType;
                     Player player = identifySelf();
-                    if (unit.Visibility[player.FactionColor])
+                    if (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor])
                     {
                         drawUnitAtHex(liY, liX, unitId);
                     }
@@ -514,7 +519,7 @@ class HexMapEngineAdapter
         Vector2 currentPixelPosition = this.getCurrentPixelPosition();
         Vector2 rowColVector = new Vector2(column, row);
         Vector2 pixelVector = ConvertHexToPixels(rowColVector);
-        //Console.WriteLine("row=" + row + ", col=" + column +
+        //Console.WriteLine("drawUnitAtHex(): row=" + row + ", col=" + column +
         //    ", currentPixelX=" + currentPixelPosition.X + ", currentPixelY=" + currentPixelPosition.Y +
         //    ", pixelX=" + pixelVector.X + ", PixelY=" + pixelVector.Y
         //);
