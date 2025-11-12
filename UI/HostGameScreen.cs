@@ -23,7 +23,7 @@ public class HostGameScreen
     Label portLabel = new Label();
     TextBox portTextBox = new TextBox();
     Label humanPlayersLabel = new Label();
-    TextBox humanPlayersTextBox= new TextBox();
+    TextBox humanPlayersTextBox = new TextBox();
     Label spacerLabel = new Label();
     //Texture2D gcTexture;
     Image gcImage = new Image();
@@ -40,9 +40,9 @@ public class HostGameScreen
     ComboView executionComboView = new ComboView();
     Label scoringOptionLabel = new Label();
     ComboView scoringOptionComboView = new ComboView();
-    
+
     Label numberOfBurbsLabel = new Label();
-    TextBox numberOfBurbsTextBox= new TextBox();
+    TextBox numberOfBurbsTextBox = new TextBox();
 
     Label startingMoneyLabel = new Label();
     TextBox startingMoneyTextBox = new TextBox();
@@ -227,7 +227,7 @@ public class HostGameScreen
         scoringOptionComboView.SelectedIndex = 0;
 
         nativesLabel.Text = "Natives";
-        nativesCheckButton.IsChecked = false;
+        nativesCheckButton.IsChecked = true;
         nativesCheckButton.VerticalAlignment = VerticalAlignment.Center;
 
         cancelButton.Click += cancelButtonClicked;

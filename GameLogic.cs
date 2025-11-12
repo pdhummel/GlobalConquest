@@ -108,6 +108,8 @@ public class GameLogic
     {
         Console.WriteLine("endTurn(): enter");
         GameState gameState = server.gameState;
+
+        Console.WriteLine("endTurn(): Put players into pending status before planning for next turn.");
         foreach (string key in gameState.PlayerExecutionReady.Keys)
         {
             gameState.PlayerExecutionReady[key] = false;
@@ -119,6 +121,7 @@ public class GameLogic
             Faction faction = gameState.Factions.ColorToFaction[color];
             faction.Status = "pending";
         }
+
         foreach (string key in gameState.Burbs.NameToBurb.Keys)
         {
             Burb burb = gameState.Burbs.NameToBurb[key];
@@ -128,9 +131,11 @@ public class GameLogic
             {
                 Faction faction = gameState.Factions.ColorToFaction[burb.OwnerColor];
                 faction.Money += income;
-                Console.WriteLine("endTurn(): added " + income + " to " + burb.OwnerColor);
+                Console.WriteLine("endTurn(): added " + income + " income to " + burb.OwnerColor);
             }
         }
+
+        Console.WriteLine("endTurn(): Saving state for restore point.");
         gameState.CurrentRound = 0;
         server.gameState.CurrentPhase = "plan";
         string jsonString = JsonSerializer.Serialize(server.gameState);
@@ -175,6 +180,8 @@ public class GameLogic
 
             }
         }
+
+        Console.WriteLine("endTurn(): Bump game turn.");
         server.gameState.CurrentTurn += 1;
         server.sendGameState();
     }
@@ -211,6 +218,8 @@ public class GameLogic
 
         foreach (Unit unit in units)
         {
+            if (unit.StrengthPoints <= 0)
+                continue;
             if (!("Omniscient".Equals(gameState.GameSettings.Visibility)))
                 decrementVisibility(unit);
             scanUnits(server, unit);
@@ -411,9 +420,13 @@ public class GameLogic
         }
         if (unit.getNextAction() == null)
         {
-            unit.StrengthPoints += repairPoints;
-            if (unit.StrengthPoints > 100)
-                unit.StrengthPoints = 100;
+            if (unit.StrengthPoints < 100)
+            {
+                unit.StrengthPoints += repairPoints;
+                if (unit.StrengthPoints > 100)
+                    unit.StrengthPoints = 100;
+                Console.WriteLine("repair(): " + unit.Id + " at " + unit.X + "," + unit.Y + " repaired " + repairPoints + " to " + unit.StrengthPoints);
+            }
         }
     }
 
@@ -482,29 +495,19 @@ public class GameLogic
 
             }
         }
-        if (unitToAttack != null && unitToAttack.Visibility[unit.Color] && unit.StrengthPoints > 0)
+        if (unitToAttack != null && unitToAttack.Visibility[unit.Color] && unit.StrengthPoints > 0 && unitToAttack.StrengthPoints > 0)
         {
             Console.WriteLine("checkForCombat(): " + unit.Id + " at " + unit.X + "," + unit.Y + " attacking " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
             attackingUnitsXy.Add(makeXyString(unit.X, unit.Y));
             int previousStrength = unitToAttack.StrengthPoints;
             int damage = attackerUnitType.BattleDamageToDefender[unitToAttack.UnitType];
-            unitToAttack.StrengthPoints -= damage;
-
-            // Make yourself known to your enemy
-            bool previousVisibility = false;
-            if (unit.Visibility.ContainsKey(unitToAttack.Color))
-                previousVisibility = unit.Visibility[unitToAttack.Color];
-            unit.Visibility[unitToAttack.Color] = true;
-            unit.RoundsToBeSeen[unitToAttack.Color] = 8;
-            if ("sub".Equals(unit.UnitType) || "submarine".Equals(unit.UnitType))
+            if (unit.StrengthPoints > 0)
             {
-                unit.RoundsToBeSeen[unitToAttack.Color] = 2;
+                unitToAttack.StrengthPoints -= damage;
+                Console.WriteLine("checkForCombat(): " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y + " suffered " + damage + " damage: " + unitToAttack.StrengthPoints);
             }
-            if (!previousVisibility || previousStrength != unitToAttack.StrengthPoints)
-            {
-                server.sendGameStateAndMapHex(unitToAttack.Color, unit.X, unit.Y);
-                server.sendGameStateAndMapHex(unit.Color, unit.X, unit.Y);
-            }
+            else
+                return;
 
             // Battleships and carriers can "bombard" land units once they are within range.
             // However, this type of combat cannot reduce the land unit below 30% strength.
@@ -519,23 +522,55 @@ public class GameLogic
                 {
                     unitToAttack.StrengthPoints = previousStrength;
                 }
+                Console.WriteLine("checkForCombat(): " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y + " was bombarded, strength=" + unitToAttack.StrengthPoints);
+            }
+
+            if (unitToAttack.StrengthPoints <= 0)
+            {
+                Console.WriteLine("checkForCombat(): destroyed unit" + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
+                unitToAttack.StrengthPoints = 0;
+                MapHex deadUnitMapHex = map.Hexes[unitToAttack.Y, unitToAttack.X];
+                unit.lastTargetUnitVector = new Vector2(-1, -1);
+                if (deadUnitMapHex.Units.Count > 0)
+                    deadUnitMapHex.Units.RemoveAt(0);
+                if ("comcen".Equals(unitToAttack.UnitType))
+                {
+                    Faction faction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
+                    faction.HasComCen = false;
+                }
+            }
+            else
+            {
+                unit.lastTargetUnitVector = new Vector2(unitToAttack.X, unitToAttack.Y);
+                attackedUnitsXy.Add(makeXyString(unitToAttack.X, unitToAttack.Y));
+            }
+
+            // Make yourself known to your enemy
+            bool previousVisibility = false;
+            if (unit.Visibility.ContainsKey(unitToAttack.Color))
+                previousVisibility = unit.Visibility[unitToAttack.Color];
+            unit.Visibility[unitToAttack.Color] = true;
+            unit.RoundsToBeSeen[unitToAttack.Color] = 8;
+            if ("sub".Equals(unit.UnitType) || "submarine".Equals(unit.UnitType))
+            {
+                unit.RoundsToBeSeen[unitToAttack.Color] = 2;
             }
 
             // Infantry units lose steps equal to the damage done when either
             // attacking or defending. Armor lose steps equal to 1/2 the damage. This
             // effect can reduce the steps to a deficit of -25 (when steps are negative
             // the unit is pinned.)
-            if ("infantry".Equals(unitToAttack.UnitType) || "dug-in-infantry".Equals(unitToAttack.UnitType))
+            if (unitToAttack.StrengthPoints > 0 && ("infantry".Equals(unitToAttack.UnitType) || "dug-in-infantry".Equals(unitToAttack.UnitType)))
             {
 
                 unitToAttack.MoveSteps -= damage;
             }
-            if ("tank".Equals(unitToAttack.UnitType) || "armor".Equals(unitToAttack.UnitType))
+            if (unitToAttack.StrengthPoints > 0 && ("tank".Equals(unitToAttack.UnitType) || "armor".Equals(unitToAttack.UnitType)))
             {
 
                 unitToAttack.MoveSteps -= damage / 2;
             }
-            if (unitToAttack.MoveSteps < -25)
+            if (unitToAttack.StrengthPoints > 0 && unitToAttack.MoveSteps < -25)
                 unitToAttack.MoveSteps = -25;
 
             if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
@@ -548,6 +583,15 @@ public class GameLogic
             }
             if (unit.MoveSteps < -25)
                 unit.MoveSteps = -25;
+
+            if (unitToAttack.StrengthPoints > 0 && unitToAttack.StrengthPoints <= 20)
+                unitToAttack.IsBlitzing = false;
+
+            server.sendGameStateAndMapHex(unitToAttack.Color, unit.X, unit.Y);
+            server.sendGameStateAndMapHex(unit.Color, unit.X, unit.Y);
+            server.sendGameStateAndMapHex(unitToAttack.Color, unitToAttack.X, unitToAttack.Y);
+            server.sendGameStateAndMapHex(unit.Color, unitToAttack.X, unitToAttack.Y);
+
 
             // Head-Count scoring point calcs for fighting
             if (!"grey".Equals(unitToAttack.Color))
@@ -565,27 +609,7 @@ public class GameLogic
                     faction.HeadCountScore = 0;
             }
 
-            if (unitToAttack.StrengthPoints <= 20)
-                unitToAttack.IsBlitzing = false;
-            if (unitToAttack.StrengthPoints <= 0)
-            {
-                Console.WriteLine("checkForCombat(): destroyed unit" + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
-                unitToAttack.StrengthPoints = 0;
-                MapHex deadUnitMapHex = map.Hexes[unitToAttack.Y, unitToAttack.X];
-                if (deadUnitMapHex.Units.Count > 0)
-                    deadUnitMapHex.Units.RemoveAt(0);
-                if ("comcen".Equals(unitToAttack.UnitType))
-                {
-                    Faction faction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
-                    faction.HasComCen = false;
-                }
-            }
-            else
-            {
-                unit.lastTargetUnitVector = new Vector2(unitToAttack.X, unitToAttack.Y);
-                attackedUnitsXy.Add(makeXyString(unitToAttack.X, unitToAttack.Y));
-            }
-            server.sendGameStateAndMapHex(unitToAttack.X, unitToAttack.Y);
+            server.sendGameState();
         }
     }
 

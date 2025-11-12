@@ -29,6 +29,19 @@ public class GameState
     public string VictoriousColor { get; set; } = "grey";
     public long Ticks { get; set; } = 0;
 
+    // TODO: Send separate message to clients for Events.
+    // Also keep track of these events in a server log.
+    // * comcen attacked
+    // * unit attacked
+    // * unit destroyed
+    // * unit movement blocked
+    // * enemy discovered
+    // * enemy unit destroyed
+    // * burb discovered
+    // * burb captured
+    // * burb lost
+    public string LastClientEvent { get; set; }
+
     // if any of the data elements in the entities change above, then this version should be bumped.
     public string Version { get; set; } = "v0.4.0";
     private Random rand = new System.Random();
@@ -158,23 +171,28 @@ public class GameState
             Map.placeNewUnit(unit, mapHex);
     }
 
+    private Unit createNativeInfantry(MapHex mapHex)
+    {
+        Unit unit = new Unit();
+        unit.Color = "grey";
+        unit.UnitType = "infantry";
+        if ("Omniscient".Equals(GameSettings.Visibility))
+        {
+            unit.setOmniVisibility();
+        }
+        else
+        {
+            unit.setBaseVisibility();
+        }
+        return unit;
+    }
+
     private void placeNatives()
     {
         foreach (string key in Burbs.NameToBurb.Keys)
         {
             Burb burb = Burbs.NameToBurb[key];
             MapHex mapHex = Map.Hexes[burb.Y, burb.X];
-            Unit unit = new Unit();
-            unit.Color = "grey";
-            unit.UnitType = "infantry";
-            if ("Omniscient".Equals(GameSettings.Visibility))
-            {
-                unit.setOmniVisibility();
-            }
-            else
-            {
-                unit.setBaseVisibility();
-            }
             // villages 50% with a native
             // towns    100% with a native
             // cities   center + random surrounding natives
@@ -183,35 +201,49 @@ public class GameState
             {
                 bool hasUnit = rand.NextDouble() >= 0.5;
                 if (hasUnit)
+                {
+                    Unit unit = createNativeInfantry(mapHex);
                     placeUnit(mapHex, unit);
+                }
+
             }
             else if ("town".Equals(burb.Type))
             {
+                Unit unit = createNativeInfantry(mapHex);
                 placeUnit(mapHex, unit);
             }
             else if ("city".Equals(burb.Type))
             {
+                Unit unit = createNativeInfantry(mapHex);
                 placeUnit(mapHex, unit);
                 List<MapHex> neighbors = Map.getSurroundingHexesList(mapHex);
                 foreach (MapHex neighbor in neighbors)
                 {
                     bool hasUnit = rand.NextDouble() >= 0.5;
                     if (neighbor.Burb != null && hasUnit)
-                        placeUnit(neighbor, unit);                    
+                    {
+                        Unit neighborUnit = createNativeInfantry(mapHex);
+                        if ("dock".Equals(neighbor.Burb.Type))
+                            neighborUnit.UnitType = "transport-infantry";
+                        placeUnit(neighbor, neighborUnit);
+                    }
                 }
-
             }
             else if ("capital".Equals(burb.Type))
             {
+                Unit unit = createNativeInfantry(mapHex);
                 placeUnit(mapHex, unit);
                 List<MapHex> neighbors = Map.getSurroundingHexesList(mapHex);
                 foreach (MapHex neighbor in neighbors)
                 {
-                    placeUnit(neighbor, unit);                    
+                    Unit neighborUnit = createNativeInfantry(mapHex);
+                    if (neighbor.Burb != null && "dock".Equals(neighbor.Burb.Type))
+                    {
+                        neighborUnit.UnitType = "transport-infantry";
+                    }
+                    placeUnit(neighbor, neighborUnit);
                 }
-
             }
-
         }
     }
 
