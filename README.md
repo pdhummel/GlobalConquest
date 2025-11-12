@@ -53,15 +53,15 @@ The game is being designed with known differences from the original.
   - [x] pursue
 
 ### Milestone 4
-- [ ] Airplanes
-
-### Milestone 5
 - [ ] AI opponents
 - [ ] Add natives
 - [x] Add more victory conditions.
   - [x] Add number of turns game setting.
   - [x] Calculate victory points.
 - [ ] Add support for all execution triggers. (timers, etc.)
+
+### Milestone 5
+- [ ] Airplanes
 
 ### Milestone 6
 - [ ] Host Game and Join Game setting validations.

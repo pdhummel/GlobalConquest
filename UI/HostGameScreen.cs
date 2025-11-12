@@ -8,6 +8,8 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using static Myra.Graphics2D.UI.Grid;
 using Thickness = Myra.Graphics2D.Thickness;
+using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
+using VerticalAlignment = Myra.Graphics2D.UI.VerticalAlignment;
 
 namespace GlobalConquest.UI;
 
@@ -46,6 +48,8 @@ public class HostGameScreen
     TextBox startingMoneyTextBox = new TextBox();
     Label numberOfTurnsLabel = new Label();
     TextBox numberOfTurnsTextBox = new TextBox();
+    Label nativesLabel = new Label();
+    CheckButton nativesCheckButton = new CheckButton();
 
 
     public HostGameScreen(PlayGameMenu playGameMenu, Game game, Grid grid)
@@ -112,7 +116,7 @@ public class HostGameScreen
 
         mapHeightLabel.Id = "mapHeightLabel";
         mapHeightLabel.Text = "height:";
-        mapHeightLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
+        //mapHeightLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
         mapHeightTextBox.Id = "mapHeightTextBox";
         mapHeightTextBox.Text = "50";
         mapHeightTextBox.Width = 50;
@@ -222,6 +226,9 @@ public class HostGameScreen
         scoringOptionComboView.Widgets.Add(headCountScoringLabel);
         scoringOptionComboView.SelectedIndex = 0;
 
+        nativesLabel.Text = "Natives";
+        nativesCheckButton.IsChecked = false;
+        nativesCheckButton.VerticalAlignment = VerticalAlignment.Center;
 
         cancelButton.Click += cancelButtonClicked;
         okButton.Click += okButtonClicked;
@@ -239,76 +246,26 @@ public class HostGameScreen
 
         verticalStackPanel.Widgets.Add(hostSettingsLabel);
         hostSettingsLabel.Visible = true;
+        var hostSettingsPanel = new Panel();
+        hostSettingsPanel.Width = 300;
+        hostSettingsPanel.MaxWidth = 300;
+        verticalStackPanel.Widgets.Add(hostSettingsPanel);
+        hostSettingsPanel.Widgets.Add(hostSettingsLabel);
+        hostSettingsLabel.Visible = true;
+        hostSettingsLabel.HorizontalAlignment = HorizontalAlignment.Center;
 
-        var portPanel = new HorizontalStackPanel { Spacing = 8 };
-        verticalStackPanel.Widgets.Add(portPanel);
-        portPanel.Widgets.Add(portLabel);
-        portLabel.Visible = true;
-        portPanel.Widgets.Add(portTextBox);
-        portTextBox.Visible = true;
 
-        var humanPlayersPanel = new HorizontalStackPanel { Spacing = 8 };
-        verticalStackPanel.Widgets.Add(humanPlayersPanel);
-        humanPlayersPanel.Widgets.Add(humanPlayersLabel);
-        humanPlayersLabel.Visible = true;
-        humanPlayersPanel.Widgets.Add(humanPlayersTextBox);
-        humanPlayersTextBox.Visible = true;
-
-        var mapHeightPanel = new HorizontalStackPanel { Spacing = 8 };
-        verticalStackPanel.Widgets.Add(mapHeightPanel);
-        mapHeightPanel.Widgets.Add(mapHeightLabel);
-        mapHeightLabel.Visible = true;
-        mapHeightPanel.Widgets.Add(mapHeightTextBox);
-        mapHeightTextBox.Visible = true;
-
-        var mapWidthPanel = new HorizontalStackPanel { Spacing = 8 };
-        verticalStackPanel.Widgets.Add(mapWidthPanel);
-        mapWidthPanel.Widgets.Add(mapWidthLabel);
-        mapWidthLabel.Visible = true;
-        mapWidthPanel.Widgets.Add(mapWidthTextBox);
-        mapWidthTextBox.Visible = true;
-
-        var numberOfBurbsPanel = new HorizontalStackPanel { Spacing = 8 };
-        verticalStackPanel.Widgets.Add(numberOfBurbsPanel);
-        numberOfBurbsPanel.Widgets.Add(numberOfBurbsLabel);
-        numberOfBurbsLabel.Visible = true;
-        numberOfBurbsPanel.Widgets.Add(numberOfBurbsTextBox);
-        numberOfBurbsTextBox.Visible = true;
-
-        var startingMoneyPanel = new HorizontalStackPanel { Spacing = 8 };
-        verticalStackPanel.Widgets.Add(startingMoneyPanel);
-        startingMoneyPanel.Widgets.Add(startingMoneyLabel);
-        startingMoneyLabel.Visible = true;
-        startingMoneyPanel.Widgets.Add(startingMoneyTextBox);
-        startingMoneyTextBox.Visible = true;
-
-        var numberOfTurnsPanel = new HorizontalStackPanel { Spacing = 8 };
-        verticalStackPanel.Widgets.Add(numberOfTurnsPanel);
-        numberOfTurnsPanel.Widgets.Add(numberOfTurnsLabel);
-        numberOfTurnsLabel.Visible = true;
-        numberOfTurnsPanel.Widgets.Add(numberOfTurnsTextBox);
-        numberOfTurnsTextBox.Visible = true;
-
-        var visibilityPanel = new HorizontalStackPanel { Spacing = 8 };
-        verticalStackPanel.Widgets.Add(visibilityPanel);
-        visibilityPanel.Widgets.Add(visibilityLabel);
-        visibilityLabel.Visible = true;
-        visibilityPanel.Widgets.Add(visibilityComboView);
-        visibilityComboView.Visible = true;
-
-        var executionPanel = new HorizontalStackPanel { Spacing = 8 };
-        verticalStackPanel.Widgets.Add(executionPanel);
-        executionPanel.Widgets.Add(executionLabel);
-        executionLabel.Visible = true;
-        executionPanel.Widgets.Add(executionComboView);
-        executionComboView.Visible = true;
-
-        var scoringOptionPanel = new HorizontalStackPanel { Spacing = 8 };
-        verticalStackPanel.Widgets.Add(scoringOptionPanel);
-        scoringOptionPanel.Widgets.Add(scoringOptionLabel);
-        scoringOptionLabel.Visible = true;
-        scoringOptionPanel.Widgets.Add(scoringOptionComboView);
-        scoringOptionComboView.Visible = true;
+        addPanelRow(verticalStackPanel, portLabel, portTextBox);
+        addPanelRow(verticalStackPanel, humanPlayersLabel, humanPlayersTextBox);
+        addPanelRow(verticalStackPanel, mapHeightLabel, mapHeightTextBox);
+        addPanelRow(verticalStackPanel, mapWidthLabel, mapWidthTextBox);
+        addPanelRow(verticalStackPanel, numberOfBurbsLabel, numberOfBurbsTextBox);
+        addPanelRow(verticalStackPanel, startingMoneyLabel, startingMoneyTextBox);
+        addPanelRow(verticalStackPanel, numberOfTurnsLabel, numberOfTurnsTextBox);
+        addPanelRow(verticalStackPanel, visibilityLabel, visibilityComboView);
+        addPanelRow(verticalStackPanel, executionLabel, executionComboView);
+        addPanelRow(verticalStackPanel, scoringOptionLabel, scoringOptionComboView);
+        addPanelRow(verticalStackPanel, nativesLabel, nativesCheckButton);
 
         var buttonsPanel = new HorizontalStackPanel { Spacing = 8 };
         verticalStackPanel.Widgets.Add(buttonsPanel);
@@ -317,6 +274,20 @@ public class HostGameScreen
         buttonsPanel.Widgets.Add(cancelButton);
         cancelButton.Visible = true;
 
+    }
+
+    private void addPanelRow(VerticalStackPanel verticalStackPanel, Label label, Widget widget)
+    {
+        var panel = new Panel();
+        panel.Width = 300;
+        panel.MaxWidth = 300;
+        verticalStackPanel.Widgets.Add(panel);
+        panel.Widgets.Add(label);
+        label.Visible = true;
+        label.HorizontalAlignment = HorizontalAlignment.Left;
+        widget.HorizontalAlignment = HorizontalAlignment.Right;
+        panel.Widgets.Add(widget);
+        widget.Visible = true;
     }
 
     public void hide()
@@ -346,6 +317,8 @@ public class HostGameScreen
         executionComboView.Visible = false;
         scoringOptionLabel.Visible = false;
         scoringOptionComboView.Visible = false;
+        nativesLabel.Visible = false;
+        nativesCheckButton.Visible = false;
 
         hostSettingsLabel.RemoveFromParent();
         portLabel.RemoveFromParent();
@@ -372,6 +345,8 @@ public class HostGameScreen
         executionComboView.RemoveFromParent();
         scoringOptionLabel.RemoveFromParent();
         scoringOptionComboView.RemoveFromParent();
+        nativesLabel.RemoveFromParent();
+        nativesCheckButton.RemoveFromParent();
 
     }
 
