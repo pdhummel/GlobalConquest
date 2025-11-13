@@ -41,7 +41,6 @@ public class ExecuteAction : PlayerAction
             {
                 faction.Money += 5;
             }
-            //gameState.updateTicks();
             server.sendGameState();
         }
 

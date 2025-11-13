@@ -104,8 +104,8 @@ public class GameState
         {
             MapHex metroHex = Map.getMetroHex("amber");
             List<string> directions = ["northWest", "northEast", "southWest", "southEast"];
-            placeUnit(metroHex, directions, spy);
-            Map.placeNewUnit(comcen, metroHex);
+            placeUnit(metroHex, directions, comcen);
+            Map.placeNewUnit(spy, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
@@ -113,8 +113,8 @@ public class GameState
         {
             MapHex metroHex = Map.getMetroHex("ocher");
             List<string> directions = ["northEast", "northWest", "southWest", "southEast"];
-            placeUnit(metroHex, directions, spy);
-            Map.placeNewUnit(comcen, metroHex);
+            placeUnit(metroHex, directions, comcen);
+            Map.placeNewUnit(spy, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
@@ -122,8 +122,8 @@ public class GameState
         {
             MapHex metroHex = Map.getMetroHex("cyan");
             List<string> directions = ["southEast", "northWest", "southWest", "northEast"];
-            placeUnit(metroHex, directions, spy);
-            Map.placeNewUnit(comcen, metroHex);
+            placeUnit(metroHex, directions, comcen);
+            Map.placeNewUnit(spy, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
@@ -131,8 +131,8 @@ public class GameState
         {
             MapHex metroHex = Map.getMetroHex("magenta");
             List<string> directions = ["southWest", "northWest", "southEast", "northEast"];
-            placeUnit(metroHex, directions, spy);
-            Map.placeNewUnit(comcen, metroHex);
+            placeUnit(metroHex, directions, comcen);
+            Map.placeNewUnit(spy, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }

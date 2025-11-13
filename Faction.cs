@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Text.Json.Serialization;
 
 namespace GlobalConquest;
 
@@ -15,10 +16,15 @@ public class Faction
     public int CombinedScore { get; set; } = 0;
     public string Status { get; set; } = "planning";
 
+    [JsonIgnore]
+    public Ai Ai { get; set; } = new Ai();
+
+
     public Faction(string name, string color)
     {
         Name = name;
         Color = color;
+        Ai.Faction = this;
     }
 }
 

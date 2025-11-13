@@ -30,6 +30,23 @@ public class GameLogic
         gameState.CurrentPhase = "execution";
         server.sendGameState();
 
+        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        foreach (string color in colors)
+        {
+            bool isFactionAi = true;
+            Faction faction = gameState.Factions.ColorToFaction[color];
+            if (gameState.Players.colorToPlayer.ContainsKey(color))
+            {
+                Player player = gameState.Players.colorToPlayer[color];
+                if (player.IsHuman)
+                    isFactionAi = false;
+            }
+            if (isFactionAi)
+            {
+                faction.Ai.planTurn();
+            }
+        }
+
         infantryUnitsXy.Clear();
         movingUnitsXy.Clear();
         attackedUnitsXy.Clear();
@@ -95,7 +112,6 @@ public class GameLogic
 
         if (!"gameOver".Equals(server.gameState.CurrentPhase))
         {
-
             foreach (Unit unit in units)
             {
                 scanUnits(server, unit);
@@ -216,6 +232,7 @@ public class GameLogic
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
             faction.Money = gameState.GameSettings.StartingMoney;
+            faction.Ai.initialize(server);
         }
     }
 
@@ -535,8 +552,10 @@ public class GameLogic
 
             if (unitToAttack.StrengthPoints <= 0)
             {
-                Console.WriteLine("checkForCombat(): destroyed unit" + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
+                Console.WriteLine("checkForCombat(): destroyed unit " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
                 unitToAttack.StrengthPoints = 0;
+                map.UnitIdToUnit.Remove(unitToAttack.Id);
+                map.ColorToUnitIds[unitToAttack.Color].Remove(unitToAttack.Id);
                 MapHex deadUnitMapHex = map.Hexes[unitToAttack.Y, unitToAttack.X];
                 unit.lastTargetUnitVector = new Vector2(-1, -1);
                 if (deadUnitMapHex.Units.Count > 0)
@@ -808,7 +827,7 @@ public class GameLogic
         }
     }
 
-    private MapHex determineNextHexTowardsDestination(Server server, Unit unit, UnitAction unitAction)
+    public MapHex determineNextHexTowardsDestination(Server server, Unit unit, UnitAction unitAction)
     {
         Map map = server.gameState.Map;
         int fromX = unit.X;

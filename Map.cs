@@ -9,7 +9,11 @@ public class Map
     public int X { get; set; }
     public string VisibilityMode { get; set; }
     public Dictionary<string, MapHex> MetroLocations { get; set; } = new Dictionary<string, MapHex>();
+    public Dictionary<string, MapHex> LeftMetro { get; set; } = new Dictionary<string, MapHex>();
+    public Dictionary<string, MapHex> RightMetro { get; set; } = new Dictionary<string, MapHex>();
+    public Dictionary<string, MapHex> DiagonalMetro { get; set; } = new Dictionary<string, MapHex>();
     public Dictionary<string, Unit> UnitIdToUnit { get; set; } = new Dictionary<string, Unit>();
+    public Dictionary<string, HashSet<string>> ColorToUnitIds { get; set; } = new Dictionary<string, HashSet<string>>();
     public bool IsMapReady { get; set; } = false;
 
     public Map()
@@ -22,6 +26,11 @@ public class Map
         X = x;
         Hexes = generateMap(y, x);
         IsMapReady = true;
+        List<string> colors = ["amber", "ocher", "magenta", "cyan", "grey"];
+        foreach (string color in colors)
+        {
+            ColorToUnitIds[color] = new HashSet<string>();
+        }
     }
 
     public void addBurbs(Burbs burbs, int desiredBurbCount)
@@ -80,6 +89,18 @@ public class Map
         burbs.addBurb("Cyan Circle", "metro", this, Hexes[Y - 1, X - 2], "cyan");
 
         burbs.addBurb("Washington", "capital", this, Hexes[Y / 2, X / 2]);
+        LeftMetro["amber"] = MetroLocations["ocher"];
+        RightMetro["amber"] = MetroLocations["magenta"];
+        DiagonalMetro["amber"] = MetroLocations["cyan"];
+        LeftMetro["ocher"] = MetroLocations["cyan"];
+        RightMetro["ocher"] = MetroLocations["ocher"];
+        DiagonalMetro["ocher"] = MetroLocations["magenta"];
+        LeftMetro["cyan"] = MetroLocations["magenta"];
+        RightMetro["cyan"] = MetroLocations["ocher"];
+        DiagonalMetro["cyan"] = MetroLocations["amber"];
+        LeftMetro["magenta"] = MetroLocations["amber"];
+        RightMetro["magenta"] = MetroLocations["cyan"];
+        DiagonalMetro["magenta"] = MetroLocations["ocher"];
     }
 
     public MapHex getCapitalHex()
@@ -140,6 +161,7 @@ public class Map
             unit.Y = y;
             string id = unit.generateId();
             UnitIdToUnit[id] = unit;
+            ColorToUnitIds[unit.Color].Add(id);
         }
     }
 
@@ -419,6 +441,12 @@ public class Map
     {
         List<MapHex> hexes = new List<MapHex>();
         Dictionary<string, MapHex> hexesMap = getSurroundingHexes(mapHex);
+        return getSurroundingHexesList(hexesMap);
+    }
+
+    public List<MapHex> getSurroundingHexesList(Dictionary<string, MapHex> hexesMap)
+    {
+        List<MapHex> hexes = new List<MapHex>();
         if (hexesMap.ContainsKey("north"))
             hexes.Add(hexesMap["north"]);
         if (hexesMap.ContainsKey("south"))
