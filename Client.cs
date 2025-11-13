@@ -195,6 +195,7 @@ public class Client
                 action.ClassType = "GlobalConquest.Actions.PlanningReadyAction";  //executeAction.GetType().FullName
                 action.ClientIdentifier = ClientIdentifier;
                 SendAction(ClientIdentifier, action);
+                GameState.PlayerPlanningReady[ClientIdentifier] = true;
             }
         }
         else

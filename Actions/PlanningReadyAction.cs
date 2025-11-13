@@ -32,12 +32,8 @@ public class PlanningReadyAction : PlayerAction
             faction.Status = "planning";
             server.sendGameState();
         }
-
+        GameLogic gameLogic = server.GameLogic;
+        gameLogic.checkPlayersReadyForTimedPlanning();
     }
-
-
-
-
-    
 
 }

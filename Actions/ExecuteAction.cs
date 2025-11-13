@@ -67,8 +67,7 @@ public class ExecuteAction : PlayerAction
 
         if (startExecution)
         {
-            GameLogic gameLogic = new GameLogic();
-            gameLogic.server = server;
+            GameLogic gameLogic = server.GameLogic;
             Thread executionPhaseThread = new Thread(new ThreadStart(gameLogic.doExecutionPhase))
             {
                 IsBackground = true // Ensures thread closes with the main app
@@ -76,10 +75,5 @@ public class ExecuteAction : PlayerAction
             executionPhaseThread.Start();
         }
     }
-
-
-
-
-    
 
 }

@@ -17,7 +17,7 @@ public class JoinGameAction : PlayerAction
             action?.execute(peer, serverObj);
         }
     }
-    
+
     public new void execute(NetPeer peer, Object serverObj)
     {
         Console.WriteLine("JoinGameAction.execute()");
@@ -56,5 +56,10 @@ public class JoinGameAction : PlayerAction
             faction.Status = "planning";
         }
         server.sendGameState();
+
+        gameState.PlayerPlanningReady[newPlayer.Name] = true;
+        GameLogic gameLogic = server.GameLogic;
+        gameLogic.checkPlayersReadyForTimedPlanning();
+
     }
 }

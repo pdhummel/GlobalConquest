@@ -23,6 +23,7 @@ public class Server
     long lastMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
     public GameState gameState { get; set; } = new();
     private bool initialSync = false;
+    public GameLogic? GameLogic { get; set; }
 
     public void StartAsHost(GameSettings gameSettings, string key)
     {
@@ -93,9 +94,9 @@ public class Server
 
     private void ServerLoop()
     {
-        GameLogic gameLogic = new GameLogic();
-        gameLogic.server = this;
-        gameLogic.startGame(this);
+        GameLogic = new GameLogic();
+        GameLogic.server = this;
+        GameLogic.startGame(this);
 
         int sleepTime = 1000;
         Console.WriteLine("ServerLoop(): Server polling");
@@ -136,8 +137,16 @@ public class Server
             int count = server.ConnectedPeerList.Count;
             for (int i = 0; i < count; i++)
             {
-                NetPeer peer = server.ConnectedPeerList[i];
-                sendGameState(peer);
+                if (i <= server.ConnectedPeerList.Count)
+                {
+                    NetPeer peer = server.ConnectedPeerList[i];
+                    sendGameState(peer);
+                }
+                else
+                {
+                    Console.WriteLine("sendGameStateAndMapHex(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
+                }
+
             }
         }
     }
@@ -151,8 +160,15 @@ public class Server
             int count = server.ConnectedPeerList.Count;
             for (int i = 0; i < count; i++)
             {
-                NetPeer peer = server.ConnectedPeerList[i];
-                sendGameStateAndMapHex(peer, x, y);
+                if (i < server.ConnectedPeerList.Count)
+                {
+                    NetPeer peer = server.ConnectedPeerList[i];
+                    sendGameStateAndMapHex(peer, x, y);
+                }
+                else
+                {
+                    Console.WriteLine("sendGameStateAndMapHex(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
+                }
             }
         }
     }

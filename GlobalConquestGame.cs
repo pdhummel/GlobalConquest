@@ -733,11 +733,11 @@ public class GlobalConquestGame : Game
 
     public bool IsAllowedToPlan()
     {
-        Console.WriteLine("IsAllowedToPlan(): enter");
+        //Console.WriteLine("IsAllowedToPlan(): enter");
         bool canPlan = false;
         if ("plan".Equals(Client.GameState.CurrentPhase))
         {
-            Console.WriteLine("IsAllowedToPlan(): currentPhase=" + Client.GameState.CurrentPhase);
+            //Console.WriteLine("IsAllowedToPlan(): currentPhase=" + Client.GameState.CurrentPhase);
             canPlan = true;
         }
         if (canPlan)
@@ -748,7 +748,7 @@ public class GlobalConquestGame : Game
             if (!"planning".Equals(faction.Status))
             {
                 canPlan = false;
-                Console.WriteLine("IsAllowedToPlan(): canPlan=" + canPlan);
+                //Console.WriteLine("IsAllowedToPlan(): canPlan=" + canPlan);
                 return canPlan;
             }
         }
@@ -756,13 +756,13 @@ public class GlobalConquestGame : Game
         {
             if (!Client.GameState.PlayerPlanningReady[key])
             {
-                Console.WriteLine("IsAllowedToPlan(): PlayerPlanningReady=" + key + " " + Client.GameState.PlayerPlanningReady[key]);
+                //Console.WriteLine("IsAllowedToPlan(): PlayerPlanningReady=" + key + " " + Client.GameState.PlayerPlanningReady[key]);
                 canPlan = false;
-                Console.WriteLine("IsAllowedToPlan(): canPlan=" + canPlan);
+                //Console.WriteLine("IsAllowedToPlan(): canPlan=" + canPlan);
                 return canPlan;
             }
         }
-        Console.WriteLine("IsAllowedToPlan(): canPlan=" + canPlan);
+        //Console.WriteLine("IsAllowedToPlan(): canPlan=" + canPlan);
         return canPlan;
     }
 }

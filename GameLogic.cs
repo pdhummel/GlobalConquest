@@ -13,6 +13,9 @@ public class GameLogic
     private HashSet<string> movingUnitsXy = new HashSet<string>();
     private HashSet<string> attackedUnitsXy = new HashSet<string>();
     private HashSet<string> attackingUnitsXy = new HashSet<string>();
+    private readonly object syncLock = new object();
+    private bool timerRunning = false;
+    private DateTime startDateTime = DateTime.Now;
 
     public GameLogic()
     {
@@ -113,6 +116,9 @@ public class GameLogic
         foreach (string key in gameState.PlayerExecutionReady.Keys)
         {
             gameState.PlayerExecutionReady[key] = false;
+        }
+        foreach (string key in gameState.PlayerPlanningReady.Keys)
+        {
             gameState.PlayerPlanningReady[key] = false;
         }
         List<string> colors = ["amber", "ocher", "magenta", "cyan"];
@@ -122,6 +128,7 @@ public class GameLogic
             faction.Status = "pending";
         }
 
+        // Collect income
         foreach (string key in gameState.Burbs.NameToBurb.Keys)
         {
             Burb burb = gameState.Burbs.NameToBurb[key];
@@ -184,6 +191,7 @@ public class GameLogic
         Console.WriteLine("endTurn(): Bump game turn.");
         server.gameState.CurrentTurn += 1;
         server.sendGameState();
+        Console.WriteLine("doExecutionPhase(): exit");
     }
 
 
@@ -420,7 +428,7 @@ public class GameLogic
         }
         if (unit.getNextAction() == null)
         {
-            if (unit.StrengthPoints < 100)
+            if (unit.StrengthPoints < 100 && repairPoints > 0)
             {
                 unit.StrengthPoints += repairPoints;
                 if (unit.StrengthPoints > 100)
@@ -1102,6 +1110,111 @@ public class GameLogic
             }
         }
         server.gameState = newGameState;
+    }
+
+    public void checkPlayersReadyForTimedPlanning()
+    {
+        Console.WriteLine("checkPlayersReadyForTimedPlanning(): enter");
+
+        lock (syncLock)
+        {
+            GameState gameState = server.gameState;
+            if ("Timed*".Equals(gameState.GameSettings.ExecutionMode))
+            {
+                Console.WriteLine("execute(): Checking whether to start timer");
+                int readyCount = 0;
+                bool startTimer = false;
+                foreach (string key in gameState.PlayerPlanningReady.Keys)
+                {
+                    if (gameState.PlayerPlanningReady[key])
+                    {
+                        readyCount += 1;
+                    }
+                }
+                if (readyCount >= gameState.GameSettings.NumberOfHumans)
+                {
+                    startTimer = true;
+                }
+                if (startTimer && timerRunning == false)
+                {
+                    startExecutionTimer();
+                }
+            }
+        }
+        Console.WriteLine("checkPlayersReadyForTimedPlanning(): exit");
+    }
+
+    public void startExecutionTimer()
+    {
+        Console.WriteLine("startExecutionTimer(): enter");
+        if (!timerRunning)
+        {
+            timerRunning = true;
+            Thread waitForExecutionThread = new Thread(new ThreadStart(waitForExecution))
+            {
+                IsBackground = true
+            };
+            waitForExecutionThread.Start();
+        }
+        Console.WriteLine("startExecutionTimer(): exit");
+    }
+
+    private void waitForExecution()
+    {
+        Console.WriteLine("waitForExecution(): enter");
+        int readyCount = 0;
+        int count = 0;
+        GameState gameState = server.gameState;
+        bool startExecution = false;
+        startDateTime = DateTime.Now;
+        while (!startExecution && count < gameState.GameSettings.TimedSeconds && ((TimeSpan)(DateTime.Now - startDateTime)).TotalSeconds < gameState.GameSettings.TimedSeconds)
+        {
+            foreach (string key in gameState.PlayerExecutionReady.Keys)
+            {
+                if (gameState.PlayerExecutionReady[key])
+                {
+                    readyCount += 1;
+                }
+            }
+            if (readyCount >= gameState.GameSettings.NumberOfHumans)
+                startExecution = true;
+            count += 1;
+            Thread.Sleep(1000);
+        }
+        foreach (string key in gameState.PlayerExecutionReady.Keys)
+        {
+            gameState.PlayerExecutionReady[key] = true;
+            if (gameState.Players.playerNameToPlayer.ContainsKey(key))
+            {
+                Player player = gameState.Players.playerNameToPlayer[key];
+                Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
+                faction.Status = "ready";
+            }
+        }
+        foreach (string key in gameState.PlayerPlanningReady.Keys)
+        {
+            gameState.PlayerExecutionReady[key] = true;
+            if (gameState.Players.playerNameToPlayer.ContainsKey(key))
+            {
+                Player player = gameState.Players.playerNameToPlayer[key];
+                Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
+                faction.Status = "ready";
+            }
+        }
+
+        server.sendGameState();
+        Console.WriteLine("waitForExecution(): done waiting");
+
+        doExecutionPhase();
+        /*
+        Thread executionPhaseThread = new Thread(new ThreadStart(doExecutionPhase))
+        {
+            IsBackground = true
+        };
+        executionPhaseThread.Start();
+        */
+        timerRunning = false;
+        Console.WriteLine("waitForExecution(): exit");
     }
 
 }

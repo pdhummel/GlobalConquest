@@ -2,9 +2,9 @@ namespace GlobalConquest;
 
 public class GameSettings
 {
-    public int Port { get; set;  }
+    public int Port { get; set; }
 
-    public int NumberOfHumans { get; set;  }
+    public int NumberOfHumans { get; set; }
 
     public int Height { get; set; }
 
@@ -18,6 +18,7 @@ public class GameSettings
     public string Visibility { get; set; } = "Fog of War";
 
     public string ExecutionMode { get; set; } = "Quorum";
+    public int TimedSeconds { get; set; } = 180;
     public int StartingMoney { get; set; } = 0;
     public string ScoringOption { get; set; } = "Combined"; // Income, Capital, Head-Count, Combined
     public bool HasNatives { get; set; } = false;

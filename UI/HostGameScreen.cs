@@ -51,6 +51,10 @@ public class HostGameScreen
     Label nativesLabel = new Label();
     CheckButton nativesCheckButton = new CheckButton();
 
+    Label timedSecondsLabel = new Label();
+    TextBox timedSecondsTextBox = new TextBox();
+
+
 
     public HostGameScreen(PlayGameMenu playGameMenu, Game game, Grid grid)
     {
@@ -183,7 +187,6 @@ public class HostGameScreen
         //visibilityComboView.Widgets.Add(alliesLabel);
         visibilityComboView.SelectedIndex = 0;
 
-
         executionLabel.Id = "executionLabel";
         executionLabel.Text = "execution:";
         executionLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
@@ -201,15 +204,16 @@ public class HostGameScreen
         Label immediateLabel = new Label();
         immediateLabel.Text = "Immediate";
         Label timedGraceLabel = new Label();
-        timedGraceLabel.Text = "Timed Grace";
-        Label TimedLabel = new Label();
-        TimedLabel.Text = "Timed";
+        timedGraceLabel.Text = "Grace*";
+        Label timedLabel = new Label();
+        timedLabel.Text = "Timed*";
         Label quorumLabel = new Label();
         quorumLabel.Text = "Quorum";
         Label infiniteLabel = new Label();
         infiniteLabel.Text = "Infinite";
         executionComboView.Widgets.Add(quorumLabel);
         executionComboView.Widgets.Add(immediateLabel);
+        executionComboView.Widgets.Add(timedLabel);
         executionComboView.SelectedIndex = 0;
 
         Label combinationScoringLabel = new Label();
@@ -225,6 +229,10 @@ public class HostGameScreen
         scoringOptionComboView.Widgets.Add(incomeScoringLabel);
         scoringOptionComboView.Widgets.Add(headCountScoringLabel);
         scoringOptionComboView.SelectedIndex = 0;
+
+        timedSecondsLabel.Text = "Seconds*";
+        timedSecondsTextBox.Text = "180";
+        timedSecondsTextBox.Width = 50;
 
         nativesLabel.Text = "Natives";
         nativesCheckButton.IsChecked = true;
@@ -252,7 +260,6 @@ public class HostGameScreen
         hostSettingsLabel.Visible = true;
         hostSettingsLabel.HorizontalAlignment = HorizontalAlignment.Center;
 
-
         addPanelRow(verticalStackPanel, portLabel, portTextBox);
         addPanelRow(verticalStackPanel, humanPlayersLabel, humanPlayersTextBox);
         addPanelRow(verticalStackPanel, mapHeightLabel, mapHeightTextBox);
@@ -262,6 +269,7 @@ public class HostGameScreen
         addPanelRow(verticalStackPanel, numberOfTurnsLabel, numberOfTurnsTextBox);
         addPanelRow(verticalStackPanel, visibilityLabel, visibilityComboView);
         addPanelRow(verticalStackPanel, executionLabel, executionComboView);
+        addPanelRow(verticalStackPanel, timedSecondsLabel, timedSecondsTextBox);
         addPanelRow(verticalStackPanel, scoringOptionLabel, scoringOptionComboView);
         addPanelRow(verticalStackPanel, nativesLabel, nativesCheckButton);
 
@@ -313,6 +321,8 @@ public class HostGameScreen
         visibilityComboView.Visible = false;
         executionLabel.Visible = false;
         executionComboView.Visible = false;
+        timedSecondsLabel.Visible = false;
+        timedSecondsTextBox.Visible = false;
         scoringOptionLabel.Visible = false;
         scoringOptionComboView.Visible = false;
         nativesLabel.Visible = false;
@@ -341,6 +351,8 @@ public class HostGameScreen
         visibilityComboView.RemoveFromParent();
         executionLabel.RemoveFromParent();
         executionComboView.RemoveFromParent();
+        timedSecondsLabel.RemoveFromParent();
+        timedSecondsTextBox.RemoveFromParent();
         scoringOptionLabel.RemoveFromParent();
         scoringOptionComboView.RemoveFromParent();
         nativesLabel.RemoveFromParent();
@@ -369,6 +381,7 @@ public class HostGameScreen
         gameSettings.Visibility = ((Label)visibilityComboView.SelectedItem).Text;
         gameSettings.ExecutionMode = ((Label)executionComboView.SelectedItem).Text;
         gameSettings.ScoringOption = ((Label)scoringOptionComboView.SelectedItem).Text;
+        gameSettings.TimedSeconds = (Int32.Parse(timedSecondsTextBox.Text));
         if (nativesCheckButton.IsChecked)
             gameSettings.HasNatives = true;
         else
