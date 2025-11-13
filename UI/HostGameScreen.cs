@@ -214,6 +214,7 @@ public class HostGameScreen
         executionComboView.Widgets.Add(quorumLabel);
         executionComboView.Widgets.Add(immediateLabel);
         executionComboView.Widgets.Add(timedLabel);
+        executionComboView.Widgets.Add(timedGraceLabel);
         executionComboView.SelectedIndex = 0;
 
         Label combinationScoringLabel = new Label();

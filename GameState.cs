@@ -43,7 +43,7 @@ public class GameState
     public string LastClientEvent { get; set; }
 
     // if any of the data elements in the entities change above, then this version should be bumped.
-    public string Version { get; set; } = "v0.4.1";
+    public string Version { get; set; } = "v0.4.2";
     private Random rand = new System.Random();
 
 

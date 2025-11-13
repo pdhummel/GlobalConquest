@@ -51,7 +51,7 @@ public class ExecuteAction : PlayerAction
         {
             startExecution = true;
         }
-        if ("Quorum".Equals(gameState.GameSettings.ExecutionMode))
+        else if ("Quorum".Equals(gameState.GameSettings.ExecutionMode))
         {
             int readyCount = 0;
             foreach (string key in gameState.PlayerExecutionReady.Keys)
@@ -63,6 +63,10 @@ public class ExecuteAction : PlayerAction
             }
             if (readyCount >= gameState.GameSettings.NumberOfHumans)
                 startExecution = true;
+        }
+        else if ("Grace*".Equals(gameState.GameSettings.ExecutionMode))
+        {
+            server.GameLogic.startExecutionTimer();
         }
 
         if (startExecution)

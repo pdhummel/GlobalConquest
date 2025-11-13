@@ -58,7 +58,7 @@ The game is being designed with known differences from the original.
 - [x] Add more victory conditions.
   - [x] Add number of turns game setting.
   - [x] Calculate victory points.
-- [ ] Add support for all execution triggers. (timers, etc.)
+- [x] Add support for all execution triggers. (timers, etc.)
 
 ### Milestone 5
 - [ ] Airplanes

@@ -1162,13 +1162,13 @@ public class GameLogic
     private void waitForExecution()
     {
         Console.WriteLine("waitForExecution(): enter");
-        int readyCount = 0;
         int count = 0;
         GameState gameState = server.gameState;
         bool startExecution = false;
         startDateTime = DateTime.Now;
         while (!startExecution && count < gameState.GameSettings.TimedSeconds && ((TimeSpan)(DateTime.Now - startDateTime)).TotalSeconds < gameState.GameSettings.TimedSeconds)
         {
+            int readyCount = 0;
             foreach (string key in gameState.PlayerExecutionReady.Keys)
             {
                 if (gameState.PlayerExecutionReady[key])
