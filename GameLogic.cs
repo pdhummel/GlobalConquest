@@ -462,6 +462,7 @@ public class GameLogic
         // A sneaking unit can't fire at other units at all.
         if (unit.IsSneaking)
             return;
+        Console.WriteLine("checkForCombat(): " + unit.Id);
         Unit unitToAttack = null;
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
@@ -482,9 +483,10 @@ public class GameLogic
                     UnitType targetUnitType = unitTypes.UnitTypeMap[lastTargetUnit.UnitType];
                     int firingRangeFromAttacker = targetUnitType.FiringRangeFromAttacker[unit.UnitType];
                     int firingRangeToDefender = attackerUnitType.FiringRangeToDefender[lastTargetUnit.UnitType];
-                    if (lastTargetUnit.Visibility[unit.Color] && scanRange <= firingRangeFromAttacker && scanRange <= firingRangeToDefender && hexesToScan.Contains(targetMapHex))
+                    if (lastTargetUnit.StrengthPoints > 0 && lastTargetUnit.Visibility[unit.Color] && scanRange <= firingRangeFromAttacker && scanRange <= firingRangeToDefender && hexesToScan.Contains(targetMapHex))
                     {
                         unitToAttack = lastTargetUnit;
+                        Console.WriteLine("checkForCombat(): " + unit.Id + " wants to continue to attack " + unitToAttack.Id);
                     }
                 }
 
@@ -504,6 +506,7 @@ public class GameLogic
                                 attackerUnitType.BattleDamageToDefender[hexUnit.UnitType] > 0 && hexUnit.Color != unit.Color)
                             {
                                 unitToAttack = hexUnit;
+                                Console.WriteLine("checkForCombat(): " + unit.Id + " wants to attack " + unitToAttack.Id);
                                 break;
                             }
                         }
@@ -614,10 +617,10 @@ public class GameLogic
             if (unitToAttack.StrengthPoints > 0 && unitToAttack.StrengthPoints <= 20)
                 unitToAttack.IsBlitzing = false;
 
-            server.sendGameStateAndMapHex(unitToAttack.Color, unit.X, unit.Y);
-            server.sendGameStateAndMapHex(unit.Color, unit.X, unit.Y);
-            server.sendGameStateAndMapHex(unitToAttack.Color, unitToAttack.X, unitToAttack.Y);
-            server.sendGameStateAndMapHex(unit.Color, unitToAttack.X, unitToAttack.Y);
+            //server.sendGameStateAndMapHex(unitToAttack.Color, unit.X, unit.Y);
+            server.sendGameStateAndMapHex(unit.X, unit.Y);
+            server.sendGameStateAndMapHex(unitToAttack.X, unitToAttack.Y);
+            //server.sendGameStateAndMapHex(unit.Color, unitToAttack.X, unitToAttack.Y);
 
 
             // Head-Count scoring point calcs for fighting

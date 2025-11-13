@@ -72,44 +72,20 @@ public class Ai
     public void planTurn()
     {
         Console.WriteLine("planTurn(): faction=" + Faction.Color);
+        if (!Faction.HasComCen)
+            return;
         build();
         moveUnits();
     }
 
     private void build()
     {
-        bool isExplorer = false;
-        int randomNumber = random.Next(0, 2);
-        if (randomNumber > 0)
-            isExplorer = true;
-
-        if (isExplorer || myMetroHex.getUnit() != null)
+        if (myMetroHex.getUnit() == null)
         {
-            bool isSubExplorer = false;
-            randomNumber = random.Next(0, 2);
-            if (randomNumber > 0)
-                isSubExplorer = true;
-            isSubExplorer = false;
-            if (isSubExplorer)
-            {
-                Unit unit = purchaseUnitAtDock("sub");
-                moveAlongSeaPerimeter(unit);
-            }
-            else
-            {
-                Unit unit = purchaseUnitAtDock("transport-infantry");
-                moveTowardsCapital(unit);
-            }
+            purchaseUnitAtMetro("infantry");
         }
-        // defender
-        else
-        {
-            if (myMetroHex.getUnit() == null)
-            {
-                purchaseUnitAtMetro("infantry");
-            }
-        }
-
+        Unit unit = purchaseUnitAtDock("transport-infantry");
+        moveTowardsCapital(unit);
     }
 
     private Unit purchaseUnitAtMetro(string unitTypeString)
