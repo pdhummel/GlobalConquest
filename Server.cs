@@ -178,10 +178,11 @@ public class Server
         NetDataWriter writer = new NetDataWriter();
         if (server != null)
         {
+            GameEvent gameEvent = new GameEvent();
+            gameEvent.EventType = "gameStateAndMapUpdate";
+            gameEvent.GameState = gameState;
             gameState.MapHex = gameState.Map.Hexes[y, x];
-            Unit unit = gameState.MapHex.getUnit();
-            gameState.UnitAtMapHex = unit;
-            string jsonString = JsonSerializer.Serialize(this.gameState);
+            string jsonString = JsonSerializer.Serialize(gameEvent);
             writer.Put(jsonString);
             peer.Send(writer, DeliveryMethod.ReliableOrdered);
             writer.Reset();
@@ -211,8 +212,11 @@ public class Server
         NetDataWriter writer = new NetDataWriter();
         if (server != null)
         {
+            GameEvent gameEvent = new GameEvent();
+            gameEvent.EventType = "gameStateUpdate";
+            gameEvent.GameState = gameState;
             gameState.MapHex = null;
-            string jsonString = JsonSerializer.Serialize(this.gameState);
+            string jsonString = JsonSerializer.Serialize(gameEvent);
             writer.Put(jsonString);
             peer.Send(writer, DeliveryMethod.ReliableOrdered);
             writer.Reset();

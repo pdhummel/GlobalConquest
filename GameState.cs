@@ -16,7 +16,6 @@ public class GameState
     public Map Map { get; set; }
 
     public MapHex MapHex { get; set; }
-    public Unit UnitAtMapHex { get; set; }
 
     public Dictionary<string, bool> PlayerExecutionReady { get; set; } = new Dictionary<string, bool>();
     public Dictionary<string, bool> PlayerPlanningReady { get; set; } = new Dictionary<string, bool>();
@@ -29,18 +28,6 @@ public class GameState
     public string VictoriousColor { get; set; } = "grey";
     public long Ticks { get; set; } = 0;
 
-    // TODO: Send separate message to clients for Events.
-    // Also keep track of these events in a server log.
-    // * comcen attacked
-    // * unit attacked
-    // * unit destroyed
-    // * unit movement blocked
-    // * enemy discovered
-    // * enemy unit destroyed
-    // * burb discovered
-    // * burb captured
-    // * burb lost
-    public string LastClientEvent { get; set; }
 
     // if any of the data elements in the entities change above, then this version should be bumped.
     public string Version { get; set; } = "v0.4.2";

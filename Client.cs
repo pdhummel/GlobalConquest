@@ -116,10 +116,10 @@ public class Client
     private void OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod)
     {
         var jsonString = reader.GetString();
-        //Console.WriteLine($"OnNetworkReceive(): Client [Received] from {peer.Address}: {jsonString}");
         GameState oldGameState = GameState;
+        GameEvent? gameEvent = JsonSerializer.Deserialize<GameEvent>(jsonString);
         // Note that the full Map is never sent from the server to the client b/c the content is too large.
-        GameState? newGameState = JsonSerializer.Deserialize<GameState>(jsonString);
+        GameState? newGameState = gameEvent.GameState;
         if (newGameState != null && oldGameState != null && (newGameState.Ticks > oldGameState.Ticks || newGameState.MapHex != null))
         {
             if (newGameState.MapHex == null)
@@ -164,17 +164,11 @@ public class Client
                         }
                     }
                 }
-                //newGameState.Map.IsMapReady = true;
             }
             if (newGameState.MapHex != null)
             {
                 Console.WriteLine("OnNetworkReceive(): updating MapHex " + newGameState.MapHex.X + "," + newGameState.MapHex.Y);
                 newGameState.Map.Hexes[newGameState.MapHex.Y, newGameState.MapHex.X] = newGameState.MapHex;
-                if (newGameState.UnitAtMapHex != null)
-                {
-                    Unit unit = newGameState.UnitAtMapHex;
-                    newGameState.Map.Hexes[newGameState.MapHex.Y, newGameState.MapHex.X].setUnit(unit);
-                }
             }
 
             GameState = newGameState;
