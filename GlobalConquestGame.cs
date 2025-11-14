@@ -744,7 +744,12 @@ public class GlobalConquestGame : Game
         {
             Player player = identifySelf();
             Faction faction = Client.GameState.Factions.ColorToFaction[player.FactionColor];
-            Console.WriteLine("IsAllowedToPlan(): faction status=" + faction.Status);
+            if (!faction.HasComCen)
+            {
+                canPlan = false;
+                return canPlan;
+            }
+            //Console.WriteLine("IsAllowedToPlan(): faction status=" + faction.Status);
             if (!"planning".Equals(faction.Status))
             {
                 canPlan = false;
