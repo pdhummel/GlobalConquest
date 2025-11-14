@@ -363,7 +363,7 @@ public class GameLogic
                 // However, once a sub is spotted it stays "seen"
                 // at the normal range of the "seeing" unit
                 // (e.g., 6 for carriers and Comcens, 5 for battleships)
-                // but for a shorter period of time 
+                // but for a shorter period of time
                 // (only 2 rounds, which is considerably shorter than the 8 rounds for all other units).
                 bool previousVisibility = false;
                 if (hexUnit.Visibility.ContainsKey(unit.Color))
@@ -462,7 +462,7 @@ public class GameLogic
         // A sneaking unit can't fire at other units at all.
         if (unit.IsSneaking)
             return;
-        Console.WriteLine("checkForCombat(): " + unit.Id);
+        //Console.WriteLine("checkForCombat(): " + unit.Id);
         Unit unitToAttack = null;
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
@@ -971,6 +971,8 @@ public class GameLogic
             {
                 metroOwnerCount[color] = 0;
             }
+            if (! metroOwnerCount.ContainsKey(gameState.Map.getMetroHex(color).Burb.OwnerColor))
+                metroOwnerCount[gameState.Map.getMetroHex(color).Burb.OwnerColor] = 1;
             metroOwnerCount[gameState.Map.getMetroHex(color).Burb.OwnerColor] += 1;
         }
         foreach (string color in colors)
