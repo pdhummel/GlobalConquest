@@ -363,8 +363,8 @@ public class GameLogic
                 // However, once a sub is spotted it stays "seen"
                 // at the normal range of the "seeing" unit
                 // (e.g., 6 for carriers and Comcens, 5 for battleships)
-                // but for a shorter period of time (only 2 rounds, which is
-                //considerably shorter than the 8 rounds for all other units).
+                // but for a shorter period of time 
+                // (only 2 rounds, which is considerably shorter than the 8 rounds for all other units).
                 bool previousVisibility = false;
                 if (hexUnit.Visibility.ContainsKey(unit.Color))
                     previousVisibility = hexUnit.Visibility[unit.Color];
