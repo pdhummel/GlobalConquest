@@ -2,6 +2,7 @@ using GlobalConquest.Actions;
 using GlobalConquest.Units;
 
 namespace GlobalConquest;
+
 public class Ai
 {
     public Server Server { get; set; }
@@ -96,6 +97,7 @@ public class Ai
         }
         if (closestConquestGoal != null)
         {
+            Console.WriteLine("Ai.processGoal(): closest goal for " + Faction.Color + " " + closestConquestGoal.Type + " at " + closestConquestGoal.TargetMapHex.X + "," + closestConquestGoal.TargetMapHex.Y);
             processGoal(goalsToKeep, closestConquestGoal);
         }
 
@@ -104,6 +106,7 @@ public class Ai
         {
             int index = random.Next(0, goals.Count);
             AiGoal randomGoal = goals[index];
+            Console.WriteLine("Ai.processGoal(): random goal for " + Faction.Color + " " + randomGoal.Type + " at " + randomGoal.TargetMapHex.X + "," + randomGoal.TargetMapHex.Y);
             processGoal(goalsToKeep, randomGoal);
         }
 
@@ -132,7 +135,7 @@ public class Ai
     {
         if (goal.IsOngoingGoal)
             return false;
-        // TODO: expand DesiredUnits if enemy count increases.
+        // Expand DesiredUnits if enemy count increases.
         if ("conquer".Equals(goal.Type))
         {
             if (isBurbCoastal(goal.TargetMapHex))
@@ -233,7 +236,7 @@ public class Ai
                 newUnit.setUnitAction(unitAction);
             }
         }
-        else if ("conquer".Equals(goal.Type) && aiUnit.InitialPosition == null  && aiUnit.DistanceFromTarget > 1)
+        else if ("conquer".Equals(goal.Type) && aiUnit.InitialPosition == null && aiUnit.DistanceFromTarget > 1)
         {
             newUnit = purchaseUnitAtMetroDock(aiUnit.UnitType);
             MapHex foundMapHex = findHexAroundBurb(goal, aiUnit);
@@ -309,10 +312,14 @@ public class Ai
 
     private MapHex findHexAroundBurb(AiGoal goal, AiUnit aiUnit)
     {
-        HashSet<MapHex> rangeMinusOneHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget-1);
+        HashSet<MapHex> rangeMinusOneHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget - 1);
         HashSet<MapHex> rangeHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget);
         rangeHexes.ExceptWith(rangeMinusOneHexes);
         HashSet<MapHex> finalRangeHexes = rangeHexes;
+        MapHex mapHex = map.Hexes[aiUnit.Unit.Y, aiUnit.Unit.X];
+        if (finalRangeHexes.Contains(mapHex))
+            return null;
+
         /*
         HashSet<MapHex> finalRangeHexes = new HashSet<MapHex>();
         // TODO: optimize set subtraction
@@ -731,7 +738,7 @@ public class Ai
             count = 0;
         if (enemies > 0)
             count = enemies + 3;
-        for (int i=0; i< count; i++)
+        for (int i = 0; i < count; i++)
         {
             AiUnit infantry = new AiUnit();
             infantry.UnitType = "infantry";
