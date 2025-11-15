@@ -34,10 +34,32 @@ public class AiGoal
         ActualUnits = newActualUnits;
 
         AiUnit nextUnit = null;
-        HashSet<AiUnit> tempSet = new HashSet<AiUnit>(DesiredUnits);
-        tempSet.ExceptWith(ActualUnits);
-        if (tempSet.Count > 0)
-            nextUnit = tempSet.ToList()[0];
+        //HashSet<AiUnit> tempSet = new HashSet<AiUnit>(DesiredUnits);
+        //tempSet.ExceptWith(ActualUnits);
+        //if (tempSet.Count > 0)
+        //    nextUnit = tempSet.ToList()[0];
+        HashSet<AiUnit> remainingDesiredUnits = new HashSet<AiUnit>();
+        foreach (AiUnit outer in DesiredUnits)
+        {
+           bool isDesiredUnitFound = false;
+           foreach (AiUnit inner in ActualUnits)
+           {
+               if (outer.Unit != null && inner.Unit != null &&
+                   outer.Unit.X == inner.Unit.X && outer.Unit.Y == inner.Unit.Y &&
+                   outer.UnitType == inner.UnitType)
+               {
+                   isDesiredUnitFound = true;
+                   break;
+               }
+           }
+           if (!isDesiredUnitFound)
+               remainingDesiredUnits.Add(outer);
+        }
+        if (remainingDesiredUnits.Count > 0)
+        {
+           nextUnit = remainingDesiredUnits.ToList<AiUnit>()[0];
+        }
+
         return nextUnit;
     }
 }

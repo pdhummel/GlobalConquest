@@ -11,6 +11,8 @@ using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Microsoft.Xna.Framework.Input;
+using Panel = Myra.Graphics2D.UI.Panel;
+using Color = Microsoft.Xna.Framework.Color;
 
 namespace GlobalConquest.UI;
 

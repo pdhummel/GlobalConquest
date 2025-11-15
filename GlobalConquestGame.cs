@@ -10,6 +10,11 @@ using GlobalConquest.Actions;
 using GlobalConquest.UI;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using GlobalConquest.Units;
+using System.Runtime.InteropServices;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
+using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
+using Point = Microsoft.Xna.Framework.Point;
+
 
 namespace GlobalConquest;
 
@@ -44,6 +49,10 @@ public class GlobalConquestGame : Game
     public bool PursueMode { get; set; } = false;
     public JoinGameValues MyJoinGameValues { get; set; }
 
+    [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void SDL_MinimizeWindow(IntPtr window);
+    //public static System.Windows.Forms.Control? FromHandle(IntPtr handle);
+
     float clickStartTime;
     bool isMouseDown = false;
     bool isMultiHexMove = false;
@@ -72,6 +81,14 @@ public class GlobalConquestGame : Game
     void graphics_PreparingDeviceSettings(object? sender, PreparingDeviceSettingsEventArgs e)
     {
         e.GraphicsDeviceInformation.PresentationParameters.DeviceWindowHandle = drawSurface;
+    }
+
+    public void minimizeScreen()
+    {
+        Console.WriteLine("minimizeScreen(): enter");
+        SDL_MinimizeWindow(Window.Handle);
+        Form form = (Form)Control.FromHandle(Window.Handle);
+        form.Hide();
     }
 
     private void GlobalConquestGame_VisibleChanged(object? sender, EventArgs e)

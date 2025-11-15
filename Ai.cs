@@ -145,7 +145,7 @@ public class Ai
             }
         }
         AiUnit aiUnit = goal.getNextUnitToBuild();
-        // Build is complete for goal
+        // Build is complete for goal b/c there is nothing needed from above.
         if (aiUnit == null && "conquer".Equals(goal.Type))
         {
             foreach (AiUnit builtAiUnit in goal.ActualUnits)
@@ -184,25 +184,20 @@ public class Ai
         {
             newUnit = purchaseUnitAtMetro(aiUnit.UnitType);
             if (newUnit != null)
-                Console.WriteLine("Ai.buildUnits(): " + newUnit.Id + " built for defend of " + Faction.Color + " metro");
+                Console.WriteLine("Ai.buildUnits(): " + newUnit.Id + " built to defend " + Faction.Color + " metro");
         }
         else if ("defend".Equals(goal.Type) && aiUnit.InitialPosition != null && aiUnit.InitialPosition.X == goal.TargetMapHex.X && aiUnit.InitialPosition.Y == goal.TargetMapHex.Y)
         {
             newUnit = purchaseUnitAtBurb(aiUnit.InitialPosition, aiUnit.UnitType);
             if (newUnit != null)
-                Console.WriteLine("Ai.buildUnits(): " + newUnit.Id + " built for defend of burb at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                Console.WriteLine("Ai.buildUnits(): Burb-InitialPosition " + newUnit.Id + " built to defend burb at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
         }
         else if ("defend".Equals(goal.Type) && aiUnit.InitialPosition != null)
         {
-            UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
             newUnit = purchaseUnitAtBurbDock(aiUnit.InitialPosition, aiUnit.UnitType);
             if (newUnit != null)
             {
-                Console.WriteLine("Ai.buildUnits(): " + newUnit.Id + " built for defend of burb at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
-            }
-            if (newUnit != null)
-            {
-                Console.WriteLine("Ai.buildUnits(): " + newUnit.Id + " built for defend of burb at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                Console.WriteLine("Ai.buildUnits(): InitialPosition " + newUnit.Id + " built to defend burb at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
                 UnitAction unitAction = new UnitAction();
                 unitAction.Action = "move";
                 unitAction.TargetX = aiUnit.InitialPosition.X;
@@ -212,22 +207,11 @@ public class Ai
         }
         else if ("defend".Equals(goal.Type) && aiUnit.InitialPosition == null && aiUnit.DistanceFromTarget > 1)
         {
-            UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
             newUnit = purchaseUnitAtMetroDock(aiUnit.UnitType);
-
-            HashSet<MapHex> rangeMinusOneHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget-1);
-            HashSet<MapHex> rangeHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget);
-            rangeHexes.ExceptWith(rangeMinusOneHexes);
-            MapHex foundMapHex = null;
-            foreach (MapHex mapHex in rangeHexes)
-            {
-                if (mapHex.getUnit() == null) {
-                    foundMapHex = mapHex;
-                }
-            }
+            MapHex foundMapHex = findHexAroundBurb(goal, aiUnit);
             if (newUnit != null && foundMapHex != null)
             {
-                Console.WriteLine("Ai.buildUnits(): " + newUnit.Id + " built for defend around " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                Console.WriteLine("Ai.buildUnits(): " + newUnit.Id + " built to defend around " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
                 UnitAction unitAction = new UnitAction();
                 unitAction.Action = "move";
                 unitAction.TargetX = foundMapHex.X;
@@ -238,7 +222,6 @@ public class Ai
 
         else if ("conquer".Equals(goal.Type) && aiUnit.InitialPosition != null)
         {
-            UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
             newUnit = purchaseUnitAtMetroDock(aiUnit.UnitType);
             if (newUnit != null)
             {
@@ -252,19 +235,8 @@ public class Ai
         }
         else if ("conquer".Equals(goal.Type) && aiUnit.InitialPosition == null  && aiUnit.DistanceFromTarget > 1)
         {
-            UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
             newUnit = purchaseUnitAtMetroDock(aiUnit.UnitType);
-
-            HashSet<MapHex> rangeMinusOneHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget-1);
-            HashSet<MapHex> rangeHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget);
-            rangeHexes.ExceptWith(rangeMinusOneHexes);
-            MapHex foundMapHex = null;
-            foreach (MapHex mapHex in rangeHexes)
-            {
-                if (mapHex.getUnit() == null) {
-                    foundMapHex = mapHex;
-                }
-            }
+            MapHex foundMapHex = findHexAroundBurb(goal, aiUnit);
             if (newUnit != null && foundMapHex != null)
             {
                 Console.WriteLine("Ai.buildUnits(): " + newUnit.Id + " built for conquest around " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
@@ -308,6 +280,7 @@ public class Ai
                 unitAction.TargetX = goal.TargetMapHex.X;
                 unitAction.TargetY = goal.TargetMapHex.Y;
                 aiUnit.Unit.setUnitAction(unitAction);
+                Console.WriteLine("Ai.moveUnits(): ShouldMoveToTarget " + aiUnit.Unit.Id + " to " + unitAction.TargetX + "," + unitAction.TargetY);
             }
             else if (aiUnit.InitialPosition != null)
             {
@@ -316,19 +289,11 @@ public class Ai
                 unitAction.TargetX = aiUnit.InitialPosition.X;
                 unitAction.TargetY = aiUnit.InitialPosition.Y;
                 aiUnit.Unit.setUnitAction(unitAction);
+                Console.WriteLine("Ai.moveUnits(): InitialPosition " + aiUnit.Unit.Id + " to " + unitAction.TargetX + "," + unitAction.TargetY);
             }
             else if (aiUnit.InitialPosition == null && aiUnit.DistanceFromTarget > 1)
             {
-                HashSet<MapHex> rangeMinusOneHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget-1);
-                HashSet<MapHex> rangeHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget);
-                rangeHexes.ExceptWith(rangeMinusOneHexes);
-                MapHex foundMapHex = null;
-                foreach (MapHex mapHex in rangeHexes)
-                {
-                    if (mapHex.getUnit() == null) {
-                        foundMapHex = mapHex;
-                    }
-                }
+                MapHex foundMapHex = findHexAroundBurb(goal, aiUnit);
                 if (foundMapHex != null)
                 {
                     UnitAction unitAction = new UnitAction();
@@ -336,11 +301,66 @@ public class Ai
                     unitAction.TargetX = foundMapHex.X;
                     unitAction.TargetY = foundMapHex.Y;
                     aiUnit.Unit.setUnitAction(unitAction);
+                    Console.WriteLine("Ai.moveUnits(): DistanceFromTarget " + aiUnit.Unit.Id + " to " + unitAction.TargetX + "," + unitAction.TargetY);
                 }
             }
         }
     }
 
+    private MapHex findHexAroundBurb(AiGoal goal, AiUnit aiUnit)
+    {
+        HashSet<MapHex> rangeMinusOneHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget-1);
+        HashSet<MapHex> rangeHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget);
+        rangeHexes.ExceptWith(rangeMinusOneHexes);
+        HashSet<MapHex> finalRangeHexes = rangeHexes;
+        /*
+        HashSet<MapHex> finalRangeHexes = new HashSet<MapHex>();
+        // TODO: optimize set subtraction
+        foreach (MapHex outerMapHex in rangeHexes)
+        {
+            bool foundInInner = false;
+            foreach (MapHex innerMapHex in rangeMinusOneHexes)
+            {
+                if (outerMapHex.X == innerMapHex.X && outerMapHex.Y == innerMapHex.Y)
+                {
+                    foundInInner = true;
+                    break;
+                }
+            }
+            if (! foundInInner)
+            {
+                finalRangeHexes.Add(outerMapHex);
+            }
+        }
+        */
+        MapHex foundMapHex = null;
+        int index = random.Next(0, finalRangeHexes.Count);
+        MapHex candidateHex = finalRangeHexes.ToList<MapHex>()[index];
+        if (candidateHex.getUnit() == null)
+        {
+            foundMapHex = candidateHex;
+        }
+        else
+        {
+            foreach (MapHex mapHex in finalRangeHexes)
+            {
+                if (mapHex.getUnit() == null)
+                {
+                    foundMapHex = mapHex;
+                }
+            }
+        }
+
+        if (foundMapHex != null)
+        {
+            //Console.WriteLine("Ai.findHexAroundBurb(): found " + foundMapHex.X + "," + foundMapHex.Y + " around " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+        }
+        else
+        {
+            Console.WriteLine("Ai.findHexAroundBurb(): could not find hex around " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+        }
+        return foundMapHex;
+    }
 
 
     private Unit purchaseUnitAtMetro(string unitTypeString)
@@ -682,7 +702,7 @@ public class Ai
         AiGoal attackGoal = new AiGoal();
         attackGoal.Type = "conquer";
         attackGoal.TargetMapHex = burbHex;
-        attackGoal.ShouldMoveToTarget = true;
+        attackGoal.ShouldMoveToTarget = false;
         attackGoal.IsOngoingGoal = false;
         updateDesiredUnitsForInteriorBurbGoal(attackGoal);
         goals.Add(attackGoal);
@@ -695,6 +715,8 @@ public class Ai
         MapHex burbHex = attackGoal.TargetMapHex;
         List<MapHex> neighbors = map.getSurroundingHexesList(burbHex);
         int enemies = 0;
+        if (burbHex.getUnit() != null)
+            enemies = 1;
         foreach (MapHex neighbor in neighbors)
         {
             Unit unit = neighbor.getUnit();
@@ -705,10 +727,10 @@ public class Ai
         attackGoal.Enemies = enemies;
         enemies = attackGoal.Enemies - oldEnemies;
         int count = 1;
-        if (oldEnemies > 0)
+        if (oldEnemies > 0 || attackGoal.ActualUnits.Count >= attackGoal.DesiredUnits.Count)
             count = 0;
         if (enemies > 0)
-            count = enemies * 3;
+            count = enemies + 3;
         for (int i=0; i< count; i++)
         {
             AiUnit infantry = new AiUnit();
@@ -728,7 +750,7 @@ public class Ai
         AiGoal attackGoal = new AiGoal();
         attackGoal.Type = "conquer";
         attackGoal.TargetMapHex = burbHex;
-        attackGoal.ShouldMoveToTarget = true;
+        attackGoal.ShouldMoveToTarget = false;
         attackGoal.IsOngoingGoal = false;
         updateDesiredUnitsForCoastalBurbGoal(attackGoal);
         goals.Add(attackGoal);
@@ -742,6 +764,8 @@ public class Ai
         MapHex burbHex = attackGoal.TargetMapHex;
         List<MapHex> neighbors = map.getSurroundingHexesList(burbHex);
         int enemies = 0;
+        if (burbHex.getUnit() != null)
+            enemies = 1;
         foreach (MapHex neighbor in neighbors)
         {
             Unit unit = neighbor.getUnit();
@@ -752,10 +776,10 @@ public class Ai
         attackGoal.Enemies = enemies;
         enemies = attackGoal.Enemies - oldEnemies;
         int count = 1;
-        if (oldEnemies > 0)
+        if (oldEnemies > 0 || attackGoal.ActualUnits.Count >= attackGoal.DesiredUnits.Count)
             count = 0;
         if (enemies > 0)
-            count = enemies * 4;
+            count = enemies + 4;
         for (int i = 0; i < count; i++)
         {
             AiUnit infantry = new AiUnit();

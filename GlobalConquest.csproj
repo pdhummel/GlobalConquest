@@ -6,7 +6,7 @@
     <RollForward>Major</RollForward>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
-     <UseWindowsForms>false</UseWindowsForms>
+     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>    
     <ImplicitUsings>enable</ImplicitUsings>     

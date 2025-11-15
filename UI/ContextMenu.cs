@@ -5,6 +5,9 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
+using Panel = Myra.Graphics2D.UI.Panel;
+using Label = Myra.Graphics2D.UI.Label;
+using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
 namespace GlobalConquest.UI;
 
 public class ContextMenu

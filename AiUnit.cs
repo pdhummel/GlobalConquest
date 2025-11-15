@@ -14,4 +14,21 @@ public class AiUnit
     {
         Ticks = DateTime.Now.Ticks;
     }
+
+
+    public override bool Equals(object obj)
+    {
+        if (obj is MapHex other)
+        {
+            return Ticks == Ticks;
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        // Combine hash codes of relevant properties
+        return HashCode.Combine(Ticks, UnitType); 
+    }
+
 }

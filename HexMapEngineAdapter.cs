@@ -8,6 +8,8 @@ using Vector2 = Microsoft.Xna.Framework.Vector2;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
 using System.Numerics;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
+using Color = Microsoft.Xna.Framework.Color;
 
 namespace GlobalConquest;
 

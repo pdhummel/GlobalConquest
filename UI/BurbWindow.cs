@@ -4,6 +4,9 @@ using GlobalConquest.Units;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
+using Button = Myra.Graphics2D.UI.Button;
+using Label = Myra.Graphics2D.UI.Label;
+using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
 namespace GlobalConquest.UI;
 
 public class BurbWindow

@@ -1,4 +1,3 @@
-using System.Windows;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Myra;
@@ -10,6 +9,13 @@ using static Myra.Graphics2D.UI.Grid;
 using Thickness = Myra.Graphics2D.Thickness;
 using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
 using VerticalAlignment = Myra.Graphics2D.UI.VerticalAlignment;
+using System.Windows;
+using Label = Myra.Graphics2D.UI.Label;
+using TextBox = Myra.Graphics2D.UI.TextBox;
+using Image = Myra.Graphics2D.UI.Image;
+using Button = Myra.Graphics2D.UI.Button;
+using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
+using Panel = Myra.Graphics2D.UI.Panel;
 
 namespace GlobalConquest.UI;
 
@@ -20,6 +26,8 @@ public class HostGameScreen
     Game game;
     Grid grid;
     Label hostSettingsLabel = new Label();
+    Label standaloneServerLabel = new Label();
+    CheckButton standaloneServerCheckButton = new CheckButton();
     Label portLabel = new Label();
     TextBox portTextBox = new TextBox();
     Label humanPlayersLabel = new Label();
@@ -90,6 +98,10 @@ public class HostGameScreen
     {
         hostSettingsLabel.Id = "hostSettingsLabel";
         hostSettingsLabel.Text = "Host Settings";
+
+        standaloneServerLabel.Text = "Standalone Server";
+        standaloneServerCheckButton.IsChecked = false;
+        standaloneServerCheckButton.VerticalAlignment = VerticalAlignment.Center;
 
         portLabel.Id = "portLabel";
         portLabel.Text = "port:";
@@ -261,6 +273,7 @@ public class HostGameScreen
         hostSettingsLabel.Visible = true;
         hostSettingsLabel.HorizontalAlignment = HorizontalAlignment.Center;
 
+        addPanelRow(verticalStackPanel, standaloneServerLabel, standaloneServerCheckButton);
         addPanelRow(verticalStackPanel, portLabel, portTextBox);
         addPanelRow(verticalStackPanel, humanPlayersLabel, humanPlayersTextBox);
         addPanelRow(verticalStackPanel, mapHeightLabel, mapHeightTextBox);
@@ -328,6 +341,8 @@ public class HostGameScreen
         scoringOptionComboView.Visible = false;
         nativesLabel.Visible = false;
         nativesCheckButton.Visible = false;
+        standaloneServerLabel.Visible = false;
+        standaloneServerCheckButton.Visible = false;
 
         hostSettingsLabel.RemoveFromParent();
         portLabel.RemoveFromParent();
@@ -358,7 +373,8 @@ public class HostGameScreen
         scoringOptionComboView.RemoveFromParent();
         nativesLabel.RemoveFromParent();
         nativesCheckButton.RemoveFromParent();
-
+        standaloneServerLabel.RemoveFromParent();
+        standaloneServerCheckButton.RemoveFromParent();
     }
 
     private void cancelButtonClicked(object? sender, EventArgs e)
@@ -370,6 +386,8 @@ public class HostGameScreen
 
     private void okButtonClicked(object? sender, EventArgs e)
     {
+        GlobalConquestGame gcGame = (GlobalConquestGame)game;
+
         this.hide();
         GameSettings gameSettings = new GameSettings();
         gameSettings.Port = (Int32.Parse(portTextBox.Text));
@@ -387,10 +405,18 @@ public class HostGameScreen
             gameSettings.HasNatives = true;
         else
             gameSettings.HasNatives = false;
-        GlobalConquestGame gcGame = (GlobalConquestGame)game;
+
         gcGame.Server = new Server();
         gcGame.Server.StartAsHost(gameSettings, "GlobalConquest");
-        joinGameScreen.show();
+
+        if (standaloneServerCheckButton.IsChecked)
+        {
+            gcGame.minimizeScreen();
+        }
+        else
+        {
+            joinGameScreen.show();
+        }
 
     }
 

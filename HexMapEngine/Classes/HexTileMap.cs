@@ -9,6 +9,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using GlobalConquest.HexMapEngine.Structures;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
+using Color = Microsoft.Xna.Framework.Color;
 
 
 namespace GlobalConquest.HexMapEngine.Classes

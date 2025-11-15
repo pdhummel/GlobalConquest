@@ -6,6 +6,8 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using static Myra.Graphics2D.UI.Grid;
 using static Myra.Graphics2D.UI.Label;
+using Image = Myra.Graphics2D.UI.Image;
+using Label = Myra.Graphics2D.UI.Label;
 
 namespace GlobalConquest.UI;
 

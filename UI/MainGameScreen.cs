@@ -13,6 +13,8 @@ using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
 using Point = Microsoft.Xna.Framework.Point;
 using Thickness = Myra.Graphics2D.Thickness;
 using Microsoft.Xna.Framework.Input;
+using Panel = Myra.Graphics2D.UI.Panel;
+using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
 
 namespace GlobalConquest.UI;
 
