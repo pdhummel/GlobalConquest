@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Point = Microsoft.Xna.Framework.Point;
+using System.Numerics;
 
 
 namespace GlobalConquest;
@@ -36,10 +37,6 @@ public class GlobalConquestGame : Game
     HexMapEngineAdapter miniMapHexMapEngineAdapter;
     Texture2D viewPortBox;
     Texture2D drawPixel;
-    public MouseState previousMouseState = Mouse.GetState();
-    public MouseState currentMouseState = Mouse.GetState();
-    KeyboardState currentKeyboardState = Keyboard.GetState();
-    KeyboardState previousKeyboardState = Keyboard.GetState();
     public SpriteFont? font;
     public MapHex? lastSelectedHex;
     public Vector2 mouseOverVector = new Vector2(-1, -1);
@@ -51,12 +48,11 @@ public class GlobalConquestGame : Game
 
     [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern void SDL_MinimizeWindow(IntPtr window);
-    //public static System.Windows.Forms.Control? FromHandle(IntPtr handle);
 
-    float clickStartTime;
-    bool isMouseDown = false;
     bool isMultiHexMove = false;
     public bool IsShowDestinations { get; set; }
+
+    public GameControl GameControl { get; set; } = new GameControl();
 
     public GlobalConquestGame()
     {
@@ -70,6 +66,7 @@ public class GlobalConquestGame : Game
         IsShowDestinations = false;
         Window.AllowUserResizing = true;
         Client = new Client(this);
+        GameControl.gcGame = this;
     }
 
     public GlobalConquestGame(IntPtr drawSurface) : this()
@@ -86,6 +83,7 @@ public class GlobalConquestGame : Game
     public void minimizeScreen()
     {
         Console.WriteLine("minimizeScreen(): enter");
+        // TODO: make sure this is cross-platform compatible.
         SDL_MinimizeWindow(Window.Handle);
         Form form = (Form)Control.FromHandle(Window.Handle);
         form.Hide();
@@ -183,49 +181,15 @@ public class GlobalConquestGame : Game
     protected override void Update(GameTime gameTime)
     {
         long currentMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
-        //    Exit();
-        currentKeyboardState = Keyboard.GetState();
+        GameControl.Update(gameTime);
 
-        if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up) &&
-            hexMapEngineAdapter != null &&
-             currentMilliseconds - lastMilliseconds > 50)
-        {
-            MainGameScreen.HideContextMenu();
-            hexMapEngineAdapter?.scrollUp();
-        }
-        if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down) &&
-            hexMapEngineAdapter != null &&
-             currentMilliseconds - lastMilliseconds > 50)
-        {
-            MainGameScreen.HideContextMenu();
-            hexMapEngineAdapter?.scrollDown();
-        }
-        if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left) &&
-            hexMapEngineAdapter != null &&
-             currentMilliseconds - lastMilliseconds > 50)
-        {
-            MainGameScreen.HideContextMenu();
-            hexMapEngineAdapter?.scrollLeft();
-        }
-        if (currentKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right) &&
-            hexMapEngineAdapter != null &&
-             currentMilliseconds - lastMilliseconds > 50)
-        {
-            MainGameScreen.HideContextMenu();
-            hexMapEngineAdapter?.scrollRight();
-        }
-        previousKeyboardState = currentKeyboardState;
-
-        previousMouseState = currentMouseState;
-        currentMouseState = Mouse.GetState();
-        var mousePosition = new Vector2(currentMouseState.X, currentMouseState.Y);
+        var mousePosition = new Vector2(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
 
         if (Client != null && Client.isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible)
         {
-            mouseOverVector = findHexFromPixels(currentMouseState.X, currentMouseState.Y);
+            mouseOverVector = findHexFromPixels(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
             // Check for a left mouse button click within the minimap's boundaries
-            if (currentMouseState.LeftButton == ButtonState.Pressed &&
+            if (GameControl.currentMouseState.LeftButton == ButtonState.Pressed &&
                 miniMapRectangle.Contains(mousePosition))
             {
                 // Calculate the relative mouse position within the minimap
@@ -259,20 +223,26 @@ public class GlobalConquestGame : Game
         if (Client != null && Client.isLoadContentComplete)
         {
             hexMapEngineAdapter?.Process_UpdateEvent(gameTime);
-            // Make sure the mouse is in the map panel
-            if (
-                currentMouseState.X >= 0 && currentMouseState.X >= MainGameScreen.MapPanel.Left &&
-                currentMouseState.X <= MainGameScreen.MapPanel.Left + MainGameScreen.MapPanel.Width &&
-                currentMouseState.Y >= 0 && currentMouseState.Y >= MainGameScreen.MapPanel.Top &&
-                currentMouseState.Y <= MainGameScreen.MapPanel.Top + MainGameScreen.MapPanel.Height
-            )
-            {
-                handleLeftClickMouseOnMap(gameTime);
-                handleRightClickMouseOnMap();
-            }
         }
 
         base.Update(gameTime);
+    }
+
+    public void handleUpKey()
+    {
+        scrollUp();
+    }
+    public void handleDownKey()
+    {
+        scrollDown();
+    }
+    public void handleLeftKey()
+    {
+        scrollLeft();
+    }
+    public void handleRightKey()
+    {
+        scrollRight();
     }
 
     public void updateMap()
@@ -428,7 +398,7 @@ public class GlobalConquestGame : Game
     private void DrawLine(Vector2 hexPixelOrigin)
     {
         Point startPoint = new Point((int)hexPixelOrigin.X, (int)hexPixelOrigin.Y);
-        Point resultingPoint = currentMouseState.Position - startPoint;
+        Point resultingPoint = GameControl.currentMouseState.Position - startPoint;
         Vector2 direction = new Vector2(resultingPoint.X, resultingPoint.Y);
         float distance = direction.Length();
         float angle = (float)Math.Atan2(direction.Y, direction.X);
@@ -543,21 +513,19 @@ public class GlobalConquestGame : Game
         return v;
     }
 
-
-    private void handleLeftClickMouseOnMap(GameTime gameTime)
+    public void handleLongLeftClick()
     {
-        if (currentMouseState.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released && !isMouseDown)
-        {
-            isMouseDown = true;
-            clickStartTime = (float)gameTime.TotalGameTime.TotalSeconds; // Or use DateTime.Now.Ticks
-        }
-        // Check if enough time has passed for a long click
-        else if (isMouseDown && currentMouseState.LeftButton == ButtonState.Pressed &&
-                 ((float)gameTime.TotalGameTime.TotalSeconds - clickStartTime >= 1.0f))
+        if (MainGameScreen == null)
+            return;
+        if (
+            GameControl.currentMouseState.X >= 0 && GameControl.currentMouseState.X >= MainGameScreen.MapPanel.Left &&
+            GameControl.currentMouseState.X <= MainGameScreen.MapPanel.Left + MainGameScreen.MapPanel.Width &&
+            GameControl.currentMouseState.Y >= 0 && GameControl.currentMouseState.Y >= MainGameScreen.MapPanel.Top &&
+            GameControl.currentMouseState.Y <= MainGameScreen.MapPanel.Top + MainGameScreen.MapPanel.Height
+        )
         {
             // long-press logic here
-            Console.WriteLine("handleLeftClickMouseOnMap(): long click");
-            isMouseDown = false;
+            Console.WriteLine("handleLongLeftClick(): long click");
             MainGameScreen.HideContextMenu();
             if (MoveMode)
             {
@@ -567,11 +535,26 @@ public class GlobalConquestGame : Game
                 handleClickMouseOnMap();
                 sendMoveAction(previousSelectedHex, previousSelectedUnit);
             }
+            if (!PursueMode && !MoveMode && lastSelectedHex != null)
+            {
+                Unit unit = lastSelectedHex.getUnit();
+                lastSelectedUnit = unit;
+            }
         }
-        else if (currentMouseState.LeftButton == ButtonState.Released && isMouseDown)
+    }
+
+    public void handleLeftClick()
+    {
+        if (MainGameScreen == null)
+            return;
+        if (
+            GameControl.currentMouseState.X >= 0 && GameControl.currentMouseState.X >= MainGameScreen.MapPanel.Left &&
+            GameControl.currentMouseState.X <= MainGameScreen.MapPanel.Left + MainGameScreen.MapPanel.Width &&
+            GameControl.currentMouseState.Y >= 0 && GameControl.currentMouseState.Y >= MainGameScreen.MapPanel.Top &&
+            GameControl.currentMouseState.Y <= MainGameScreen.MapPanel.Top + MainGameScreen.MapPanel.Height
+        )
         {
-            isMouseDown = false;
-            if (MainGameScreen.IsContextMenuVisible())
+            if (MainGameScreen == null || MainGameScreen.IsContextMenuVisible())
             {
                 return;
             }
@@ -598,45 +581,26 @@ public class GlobalConquestGame : Game
                     Console.WriteLine("handleLeftClickMouseOnMap(): pursueAction sent");
                 }
                 PursueMode = false;
+                if (!PursueMode && !MoveMode && lastSelectedHex != null)
+                {
+                    Unit unit = lastSelectedHex.getUnit();
+                    lastSelectedUnit = unit;
+                }
             }
-        }
-        if (!PursueMode && !MoveMode && lastSelectedHex != null)
-        {
-            Unit unit = lastSelectedHex.getUnit();
-            lastSelectedUnit = unit;
-        }
-
-    }
-
-    private void sendMoveAction(MapHex previousSelectedHex, Unit previousSelectedUnit)
-    {
-        if (lastSelectedHex.X >= 0 && lastSelectedHex.Y >= 0 && !previousSelectedHex.Equals(lastSelectedHex))
-        {
-            if (!isMultiHexMove)
-            {
-                MoveMode = false;
-            }
-
-            MoveUnitAction action = new MoveUnitAction();
-            action.Unit = previousSelectedUnit;
-
-            action.FromX = previousSelectedHex.X;
-            action.FromY = previousSelectedHex.Y;
-            action.ToX = lastSelectedHex.X;
-            action.ToY = lastSelectedHex.Y;
-            action.ClassType = "GlobalConquest.Actions.MoveUnitAction";
-            action.IsMultiHexMove = isMultiHexMove;
-            Client?.SendAction(Client.ClientIdentifier, action);
-            Console.WriteLine("sendMoveAction(): action sent");
         }
     }
 
-    private void handleRightClickMouseOnMap()
+    public void handleRightClick()
     {
-        if (currentMouseState.RightButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed &&
-            previousMouseState.RightButton == ButtonState.Released)
+        if (MainGameScreen == null)
+            return;
+        if (
+            GameControl.currentMouseState.X >= 0 && GameControl.currentMouseState.X >= MainGameScreen.MapPanel.Left &&
+            GameControl.currentMouseState.X <= MainGameScreen.MapPanel.Left + MainGameScreen.MapPanel.Width &&
+            GameControl.currentMouseState.Y >= 0 && GameControl.currentMouseState.Y >= MainGameScreen.MapPanel.Top &&
+            GameControl.currentMouseState.Y <= MainGameScreen.MapPanel.Top + MainGameScreen.MapPanel.Height
+        )
         {
-            //Console.WriteLine("handleRightClickMouseOnMap(): pressed");
             MainGameScreen.HideContextMenu();
             MoveMode = false;
             Vector2 selectedHexVector = handleClickMouseOnMap();
@@ -671,13 +635,68 @@ public class GlobalConquestGame : Game
 
             }
         }
+    }
 
+    public void scrollRight()
+    {
+        if (hexMapEngineAdapter != null && MainGameScreen != null && MainGameScreen.MapPanel != null)
+        {
+            MainGameScreen.HideContextMenu();
+            hexMapEngineAdapter.scrollRight();
+        }
+    }
+    public void scrollLeft()
+    {
+        if (hexMapEngineAdapter != null && MainGameScreen != null && MainGameScreen.MapPanel != null)
+        {
+            MainGameScreen.HideContextMenu();
+            hexMapEngineAdapter.scrollLeft();
+        }
+    }
+    public void scrollUp()
+    {
+        if (hexMapEngineAdapter != null && MainGameScreen != null && MainGameScreen.MapPanel != null)
+        {
+            MainGameScreen.HideContextMenu();
+            hexMapEngineAdapter.scrollUp();
+        }
+    }
+    public void scrollDown()
+    {
+        if (hexMapEngineAdapter != null && MainGameScreen != null && MainGameScreen.MapPanel != null)
+        {
+            MainGameScreen.HideContextMenu();
+            hexMapEngineAdapter.scrollDown();
+        }
+    }
+
+
+    private void sendMoveAction(MapHex previousSelectedHex, Unit previousSelectedUnit)
+    {
+        if (lastSelectedHex.X >= 0 && lastSelectedHex.Y >= 0 && !previousSelectedHex.Equals(lastSelectedHex))
+        {
+            if (!isMultiHexMove)
+            {
+                MoveMode = false;
+            }
+
+            MoveUnitAction action = new MoveUnitAction();
+            action.Unit = previousSelectedUnit;
+
+            action.FromX = previousSelectedHex.X;
+            action.FromY = previousSelectedHex.Y;
+            action.ToX = lastSelectedHex.X;
+            action.ToY = lastSelectedHex.Y;
+            action.ClassType = "GlobalConquest.Actions.MoveUnitAction";
+            action.IsMultiHexMove = isMultiHexMove;
+            Client?.SendAction(Client.ClientIdentifier, action);
+            Console.WriteLine("sendMoveAction(): action sent");
+        }
     }
 
     private Vector2 handleClickMouseOnMap()
     {
-        Vector2 selectedHexVector = new Vector2(-1, -1);
-        selectedHexVector = findHexVectorFromPixels(currentMouseState.X, currentMouseState.Y);
+        Vector2 selectedHexVector = findHexVectorFromPixels(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
         if (selectedHexVector.X >= 0 && selectedHexVector.Y >= 0 &&
             selectedHexVector.X < Client.GameState.GameSettings.Width && selectedHexVector.Y < Client.GameState.GameSettings.Height)
         {
@@ -703,7 +722,7 @@ public class GlobalConquestGame : Game
 
     private void drawDetailsPanel()
     {
-        MainGameScreen.drawDetailsPanel(this, lastSelectedHex, font, currentMouseState);
+        MainGameScreen.drawDetailsPanel(this, lastSelectedHex, font, GameControl.currentMouseState);
     }
 
     public Player identifySelf()

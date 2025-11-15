@@ -37,7 +37,7 @@ public class DetailsPanelView
 
     public void drawDetailsPanel()
     {
-        MouseState currentMouseState = gcGame.currentMouseState;
+        MouseState currentMouseState = gcGame.GameControl.currentMouseState;
         GameState gameState = gcGame.Client.GameState;
         MapHex lastSelectedHex = gcGame.lastSelectedHex;
         Unit lastSelectedUnit = lastSelectedHex == null ? null : lastSelectedHex.getUnit();

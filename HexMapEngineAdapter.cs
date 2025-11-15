@@ -43,7 +43,6 @@ class HexMapEngineAdapter
     private Microsoft.Xna.Framework.Graphics.Texture2D coTexture2DTile;
     private Microsoft.Xna.Framework.Graphics.Texture2D coTextureYellowBorder2DTile;
 
-    //private Microsoft.Xna.Framework.Input.MouseState coMouseState;
     private Dictionary<string, Texture2D> units = new Dictionary<string, Texture2D>();
 
     private Dictionary<string, Texture2D> burbs = new Dictionary<string, Texture2D>();
@@ -347,19 +346,19 @@ class HexMapEngineAdapter
         if (isEnabled)
         {
             csScrollDirection = "";
-            if (gcGame.currentMouseState.X < 1)
+            if (gcGame.GameControl.currentMouseState.X < 1)
             {
                 scrollLeft();
             }
-            if (gcGame.currentMouseState.X > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width)
+            if (gcGame.GameControl.currentMouseState.X > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width)
             {
                 scrollRight();
             }
-            if (gcGame.currentMouseState.Y < 1)
+            if (gcGame.GameControl.currentMouseState.Y < 1)
             {
                 scrollUp();
             }
-            if (gcGame.currentMouseState.Y > ciScreenHeight)
+            if (gcGame.GameControl.currentMouseState.Y > ciScreenHeight)
             {
                 scrollDown();
             }

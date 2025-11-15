@@ -251,8 +251,8 @@ public class ContextMenu
         container.Widgets.Add(verticalMenu);
 
         MapPanel.Widgets.Add(container);
-        container.Left = gcGame.currentMouseState.X;
-        container.Top = gcGame.currentMouseState.Y;
+        container.Left = gcGame.GameControl.currentMouseState.X;
+        container.Top = gcGame.GameControl.currentMouseState.Y;
         container.Visible = true;
         IsShowContextMenu = false;
 
@@ -316,8 +316,8 @@ public class ContextMenu
         container.Widgets.Add(verticalMenu);
 
         MapPanel.Widgets.Add(container);
-        container.Left = gcGame.currentMouseState.X;
-        container.Top = gcGame.currentMouseState.Y;
+        container.Left = gcGame.GameControl.currentMouseState.X;
+        container.Top = gcGame.GameControl.currentMouseState.Y;
         container.Visible = true;
         IsShowContextMenu = false;
 
