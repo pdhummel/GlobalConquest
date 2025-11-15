@@ -316,6 +316,8 @@ public class Ai
         HashSet<MapHex> rangeHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget);
         rangeHexes.ExceptWith(rangeMinusOneHexes);
         HashSet<MapHex> finalRangeHexes = rangeHexes;
+        if (aiUnit.Unit == null)
+            return null;
         MapHex mapHex = map.Hexes[aiUnit.Unit.Y, aiUnit.Unit.X];
         if (finalRangeHexes.Contains(mapHex))
             return null;
@@ -349,11 +351,11 @@ public class Ai
         }
         else
         {
-            foreach (MapHex mapHex in finalRangeHexes)
+            foreach (MapHex searchMapHex in finalRangeHexes)
             {
-                if (mapHex.getUnit() == null)
+                if (searchMapHex.getUnit() == null)
                 {
-                    foundMapHex = mapHex;
+                    foundMapHex = searchMapHex;
                 }
             }
         }
