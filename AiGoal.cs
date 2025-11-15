@@ -9,6 +9,7 @@ public class AiGoal
     public HashSet<AiUnit> DesiredUnits = new HashSet<AiUnit>();
     public HashSet<AiUnit> ActualUnits = new HashSet<AiUnit>();
 
+    public int Enemies { get; set;}
     public bool ShouldMoveToTarget { get; set; } = false;
     public bool IsOngoingGoal { get; set; } = false;
 

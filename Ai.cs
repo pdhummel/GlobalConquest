@@ -52,8 +52,6 @@ public class Ai
         createInitialGoals();
     }
 
-
-
     public void planTurn()
     {
         Console.WriteLine("Ai.planTurn(): faction=" + Faction.Color);
@@ -80,6 +78,28 @@ public class Ai
     public void processGoals()
     {
         List<AiGoal> goalsToKeep = new List<AiGoal>();
+
+        // first work on a conquest goal
+        AiGoal closestConquestGoal = null;
+        float closestDistance = -1;
+        foreach (AiGoal goal in goals)
+        {
+            if ("conquer".Equals(goal.Type) && !goal.IsComplete)
+            {
+                float goalDistance = map.calculateDistance(myMetroHex, goal.TargetMapHex);
+                if (goalDistance < closestDistance || closestDistance == -1)
+                {
+                    closestDistance = goalDistance;
+                    closestConquestGoal = goal;
+                }
+            }
+        }
+        if (closestConquestGoal != null)
+        {
+            processGoal(goalsToKeep, closestConquestGoal);
+        }
+
+        // next pick a random goal
         if (goals.Count > 0)
         {
             int index = random.Next(0, goals.Count);
@@ -87,6 +107,8 @@ public class Ai
             processGoal(goalsToKeep, randomGoal);
         }
 
+        // finally work on goals in order
+        goalsToKeep.Clear();
         foreach (AiGoal goal in goals)
         {
             processGoal(goalsToKeep, goal);
@@ -104,14 +126,26 @@ public class Ai
             moveUnits(aiGoal);
             goalsToKeep.Add(aiGoal);
         }
-
     }
 
     private bool evaluateGoal(AiGoal goal)
     {
         if (goal.IsOngoingGoal)
             return false;
+        // TODO: expand DesiredUnits if enemy count increases.
+        if ("conquer".Equals(goal.Type))
+        {
+            if (isBurbCoastal(goal.TargetMapHex))
+            {
+                updateDesiredUnitsForCoastalBurbGoal(goal);
+            }
+            else
+            {
+                updateDesiredUnitsForInteriorBurbGoal(goal);
+            }
+        }
         AiUnit aiUnit = goal.getNextUnitToBuild();
+        // Build is complete for goal
         if (aiUnit == null && "conquer".Equals(goal.Type))
         {
             foreach (AiUnit builtAiUnit in goal.ActualUnits)
@@ -120,6 +154,13 @@ public class Ai
                 builtAiUnit.ShouldMoveToTarget = true;
             }
             Console.WriteLine("Ai.evaluateGoal(): build ready for : " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+        }
+        else if (goal.ActualUnits.Count == 0)
+        {
+            foreach (AiUnit builtAiUnit in goal.ActualUnits)
+            {
+                builtAiUnit.ShouldMoveToTarget = false;
+            }
         }
         // goal is complete
         if ("conquer".Equals(goal.Type) && goal.TargetMapHex.Burb != null && goal.TargetMapHex.Burb.OwnerColor.Equals(Faction.Color))
@@ -209,6 +250,31 @@ public class Ai
                 newUnit.setUnitAction(unitAction);
             }
         }
+        else if ("conquer".Equals(goal.Type) && aiUnit.InitialPosition == null  && aiUnit.DistanceFromTarget > 1)
+        {
+            UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
+            newUnit = purchaseUnitAtMetroDock(aiUnit.UnitType);
+
+            HashSet<MapHex> rangeMinusOneHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget-1);
+            HashSet<MapHex> rangeHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget);
+            rangeHexes.ExceptWith(rangeMinusOneHexes);
+            MapHex foundMapHex = null;
+            foreach (MapHex mapHex in rangeHexes)
+            {
+                if (mapHex.getUnit() == null) {
+                    foundMapHex = mapHex;
+                }
+            }
+            if (newUnit != null && foundMapHex != null)
+            {
+                Console.WriteLine("Ai.buildUnits(): " + newUnit.Id + " built for conquest around " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                UnitAction unitAction = new UnitAction();
+                unitAction.Action = "move";
+                unitAction.TargetX = foundMapHex.X;
+                unitAction.TargetY = foundMapHex.Y;
+                newUnit.setUnitAction(unitAction);
+            }
+        }
         else if ("explore".Equals(goal.Type))
         {
             UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
@@ -235,7 +301,7 @@ public class Ai
     {
         foreach (AiUnit aiUnit in goal.ActualUnits)
         {
-            if (aiUnit.ShouldMoveToTarget)
+            if (aiUnit.ShouldMoveToTarget || goal.Enemies == 0)
             {
                 UnitAction unitAction = new UnitAction();
                 unitAction.Action = "move";
@@ -243,14 +309,32 @@ public class Ai
                 unitAction.TargetY = goal.TargetMapHex.Y;
                 aiUnit.Unit.setUnitAction(unitAction);
             }
-            else
+            else if (aiUnit.InitialPosition != null)
             {
-                if (aiUnit.InitialPosition != null)
+                UnitAction unitAction = new UnitAction();
+                unitAction.Action = "move";
+                unitAction.TargetX = aiUnit.InitialPosition.X;
+                unitAction.TargetY = aiUnit.InitialPosition.Y;
+                aiUnit.Unit.setUnitAction(unitAction);
+            }
+            else if (aiUnit.InitialPosition == null && aiUnit.DistanceFromTarget > 1)
+            {
+                HashSet<MapHex> rangeMinusOneHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget-1);
+                HashSet<MapHex> rangeHexes = map.getMapHexesInRange(goal.TargetMapHex, aiUnit.DistanceFromTarget);
+                rangeHexes.ExceptWith(rangeMinusOneHexes);
+                MapHex foundMapHex = null;
+                foreach (MapHex mapHex in rangeHexes)
+                {
+                    if (mapHex.getUnit() == null) {
+                        foundMapHex = mapHex;
+                    }
+                }
+                if (foundMapHex != null)
                 {
                     UnitAction unitAction = new UnitAction();
                     unitAction.Action = "move";
-                    unitAction.TargetX = aiUnit.InitialPosition.X;
-                    unitAction.TargetY = aiUnit.InitialPosition.Y;
+                    unitAction.TargetX = foundMapHex.X;
+                    unitAction.TargetY = foundMapHex.Y;
                     aiUnit.Unit.setUnitAction(unitAction);
                 }
             }
@@ -569,6 +653,15 @@ public class Ai
     {
         if (targetXyToGoal.ContainsKey(burbHex.X + "," + burbHex.Y))
             return;
+        bool isCoastal = isBurbCoastal(burbHex);
+        if (isCoastal)
+            conquerCoastalBurbGoal(burbHex);
+        else
+            conquerInteriorBurbGoal(burbHex);
+    }
+
+    private bool isBurbCoastal(MapHex burbHex)
+    {
         bool isCoastal = false;
         List<MapHex> neighbors = map.getSurroundingHexesList(burbHex);
         foreach (MapHex neighbor in neighbors)
@@ -579,19 +672,27 @@ public class Ai
                 break;
             }
         }
-        if (isCoastal)
-            conquerCoastalBurbGoal(burbHex);
-        else
-            conquerInteriorBurbGoal(burbHex);
+        return isCoastal;
     }
 
     private void conquerInteriorBurbGoal(MapHex burbHex)
     {
+        if (targetXyToGoal.ContainsKey(burbHex.X + "," + burbHex.Y))
+            return;
         AiGoal attackGoal = new AiGoal();
         attackGoal.Type = "conquer";
         attackGoal.TargetMapHex = burbHex;
         attackGoal.ShouldMoveToTarget = true;
         attackGoal.IsOngoingGoal = false;
+        updateDesiredUnitsForInteriorBurbGoal(attackGoal);
+        goals.Add(attackGoal);
+        Console.WriteLine("Ai.conquerInteriorBurbGoal(): added conquer goal for " + burbHex.X + "," + burbHex.Y);
+        targetXyToGoal[burbHex.X + "," + burbHex.Y] = attackGoal;
+    }
+
+    private void updateDesiredUnitsForInteriorBurbGoal(AiGoal attackGoal)
+    {
+        MapHex burbHex = attackGoal.TargetMapHex;
         List<MapHex> neighbors = map.getSurroundingHexesList(burbHex);
         int enemies = 0;
         foreach (MapHex neighbor in neighbors)
@@ -600,7 +701,12 @@ public class Ai
             if (unit != null && !unit.Color.Equals(Faction.Color))
                 enemies += 1;
         }
+        int oldEnemies = attackGoal.Enemies;
+        attackGoal.Enemies = enemies;
+        enemies = attackGoal.Enemies - oldEnemies;
         int count = 1;
+        if (oldEnemies > 0)
+            count = 0;
         if (enemies > 0)
             count = enemies * 3;
         for (int i=0; i< count; i++)
@@ -613,17 +719,27 @@ public class Ai
                 infantry.DistanceFromTarget = 5;
             attackGoal.DesiredUnits.Add(infantry);
         }
-        goals.Add(attackGoal);
-        targetXyToGoal[burbHex.X + "," + burbHex.Y] = attackGoal;
     }
 
     private void conquerCoastalBurbGoal(MapHex burbHex)
     {
+        if (targetXyToGoal.ContainsKey(burbHex.X + "," + burbHex.Y))
+            return;
         AiGoal attackGoal = new AiGoal();
         attackGoal.Type = "conquer";
         attackGoal.TargetMapHex = burbHex;
         attackGoal.ShouldMoveToTarget = true;
         attackGoal.IsOngoingGoal = false;
+        updateDesiredUnitsForCoastalBurbGoal(attackGoal);
+        goals.Add(attackGoal);
+        Console.WriteLine("Ai.conquerCoastalBurbGoal(): added conquer goal for " + burbHex.X + "," + burbHex.Y);
+        targetXyToGoal[burbHex.X + "," + burbHex.Y] = attackGoal;
+
+    }
+
+    private void updateDesiredUnitsForCoastalBurbGoal(AiGoal attackGoal)
+    {
+        MapHex burbHex = attackGoal.TargetMapHex;
         List<MapHex> neighbors = map.getSurroundingHexesList(burbHex);
         int enemies = 0;
         foreach (MapHex neighbor in neighbors)
@@ -632,13 +748,14 @@ public class Ai
             if (unit != null && !unit.Color.Equals(Faction.Color))
                 enemies += 1;
         }
+        int oldEnemies = attackGoal.Enemies;
+        attackGoal.Enemies = enemies;
+        enemies = attackGoal.Enemies - oldEnemies;
         int count = 1;
+        if (oldEnemies > 0)
+            count = 0;
         if (enemies > 0)
-        {
-            // TODO: once we figure out sea unit pathing
-            //count = enemies * 2;
             count = enemies * 4;
-        }
         for (int i = 0; i < count; i++)
         {
             AiUnit infantry = new AiUnit();
@@ -664,9 +781,5 @@ public class Ai
         //else
         //    battleship.DistanceFromTarget = 4;
         //attackGoal.DesiredUnits.Add(battleship);
-        goals.Add(attackGoal);
-        targetXyToGoal[burbHex.X + "," + burbHex.Y] = attackGoal;
-
     }
-
 }

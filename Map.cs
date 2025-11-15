@@ -587,5 +587,10 @@ public class Map
         }
     }
 
+    public float calculateDistance(MapHex mapHex1, MapHex mapHex2)
+    {
+        float distance = (float)Math.Sqrt((Math.Pow(mapHex1.X - mapHex2.X, 2) + Math.Pow(mapHex1.Y - mapHex2.Y, 2)));
+        return distance;
+    }
 
 }
