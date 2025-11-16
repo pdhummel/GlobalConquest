@@ -180,17 +180,26 @@ public class GlobalConquestGame : Game
 
     protected override void Update(GameTime gameTime)
     {
-        long currentMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         GameControl.Update(gameTime);
 
+        // Add your update logic here
+        if (Client != null && Client.isLoadContentComplete)
+        {
+            hexMapEngineAdapter?.Process_UpdateEvent(gameTime);
+        }
+
+        base.Update(gameTime);
+    }
+
+    public void handleLeftMouseButtonPressed()
+    {
         var mousePosition = new Vector2(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
 
         if (Client != null && Client.isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible)
         {
             mouseOverVector = findHexFromPixels(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
             // Check for a left mouse button click within the minimap's boundaries
-            if (GameControl.currentMouseState.LeftButton == ButtonState.Pressed &&
-                miniMapRectangle.Contains(mousePosition))
+            if (miniMapRectangle.Contains(mousePosition))
             {
                 // Calculate the relative mouse position within the minimap
                 Vector2 minimapMousePos = mousePosition - new Vector2(miniMapRectangle.X, miniMapRectangle.Y);
@@ -218,14 +227,6 @@ public class GlobalConquestGame : Game
                 }
             }
         }
-
-        // Add your update logic here
-        if (Client != null && Client.isLoadContentComplete)
-        {
-            hexMapEngineAdapter?.Process_UpdateEvent(gameTime);
-        }
-
-        base.Update(gameTime);
     }
 
     public void handleUpKey()

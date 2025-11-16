@@ -43,6 +43,9 @@ public class BurbWindow
 
         addBurbRows(mainGameScreen, window, grid);
         window.ShowModal(mainGameScreen.grid.Desktop);
+        window.AcceptsKeyboardFocus = true;
+        window.SetKeyboardFocus();
+
     }
 
     private void addBurbRows(MainGameScreen mainGameScreen, Window window, Grid grid)
@@ -238,6 +241,8 @@ public class BurbWindow
         };
 
         window.ShowModal(mainGameScreen.grid.Desktop);
+        window.AcceptsKeyboardFocus = true;
+        window.SetKeyboardFocus();
 
     }
 

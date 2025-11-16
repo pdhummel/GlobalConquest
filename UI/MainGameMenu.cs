@@ -12,10 +12,10 @@ namespace GlobalConquest.UI;
 public class MainGameMenu
 {
     HorizontalMenu horizontalMenu = new HorizontalMenu();
-    MenuItem executeMenuItem = new MenuItem("Execute", "Execute!");
-    MenuItem destinationsMenuItem = new MenuItem("Destinations", "Destinations");
-    MenuItem fileMenuItem = new MenuItem("File", "File");
-    MenuItem viewMenuItem = new MenuItem("View", "View");
+    MenuItem executeMenuItem = new MenuItem("&Execute", "Execute!");
+    MenuItem destinationsMenuItem = new MenuItem("&Destinations", "Destinations");
+    MenuItem fileMenuItem = new MenuItem("&File", "File");
+    MenuItem viewMenuItem = new MenuItem("&View", "View");
 
     public MainGameMenu(MainGameScreen mainGameScreen)
     {

@@ -294,6 +294,10 @@ public class HostGameScreen
         buttonsPanel.Widgets.Add(cancelButton);
         cancelButton.Visible = true;
 
+        verticalStackPanel.AcceptsKeyboardFocus = true;
+        verticalStackPanel.SetKeyboardFocus();
+
+
     }
 
     private void addPanelRow(VerticalStackPanel verticalStackPanel, Label label, Widget widget)

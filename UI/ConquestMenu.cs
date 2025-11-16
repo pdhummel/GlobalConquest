@@ -40,22 +40,23 @@ public class ConquestMenu
         conquestMenuLabel.Text = "Conquest!";
 
         conquestVerticalMenu = new VerticalMenu();
+        conquestVerticalMenu.AcceptsKeyboardFocus = true;
         conquestVerticalMenu.Id = "conquestVerticalMenu";
         MenuItem playGameMenuItem = new MenuItem();
         playGameMenuItem.Id = "playGameMenuItem";
-        playGameMenuItem.Text = "Play Game";
+        playGameMenuItem.Text = "&Play Game";
         playGameMenuItem.Selected += playGameMenuItemSelected;
         playGameMenuItem.Menu = conquestVerticalMenu;
         conquestVerticalMenu.Items.Add(playGameMenuItem);
         MenuItem joinGameMenuItem = new MenuItem();
         joinGameMenuItem.Id = "joinGameMenuItem";
-        joinGameMenuItem.Text = "Join Game";
+        joinGameMenuItem.Text = "&Join Game";
         joinGameMenuItem.Selected += joinGameMenuItemSelected;
         joinGameMenuItem.Menu = conquestVerticalMenu;
         conquestVerticalMenu.Items.Add(joinGameMenuItem);
         MenuItem quitMenuItem = new MenuItem();
         quitMenuItem.Id = "quitMenuItem";
-        quitMenuItem.Text = "Quit";
+        quitMenuItem.Text = "&Quit";
         quitMenuItem.Selected += quitMenuItemSelected;
         quitMenuItem.Menu = conquestVerticalMenu;
         conquestVerticalMenu.Items.Add(quitMenuItem);
@@ -100,6 +101,8 @@ public class ConquestMenu
 
         conquestMenuLabel.Visible = true;
         conquestVerticalMenu.Visible = true;
+
+        conquestVerticalMenu.SetKeyboardFocus();
     }
 
     public void hide()

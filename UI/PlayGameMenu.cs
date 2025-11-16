@@ -46,13 +46,13 @@ public class PlayGameMenu
         playGameVerticalMenu.Id = "playGameVerticalMenu";
         customMenuItem = new MenuItem();
         customMenuItem.Id = "customMenuItem";
-        customMenuItem.Text = "Custom Game";
+        customMenuItem.Text = "&Custom Game";
         customMenuItem.Selected += customMenuItemSelected;
         customMenuItem.Menu = playGameVerticalMenu;
         playGameVerticalMenu.Items.Add(customMenuItem);
 
         restoreMenuItem = new MenuItem();
-        restoreMenuItem.Text = "Restore Game";
+        restoreMenuItem.Text = "&Restore Game";
         restoreMenuItem.Selected += restoreMenuItemSelected;
         restoreMenuItem.Menu = playGameVerticalMenu;
         playGameVerticalMenu.Items.Add(restoreMenuItem);
@@ -82,6 +82,10 @@ public class PlayGameMenu
 
         //customMenuItem.Selected += customMenuItemSelected;
         //backToMainConquestMenuItem.Selected += backToMainConquestMenuItemSelected;
+
+        playGameVerticalMenu.Enabled = true;
+        playGameVerticalMenu.SetKeyboardFocus();
+        //((GlobalConquestGame)game).Desktop.Widgets[0]. //.LocalTouchPosition  //IsMouseInside //.IsKeyboardFocused
     }
 
     public void hide()

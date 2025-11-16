@@ -176,6 +176,9 @@ public class JoinGameScreen
         buttonsPanel.Widgets.Add(cancelButton);
         cancelButton.Visible = true;
 
+        verticalStackPanel.AcceptsKeyboardFocus = true;
+        verticalStackPanel.SetKeyboardFocus();
+
     }
 
     public void hide()
