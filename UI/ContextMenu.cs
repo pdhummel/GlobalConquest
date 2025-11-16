@@ -296,8 +296,8 @@ public class ContextMenu
         container.Top = gcGame.GameControl.currentMouseState.Y;
         container.Visible = true;
         IsShowContextMenu = false;
-        container.AcceptsKeyboardFocus = true;
-        container.SetKeyboardFocus();
+        //container.AcceptsKeyboardFocus = true;
+        //container.SetKeyboardFocus();
     }
 
     public void moveMenuItemSelected()
