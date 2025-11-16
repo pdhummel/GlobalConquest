@@ -83,19 +83,38 @@ public class GameControl
 
         int xDistance = 2;
         int yDistance = 2;
-        if (leftThumbstickX > 0 || leftThumbstickX2 > 0 || rightThumbstickX > 0 || rightThumbstickX2 > 0)
+        if (leftThumbstickX > 0 || leftThumbstickX2 > 0)
         {
             Mouse.SetPosition(currentMouseState.X + xDistance, currentMouseState.Y);
         }
-        if (leftThumbstickX < 0 || leftThumbstickX2 < 0 || rightThumbstickX < 0 || rightThumbstickX2 < 0)
+        if (leftThumbstickX < 0 || leftThumbstickX2 < 0)
         {
             Mouse.SetPosition(currentMouseState.X - xDistance, currentMouseState.Y);
         }
-        if (leftThumbstickY > 0 || leftThumbstickY2 > 0 || rightThumbstickY > 0 || rightThumbstickY2 > 0)
+        if (leftThumbstickY > 0 || leftThumbstickY2 > 0)
         {
             Mouse.SetPosition(currentMouseState.X, currentMouseState.Y - yDistance);
         }
-        if (leftThumbstickY < 0 || leftThumbstickY2 < 0 || rightThumbstickY < 0 || rightThumbstickY2 < 0)
+        if (leftThumbstickY < 0 || leftThumbstickY2 < 0)
+        {
+            Mouse.SetPosition(currentMouseState.X, currentMouseState.Y + yDistance);
+        }
+
+        xDistance = 6;
+        yDistance = 6;
+        if (rightThumbstickX > 0 || rightThumbstickX2 > 0)
+        {
+            Mouse.SetPosition(currentMouseState.X + xDistance, currentMouseState.Y);
+        }
+        if (rightThumbstickX < 0 || rightThumbstickX2 < 0)
+        {
+            Mouse.SetPosition(currentMouseState.X - xDistance, currentMouseState.Y);
+        }
+        if (rightThumbstickY > 0 || rightThumbstickY2 > 0)
+        {
+            Mouse.SetPosition(currentMouseState.X, currentMouseState.Y - yDistance);
+        }
+        if (rightThumbstickY < 0 || rightThumbstickY2 < 0)
         {
             Mouse.SetPosition(currentMouseState.X, currentMouseState.Y + yDistance);
         }

@@ -16,6 +16,9 @@ public class ContextMenu
     public bool IsShowContextMenu { get; set; } = false;
     public Panel MapPanel { get; set; }
     public GlobalConquestGame gcGame { get; set; }
+    VerticalMenu verticalMenu;
+    Unit unit;
+    MapHex mapHex;
 
     public ContextMenu(MainGameScreen mainGameScreen)
     {
@@ -36,6 +39,7 @@ public class ContextMenu
 
     public void ShowContextMenu(Unit unit)
     {
+        this.unit = unit;
         if (!IsShowContextMenu)
         {
             return;
@@ -45,6 +49,12 @@ public class ContextMenu
         if (unit == null)
             return;
 
+        verticalMenu = new VerticalMenu();
+        verticalMenu.Id = "ContextMenu.verticalMenu";
+        // actionMapper allows our game controller to invoke menu items
+        GameControlActionMapper actionMapper = gcGame.GameControl.GameControlActionMapper;
+        int itemIndex = 0;
+
         var container = new VerticalStackPanel
         {
             Spacing = 4
@@ -52,7 +62,6 @@ public class ContextMenu
 
         var titleContainer = new Panel
         {
-            //Background = DefaultAssets.UITextureRegionAtlas["button"],
         };
 
         var titleLabel = new Label
@@ -62,47 +71,39 @@ public class ContextMenu
         };
 
         titleContainer.Widgets.Add(titleLabel);
-        //container.Widgets.Add(titleContainer);
 
         var moveMenuItem = new MenuItem();
+        moveMenuItem.Id = "ContextMenu.verticalMenu.moveMenuItem";
         moveMenuItem.Text = "Move";
         moveMenuItem.Selected += (s, a) =>
         {
-            DeleteMoveUnitAction deleteAction = new DeleteMoveUnitAction();
-            deleteAction.ClassType = "GlobalConquest.Actions.DeleteMoveUnitAction";
-            deleteAction.ClientIdentifier = gcGame.Client.ClientIdentifier;
-            deleteAction.Unit = unit;
-            gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, deleteAction);
-            gcGame.MoveMode = true;
+            moveMenuItemSelected();
         };
+        actionMapper.registerControlMethod(moveMenuItem.Id, this, "moveMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, moveMenuItem.Id);
+        itemIndex += 1;
+
         var deleteMoveMenuItem = new MenuItem();
+        deleteMoveMenuItem.Id = "ContextMenu.verticalMenu.deleteMoveMenuItem";
         deleteMoveMenuItem.Text = "Delete Moves";
         deleteMoveMenuItem.Selected += (s, a) =>
         {
-            DeleteMoveUnitAction deleteAction = new DeleteMoveUnitAction();
-            deleteAction.ClassType = "GlobalConquest.Actions.DeleteMoveUnitAction";
-            deleteAction.ClientIdentifier = gcGame.Client.ClientIdentifier;
-            deleteAction.Unit = unit;
-            gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, deleteAction);
-            HideContextMenu();
+            deleteMoveMenuItemSelected();
         };
-
+        actionMapper.registerControlMethod(deleteMoveMenuItem.Id, this, "deleteMoveMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, deleteMoveMenuItem.Id);
+        itemIndex += 1;
 
         var refreshMenuItem = new MenuItem();
         refreshMenuItem.Text = "Refresh";
+        refreshMenuItem.Id = "ContextMenu.verticalMenu.refreshMenuItem";
         refreshMenuItem.Selected += (s, a) =>
         {
-            Player player = gcGame.identifySelf();
-            RefreshGameStateAction action = new RefreshGameStateAction();
-            action.ClassType = "GlobalConquest.Actions.RefreshGameStateAction";
-            action.ClientIdentifier = player.Name;
-            action.X = unit.X;
-            action.Y = unit.Y;
-            gcGame.Client.SendAction(player.Name, action);
-            HideContextMenu();
+            refreshMenuItemSelected();
         };
-
-        var verticalMenu = new VerticalMenu();
+        actionMapper.registerControlMethod(refreshMenuItem.Id, this, "refreshMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, refreshMenuItem.Id);
+        itemIndex += 1;
 
         verticalMenu.Items.Add(moveMenuItem);
         verticalMenu.Items.Add(deleteMoveMenuItem);
@@ -111,27 +112,22 @@ public class ContextMenu
         if (unit.IsBlitzing)
         {
             var stopBlitzingMenuItem = new MenuItem();
+            stopBlitzingMenuItem.Id = "ContextMenu.verticalMenu.stopBlitzingMenuItem";
             stopBlitzingMenuItem.Text = "Stop Blitzing";
             stopBlitzingMenuItem.Selected += (s, a) =>
             {
-                if (gcGame.lastSelectedUnit != null)
-                {
-                    ChangeUnitContextAction action = new ChangeUnitContextAction();
-                    action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
-                    action.ClientIdentifier = gcGame.Client.ClientIdentifier;
-                    action.Unit = unit;
-                    action.IsBlitzing = false;
-                    action.IsSneaking = unit.IsSneaking;
-                    action.RoundsToWait = unit.RoundsToWait;
-                    gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
-                }
-                HideContextMenu();
+                stopBlitzingMenuItemSelected();
             };
             verticalMenu.Items.Add(stopBlitzingMenuItem);
+            actionMapper.registerControlMethod(stopBlitzingMenuItem.Id, this, "stopBlitzingMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, stopBlitzingMenuItem.Id);
+            itemIndex += 1;
+
         }
         else if (!unit.IsBlitzing && unit.StrengthPoints > 20)
         {
             var blitzMenuItem = new MenuItem();
+            blitzMenuItem.Id = "ContextMenu.verticalMenu.blitzMenuItem";
             blitzMenuItem.Text = "Blitz";
             blitzMenuItem.Selected += (s, a) =>
             {
@@ -146,107 +142,95 @@ public class ContextMenu
                 HideContextMenu();
             };
             verticalMenu.Items.Add(blitzMenuItem);
+            actionMapper.registerControlMethod(blitzMenuItem.Id, this, "blitzMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, blitzMenuItem.Id);
+            itemIndex += 1;
         }
 
         if (unit.IsSneaking)
         {
             var stopSneakingMenuItem = new MenuItem();
+            stopSneakingMenuItem.Id = "ContextMenu.verticalMenu.stopSneakingMenuItem";
             stopSneakingMenuItem.Text = "Stop Sneaking";
             stopSneakingMenuItem.Selected += (s, a) =>
             {
-                if (gcGame.lastSelectedUnit != null)
-                {
-                    ChangeUnitContextAction action = new ChangeUnitContextAction();
-                    action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
-                    action.ClientIdentifier = gcGame.Client.ClientIdentifier;
-                    action.Unit = unit;
-                    action.IsBlitzing = unit.IsBlitzing;
-                    action.IsSneaking = false;
-                    action.RoundsToWait = unit.RoundsToWait;
-                    gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
-                }
-                HideContextMenu();
+                stopSneakingMenuItemSelected();
             };
             verticalMenu.Items.Add(stopSneakingMenuItem);
+            actionMapper.registerControlMethod(stopSneakingMenuItem.Id, this, "stopSneakingMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, stopSneakingMenuItem.Id);
+            itemIndex += 1;
         }
         else if (!unit.IsSneaking)
         {
             var sneakMenuItem = new MenuItem();
+            sneakMenuItem.Id = "ContextMenu.verticalMenu.sneakMenuItem";
             sneakMenuItem.Text = "Sneak";
             sneakMenuItem.Selected += (s, a) =>
             {
-                ChangeUnitContextAction action = new ChangeUnitContextAction();
-                action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
-                action.ClientIdentifier = gcGame.Client.ClientIdentifier;
-                action.Unit = unit;
-                action.IsBlitzing = false;
-                action.IsSneaking = true;
-                action.RoundsToWait = unit.RoundsToWait;
-                gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
-                HideContextMenu();
+                sneakMenuItemSelected();
             };
             verticalMenu.Items.Add(sneakMenuItem);
+            actionMapper.registerControlMethod(sneakMenuItem.Id, this, "stopSneakingMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, sneakMenuItem.Id);
+            itemIndex += 1;
+
         }
 
         if (unit.RoundsToWait > 0)
         {
             var waitZeroMenuItem = new MenuItem();
+            waitZeroMenuItem.Id = "ContextMenu.verticalMenu.waitZeroMenuItem";
             waitZeroMenuItem.Text = "Wait 0";
             waitZeroMenuItem.Selected += (s, a) =>
             {
-                ChangeUnitContextAction action = new ChangeUnitContextAction();
-                action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
-                action.ClientIdentifier = gcGame.Client.ClientIdentifier;
-                action.Unit = unit;
-                action.IsBlitzing = unit.IsBlitzing;
-                action.IsSneaking = unit.IsSneaking;
-                action.RoundsToWait = 0;
-                gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
-                HideContextMenu();
+                waitZeroMenuItemSelected();
             };
             verticalMenu.Items.Add(waitZeroMenuItem);
+            actionMapper.registerControlMethod(waitZeroMenuItem.Id, this, "waitZeroMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, waitZeroMenuItem.Id);
+            itemIndex += 1;
+
         }
         if (unit.RoundsToWait > 1)
         {
             var waitMinusOneMenuItem = new MenuItem();
+            waitMinusOneMenuItem.Id = "ContextMenu.verticalMenu.waitMinusOneMenuItem";
             waitMinusOneMenuItem.Text = "Wait -1 (" + (unit.RoundsToWait - 1) + ")";
             waitMinusOneMenuItem.Selected += (s, a) =>
             {
-                ChangeUnitContextAction action = new ChangeUnitContextAction();
-                action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
-                action.ClientIdentifier = gcGame.Client.ClientIdentifier;
-                action.Unit = unit;
-                action.IsBlitzing = unit.IsBlitzing;
-                action.IsSneaking = unit.IsSneaking;
-                action.RoundsToWait = unit.RoundsToWait - 1;
-                gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
-                HideContextMenu();
+                waitMinusOneMenuItemSelected();
             };
             verticalMenu.Items.Add(waitMinusOneMenuItem);
+            actionMapper.registerControlMethod(waitMinusOneMenuItem.Id, this, "waitMinusOneMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, waitMinusOneMenuItem.Id);
+            itemIndex += 1;
+
         }
         var waitPlusOneMenuItem = new MenuItem();
+        waitPlusOneMenuItem.Id = "ContextMenu.verticalMenu.waitPlusOneMenuItem";
         waitPlusOneMenuItem.Text = "Wait +1 (" + (unit.RoundsToWait + 1) + ")";
         waitPlusOneMenuItem.Selected += (s, a) =>
         {
-            ChangeUnitContextAction action = new ChangeUnitContextAction();
-            action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
-            action.ClientIdentifier = gcGame.Client.ClientIdentifier;
-            action.Unit = unit;
-            action.IsBlitzing = unit.IsBlitzing;
-            action.IsSneaking = unit.IsSneaking;
-            action.RoundsToWait = unit.RoundsToWait + 1;
-            gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
-            HideContextMenu();
+            waitPlusOneMenuItemSelected();
         };
         verticalMenu.Items.Add(waitPlusOneMenuItem);
+        actionMapper.registerControlMethod(waitPlusOneMenuItem.Id, this, "waitMinusOneMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, waitPlusOneMenuItem.Id);
+        itemIndex += 1;
 
         var pursueMenuItem = new MenuItem();
+        pursueMenuItem.Id = "ContextMenu.verticalMenu.pursueMenuItem";
         pursueMenuItem.Text = "Pursue";
         pursueMenuItem.Selected += (s, a) =>
         {
-            gcGame.PursueMode = true;
+            pursueMenuItemSelected();
         };
         verticalMenu.Items.Add(pursueMenuItem);
+        actionMapper.registerControlMethod(pursueMenuItem.Id, this, "pursueMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, pursueMenuItem.Id);
+        itemIndex += 1;
+
 
         container.Widgets.Add(verticalMenu);
 
@@ -264,8 +248,15 @@ public class ContextMenu
         {
             return;
         }
+        verticalMenu = new VerticalMenu();
+        verticalMenu.Id = "ContextMenu.verticalMenu";
+        this.mapHex = mapHex;
         //Console.WriteLine("ShowContextMenu(): " + IsShowContextMenu);
         HideContextMenu();
+
+        // actionMapper allows our game controller to invoke menu items
+        GameControlActionMapper actionMapper = gcGame.GameControl.GameControlActionMapper;
+        int itemIndex = 0;
 
         var container = new VerticalStackPanel
         {
@@ -273,45 +264,30 @@ public class ContextMenu
         };
 
         var buildMenuItem = new MenuItem();
+        buildMenuItem.Id = "ContextMenu.verticalMenu.buildMenuItem";
         buildMenuItem.Text = "Build";
         buildMenuItem.Selected += (s, a) =>
         {
-            Console.WriteLine("build");
-            BurbWindow burbWindow = new BurbWindow();
-            Burb burb = mapHex.Burb;
-            if (burb != null && burb.Name != null)
-            {
-                burbWindow.showPurchaseUnit(MainGameScreen, mapHex, burb);
-                HideContextMenu();
-            }
-            else if (burb != null && burb.ParentBurbName != null)
-            {
-                Burb parentBurb = gcGame.Client.GameState.Burbs.NameToBurb[burb.ParentBurbName];
-                MapHex parentMapHex = gcGame.Client.GameState.Map.Hexes[parentBurb.Y, parentBurb.X];
-                burbWindow.showPurchaseUnit(MainGameScreen, parentMapHex, parentBurb);
-                HideContextMenu();
-            }
+            buildMenuItemSelected();
         };
-
-        var refreshMenuItem = new MenuItem();
-        refreshMenuItem.Text = "Refresh";
-        refreshMenuItem.Selected += (s, a) =>
-        {
-            Player player = gcGame.identifySelf();
-            RefreshGameStateAction action = new RefreshGameStateAction();
-            action.ClassType = "GlobalConquest.Actions.RefreshGameStateAction";
-            action.ClientIdentifier = player.Name;
-            action.X = mapHex.X;
-            action.Y = mapHex.Y;
-            gcGame.Client.SendAction(player.Name, action);
-            HideContextMenu();
-        };
-
-
-        var verticalMenu = new VerticalMenu();
-
         verticalMenu.Items.Add(buildMenuItem);
-        verticalMenu.Items.Add(refreshMenuItem);
+        actionMapper.registerControlMethod(buildMenuItem.Id, this, "buildMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, buildMenuItem.Id);
+        itemIndex += 1;
+
+
+        var refreshMapHexMenuItem = new MenuItem();
+        refreshMapHexMenuItem.Id = "ContextMenu.verticalMenu.refreshMapHexMenuItem";
+        refreshMapHexMenuItem.Text = "Refresh";
+        refreshMapHexMenuItem.Selected += (s, a) =>
+        {
+            refreshMapHexMenuItemSelected();
+        };
+        verticalMenu.Items.Add(refreshMapHexMenuItem);
+        actionMapper.registerControlMethod(refreshMapHexMenuItem.Id, this, "refreshMapHexMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, refreshMapHexMenuItem.Id);
+        itemIndex += 1;
+
 
         container.Widgets.Add(verticalMenu);
 
@@ -322,7 +298,170 @@ public class ContextMenu
         IsShowContextMenu = false;
         container.AcceptsKeyboardFocus = true;
         container.SetKeyboardFocus();
-
     }
 
+    public void moveMenuItemSelected()
+    {
+        DeleteMoveUnitAction deleteAction = new DeleteMoveUnitAction();
+        deleteAction.ClassType = "GlobalConquest.Actions.DeleteMoveUnitAction";
+        deleteAction.ClientIdentifier = gcGame.Client.ClientIdentifier;
+        deleteAction.Unit = unit;
+        gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, deleteAction);
+        gcGame.MoveMode = true;
+    }
+
+    public void deleteMoveMenuItemSelected()
+    {
+        DeleteMoveUnitAction deleteAction = new DeleteMoveUnitAction();
+        deleteAction.ClassType = "GlobalConquest.Actions.DeleteMoveUnitAction";
+        deleteAction.ClientIdentifier = gcGame.Client.ClientIdentifier;
+        deleteAction.Unit = unit;
+        gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, deleteAction);
+        HideContextMenu();
+    }
+
+    public void refreshMenuItemSelected()
+    {
+        Player player = gcGame.identifySelf();
+        RefreshGameStateAction action = new RefreshGameStateAction();
+        action.ClassType = "GlobalConquest.Actions.RefreshGameStateAction";
+        action.ClientIdentifier = player.Name;
+        action.X = unit.X;
+        action.Y = unit.Y;
+        gcGame.Client.SendAction(player.Name, action);
+        HideContextMenu();
+    }
+
+    public void stopBlitzingMenuItemSelected()
+    {
+        if (gcGame.lastSelectedUnit != null)
+        {
+            ChangeUnitContextAction action = new ChangeUnitContextAction();
+            action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
+            action.ClientIdentifier = gcGame.Client.ClientIdentifier;
+            action.Unit = unit;
+            action.IsBlitzing = false;
+            action.IsSneaking = unit.IsSneaking;
+            action.RoundsToWait = unit.RoundsToWait;
+            gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+        }
+        HideContextMenu();
+    }
+
+    public void blitzMenuItemSelected()
+    {
+        ChangeUnitContextAction action = new ChangeUnitContextAction();
+        action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
+        action.ClientIdentifier = gcGame.Client.ClientIdentifier;
+        action.Unit = unit;
+        action.IsBlitzing = true;
+        action.IsSneaking = false;
+        action.RoundsToWait = unit.RoundsToWait;
+        gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+        HideContextMenu();
+    }
+
+    public void stopSneakingMenuItemSelected()
+    {
+        if (gcGame.lastSelectedUnit != null)
+        {
+            ChangeUnitContextAction action = new ChangeUnitContextAction();
+            action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
+            action.ClientIdentifier = gcGame.Client.ClientIdentifier;
+            action.Unit = unit;
+            action.IsBlitzing = unit.IsBlitzing;
+            action.IsSneaking = false;
+            action.RoundsToWait = unit.RoundsToWait;
+            gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+        }
+        HideContextMenu();
+    }
+
+    public void sneakMenuItemSelected()
+    {
+        ChangeUnitContextAction action = new ChangeUnitContextAction();
+        action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
+        action.ClientIdentifier = gcGame.Client.ClientIdentifier;
+        action.Unit = unit;
+        action.IsBlitzing = false;
+        action.IsSneaking = true;
+        action.RoundsToWait = unit.RoundsToWait;
+        gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+        HideContextMenu();
+    }
+
+    public void waitZeroMenuItemSelected()
+    {
+        ChangeUnitContextAction action = new ChangeUnitContextAction();
+        action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
+        action.ClientIdentifier = gcGame.Client.ClientIdentifier;
+        action.Unit = unit;
+        action.IsBlitzing = unit.IsBlitzing;
+        action.IsSneaking = unit.IsSneaking;
+        action.RoundsToWait = 0;
+        gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+        HideContextMenu();
+    }
+
+    public void waitMinusOneMenuItemSelected()
+    {
+        ChangeUnitContextAction action = new ChangeUnitContextAction();
+        action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
+        action.ClientIdentifier = gcGame.Client.ClientIdentifier;
+        action.Unit = unit;
+        action.IsBlitzing = unit.IsBlitzing;
+        action.IsSneaking = unit.IsSneaking;
+        action.RoundsToWait = unit.RoundsToWait - 1;
+        gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+        HideContextMenu();
+    }
+
+    public void waitPlusOneMenuItemSelected()
+    {
+        ChangeUnitContextAction action = new ChangeUnitContextAction();
+        action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
+        action.ClientIdentifier = gcGame.Client.ClientIdentifier;
+        action.Unit = unit;
+        action.IsBlitzing = unit.IsBlitzing;
+        action.IsSneaking = unit.IsSneaking;
+        action.RoundsToWait = unit.RoundsToWait + 1;
+        gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+        HideContextMenu();
+    }
+
+    public void pursueMenuItemSelected()
+    {
+        gcGame.PursueMode = true;
+    }
+
+    public void buildMenuItemSelected()
+    {
+        Console.WriteLine("build");
+        BurbWindow burbWindow = new BurbWindow();
+        Burb burb = mapHex.Burb;
+        if (burb != null && burb.Name != null)
+        {
+            burbWindow.showPurchaseUnit(MainGameScreen, mapHex, burb);
+            HideContextMenu();
+        }
+        else if (burb != null && burb.ParentBurbName != null)
+        {
+            Burb parentBurb = gcGame.Client.GameState.Burbs.NameToBurb[burb.ParentBurbName];
+            MapHex parentMapHex = gcGame.Client.GameState.Map.Hexes[parentBurb.Y, parentBurb.X];
+            burbWindow.showPurchaseUnit(MainGameScreen, parentMapHex, parentBurb);
+            HideContextMenu();
+        }
+    }
+
+    public void refreshMapHexMenuItemSelected()
+    {
+        Player player = gcGame.identifySelf();
+        RefreshGameStateAction action = new RefreshGameStateAction();
+        action.ClassType = "GlobalConquest.Actions.RefreshGameStateAction";
+        action.ClientIdentifier = player.Name;
+        action.X = mapHex.X;
+        action.Y = mapHex.Y;
+        gcGame.Client.SendAction(player.Name, action);
+        HideContextMenu();
+    }
 }
