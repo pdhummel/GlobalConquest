@@ -42,31 +42,66 @@ public class GameControl
 
         previousGamepadState = gamepadState;
         gamepadState = GamePad.GetState(PlayerIndex.One);
-        GamePadDPad dpad = GamePad.GetState(PlayerIndex.One).DPad;
         // Since I have a MSI Claw and sometime use it docked like a PC,
         // second controller support is useful.
         previousGamepadState2 = gamepadState2;
         gamepadState2 = GamePad.GetState(PlayerIndex.Two);
-        GamePadDPad dpad2 = GamePad.GetState(PlayerIndex.Two).DPad;
 
         updateKeyBoardState(gameTime);
-
-        previousMouseState = currentMouseState;
-        currentMouseState = Mouse.GetState();
-
+        updateDpadState(gameTime);
 
         if ((gamepadState.Buttons.A == ButtonState.Pressed && previousGamepadState.Buttons.A == ButtonState.Released) ||
             (gamepadState2.Buttons.A == ButtonState.Pressed && previousGamepadState2.Buttons.A == ButtonState.Released))
         {
-            Console.WriteLine("A button");
-            //LeftMouseClickInput();
-            //SpaceKeyInput();
-            //EnterKeyInput();
             if (gcGame.Desktop != null && gcGame.Desktop.Widgets.Count > 0)
                 checkAllWidgets(gcGame.Desktop);
+            gcGame.handleLeftClick();
+            gcGame.handleLeftMouseButtonOnMiniMap();
+        }
+
+        if ((gamepadState.Buttons.B == ButtonState.Pressed && previousGamepadState.Buttons.B == ButtonState.Released) ||
+            (gamepadState2.Buttons.B == ButtonState.Pressed && previousGamepadState2.Buttons.B == ButtonState.Released))
+        {
+            gcGame.handleRightClick();
+        }
+
+        //float deadZone = 0.2f;
+        float leftThumbstickX = gamepadState.ThumbSticks.Left.X;
+        float rightThumbstickX = gamepadState.ThumbSticks.Right.X;
+        float leftThumbstickY = gamepadState.ThumbSticks.Left.Y;
+        float rightThumbstickY = gamepadState.ThumbSticks.Right.Y;
+        float leftThumbstickX2 = gamepadState2.ThumbSticks.Left.X;
+        float rightThumbstickX2 = gamepadState2.ThumbSticks.Right.X;
+        float leftThumbstickY2 = gamepadState2.ThumbSticks.Left.Y;
+        float rightThumbstickY2 = gamepadState2.ThumbSticks.Right.Y;
+
+        int xDistance = 2;
+        int yDistance = 2;
+        if (leftThumbstickX > 0 || leftThumbstickX2 > 0 || rightThumbstickX > 0 || rightThumbstickX2 > 0)
+        {
+            Mouse.SetPosition(currentMouseState.X + xDistance, currentMouseState.Y);
+        }
+        if (leftThumbstickX < 0 || leftThumbstickX2 < 0 || rightThumbstickX < 0 || rightThumbstickX2 < 0)
+        {
+            Mouse.SetPosition(currentMouseState.X - xDistance, currentMouseState.Y);
+        }
+        if (leftThumbstickY > 0 || leftThumbstickY2 > 0 || rightThumbstickY > 0 || rightThumbstickY2 > 0)
+        {
+            Mouse.SetPosition(currentMouseState.X, currentMouseState.Y - yDistance);
+        }
+        if (leftThumbstickY < 0 || leftThumbstickY2 < 0 || rightThumbstickY < 0 || rightThumbstickY2 < 0)
+        {
+            Mouse.SetPosition(currentMouseState.X, currentMouseState.Y + yDistance);
         }
 
 
+        previousMouseState = currentMouseState;
+        currentMouseState = Mouse.GetState();
+
+        if (currentMouseState.LeftButton == ButtonState.Pressed)
+        {
+            gcGame.handleLeftMouseButtonOnMiniMap();
+        }
 
         if (currentMouseState.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released && !isMouseDown)
         {
@@ -85,10 +120,6 @@ public class GameControl
             gcGame.handleLeftClick();
         }
 
-        if (currentMouseState.LeftButton == ButtonState.Pressed)
-        {
-            gcGame.handleLeftMouseButtonPressed();
-        }
 
         if (currentMouseState.RightButton == ButtonState.Pressed &&
             previousMouseState.RightButton == ButtonState.Released)
@@ -96,8 +127,14 @@ public class GameControl
             gcGame.handleRightClick();
         }
 
+    }
 
-        //float deadZone = 0.2f;
+    private void updateDpadState(GameTime gameTime)
+    {
+        GamePadDPad dpad = GamePad.GetState(PlayerIndex.One).DPad;
+        // Since I have a MSI Claw and sometime use it docked like a PC,
+        // second controller support is useful.
+        GamePadDPad dpad2 = GamePad.GetState(PlayerIndex.Two).DPad;
         if (dpad.Up == ButtonState.Pressed || dpad2.Up == ButtonState.Pressed)
         {
             gcGame.scrollUp();
@@ -113,32 +150,6 @@ public class GameControl
         if (dpad.Right == ButtonState.Pressed || dpad2.Right == ButtonState.Pressed)
         {
             gcGame.scrollRight();
-        }
-
-        float leftThumbstickX = gamepadState.ThumbSticks.Left.X;
-        float rightThumbstickX = gamepadState.ThumbSticks.Right.X;
-        float leftThumbstickY = gamepadState.ThumbSticks.Left.Y;
-        float rightThumbstickY = gamepadState.ThumbSticks.Right.Y;
-        float leftThumbstickX2 = gamepadState2.ThumbSticks.Left.X;
-        float rightThumbstickX2 = gamepadState2.ThumbSticks.Right.X;
-        float leftThumbstickY2 = gamepadState2.ThumbSticks.Left.Y;
-        float rightThumbstickY2 = gamepadState2.ThumbSticks.Right.Y;
-
-        if (leftThumbstickX > 0 || leftThumbstickX2 > 0 || rightThumbstickX > 0 || rightThumbstickX2 > 0)
-        {
-            Mouse.SetPosition(currentMouseState.X + 10, currentMouseState.Y);
-        }
-        if (leftThumbstickX < 0 || leftThumbstickX2 < 0 || rightThumbstickX < 0 || rightThumbstickX2 < 0)
-        {
-            Mouse.SetPosition(currentMouseState.X - 10, currentMouseState.Y);
-        }
-        if (leftThumbstickY > 0 || leftThumbstickY2 > 0 || rightThumbstickY > 0 || rightThumbstickY2 > 0)
-        {
-            Mouse.SetPosition(currentMouseState.X, currentMouseState.Y - 5);
-        }
-        if (leftThumbstickY < 0 || leftThumbstickY2 < 0 || rightThumbstickY < 0 || rightThumbstickY2 < 0)
-        {
-            Mouse.SetPosition(currentMouseState.X, currentMouseState.Y + 5);
         }
 
     }
@@ -172,7 +183,8 @@ public class GameControl
 
     private void checkAllWidgets(Desktop desktop)
     {
-        foreach (Widget child in desktop.Widgets)
+        List<Widget> widgets = new List<Widget>(desktop.Widgets);
+        foreach (Widget child in widgets)
         {
             if (child.IsMouseInside)
             {
@@ -186,7 +198,8 @@ public class GameControl
     {
         if (widget == null)
             return;
-        foreach (Widget child in widget.GetChildren())
+        List<Widget> childWidgets = new List<Widget>(widget.GetChildren());
+        foreach (Widget child in childWidgets)
         {
             if (child.IsMouseInside)
             {

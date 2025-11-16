@@ -135,7 +135,7 @@ public class HostGameScreen
         mapHeightLabel.Text = "height:";
         //mapHeightLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
         mapHeightTextBox.Id = "mapHeightTextBox";
-        mapHeightTextBox.Text = "50";
+        mapHeightTextBox.Text = "25";
         mapHeightTextBox.Width = 50;
         mapHeightTextBox.Border = new SolidBrush("#808000FF");
         mapHeightTextBox.BorderThickness = new Thickness(2);
@@ -144,7 +144,7 @@ public class HostGameScreen
         mapWidthLabel.Text = "width:";
         mapWidthLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
         mapWidthTextBox.Id = "mapWidthTextBox";
-        mapWidthTextBox.Text = "50";
+        mapWidthTextBox.Text = "25";
         mapWidthTextBox.Width = 50;
         mapWidthTextBox.Border = new SolidBrush("#808000FF");
         mapWidthTextBox.BorderThickness = new Thickness(2);
@@ -297,17 +297,6 @@ public class HostGameScreen
 
         verticalStackPanel.AcceptsKeyboardFocus = true;
         verticalStackPanel.SetKeyboardFocus();
-
-        // actionMapper allows our game controller to interact with dropdowns
-        executionComboView.ApplyComboViewStyle(ComboBoxStyle.DropDown);
-        GlobalConquestGame gcGame = (GlobalConquestGame)game;
-        GameControlActionMapper actionMapper = gcGame.GameControl.GameControlActionMapper;
-        actionMapper.registerControlMethod(customMenuItem.Id, this, "customMenuItemSelected");
-        actionMapper.registerControlMethod(restoreMenuItem.Id, this, "restoreMenuItemSelected");
-        actionMapper.registerControlMethod(backToMainConquestMenuItem.Id, this, "backToMainConquestMenuItemSelected");
-        actionMapper.registerSelectedIndex(executionComboView.Id, 0, customMenuItem.Id);
-        actionMapper.registerSelectedIndex(playGameVerticalMenu.Id, 1, restoreMenuItem.Id);
-        actionMapper.registerSelectedIndex(playGameVerticalMenu.Id, 2, backToMainConquestMenuItem.Id);
 
     }
 

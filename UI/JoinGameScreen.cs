@@ -101,7 +101,8 @@ public class JoinGameScreen
 
         nameTextBox.Id = "nameTextBox";
         nameTextBox.Width = 250;
-        nameTextBox.Text = "YourName";
+        string currentUser = Environment.UserName;
+        nameTextBox.Text = currentUser;
         nameTextBox.Border = new SolidBrush("#808000FF");
         nameTextBox.BorderThickness = new Thickness(2);
 

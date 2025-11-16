@@ -161,27 +161,14 @@ public class GlobalConquestGame : Game
         }
     }
 
-    // This logic was moved server side.
-    private void placeInitialUnit()
-    {
-        Player player = Client.GameState.Players.playerNameToPlayer[Client.ClientIdentifier];
-        int width = Client.GameState.GameSettings.Width;
-        int height = Client.GameState.GameSettings.Height;
-
-        if (player.FactionColor.Equals("amber"))
-            hexMapEngineAdapter.placeUnit(0, 0, "tank", "amber");
-        else if (player.FactionColor.Equals("ocher"))
-            hexMapEngineAdapter.placeUnit(width - 1, 0, "tank", "ocher");
-        else if (player.FactionColor.Equals("cyan"))
-            hexMapEngineAdapter.placeUnit(width - 1, height - 1, "tank", "cyan");
-        else if (player.FactionColor.Equals("magenta"))
-            hexMapEngineAdapter.placeUnit(0, height - 1, "tank", "magenta");
-    }
-
     protected override void Update(GameTime gameTime)
     {
-        if (GameControl != null)
-            GameControl.Update(gameTime);
+        if (Client != null && Client.isLoadContentComplete && MainGameScreen != null &&
+            MainGameScreen.MapPanel != null && MainGameScreen.MapPanel.Width != null && MainGameScreen.MapPanel.Height != null &&
+            MainGameScreen.IsVisible)
+        {
+            mouseOverVector = findHexFromPixels(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
+        }
 
         // Add your update logic here
         if (Client != null && Client.isLoadContentComplete)
@@ -189,46 +176,12 @@ public class GlobalConquestGame : Game
             hexMapEngineAdapter?.Process_UpdateEvent(gameTime);
         }
 
+        if (GameControl != null)
+            GameControl.Update(gameTime);
+
         base.Update(gameTime);
     }
 
-    public void handleLeftMouseButtonPressed()
-    {
-        var mousePosition = new Vector2(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
-
-        if (Client != null && Client.isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible)
-        {
-            mouseOverVector = findHexFromPixels(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
-            // Check for a left mouse button click within the minimap's boundaries
-            if (miniMapRectangle.Contains(mousePosition))
-            {
-                // Calculate the relative mouse position within the minimap
-                Vector2 minimapMousePos = mousePosition - new Vector2(miniMapRectangle.X, miniMapRectangle.Y);
-
-                // Convert the minimap position to world coordinates
-                Vector2 worldPosition = ConvertMiniMapToWorld(minimapMousePos);
-
-                //Console.WriteLine("rectX=" + miniMapRectangle.X + ", rectY=" + miniMapRectangle.Y +
-                //    ", mousePositionX=" + mousePosition.X + ", mousePositionY=" + mousePosition.Y +
-                //    ", relX=" + relativeMousePos.X + ", relY=" + relativeMousePos.Y +
-                //    ", minimapMousePosX=" + minimapMousePos.X + ", minimapMousePosY=" + minimapMousePos.Y +
-                //    ", worldX=" + worldPosition.X + ", worldY=" + worldPosition.Y +
-                //    ", row=" + rowColVector.Y + ", col=" + rowColVector.X
-                //);
-
-                if (hexMapEngineAdapter != null)
-                {
-                    worldPosition.X -= (int)MainGameScreen.MapPanel.Width / 2;
-                    worldPosition.Y -= (int)MainGameScreen.MapPanel.Height / 2;
-                    Vector2 currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
-                    MainGameScreen.HideContextMenu();
-                    hexMapEngineAdapter.scrollToPosition((int)worldPosition.Y, (int)currentPosition.X);
-                    currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
-                    hexMapEngineAdapter.scrollToPosition((int)currentPosition.Y, (int)worldPosition.X);
-                }
-            }
-        }
-    }
 
     public void handleUpKey()
     {
@@ -515,6 +468,43 @@ public class GlobalConquestGame : Game
         return v;
     }
 
+    public void handleLeftMouseButtonOnMiniMap()
+    {
+        if (Client != null && Client.isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible)
+        {
+            var mousePosition = new Vector2(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
+            // Check for a left mouse button click within the minimap's boundaries
+            if (miniMapRectangle.Contains(mousePosition))
+            {
+                // Calculate the relative mouse position within the minimap
+                Vector2 minimapMousePos = mousePosition - new Vector2(miniMapRectangle.X, miniMapRectangle.Y);
+
+                // Convert the minimap position to world coordinates
+                Vector2 worldPosition = ConvertMiniMapToWorld(minimapMousePos);
+
+                //Console.WriteLine("rectX=" + miniMapRectangle.X + ", rectY=" + miniMapRectangle.Y +
+                //    ", mousePositionX=" + mousePosition.X + ", mousePositionY=" + mousePosition.Y +
+                //    ", relX=" + relativeMousePos.X + ", relY=" + relativeMousePos.Y +
+                //    ", minimapMousePosX=" + minimapMousePos.X + ", minimapMousePosY=" + minimapMousePos.Y +
+                //    ", worldX=" + worldPosition.X + ", worldY=" + worldPosition.Y +
+                //    ", row=" + rowColVector.Y + ", col=" + rowColVector.X
+                //);
+
+                if (hexMapEngineAdapter != null)
+                {
+                    worldPosition.X -= (int)MainGameScreen.MapPanel.Width / 2;
+                    worldPosition.Y -= (int)MainGameScreen.MapPanel.Height / 2;
+                    Vector2 currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
+                    MainGameScreen.HideContextMenu();
+                    hexMapEngineAdapter.scrollToPosition((int)worldPosition.Y, (int)currentPosition.X);
+                    currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
+                    hexMapEngineAdapter.scrollToPosition((int)currentPosition.Y, (int)worldPosition.X);
+                }
+            }
+        }
+    }
+
+
     public void handleLongLeftClick()
     {
         if (MainGameScreen == null)
@@ -556,7 +546,7 @@ public class GlobalConquestGame : Game
             GameControl.currentMouseState.Y <= MainGameScreen.MapPanel.Top + MainGameScreen.MapPanel.Height
         )
         {
-            if (MainGameScreen == null || MainGameScreen.IsContextMenuVisible())
+            if (MainGameScreen.IsContextMenuVisible())
             {
                 return;
             }
@@ -580,7 +570,7 @@ public class GlobalConquestGame : Game
                     pursueAction.UnitToPursueX = unitToPursue.X;
                     pursueAction.UnitToPursueY = unitToPursue.Y;
                     Client?.SendAction(Client.ClientIdentifier, pursueAction);
-                    Console.WriteLine("handleLeftClickMouseOnMap(): pursueAction sent");
+                    Console.WriteLine("handleLeftClick(): pursueAction sent");
                 }
                 PursueMode = false;
                 if (!PursueMode && !MoveMode && lastSelectedHex != null)
@@ -703,6 +693,8 @@ public class GlobalConquestGame : Game
             selectedHexVector.X < Client.GameState.GameSettings.Width && selectedHexVector.Y < Client.GameState.GameSettings.Height)
         {
             lastSelectedHex = Client?.GameState.Map.Hexes[(int)selectedHexVector.Y, (int)selectedHexVector.X];
+            if (!MoveMode)
+                lastSelectedUnit = lastSelectedHex.getUnit();
         }
         return selectedHexVector;
     }

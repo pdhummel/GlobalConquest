@@ -34,7 +34,7 @@ public class GameControlActionMapper
         if ("Myra.Graphics2D.UI.VerticalMenu".Equals(widget.GetType().ToString()))
         {
             VerticalMenu verticalMenu = (VerticalMenu)widget;
-            if (MenuIdToSelectedIndexMap.ContainsKey(widget.Id))
+            if (widget.Id != null && MenuIdToSelectedIndexMap.ContainsKey(widget.Id))
             {
                 Console.WriteLine("invoke(): " + widget.Id + " in MenuIdToSelectedIndexMap");
                 Dictionary<int, string> map = MenuIdToSelectedIndexMap[widget.Id];
