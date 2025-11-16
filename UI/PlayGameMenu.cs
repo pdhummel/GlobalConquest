@@ -83,6 +83,16 @@ public class PlayGameMenu
         //customMenuItem.Selected += customMenuItemSelected;
         //backToMainConquestMenuItem.Selected += backToMainConquestMenuItemSelected;
 
+        // actionMapper allows our game controller to invoke menu items
+        GlobalConquestGame gcGame = (GlobalConquestGame)game;
+        GameControlActionMapper actionMapper = gcGame.GameControl.GameControlActionMapper;
+        actionMapper.registerControlMethod(customMenuItem.Id, this, "customMenuItemSelected");
+        actionMapper.registerControlMethod(restoreMenuItem.Id, this, "restoreMenuItemSelected");
+        actionMapper.registerControlMethod(backToMainConquestMenuItem.Id, this, "backToMainConquestMenuItemSelected");
+        actionMapper.registerSelectedIndex(playGameVerticalMenu.Id, 0, customMenuItem.Id);
+        actionMapper.registerSelectedIndex(playGameVerticalMenu.Id, 1, restoreMenuItem.Id);
+        actionMapper.registerSelectedIndex(playGameVerticalMenu.Id, 2, backToMainConquestMenuItem.Id);
+
         playGameVerticalMenu.Enabled = true;
         playGameVerticalMenu.SetKeyboardFocus();
         //((GlobalConquestGame)game).Desktop.Widgets[0]. //.LocalTouchPosition  //IsMouseInside //.IsKeyboardFocused
@@ -100,11 +110,19 @@ public class PlayGameMenu
 
     private void customMenuItemSelected(object? sender, EventArgs e)
     {
+        customMenuItemSelected();
+    }
+    public void customMenuItemSelected()
+    {
         this.hide();
         hostGameScreen.show();
     }
 
     private void restoreMenuItemSelected(object? sender, EventArgs e)
+    {
+        restoreMenuItemSelected();
+    }
+    public void restoreMenuItemSelected()
     {
         GlobalConquestGame gcGame = (GlobalConquestGame)game;
         Server server = new Server();
@@ -120,6 +138,10 @@ public class PlayGameMenu
     }
 
     private void backToMainConquestMenuItemSelected(object? sender, EventArgs e)
+    {
+        backToMainConquestMenuItemSelected();
+    }
+    public void backToMainConquestMenuItemSelected()
     {
         this.hide();
         ConquestMenu.LoadContent();

@@ -180,7 +180,8 @@ public class GlobalConquestGame : Game
 
     protected override void Update(GameTime gameTime)
     {
-        GameControl.Update(gameTime);
+        if (GameControl != null)
+            GameControl.Update(gameTime);
 
         // Add your update logic here
         if (Client != null && Client.isLoadContentComplete)

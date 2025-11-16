@@ -16,6 +16,7 @@ using Image = Myra.Graphics2D.UI.Image;
 using Button = Myra.Graphics2D.UI.Button;
 using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
 using Panel = Myra.Graphics2D.UI.Panel;
+using ComboBoxStyle = Myra.Graphics2D.UI.Styles.ComboBoxStyle;
 
 namespace GlobalConquest.UI;
 
@@ -297,6 +298,16 @@ public class HostGameScreen
         verticalStackPanel.AcceptsKeyboardFocus = true;
         verticalStackPanel.SetKeyboardFocus();
 
+        // actionMapper allows our game controller to interact with dropdowns
+        executionComboView.ApplyComboViewStyle(ComboBoxStyle.DropDown);
+        GlobalConquestGame gcGame = (GlobalConquestGame)game;
+        GameControlActionMapper actionMapper = gcGame.GameControl.GameControlActionMapper;
+        actionMapper.registerControlMethod(customMenuItem.Id, this, "customMenuItemSelected");
+        actionMapper.registerControlMethod(restoreMenuItem.Id, this, "restoreMenuItemSelected");
+        actionMapper.registerControlMethod(backToMainConquestMenuItem.Id, this, "backToMainConquestMenuItemSelected");
+        actionMapper.registerSelectedIndex(executionComboView.Id, 0, customMenuItem.Id);
+        actionMapper.registerSelectedIndex(playGameVerticalMenu.Id, 1, restoreMenuItem.Id);
+        actionMapper.registerSelectedIndex(playGameVerticalMenu.Id, 2, backToMainConquestMenuItem.Id);
 
     }
 

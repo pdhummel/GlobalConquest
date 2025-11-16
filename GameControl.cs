@@ -5,6 +5,10 @@ using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Keyboard = Microsoft.Xna.Framework.Input.Keyboard;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 using Mouse = Microsoft.Xna.Framework.Input.Mouse;
+using Point = Microsoft.Xna.Framework.Point;
+using Myra.Graphics2D.UI;
+using Button = Myra.Graphics2D.UI.Button;
+using CheckButton = Myra.Graphics2D.UI.CheckButton;
 
 namespace GlobalConquest;
 
@@ -25,8 +29,7 @@ public class GameControl
     // second controller support is useful.
     GamePadState gamepadState2 = GamePad.GetState(PlayerIndex.Two);
     GamePadState previousGamepadState2 = GamePad.GetState(PlayerIndex.Two);
-
-
+    public GameControlActionMapper GameControlActionMapper { get; set; } = new GameControlActionMapper();
 
     public GlobalConquestGame gcGame;
     public GameControl()
@@ -52,13 +55,16 @@ public class GameControl
         currentMouseState = Mouse.GetState();
 
 
-        //if ((gamepadState.Buttons.A == ButtonState.Pressed && previousGamepadState.Buttons.A == ButtonState.Released) ||
-        //    (gamepadState2.Buttons.A == ButtonState.Pressed && previousGamepadState2.Buttons.A == ButtonState.Released))
-        //{
+        if ((gamepadState.Buttons.A == ButtonState.Pressed && previousGamepadState.Buttons.A == ButtonState.Released) ||
+            (gamepadState2.Buttons.A == ButtonState.Pressed && previousGamepadState2.Buttons.A == ButtonState.Released))
+        {
+            Console.WriteLine("A button");
             //LeftMouseClickInput();
             //SpaceKeyInput();
-        //    EnterKeyInput();
-        //}
+            //EnterKeyInput();
+            if (gcGame.Desktop != null && gcGame.Desktop.Widgets.Count > 0)
+                checkAllWidgets(gcGame.Desktop);
+        }
 
 
 
@@ -162,8 +168,58 @@ public class GameControl
             gcGame.handleRightKey();
         }
         previousKeyboardState = currentKeyboardState;
-
     }
+
+    private void checkAllWidgets(Desktop desktop)
+    {
+        foreach (Widget child in desktop.Widgets)
+        {
+            if (child.IsMouseInside)
+            {
+                Console.WriteLine(child.GetType() + " " + child.Id);
+                checkAllWidgets(child);
+            }
+        }
+    }
+
+    private void checkAllWidgets(Widget widget)
+    {
+        if (widget == null)
+            return;
+        foreach (Widget child in widget.GetChildren())
+        {
+            if (child.IsMouseInside)
+            {
+                Console.WriteLine(child.GetType() + " " + child.Id);
+                if ("Myra.Graphics2D.UI.VerticalMenu".Equals(child.GetType().ToString()))
+                {
+                    GameControlActionMapper.invoke(child);
+                }
+                else if ("Myra.Graphics2D.UI.Button".Equals(child.GetType().ToString()))
+                {
+                    ((Button)child).DoClick();
+                }
+                else if ("Myra.Graphics2D.UI.CheckButton".Equals(child.GetType().ToString()))
+                {
+                    ((CheckButton)child).DoClick();
+                }
+                else if ("Myra.Graphics2D.UI.ToggleButton".Equals(child.GetType().ToString()))
+                {
+                    ((ToggleButton)child).DoClick();
+                }
+                //Myra.Graphics2D.UI.ComboView visibilityComboView
+                else if ("Myra.Graphics2D.UI.ComboView".Equals(child.GetType().ToString()))
+                {
+                    //((ComboView)child).
+                }
+                else
+                {
+                    checkAllWidgets(child);
+                }
+            }
+        }
+    }
+
 
     // TODO: Find a cross-platform way to do this.
     // https://stackoverflow.com/questions/20482338/simulate-keyboard-input-in-c-sharp
@@ -173,7 +229,7 @@ public class GameControl
         INPUT Input = new INPUT();
         Input.type = 1; // keyboard
         Input.U.ki.wScan = ScanCodeShort.SPACE;
-        Input.U.ki.dwFlags = KEYEVENTF.SCANCODE;   
+        Input.U.ki.dwFlags = KEYEVENTF.SCANCODE;
         Inputs[0] = Input;
         SendInput(1, Inputs, INPUT.Size);
         Console.WriteLine("SpaceKeyInput(): exit");
@@ -184,25 +240,27 @@ public class GameControl
         INPUT[] Inputs = new INPUT[1];
         INPUT Input = new INPUT();
         Input.type = 1; // keyboard
-        //Input.U.ki.wScan = ScanCodeShort.RETURN;
-        Input.U.ki.wScan = 0;
+        Input.U.ki.dwFlags = KEYEVENTF.SCANCODE;
+        Input.U.ki.wScan = ScanCodeShort.RETURN;
+        //Input.U.ki.wScan = 0;
         Input.U.ki.time = 0;
-        Input.U.ki.wVk = VirtualKeyShort.RETURN;
-        //Input.U.ki.dwFlags = KEYEVENTF.SCANCODE;
+        //Input.U.ki.wVk = VirtualKeyShort.RETURN;
+        Input.U.ki.wVk = 0;
         Inputs[0] = Input;
         SendInput(1, Inputs, INPUT.Size);
 
+        Thread.Sleep(50);
 
         Input = new INPUT();
         Input.type = 1; // keyboard
-        //Input.U.ki.wScan = ScanCodeShort.RETURN;
-        Input.U.ki.wScan = 0;
-        Input.U.ki.time = 0;
-        Input.U.ki.wVk = VirtualKeyShort.RETURN;
-        //Input.U.ki.wVk = VirtualKeyShort.ESCAPE;
         Input.U.ki.dwFlags = KEYEVENTF.KEYUP;
+        Input.U.ki.wScan = ScanCodeShort.RETURN;
+        //Input.U.ki.wScan = 0;
+        Input.U.ki.time = 0;
+        //Input.U.ki.wVk = VirtualKeyShort.RETURN;
+        Input.U.ki.wVk = 0;
         Inputs[0] = Input;
-        //SendInput(1, Inputs, INPUT.Size);
+        SendInput(1, Inputs, INPUT.Size);
         Console.WriteLine("EnterKeyInput(): exit");
 
     }
@@ -219,7 +277,7 @@ public class GameControl
         Input.U.mi.time = 0;
         Input.U.mi.dwFlags = (MOUSEEVENTF.LEFTDOWN | MOUSEEVENTF.LEFTUP);
         Inputs[0] = Input;
-        
+
         //Input = new INPUT();
         //Input.U.mi.dx = currentMouseState.X;
         //Input.U.mi.dy = currentMouseState.Y;
@@ -637,7 +695,7 @@ public class GameControl
         ///</summary>
         KEY_Z = 0x5A,
         ///<summary>
-        ///Left Windows key (Microsoft Natural keyboard) 
+        ///Left Windows key (Microsoft Natural keyboard)
         ///</summary>
         LWIN = 0x5B,
         ///<summary>
@@ -781,23 +839,23 @@ public class GameControl
         ///</summary>
         F16 = 0x7F,
         ///<summary>
-        ///F17 key  
+        ///F17 key
         ///</summary>
         F17 = 0x80,
         ///<summary>
-        ///F18 key  
+        ///F18 key
         ///</summary>
         F18 = 0x81,
         ///<summary>
-        ///F19 key  
+        ///F19 key
         ///</summary>
         F19 = 0x82,
         ///<summary>
-        ///F20 key  
+        ///F20 key
         ///</summary>
         F20 = 0x83,
         ///<summary>
-        ///F21 key  
+        ///F21 key
         ///</summary>
         F21 = 0x84,
         ///<summary>
@@ -805,11 +863,11 @@ public class GameControl
         ///</summary>
         F22 = 0x85,
         ///<summary>
-        ///F23 key  
+        ///F23 key
         ///</summary>
         F23 = 0x86,
         ///<summary>
-        ///F24 key  
+        ///F24 key
         ///</summary>
         F24 = 0x87,
         ///<summary>
@@ -861,7 +919,7 @@ public class GameControl
         ///</summary>
         BROWSER_STOP = 0xA9,
         ///<summary>
-        ///Windows 2000/XP: Browser Search key 
+        ///Windows 2000/XP: Browser Search key
         ///</summary>
         BROWSER_SEARCH = 0xAA,
         ///<summary>
@@ -941,23 +999,23 @@ public class GameControl
         ///</summary>
         OEM_2 = 0xBF,
         ///<summary>
-        ///Used for miscellaneous characters; it can vary by keyboard. 
+        ///Used for miscellaneous characters; it can vary by keyboard.
         ///</summary>
         OEM_3 = 0xC0,
         ///<summary>
-        ///Used for miscellaneous characters; it can vary by keyboard. 
+        ///Used for miscellaneous characters; it can vary by keyboard.
         ///</summary>
         OEM_4 = 0xDB,
         ///<summary>
-        ///Used for miscellaneous characters; it can vary by keyboard. 
+        ///Used for miscellaneous characters; it can vary by keyboard.
         ///</summary>
         OEM_5 = 0xDC,
         ///<summary>
-        ///Used for miscellaneous characters; it can vary by keyboard. 
+        ///Used for miscellaneous characters; it can vary by keyboard.
         ///</summary>
         OEM_6 = 0xDD,
         ///<summary>
-        ///Used for miscellaneous characters; it can vary by keyboard. 
+        ///Used for miscellaneous characters; it can vary by keyboard.
         ///</summary>
         OEM_7 = 0xDE,
         ///<summary>
@@ -1003,7 +1061,7 @@ public class GameControl
         ///</summary>
         ZOOM = 0xFB,
         ///<summary>
-        ///Reserved 
+        ///Reserved
         ///</summary>
         NONAME = 0xFC,
         ///<summary>

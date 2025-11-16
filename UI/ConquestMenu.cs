@@ -21,6 +21,7 @@ public class ConquestMenu
     PlayGameMenu? playGameMenu;
     JoinGameScreen? joinGameScreen;
     Image gcImage = new Image();
+    //Dictionary<int, EventHandler> SelectedIndexToEventHandler = new Dictionary<int, EventHandler>();
 
 
     public ConquestMenu(Game game, Grid grid)
@@ -67,15 +68,33 @@ public class ConquestMenu
         joinGameScreen = new JoinGameScreen(this, game, grid);
         joinGameScreen.LoadContent();
 
+        // actionMapper allows our game controller to invoke menu items
+        GlobalConquestGame gcGame = (GlobalConquestGame)game;
+        GameControlActionMapper actionMapper = gcGame.GameControl.GameControlActionMapper;
+        actionMapper.registerControlMethod(playGameMenuItem.Id, this, "playGameMenuItemSelected");
+        actionMapper.registerControlMethod(joinGameMenuItem.Id, this, "joinGameMenuItemSelected");
+        actionMapper.registerControlMethod(quitMenuItem.Id, this, "quitMenuItemSelected");
+        actionMapper.registerSelectedIndex(conquestVerticalMenu.Id, 0, playGameMenuItem.Id);
+        actionMapper.registerSelectedIndex(conquestVerticalMenu.Id, 1, joinGameMenuItem.Id);
+        actionMapper.registerSelectedIndex(conquestVerticalMenu.Id, 2, quitMenuItem.Id);
+
         show();
     }
 
     private void quitMenuItemSelected(object? sender, EventArgs e)
     {
+        quitMenuItemSelected();
+    }
+    public void quitMenuItemSelected()
+    {
         game.Exit();
     }
 
     private void playGameMenuItemSelected(object? sender, EventArgs e)
+    {
+        playGameMenuItemSelected();
+    }
+    public void playGameMenuItemSelected()
     {
         this.hide();
         playGameMenu?.show();
@@ -83,9 +102,14 @@ public class ConquestMenu
 
     private void joinGameMenuItemSelected(object? sender, EventArgs e)
     {
+        joinGameMenuItemSelected();
+    }
+    public void joinGameMenuItemSelected()
+    {
         this.hide();
         joinGameScreen?.show();
     }
+
 
 
 
