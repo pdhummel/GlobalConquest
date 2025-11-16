@@ -65,6 +65,12 @@ public class GameControl
             gcGame.handleRightClick();
         }
 
+        if ((gamepadState.Buttons.X == ButtonState.Pressed && previousGamepadState.Buttons.X == ButtonState.Released) ||
+            (gamepadState2.Buttons.X == ButtonState.Pressed && previousGamepadState2.Buttons.X == ButtonState.Released))
+        {
+            gcGame.handleLongLeftClick();
+        }
+
         //float deadZone = 0.2f;
         float leftThumbstickX = gamepadState.ThumbSticks.Left.X;
         float rightThumbstickX = gamepadState.ThumbSticks.Right.X;

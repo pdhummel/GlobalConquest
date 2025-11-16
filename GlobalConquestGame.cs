@@ -537,7 +537,7 @@ public class GlobalConquestGame : Game
 
     public void handleLeftClick()
     {
-        if (MainGameScreen == null)
+        if (MainGameScreen == null || hexMapEngineAdapter == null)
             return;
         if (
             GameControl.currentMouseState.X >= 0 && GameControl.currentMouseState.X >= MainGameScreen.MapPanel.Left &&
@@ -584,7 +584,7 @@ public class GlobalConquestGame : Game
 
     public void handleRightClick()
     {
-        if (MainGameScreen == null)
+        if (MainGameScreen == null || hexMapEngineAdapter == null)
             return;
         if (
             GameControl.currentMouseState.X >= 0 && GameControl.currentMouseState.X >= MainGameScreen.MapPanel.Left &&
