@@ -51,6 +51,28 @@ public class GameControlActionMapper
                 }
             }
         }
+        if ("Myra.Graphics2D.UI.HorizontalMenu".Equals(widget.GetType().ToString()))
+        {
+            HorizontalMenu horizontalMenu = (HorizontalMenu)widget;
+            if (widget.Id != null && MenuIdToSelectedIndexMap.ContainsKey(widget.Id))
+            {
+                Console.WriteLine("invoke(): " + widget.Id + " in MenuIdToSelectedIndexMap");
+                Dictionary<int, string> map = MenuIdToSelectedIndexMap[widget.Id];
+                int selectedIndex = -1;
+                if (horizontalMenu.SelectedIndex != null)
+                    selectedIndex = (int)horizontalMenu.SelectedIndex;
+                else if (horizontalMenu.HoverIndex != null)
+                    selectedIndex = (int)horizontalMenu.HoverIndex;
+                if (map.ContainsKey(selectedIndex))
+                {
+                    string menuItemId = map[selectedIndex];
+                    controlId = menuItemId;
+                    Console.WriteLine("invoke(): controlId=" + menuItemId);
+                }
+            }
+        }
+
+
         if (controlId != null && IdToMethodName.ContainsKey(controlId) && IdToObject.ContainsKey(controlId))
         {
             Console.WriteLine("invoke(): " + controlId + " properly registered");

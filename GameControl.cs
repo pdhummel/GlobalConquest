@@ -233,6 +233,10 @@ public class GameControl
                 {
                     GameControlActionMapper.invoke(child);
                 }
+                else if ("Myra.Graphics2D.UI.HorizontalMenu".Equals(child.GetType().ToString()))
+                {
+                    GameControlActionMapper.invoke(child);
+                }
                 else if ("Myra.Graphics2D.UI.Button".Equals(child.GetType().ToString()))
                 {
                     ((Button)child).DoClick();
@@ -248,7 +252,7 @@ public class GameControl
                 //Myra.Graphics2D.UI.ComboView visibilityComboView
                 else if ("Myra.Graphics2D.UI.ComboView".Equals(child.GetType().ToString()))
                 {
-                    //((ComboView)child).
+                    //((ComboView)child)
                 }
                 else
                 {
