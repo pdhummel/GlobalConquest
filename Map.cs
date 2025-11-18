@@ -6,6 +6,9 @@ namespace GlobalConquest;
 public class Map
 {
     public MapHex[,] Hexes { get; set; }
+    Dictionary<string, Node> allNodesGraph = new Dictionary<string, Node>();
+    Dictionary<string, Node> seaNodesGraph = new Dictionary<string, Node>();
+    Dictionary<string, Node> landNodesGraph = new Dictionary<string, Node>();
     public int Y { get; set; }
     public int X { get; set; }
     public string VisibilityMode { get; set; }
@@ -26,6 +29,7 @@ public class Map
         Y = y;
         X = x;
         Hexes = generateMap(y, x);
+        buildNodesForShortestPath();
         IsMapReady = true;
         List<string> colors = ["amber", "ocher", "magenta", "cyan", "grey"];
         foreach (string color in colors)
@@ -596,9 +600,82 @@ public class Map
 
     public List<UnitAction> determineSeaPath(MapHex origin, MapHex destination)
     {
+        Console.WriteLine("determineSeaPath(): from " + origin.X + "," + origin.Y + " to " + destination.X + "," + destination.Y);
         List<UnitAction> path = new List<UnitAction>();
-        
+        Node originNode = new Node(origin);
+        Node destinationNode = new Node(destination);
+        Dictionary<string, string> previousNodes = DijkstraAlgorithm.FindShortestPaths(allNodesGraph, originNode.Name);
+        //Console.WriteLine("determineSeaPath(): " + predecessors.Count);
+        Node node = destinationNode;
+
+        List<string> nodesInPath = DijkstraAlgorithm.ReconstructPath(previousNodes, originNode.Name, destinationNode.Name);
+
+        foreach (string nodeName in nodesInPath)
+        {
+            Console.WriteLine("determineSeaPath(): nodeName=" + nodeName);
+        }
+
         return path;
     }
+
+    private void buildNodesForShortestPath()
+    {
+        Console.WriteLine("buildNodesForShortestPath(): enter");
+        for (int y = 0; y < Y; y++)
+        {
+            for (int x = 0; x < X; x++)
+            {
+                MapHex mapHex = Hexes[y, x];
+                Node node = new Node(mapHex);
+                List<MapHex> neighbors = getSurroundingHexesList(mapHex);
+                allNodesGraph[node.Name] = node;
+                List<Edge> edges = new List<Edge>();
+                foreach (MapHex neighbor in neighbors)
+                {
+                    Node targetNode = new Node(neighbor);
+                    Edge edge = new Edge(targetNode);
+                    edges.Add(edge);
+                }
+                node.Edges = edges;
+
+                if ("sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain))
+                {
+                    Node seaNode = new Node(mapHex);
+                    seaNodesGraph[seaNode.Name] = seaNode;
+                    List<Edge> seaEdges = new List<Edge>();
+                    foreach (MapHex neighbor in neighbors)
+                    {
+                        Node targetNode = new Node(neighbor);
+                        if ("sea".Equals(neighbor.Terrain) || "swamp".Equals(neighbor.Terrain) || "marsh".Equals(neighbor.Terrain))
+                        {
+                            Edge edge = new Edge(targetNode);
+                            seaEdges.Add(edge);
+                        }
+                    }
+                    seaNode.Edges = seaEdges;
+                }
+
+                if (!"sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain))
+                {
+                    Node landNode = new Node(mapHex);
+                    landNodesGraph[node.Name] = node;
+                    List<Edge> landEdges = new List<Edge>();
+                    foreach (MapHex neighbor in neighbors)
+                    {
+                        Node targetNode = new Node(neighbor);
+                        if (!"sea".Equals(neighbor.Terrain) || "swamp".Equals(neighbor.Terrain) || "marsh".Equals(neighbor.Terrain))
+                        {
+                            Edge edge = new Edge(targetNode);
+                            landEdges.Add(edge);
+                        }
+                    }
+                    landNode.Edges = landEdges;
+                }
+
+            }
+        }
+        Console.WriteLine("buildNodesForShortestPath(): allNodes=" + allNodesGraph.Count + ", seaNodes=" + seaNodesGraph.Count + ", landNodes=" + landNodesGraph.Count);
+    }
+
 
 }
