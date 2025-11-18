@@ -604,17 +604,26 @@ public class Map
         List<UnitAction> path = new List<UnitAction>();
         Node originNode = new Node(origin);
         Node destinationNode = new Node(destination);
-        Dictionary<string, string> previousNodes = DijkstraAlgorithm.FindShortestPaths(allNodesGraph, originNode.Name);
-        //Console.WriteLine("determineSeaPath(): " + predecessors.Count);
+        Dictionary<string, string> previousNodes = DijkstraAlgorithm.FindShortestPaths(seaNodesGraph, originNode.Name);
         Node node = destinationNode;
-
         List<string> nodesInPath = DijkstraAlgorithm.ReconstructPath(previousNodes, originNode.Name, destinationNode.Name);
-
         foreach (string nodeName in nodesInPath)
         {
-            Console.WriteLine("determineSeaPath(): nodeName=" + nodeName);
+            Console.WriteLine("determineSeaPath(): " + nodeName);
+            UnitAction unitAction = new UnitAction();
+            unitAction.Action = "move";
+            string[] parts = nodeName.Split(",");
+            int x = Int32.Parse(parts[0]);
+            int y = Int32.Parse(parts[1]);
+            if (x != origin.X || y != origin.Y)
+            {
+                unitAction.TargetX = x;
+                unitAction.TargetY = y;
+                unitAction.Ticks = DateTime.Now.Ticks;
+                path.Add(unitAction);
+            }
         }
-
+        Console.WriteLine("determineSeaPath(): path=" + path.Count);
         return path;
     }
 

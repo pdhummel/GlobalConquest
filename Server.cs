@@ -185,6 +185,7 @@ public class Server
             GameEvent gameEvent = new GameEvent();
             gameEvent.EventType = "gameStateAndMapUpdate";
             gameEvent.GameState = gameState;
+            gameEvent.MapHex = gameState.Map.Hexes[y, x];
             gameState.MapHex = gameState.Map.Hexes[y, x];
             string jsonString = JsonSerializer.Serialize(gameEvent);
             writer.Put(jsonString);
@@ -285,7 +286,7 @@ public class Server
             }
         }
     }
-     
+
     public void sendMapBuffer(NetPeer peer, List<MapHex> mapHexBuffer, bool isLast)
     {
         Console.WriteLine("sendMapBuffer(): peer=" + peer + ", mapHexBuffer=" + mapHexBuffer.Count);

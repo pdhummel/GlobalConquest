@@ -36,6 +36,8 @@ public class MoveUnitAction : PlayerAction
         {
             MapHex mapHex = gameState.Map.Hexes[Unit.Y, Unit.X];
             Unit existingUnit = mapHex.getUnit();
+
+            // TODO: why am I doing this?
             if (existingUnit.UnitIdToPursue != null)
             {
                 existingUnit.UnitToPursueX = -1;
@@ -43,16 +45,33 @@ public class MoveUnitAction : PlayerAction
                 existingUnit.UnitIdToPursue = null;
                 existingUnit.ActionQueue.Clear();
             }
-            //Console.WriteLine("execute(): actions before " + existingUnit?.ActionQueue.Count);
+
             if (IsMultiHexMove)
             {
                 existingUnit?.addUnitAction(unitAction);
             }
             else
             {
-                existingUnit?.setUnitAction(unitAction);
+                MapHex destination = gameState.Map.Hexes[ToY, ToX];
+                if (("sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)) &&
+                    ("sea".Equals(destination.Terrain) || "swamp".Equals(destination.Terrain) || "marsh".Equals(destination.Terrain)))
+                {
+                    List<UnitAction> path = gameState.Map.determineSeaPath(mapHex, destination);
+                    if (path != null && path.Count > 0)
+                    {
+                        foreach (UnitAction moveAction in path)
+                        {
+                            existingUnit?.addUnitAction(moveAction);
+                        }
+                    }
+                }
+                else
+                {
+                    existingUnit?.setUnitAction(unitAction);
+                }
             }
-            //Console.WriteLine("execute(): actions after " + existingUnit?.ActionQueue.Count);
+
+            // Patrol logic
             int maxIndex = (int)(existingUnit.ActionQueue.Count) - 1;
             if (existingUnit.ActionQueue.Count > 1 &&
                 Unit.X == existingUnit?.ActionQueue[maxIndex].TargetX &&
@@ -70,6 +89,12 @@ public class MoveUnitAction : PlayerAction
                 existingUnit?.Patrol.Clear();
             }
 
+            //Console.WriteLine("execute(): ActionQueue=" + existingUnit.ActionQueue.Count);
+            //foreach (UnitAction moveAction in existingUnit.ActionQueue)
+            //{
+            //    Console.WriteLine("execute(): moveAction=" + moveAction.TargetX + "," + moveAction.TargetY);
+            //}
+            //gameState.Map.Hexes[Unit.Y, Unit.X].setUnit(existingUnit);
             server.sendGameStateAndMapHex(Unit.X, Unit.Y);
         }
     }
