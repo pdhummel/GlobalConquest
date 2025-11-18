@@ -1,4 +1,5 @@
 using System.Text.Json;
+using GlobalConquest.Actions;
 using GlobalConquest.Units;
 namespace GlobalConquest;
 
@@ -591,6 +592,13 @@ public class Map
     {
         float distance = (float)Math.Sqrt((Math.Pow(mapHex1.X - mapHex2.X, 2) + Math.Pow(mapHex1.Y - mapHex2.Y, 2)));
         return distance;
+    }
+
+    public List<UnitAction> determineSeaPath(MapHex origin, MapHex destination)
+    {
+        List<UnitAction> path = new List<UnitAction>();
+        
+        return path;
     }
 
 }

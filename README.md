@@ -54,6 +54,21 @@ The game is being designed with known differences from the original.
 
 ### Milestone 4
 - [ ] AI opponents
+  - [x] Infantry support with brute force pathing.
+  - [ ] Sea units and sea pathing.
+  - [ ] Armor support?
+  - [ ] Advanced land unit pathing.
+  - [ ] Exploration goals.
+    - [ ] spy
+    - [ ] infantry
+    - [ ] sea units (sub?)
+  - [ ] Conquest goals.
+    - [ ] Mass attack force.
+    - [ ] Reset after failed attack.
+  - [ ] Defense goals.
+    - [ ] infantry
+    - [ ] subs
+    - [ ] metro defense force.
 - [x] Add natives
 - [x] Add more victory conditions.
   - [x] Add number of turns game setting.
@@ -62,6 +77,20 @@ The game is being designed with known differences from the original.
 
 ### Milestone 5
 - [ ] Airplanes
+  - [ ] A plane can occupy any land burb hex. (separate layer from regular units)
+  - [ ] A plane can occupy a comcen or a carrier.
+  - [ ] Airplanes screen view.
+  - [ ] Airplane Actions
+    - [ ] Recon
+    - [ ] Strike
+    - [ ] Transfer
+    - [ ] Paradrop
+    - [ ] Bomb
+    - [ ] Dogfight
+    - [ ] Kamikaze
+    - [ ] Home?
+    - [ ] Orbit?
+- [ ] AI support for planes.
 
 ### Milestone 6
 - [ ] Host Game and Join Game setting validations.
@@ -82,7 +111,7 @@ The game is being designed with known differences from the original.
 - [ ] Treaties
 
 ### Milestone 9
-- [ ] Events
+- [ ] Event Cards
 
 ### Milestone 10
 - [ ] Make server headless.
@@ -141,5 +170,12 @@ This is best supported by mouse and keyboard. However, some effort has been made
   * Some UI elements like comboboxes and nested menus might not work appropriately.
 * The B button will behave like a mouse right click. (context menus)
 * The X button will act like a long click of the left mouse button. (movement waypoints)
+
+
+## Known Issues
+* Functional gaps from incomplete milestones.
+- [ ] Shouldn't be able to see pathing of enemy units.
+- [ ] Game controller cannot change comboboxes.
+- [ ] Game controller cannot navigate nested menus -- i.e., File, View.
 
 
