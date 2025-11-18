@@ -117,7 +117,29 @@ https://www.redblobgames.com/maps/terrain-from-noise/.
 
 Or maybe more easily, download the binary zip package to a 64 bit Windows machine and run `GlobalConquest.exe`.
 
-### Personal Notes
-I am mostly a java enterprise developer by trade -- distributed programming, REST APIs, cloud tools. Python is also one of my favorite productive ways to get stuff done too.
+## User Interface
+This is best supported by mouse and keyboard. However, some effort has been made to work with game controllers as well.
+### Mouse
+* Mouse move used to move the mouse cursor.
+* Left click is used to select menu option items and activate buttons.
+* Left click on a hex on the main map will give information about that hex in the bottom right details panel.
+* Left click on the mini-map will update the position of the focus box and recenter the main map accordingly.
+* Right click on a unit you own, and a context menu will appear.
+  * The Move action will make a line appear indicating the unit path. 
+    * Click the left mouse button on a hex to select the target so the unit will move there.
+    * Long/hard click of the left mouse button to set a waypoint for movement and to draw a line to the next segment in the unit path.
+* Right click on an unoccupied burb hex you own, and a context menu will appear.
 
-So DotNet and CSharp are not my current strengths, and so you may find that my CSharp code smells like java.
+### Keyboard
+* Use the arrow keys to scroll and pan the map.
+
+### Game Controller
+* The left thumbstick will move the mouse cursor.
+* The right thumbstick will also move the mouse cursor, but at a faster rate.
+* The dpad is used like the keyboard arrow keys to scroll and pan the map.
+* The A button will in many cases behave like a mouse left click. (hex inspection)
+  * Some UI elements like comboboxes and nested menus might not work appropriately.
+* The B button will behave like a mouse right click. (context menus)
+* The X button will act like a long click of the left mouse button. (movement waypoints)
+
+

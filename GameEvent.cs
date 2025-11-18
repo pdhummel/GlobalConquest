@@ -24,6 +24,8 @@ public class GameEvent
     public string EventType { get; set; }
     public long Ticks { get; set; }
     public MapHex? MapHex { get; set; }
+    public List<MapHex>? MapHexBuffer { get; set; } = new List<MapHex>();
+    public bool IsLastMapHexBufferUpdate {get; set;} = false;
     public string? UnitType { get; set; }
     public string? EnemyColor { get; set; }
     public GameState? GameState { get; set; }

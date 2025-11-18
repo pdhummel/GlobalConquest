@@ -213,6 +213,7 @@ public class GameLogic
 
     public void startGame(Server server)
     {
+        Console.WriteLine("startGame(): enter");
         GameState gameState = server.gameState;
         for (int liY = 0; liY < gameState.Map.Y; liY++)
         {

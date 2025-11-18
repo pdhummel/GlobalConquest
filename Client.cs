@@ -116,9 +116,48 @@ public class Client
     private void OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod)
     {
         var jsonString = reader.GetString();
-        GameState oldGameState = GameState;
+        //GameState oldGameState = GameState;
         GameEvent? gameEvent = JsonSerializer.Deserialize<GameEvent>(jsonString);
+        if (gameEvent != null)
+            Console.WriteLine("OnNetworkReceive(): gameEvent=" + gameEvent.EventType);
+        if (gameEvent != null && "mapUpdate".Equals(gameEvent.EventType))
+        {
+            updateMap(gameEvent);
+            return;
+        }
+        else if (gameEvent != null && "gameStateUpdate".Equals(gameEvent.EventType))
+        {
+            GameState? newGameState = gameEvent.GameState;
+            if (GameState.Map != null && GameState.Map.IsMapReady)
+                newGameState.Map = GameState.Map;
+            GameState = newGameState;
+        }
+        else if (gameEvent != null && "gameStateAndMapUpdate".Equals(gameEvent.EventType))
+        {
+            GameState? newGameState = gameEvent.GameState;
+            if (GameState.Map != null && GameState.Map.IsMapReady)
+                newGameState.Map = GameState.Map;
+
+            if (gameEvent.MapHex != null)
+                GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X] = gameEvent.MapHex;
+            // else if (GameState.Map != null && GameState.Map.Hexes != null && gameEvent.GameState != null && gameEvent.GameState.MapHex != null)
+            else if (gameEvent.GameState != null && gameEvent.GameState.MapHex != null)
+                GameState.Map.Hexes[gameEvent.GameState.MapHex.Y, gameEvent.GameState.MapHex.X] = gameEvent.GameState.MapHex;
+            GameState = newGameState;
+
+        }
+
+        if ("plan".Equals(GameState.CurrentPhase) && GameState.PlayerPlanningReady.ContainsKey(ClientIdentifier) && GameState.PlayerPlanningReady[ClientIdentifier] == false)
+        {
+            PlanningReadyAction action = new PlanningReadyAction();
+            action.ClassType = "GlobalConquest.Actions.PlanningReadyAction";  //executeAction.GetType().FullName
+            action.ClientIdentifier = ClientIdentifier;
+            SendAction(ClientIdentifier, action);
+            GameState.PlayerPlanningReady[ClientIdentifier] = true;
+        }
+
         // Note that the full Map is never sent from the server to the client b/c the content is too large.
+        /*
         GameState? newGameState = gameEvent.GameState;
         if (newGameState != null && oldGameState != null && (newGameState.Ticks > oldGameState.Ticks || newGameState.MapHex != null))
         {
@@ -132,8 +171,8 @@ public class Client
                 newGameState.Map = new Map();
                 newGameState.Map.Y = newGameState.GameSettings.Height;
                 newGameState.Map.X = newGameState.GameSettings.Width;
-
             }
+
             if (newGameState.Map.Hexes == null)
             {
                 //Console.WriteLine("OnNetworkReceive(): Updating map hexes in new game state");
@@ -165,6 +204,7 @@ public class Client
                     }
                 }
             }
+
             if (newGameState.MapHex != null)
             {
                 Console.WriteLine("OnNetworkReceive(): updating MapHex " + newGameState.MapHex.X + "," + newGameState.MapHex.Y);
@@ -207,7 +247,72 @@ public class Client
             }
             SendAction(player.Name, action);
         }
+        */
+
         reader.Recycle(); // Free up the data reader
+    }
+
+    private void updateMap(GameEvent gameEvent)
+    {
+        Console.WriteLine("updateMap(): gameEvent mapHexBuffer=" + gameEvent.MapHexBuffer.Count);
+        if (GameState != null)
+        {
+            if (GameState.Map == null)
+            {
+                Console.WriteLine("updateMap(): new Map");
+                GameState.Map = new Map();
+                Map map = GameState.Map;
+                GameSettings gameSettings = GameState.GameSettings;
+                map.Y = gameSettings.Height;
+                map.X = gameSettings.Width;
+                map.Hexes = new MapHex[gameSettings.Height, gameSettings.Width];
+            }
+            if (GameState.Map.Hexes == null)
+            {
+                GameState.Map.Hexes = new MapHex[GameState.GameSettings.Height, GameState.GameSettings.Width];
+            }
+                
+            for (int liY = 0; liY < GameState.GameSettings.Height; liY++)
+            {
+                for (int liX = 0; liX < GameState.GameSettings.Width; liX++)
+                {
+                    if (GameState.Map.Hexes[liY, liX] == null)
+                    {
+                        //Console.WriteLine("OnNetworkReceive(): new MapHex");
+                        MapHex mapHex = new MapHex();
+                        mapHex.Y = liY;
+                        mapHex.X = liX;
+                        mapHex.Terrain = "sea";     // this is temporary so should not matter
+                        GameState.Map.Hexes[liY, liX] = mapHex;
+                    }
+                }
+            }
+
+
+            if (gameEvent.MapHex != null)
+            {
+                Console.WriteLine("updateMap(): sync mapHex");
+                GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X] = gameEvent.MapHex;
+            }
+            if (gameEvent.MapHexBuffer != null)
+            {
+                Console.WriteLine("updateMap(): sync mapHexBuffer, IsLastMapHexBufferUpdate=" + gameEvent.IsLastMapHexBufferUpdate);
+                foreach (MapHex mapHex in gameEvent.MapHexBuffer)
+                {
+                    GameState.Map.Hexes[mapHex.Y, mapHex.X] = mapHex;
+                }
+
+                if (!isLoadContentComplete && gameEvent.IsLastMapHexBufferUpdate)
+                {
+                    GameState.Map.IsMapReady = true;
+                    Console.WriteLine("updateMap(): Loading map content into client hexMapEngineAdapter");
+                    GlobalConquestGame?.HexMapLoadContent();
+                    isLoadContentComplete = true;
+                }
+
+            }
+        }
+
     }
 
     private void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)

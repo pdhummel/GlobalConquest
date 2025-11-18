@@ -107,6 +107,7 @@ public class Server
             server?.PollEvents();
             if (!initialSync && gameState.PlayerJoined.Count >= gameState.GameSettings.NumberOfHumans)
             {
+                Console.WriteLine("ServerLoop(): all clients joined");
                 syncAllMapHexes();
                 initialSync = true;
             }
@@ -116,6 +117,7 @@ public class Server
 
     public void syncAllMapHexes()
     {
+        Console.WriteLine("syncAllMapHexes(): enter");
         for (int liY = 0; liY < gameState.Map.Y; liY++)
         {
             for (int liX = 0; liX < gameState.Map.X; liX++)
@@ -124,9 +126,11 @@ public class Server
                 {
                     gameState.Map.Hexes[liY, liX].makeVisibleToAll();
                 }
-                sendGameStateAndMapHex(liX, liY);
+                //sendGameStateAndMapHex(liX, liY);
             }
         }
+        sendGameState();
+        sendMap(null);
     }
 
     public void sendGameState()
@@ -222,6 +226,84 @@ public class Server
             writer.Reset();
         }
     }
+
+    public void sendMap(NetPeer? peer)
+    {
+        Console.WriteLine("sendMap(): peer=" + peer);
+        List<MapHex> mapHexBuffer = new List<MapHex>();
+        Map map = gameState.Map;
+        int bufferSize = 50;
+        for (int y = 0; y < map.Y; y++)
+        {
+            for (int x = 0; x < map.X; x++)
+            {
+                mapHexBuffer.Add(map.Hexes[y, x]);
+                if (mapHexBuffer.Count >= bufferSize)
+                {
+                    if (peer != null)
+                    {
+                        sendMapBuffer(peer, mapHexBuffer, false);
+                    }
+                    else
+                    {
+                        sendMapBuffer(mapHexBuffer, false);
+                    }
+                    mapHexBuffer.Clear();
+                }
+            }
+        }
+        if (mapHexBuffer.Count <= 0)
+            mapHexBuffer.Add(map.Hexes[0, 0]);
+        if (mapHexBuffer.Count > 0)
+        {
+            if (peer != null)
+            {
+                sendMapBuffer(peer, mapHexBuffer, true);
+            }
+            else
+            {
+                sendMapBuffer(mapHexBuffer, true);
+            }
+            mapHexBuffer.Clear();
+        }
+    }
+
+    public void sendMapBuffer(List<MapHex> mapHexBuffer, bool isLast)
+    {
+        Console.WriteLine("sendMapBuffer(): mapHexBuffer=" + mapHexBuffer.Count);
+        int count = server.ConnectedPeerList.Count;
+        for (int i = 0; i < count; i++)
+        {
+            if (i < server.ConnectedPeerList.Count)
+            {
+                NetPeer peer = server.ConnectedPeerList[i];
+                sendMapBuffer(peer, mapHexBuffer, isLast);
+            }
+            else
+            {
+                Console.WriteLine("sendMapBuffer(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
+            }
+        }
+    }
+     
+    public void sendMapBuffer(NetPeer peer, List<MapHex> mapHexBuffer, bool isLast)
+    {
+        Console.WriteLine("sendMapBuffer(): peer=" + peer + ", mapHexBuffer=" + mapHexBuffer.Count);
+        NetDataWriter writer = new NetDataWriter();
+        if (server != null)
+        {
+            GameEvent gameEvent = new GameEvent();
+            gameEvent.EventType = "mapUpdate";
+            gameEvent.MapHexBuffer = mapHexBuffer;
+            gameEvent.GameState = null;
+            gameEvent.IsLastMapHexBufferUpdate = isLast;
+            string jsonString = JsonSerializer.Serialize(gameEvent);
+            writer.Put(jsonString);
+            peer.Send(writer, DeliveryMethod.ReliableOrdered);
+            writer.Reset();
+        }
+    }
+
 
     private void StopServer()
     {
