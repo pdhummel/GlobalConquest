@@ -55,20 +55,20 @@ The game is being designed with known differences from the original.
 ### Milestone 4
 - [ ] AI opponents
   - [x] Infantry support with brute force pathing.
-  - [ ] Sea units and sea pathing.
+  - [x] Sea units and sea pathing.
   - [ ] Armor support?
-  - [ ] Advanced land unit pathing.
-  - [ ] Exploration goals.
-    - [ ] spy
-    - [ ] infantry
-    - [ ] sea units (sub?)
+  - [x] Advanced land unit pathing.
+  - [x] Exploration goals.
+    - [x] spy
+    - [x] infantry
+    - [x] sea units (sub)
   - [ ] Conquest goals.
     - [ ] Mass attack force.
     - [ ] Reset after failed attack.
-  - [ ] Defense goals.
-    - [ ] infantry
-    - [ ] subs
-    - [ ] metro defense force.
+  - [x] Defense goals.
+    - [x] infantry
+    - [x] subs
+    - [x] metro defense force.
 - [x] Add natives
 - [x] Add more victory conditions.
   - [x] Add number of turns game setting.
