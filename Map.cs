@@ -88,11 +88,21 @@ public class Map
 
     public void addFixedBurbs(Burbs burbs)
     {
+        bool isEven = false;
+        if (X % 2 == 0)
+            isEven = true;
         burbs.addBurb("Amber Array", "metro", this, Hexes[0, 1], "amber");
-        burbs.addBurb("Ocher Order", "metro", this, Hexes[1, X - 2], "ocher");
         burbs.addBurb("Magenta Mob", "metro", this, Hexes[Y - 2, 1], "magenta");
-        burbs.addBurb("Cyan Circle", "metro", this, Hexes[Y - 1, X - 2], "cyan");
-
+        if (isEven)
+        {
+            burbs.addBurb("Ocher Order", "metro", this, Hexes[1, X - 2], "ocher");
+            burbs.addBurb("Cyan Circle", "metro", this, Hexes[Y - 1, X - 2], "cyan");
+        }
+        else
+        {
+            burbs.addBurb("Ocher Order", "metro", this, Hexes[0, X - 2], "ocher");
+            burbs.addBurb("Cyan Circle", "metro", this, Hexes[Y - 2, X - 2], "cyan");
+        }
         burbs.addBurb("Washington", "capital", this, Hexes[Y / 2, X / 2]);
         LeftMetro["amber"] = MetroLocations["ocher"];
         RightMetro["amber"] = MetroLocations["magenta"];
@@ -663,7 +673,8 @@ public class Map
                     swampCount += 1;
                 if (mapHex.Burb != null)
                     burbCount += 1;
-                if (("sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)))
+                if (("sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)) &&
+                    (mapHex.Burb == null))
                 {
                     Node seaNode = new Node(mapHex);
                     seaNodesGraph[seaNode.Name] = seaNode;

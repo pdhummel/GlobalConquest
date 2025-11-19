@@ -215,6 +215,16 @@ public class Ai
 
     private Unit buildUnits(AiGoal goal)
     {
+        int shouldBuild = 1;
+        if (Faction.Money < 45)
+            shouldBuild = random.Next(0, 20);
+        else if (Faction.Money < 35)
+            shouldBuild = random.Next(0, 10);
+        if (shouldBuild == 0)
+        {
+            Console.WriteLine("buildUnits(): skipping to save money");
+            return null;
+        }
         AiUnit aiUnit = goal.getNextUnitToBuild();
         if (aiUnit == null)
             return null;
@@ -345,7 +355,20 @@ public class Ai
             else if (aiUnit.InitialPosition != null)
             {
                 Console.WriteLine("Ai.moveUnits(): InitialPosition " + aiUnit.Unit.Id + " to " + aiUnit.InitialPosition.X + "," + aiUnit.InitialPosition.Y);
-                moveUnit(unitType, aiUnit.Unit, aiUnit.InitialPosition);
+                if (!"sea".Equals(unitType.LandOrSea))
+                    moveUnit(unitType, aiUnit.Unit, aiUnit.InitialPosition);
+                else
+                {
+                    if ("sea".Equals(aiUnit.InitialPosition.Terrain) || "swamp".Equals(aiUnit.InitialPosition.Terrain) || "marsh".Equals(aiUnit.InitialPosition.Terrain))
+                        moveUnit(unitType, aiUnit.Unit, aiUnit.InitialPosition);
+                    else
+                    {
+                        int distance = 2;
+                        MapHex nearbyHex = findHexAroundBurb(aiUnit.InitialPosition, aiUnit, distance);
+                        if (nearbyHex != null && ("sea".Equals(nearbyHex.Terrain) || "swamp".Equals(nearbyHex.Terrain) || "marsh".Equals(nearbyHex.Terrain)))
+                            moveUnit(unitType, aiUnit.Unit, nearbyHex);
+                    }
+                }
                 count += 1;
             }
             else if (aiUnit.InitialPosition == null && aiUnit.DistanceFromTarget > 1)
@@ -516,7 +539,7 @@ public class Ai
         {
             foreach (MapHex dockHex in map.getSurroundingHexesList(burbHex))
             {
-                if (dockHex.Burb != null && "dock".Equals(dockHex.Burb.Type) && dockHex.getUnit() == null && Faction.Money >= unitType.Cost)
+                if (dockHex.Burb != null && ("dock".Equals(dockHex.Burb.Type) || "sea".Equals(dockHex.Terrain)) && dockHex.getUnit() == null && Faction.Money >= unitType.Cost)
                 {
                     unit = new Unit();
                     unit.UnitType = unitTypeString;
@@ -845,18 +868,32 @@ public class Ai
 
         if (attackGoal.Enemies > 0)
         {
-            AiUnit carrier = new AiUnit();
-            carrier.UnitType = "carrier";
-            carrier.DistanceFromTarget = 4;
-            attackGoal.DesiredUnits.Add(carrier);
-
-            AiUnit battleship = new AiUnit();
-            battleship.UnitType = "battleship";
-            if ("village".Equals(burbHex.Burb.Type) || "town".Equals(burbHex.Burb.Type))
-                battleship.DistanceFromTarget = 3;
-            else
-                battleship.DistanceFromTarget = 4;
-            attackGoal.DesiredUnits.Add(battleship);
+            bool needsCarrier = true;
+            bool needsBattleship = true;
+            foreach (AiUnit actualAiUnit in attackGoal.ActualUnits)
+            {
+                if ("carrier".Equals(actualAiUnit.UnitType))
+                    needsCarrier = false;
+                if ("battleship".Equals(actualAiUnit.UnitType))
+                    needsBattleship = false;
+            }
+            if (needsCarrier)
+            {
+                AiUnit carrier = new AiUnit();
+                carrier.UnitType = "carrier";
+                carrier.DistanceFromTarget = 4;
+                attackGoal.DesiredUnits.Add(carrier);
+            }
+            if (needsBattleship)
+            {
+                AiUnit battleship = new AiUnit();
+                battleship.UnitType = "battleship";
+                if ("village".Equals(burbHex.Burb.Type) || "town".Equals(burbHex.Burb.Type))
+                    battleship.DistanceFromTarget = 3;
+                else
+                    battleship.DistanceFromTarget = 4;
+                attackGoal.DesiredUnits.Add(battleship);
+            }
         }
     }
 }

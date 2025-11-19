@@ -3,18 +3,19 @@ using GlobalConquest.Units;
 
 public class AiGoal
 {
-    public string Type { get; set;} // explore, defend, conquer
-    public bool IsComplete {get; set; } = false;
+    public string Type { get; set; } // explore, defend, conquer
+    public bool IsComplete { get; set; } = false;
     public bool IsGoalStarted { get; set; } = false;    // builds have begun
     public MapHex TargetMapHex { get; set; }
     public HashSet<AiUnit> DesiredUnits = new HashSet<AiUnit>();
     public HashSet<AiUnit> ActualUnits = new HashSet<AiUnit>();
 
-    public int Enemies { get; set;}
+    public int Enemies { get; set; }
     public bool ShouldMoveToTarget { get; set; } = false;
     public bool IsOngoingGoal { get; set; } = false;
 
     public bool UseRandomMovement { get; set; } = false;
+    Random random = new Random();
 
 
     public AiGoal()
@@ -42,23 +43,24 @@ public class AiGoal
         HashSet<AiUnit> remainingDesiredUnits = new HashSet<AiUnit>();
         foreach (AiUnit outer in DesiredUnits)
         {
-           bool isDesiredUnitFound = false;
-           foreach (AiUnit inner in ActualUnits)
-           {
-               if (outer.Unit != null && inner.Unit != null &&
-                   outer.Unit.X == inner.Unit.X && outer.Unit.Y == inner.Unit.Y &&
-                   outer.UnitType == inner.UnitType)
-               {
-                   isDesiredUnitFound = true;
-                   break;
-               }
-           }
-           if (!isDesiredUnitFound)
-               remainingDesiredUnits.Add(outer);
+            bool isDesiredUnitFound = false;
+            foreach (AiUnit inner in ActualUnits)
+            {
+                if (outer.Unit != null && inner.Unit != null &&
+                    outer.Unit.X == inner.Unit.X && outer.Unit.Y == inner.Unit.Y &&
+                    outer.UnitType == inner.UnitType)
+                {
+                    isDesiredUnitFound = true;
+                    break;
+                }
+            }
+            if (!isDesiredUnitFound)
+                remainingDesiredUnits.Add(outer);
         }
         if (remainingDesiredUnits.Count > 0)
         {
-           nextUnit = remainingDesiredUnits.ToList<AiUnit>()[0];
+            int index = random.Next(0, remainingDesiredUnits.Count);
+            nextUnit = remainingDesiredUnits.ToList<AiUnit>()[index];
         }
 
         return nextUnit;
