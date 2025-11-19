@@ -58,7 +58,7 @@ public class Ai
         Console.WriteLine("Ai.planTurn(): faction=" + Faction.Color);
         if (!Faction.HasComCen)
             return;
-        addGoals();
+        //addGoals();
         processGoals();
         moveSpy();
     }
@@ -182,16 +182,25 @@ public class Ai
         AiUnit aiUnit = goal.getNextUnitToBuild();
         if (aiUnit == null)
             return;
+        UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
         Unit newUnit = null;
+
         if ("defend".Equals(goal.Type) && aiUnit.InitialPosition != null && aiUnit.InitialPosition.X == myMetroHex.X && aiUnit.InitialPosition.Y == myMetroHex.Y)
         {
-            newUnit = purchaseUnitAtMetro(aiUnit.UnitType);
+            if ("sea".Equals(unitType.LandOrSea))
+                newUnit = purchaseUnitAtMetroDock(aiUnit.UnitType);
+            else
+                newUnit = purchaseUnitAtMetro(aiUnit.UnitType);
             if (newUnit != null)
                 Console.WriteLine("Ai.buildUnits(): " + newUnit.Id + " built to defend " + Faction.Color + " metro");
         }
         else if ("defend".Equals(goal.Type) && aiUnit.InitialPosition != null && aiUnit.InitialPosition.X == goal.TargetMapHex.X && aiUnit.InitialPosition.Y == goal.TargetMapHex.Y)
         {
-            newUnit = purchaseUnitAtBurb(aiUnit.InitialPosition, aiUnit.UnitType);
+
+            if ("sea".Equals(unitType.LandOrSea))
+                newUnit = purchaseUnitAtBurbDock(aiUnit.InitialPosition, aiUnit.UnitType);
+            else
+                newUnit = purchaseUnitAtBurb(aiUnit.InitialPosition, aiUnit.UnitType);
             if (newUnit != null)
                 Console.WriteLine("Ai.buildUnits(): Burb-InitialPosition " + newUnit.Id + " built to defend burb at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
         }
@@ -252,7 +261,6 @@ public class Ai
         }
         else if ("explore".Equals(goal.Type))
         {
-            UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
             newUnit = purchaseUnitAtMetroDock(aiUnit.UnitType);
             if (newUnit != null)
             {
@@ -276,7 +284,8 @@ public class Ai
     {
         foreach (AiUnit aiUnit in goal.ActualUnits)
         {
-            if (aiUnit.ShouldMoveToTarget || goal.Enemies == 0)
+            UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
+            if ("conquer".Equals(goal.Type) && (aiUnit.ShouldMoveToTarget || goal.Enemies == 0))
             {
                 UnitAction unitAction = new UnitAction();
                 unitAction.Action = "move";
@@ -299,12 +308,25 @@ public class Ai
                 MapHex foundMapHex = findHexAroundBurb(goal, aiUnit);
                 if (foundMapHex != null)
                 {
-                    UnitAction unitAction = new UnitAction();
-                    unitAction.Action = "move";
-                    unitAction.TargetX = foundMapHex.X;
-                    unitAction.TargetY = foundMapHex.Y;
-                    aiUnit.Unit.setUnitAction(unitAction);
-                    Console.WriteLine("Ai.moveUnits(): DistanceFromTarget " + aiUnit.Unit.Id + " to " + unitAction.TargetX + "," + unitAction.TargetY);
+                    MapHex mapHex = map.Hexes[aiUnit.Unit.Y, aiUnit.Unit.X];
+                    List<UnitAction> path = gameState.Map.determineSeaPath(mapHex, foundMapHex);
+                    if (path != null && path.Count > 0)
+                    {
+                        aiUnit.Unit.ActionQueue.Clear();
+                        foreach (UnitAction moveAction in path)
+                        {
+                            aiUnit.Unit.addUnitAction(moveAction);
+                        }
+                    }
+                    else
+                    {
+                        UnitAction unitAction = new UnitAction();
+                        unitAction.Action = "move";
+                        unitAction.TargetX = foundMapHex.X;
+                        unitAction.TargetY = foundMapHex.Y;
+                        aiUnit.Unit.setUnitAction(unitAction);
+                    }
+                    Console.WriteLine("Ai.moveUnits(): DistanceFromTarget " + aiUnit.Unit.Id + " to " + foundMapHex.X + "," + foundMapHex.Y);
                 }
             }
         }
@@ -322,30 +344,13 @@ public class Ai
         if (finalRangeHexes.Contains(mapHex))
             return null;
 
-        /*
-        HashSet<MapHex> finalRangeHexes = new HashSet<MapHex>();
-        // TODO: optimize set subtraction
-        foreach (MapHex outerMapHex in rangeHexes)
-        {
-            bool foundInInner = false;
-            foreach (MapHex innerMapHex in rangeMinusOneHexes)
-            {
-                if (outerMapHex.X == innerMapHex.X && outerMapHex.Y == innerMapHex.Y)
-                {
-                    foundInInner = true;
-                    break;
-                }
-            }
-            if (! foundInInner)
-            {
-                finalRangeHexes.Add(outerMapHex);
-            }
-        }
-        */
         MapHex foundMapHex = null;
         int index = random.Next(0, finalRangeHexes.Count);
         MapHex candidateHex = finalRangeHexes.ToList<MapHex>()[index];
-        if (candidateHex.getUnit() == null)
+        UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
+        if (candidateHex.getUnit() == null && ((!"sea".Equals(unitType.LandOrSea)) ||
+            ("sea".Equals(unitType.LandOrSea) &&
+            ("sea".Equals(candidateHex.Terrain) || "swamp".Equals(candidateHex.Terrain) || "marsh".Equals(candidateHex.Terrain)))))
         {
             foundMapHex = candidateHex;
         }
@@ -353,9 +358,12 @@ public class Ai
         {
             foreach (MapHex searchMapHex in finalRangeHexes)
             {
-                if (searchMapHex.getUnit() == null)
+                if (searchMapHex.getUnit() == null && ((!"sea".Equals(unitType.LandOrSea)) ||
+                    ("sea".Equals(unitType.LandOrSea) &&
+                    ("sea".Equals(searchMapHex.Terrain) || "swamp".Equals(searchMapHex.Terrain) || "marsh".Equals(searchMapHex.Terrain)))))
                 {
                     foundMapHex = searchMapHex;
+                    break;
                 }
             }
         }
@@ -581,15 +589,15 @@ public class Ai
         AiUnit sub1 = new AiUnit();
         sub1.DistanceFromTarget = 5;
         sub1.UnitType = "sub";
-        //defendMetro.DesiredUnits.Add(sub1);
+        defendMetro.DesiredUnits.Add(sub1);
         AiUnit sub2 = new AiUnit();
-        sub1.DistanceFromTarget = 5;
-        sub1.UnitType = "sub";
-        //defendMetro.DesiredUnits.Add(sub2);
+        sub2.DistanceFromTarget = 5;
+        sub2.UnitType = "sub";
+        defendMetro.DesiredUnits.Add(sub2);
         AiUnit sub3 = new AiUnit();
-        sub1.DistanceFromTarget = 5;
-        sub1.UnitType = "sub";
-        //defendMetro.DesiredUnits.Add(sub3);
+        sub3.DistanceFromTarget = 5;
+        sub3.UnitType = "sub";
+        defendMetro.DesiredUnits.Add(sub3);
         AiUnit infantry = new AiUnit();
         infantry.InitialPosition = myMetroHex;
         infantry.UnitType = "infantry";
@@ -597,11 +605,11 @@ public class Ai
         AiUnit battleship = new AiUnit();
         battleship.DistanceFromTarget = 4;
         battleship.UnitType = "battleship";
-        //defendMetro.DesiredUnits.Add(battleship);
+        defendMetro.DesiredUnits.Add(battleship);
         AiUnit carrier = new AiUnit();
         carrier.DistanceFromTarget = 3;
         carrier.UnitType = "carrier";
-        //defendMetro.DesiredUnits.Add(carrier);
+        defendMetro.DesiredUnits.Add(carrier);
         goals.Add(defendMetro);
     }
 

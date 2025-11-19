@@ -118,8 +118,8 @@ public class Client
         var jsonString = reader.GetString();
         //GameState oldGameState = GameState;
         GameEvent? gameEvent = JsonSerializer.Deserialize<GameEvent>(jsonString);
-        if (gameEvent != null)
-            Console.WriteLine("OnNetworkReceive(): gameEvent=" + gameEvent.EventType);
+        //if (gameEvent != null)
+        //    Console.WriteLine("OnNetworkReceive(): gameEvent=" + gameEvent.EventType);
         if (gameEvent != null && "mapUpdate".Equals(gameEvent.EventType))
         {
             updateMap(gameEvent);
