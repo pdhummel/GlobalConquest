@@ -53,7 +53,11 @@ public class MoveUnitAction : PlayerAction
             else
             {
                 MapHex destination = gameState.Map.Hexes[ToY, ToX];
-                if (("sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)) &&
+                if ("comcen".Equals(existingUnit.UnitType) || "spy".Equals(existingUnit.UnitType))
+                {
+                    existingUnit?.setUnitAction(unitAction);
+                }
+                else if (("sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)) &&
                     ("sea".Equals(destination.Terrain) || "swamp".Equals(destination.Terrain) || "marsh".Equals(destination.Terrain)))
                 {
                     List<UnitAction> path = gameState.Map.determineSeaPath(mapHex, destination);

@@ -5,6 +5,7 @@ public class AiGoal
 {
     public string Type { get; set;} // explore, defend, conquer
     public bool IsComplete {get; set; } = false;
+    public bool IsGoalStarted { get; set; } = false;    // builds have begun
     public MapHex TargetMapHex { get; set; }
     public HashSet<AiUnit> DesiredUnits = new HashSet<AiUnit>();
     public HashSet<AiUnit> ActualUnits = new HashSet<AiUnit>();
@@ -61,5 +62,10 @@ public class AiGoal
         }
 
         return nextUnit;
+    }
+
+    public string GoalName()
+    {
+        return TargetMapHex.X + "," + TargetMapHex.Y;
     }
 }

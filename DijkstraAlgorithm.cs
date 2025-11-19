@@ -60,7 +60,10 @@ public class DijkstraAlgorithm
         while (!"-1,-1".Equals(current) && !current.Equals(startNodeId))
         {
             path.Add(current);
-            current = previousNodes[current];
+            if (previousNodes.ContainsKey(current))
+                current = previousNodes[current];
+            else
+                return new List<string>();
         }
         if (current.Equals(startNodeId))
         {

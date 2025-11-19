@@ -362,7 +362,7 @@ public class Server
         if ("plan".Equals(gameState.CurrentPhase))
         {
             executeMethod?.Invoke(subClassAction, parameters);
-            Console.WriteLine("OnNetworkReceive(): invoked method");
+            Console.WriteLine("OnNetworkReceive(): invoked method for " + subClassAction.GetType());
         }
         else
         {

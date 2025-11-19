@@ -610,7 +610,7 @@ public class Map
 
     public List<UnitAction> determinePath(Dictionary<string, Node> graph, MapHex origin, MapHex destination)
     {
-        Console.WriteLine("determinePath(): from " + origin.X + "," + origin.Y + " to " + destination.X + "," + destination.Y);
+        //Console.WriteLine("determinePath(): from " + origin.X + "," + origin.Y + " to " + destination.X + "," + destination.Y);
         List<UnitAction> path = new List<UnitAction>();
         Node originNode = new Node(origin);
         Node destinationNode = new Node(destination);
@@ -619,7 +619,7 @@ public class Map
         List<string> nodesInPath = DijkstraAlgorithm.ReconstructPath(previousNodes, originNode.Name, destinationNode.Name);
         foreach (string nodeName in nodesInPath)
         {
-            Console.WriteLine("determinePath(): " + nodeName);
+            //Console.WriteLine("determinePath(): " + nodeName);
             UnitAction unitAction = new UnitAction();
             unitAction.Action = "move";
             string[] parts = nodeName.Split(",");
@@ -633,7 +633,7 @@ public class Map
                 path.Add(unitAction);
             }
         }
-        Console.WriteLine("determinePath(): path=" + path.Count);
+        Console.WriteLine("determinePath(): path count=" + path.Count + " from " + origin.X + "," + origin.Y + " to " + destination.X + "," + destination.Y);
         return path;
     }
 
