@@ -681,7 +681,7 @@ public class Map
                     seaNode.Edges = seaEdges;
                 }
 
-                if ((!"sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)))
+                if ((!"sea".Equals(mapHex.Terrain)))
                 {
                     Node landNode = new Node(mapHex);
                     landNodesGraph[node.Name] = node;
@@ -689,8 +689,7 @@ public class Map
                     foreach (MapHex neighbor in neighbors)
                     {
                         Node targetNode = new Node(neighbor);
-                        if ((!"sea".Equals(neighbor.Terrain) || "swamp".Equals(neighbor.Terrain) || "marsh".Equals(neighbor.Terrain)) &&
-                            (neighbor.Burb == null))
+                        if ((!"sea".Equals(neighbor.Terrain)) && (neighbor.Burb == null))
                         {
                             Edge edge = new Edge(targetNode);
                             landEdges.Add(edge);

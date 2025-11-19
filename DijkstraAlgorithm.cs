@@ -40,7 +40,7 @@ public class DijkstraAlgorithm
                     if (distances.ContainsKey(currentNodeId))
                         newDistance = distances[currentNodeId] + edge.Weight;
 
-                    if (newDistance < distances[neighborId])
+                    if (distances.ContainsKey(neighborId) && newDistance < distances[neighborId])
                     {
                         distances[neighborId] = newDistance;
                         previousNodes[neighborId] = currentNodeId;
