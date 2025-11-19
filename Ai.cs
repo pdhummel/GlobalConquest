@@ -315,15 +315,22 @@ public class Ai
             UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
             if (aiUnit.Unit != null && aiUnit.LastMapHex != null && aiUnit.Unit.ActionQueue.Count > 0)
             {
+                // See if there is an empty nearby burb to claim
+                freeBurb(aiUnit.Unit, 1);
+                if (aiUnit.Unit.ActionQueue.Count > 0)
+                    continue;
+
                 if (aiUnit.Unit.X == aiUnit.LastMapHex.X && aiUnit.Unit.Y == aiUnit.LastMapHex.Y &&
                     !aiUnit.Unit.IsLoading && !aiUnit.Unit.IsUnloading)
                 {
                     aiUnit.BlockedRounds += 1;
-                    if (aiUnit.BlockedRounds >= 8)
+                    if (aiUnit.BlockedRounds >= 4)
                     {
                         Console.WriteLine("moveUnits(): Unblocking unit " + aiUnit.Unit.Id + " at " + aiUnit.Unit.X + "," + aiUnit.Unit.Y);
                         aiUnit.Unit.ActionQueue.Clear();
-                        randomMovement(aiUnit.Unit);
+                        //freeBurb(aiUnit.Unit);
+                        if (aiUnit.Unit.ActionQueue.Count <= 0)
+                            randomMovement(aiUnit.Unit);
                         aiUnit.LastMapHex = map.Hexes[aiUnit.Unit.Y, aiUnit.Unit.X];
                         aiUnit.BlockedRounds = 0;
                         continue;
@@ -601,7 +608,7 @@ public class Ai
     {
         if (unit != null && unit.StrengthPoints > 0)
         {
-            Console.WriteLine("Ai.randomMovement(): " + unit.UnitType);
+            //Console.WriteLine("Ai.randomMovement(): " + unit.UnitType);
             // 0=capital, 1=left, 2=right, 3=diagonal
             MapHex mapHex = null;
             int randomNumber = random.Next(0, 4);
@@ -620,10 +627,53 @@ public class Ai
                 unitAction.TargetX = mapHex.X;
                 unitAction.TargetY = mapHex.Y;
                 unit.setUnitAction(unitAction);
-                Console.WriteLine("Ai.randomMovement(): " + unit.UnitType + " to " + mapHex.X + "," + mapHex.Y);
+                Console.WriteLine("Ai.randomMovement(): " + unit.Id + " to " + mapHex.X + "," + mapHex.Y);
             }
         }
     }
+
+    private void freeBurb(Unit unit)
+    {
+        freeBurb(unit, 3);
+    }
+
+    private void freeBurb(Unit unit, int range)
+    {
+        if (unit != null && unit.StrengthPoints > 0)
+        {
+            MapHex unitHex = map.Hexes[unit.Y, unit.X];
+            foreach (string burbKey in gameState.Burbs.HexXyToBurb.Keys)
+            {
+                Burb burb = gameState.Burbs.HexXyToBurb[burbKey];
+                MapHex burbHex = map.Hexes[burb.Y, burb.X];
+                List<MapHex> neighbors = map.getSurroundingHexesList(burbHex);
+                int enemies = 0;
+                if (burbHex.getUnit() != null)
+                    enemies = 1;
+                foreach (MapHex neighbor in neighbors)
+                {
+                    Unit enemyUnit = neighbor.getUnit();
+                    if (enemyUnit != null && !enemyUnit.Color.Equals(Faction.Color))
+                        enemies += 1;
+                }
+                if (enemies == 0)
+                {
+                    float distance = map.calculateDistance(unitHex, burbHex);
+                    if (distance <= range)
+                    {
+                        UnitAction unitAction = new UnitAction();
+                        unitAction.Action = "move";
+                        unitAction.TargetX = burbHex.X;
+                        unitAction.TargetY = burbHex.Y;
+                        unit.setUnitAction(unitAction);
+                        Console.WriteLine("Ai.freeBurb(): " + unit.Id + " to " + burbHex.X + "," + burbHex.Y);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
 
     private void createInitialGoals()
     {
