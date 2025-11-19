@@ -370,7 +370,7 @@ class HexMapEngineAdapter
         csScrollDirection = "R";
         Rectangle worldBounds = getPixelWorldBounds();
         int mapPanelWidth = (int)gcGame.MainGameScreen.MapPanel.Width;
-        if (ciColumnPosition + 3 < worldBounds.Right - mapPanelWidth + 72)
+        if (ciColumnPosition + 3 < worldBounds.Right - mapPanelWidth + 72 + 72)
             scrollToPosition(ciRowPosition, ciColumnPosition + 3);
     }
 
@@ -405,12 +405,12 @@ class HexMapEngineAdapter
         coHexTileMap.cameraWrapper.coCameraVector2Location.X =
             MathHelper.Clamp(coHexTileMap.cameraWrapper.coCameraVector2Location.X + xIncrement,
                                 0,
-                                getPixelCenter().X * 2);
+                                getPixelCenter().X * 2 + 72);
 
         coHexTileMap.cameraWrapper.coCameraVector2Location.Y =
             MathHelper.Clamp(coHexTileMap.cameraWrapper.coCameraVector2Location.Y + yIncrement,
                                 0,
-                            getPixelCenter().Y * 2);
+                            getPixelCenter().Y * 2 + 72);
 
         //Console.WriteLine("oldRow=" + oldRowPosition + ", oldCol=" + oldColPosition +
         //", newrow=" + row + ", newcol=" + column + ", yinc=" + yIncrement + ", xinc=" + xIncrement +

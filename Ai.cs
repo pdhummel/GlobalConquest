@@ -14,7 +14,6 @@ public class Ai
     Dictionary<string, MapHex> metroSurroundingHexes;
     List<MapHex> metroSurroundingHexesList;
     List<MapHex> dockList = new List<MapHex>();
-    //List<Unit> knownUnits = new List<Unit>();
     List<AiGoal> goals = new List<AiGoal>();
     Dictionary<string, AiGoal> targetXyToGoal = new Dictionary<string, AiGoal>();
 
@@ -81,8 +80,9 @@ public class Ai
         List<AiGoal> goalsToKeep = new List<AiGoal>();
         HashSet<string> conquestGoalsInProgress = new HashSet<string>();
 
-        // first work on a conquest goal
+        // First work on a conquest goal - find the closest one.
         AiGoal closestConquestGoal = null;
+        AiGoal secondConquestGoal = null;
         float closestDistance = -1;
         foreach (AiGoal goal in goals)
         {
@@ -92,6 +92,7 @@ public class Ai
                 if (goalDistance < closestDistance || closestDistance == -1)
                 {
                     closestDistance = goalDistance;
+                    secondConquestGoal = closestConquestGoal;
                     closestConquestGoal = goal;
                 }
                 if (goal.IsGoalStarted)
@@ -100,8 +101,6 @@ public class Ai
                 }
             }
         }
-
-        // find the closest conquest goal
         if (closestConquestGoal != null)
         {
             Console.WriteLine("Ai.processGoal(): closest goal for " + Faction.Color + " " + closestConquestGoal.Type + " at " + closestConquestGoal.TargetMapHex.X + "," + closestConquestGoal.TargetMapHex.Y);
@@ -109,21 +108,24 @@ public class Ai
             conquestGoalsInProgress.Remove(closestConquestGoal.GoalName());
         }
 
-        // next pick a random goal
+        // Next pick a random goal
         if (goals.Count > 0)
         {
             int index = random.Next(0, goals.Count);
             AiGoal randomGoal = goals[index];
-            if ("conquer".Equals(randomGoal.Type) && conquestGoalsInProgress.Count > 0 && !conquestGoalsInProgress.Contains(randomGoal.GoalName()))
+            // If we pick a conquest goal, switch to the next closest conquest goal or a conquest goal that is already in progress.
+            if ("conquer".Equals(randomGoal.Type) && !conquestGoalsInProgress.Contains(randomGoal.GoalName()))
             {
-                if (targetXyToGoal.ContainsKey(conquestGoalsInProgress.ToList<string>()[0]))
+                if (secondConquestGoal != null)
+                    randomGoal = secondConquestGoal;
+                else if (conquestGoalsInProgress.Count > 0 && targetXyToGoal.ContainsKey(conquestGoalsInProgress.ToList<string>()[0]))
                     randomGoal = targetXyToGoal[conquestGoalsInProgress.ToList<string>()[0]];
             }
             Console.WriteLine("Ai.processGoal(): random goal for " + Faction.Color + " " + randomGoal.Type + " at " + randomGoal.TargetMapHex.X + "," + randomGoal.TargetMapHex.Y);
             processGoal(goalsToKeep, randomGoal);
         }
 
-        // finally work on goals in order
+        // Finally loop through goals and see what can be done.
         goalsToKeep.Clear();
         foreach (AiGoal goal in goals)
         {
@@ -136,7 +138,7 @@ public class Ai
     {
         bool isFinished = evaluateGoal(aiGoal);
         if (!isFinished)
-        {            
+        {
             Unit unit = buildUnits(aiGoal);
             int moveCount = moveUnits(aiGoal);
             goalsToKeep.Add(aiGoal);
@@ -152,7 +154,7 @@ public class Ai
         // Expand DesiredUnits if enemy count increases.
         if ("conquer".Equals(goal.Type))
         {
-            if (isBurbCoastal(goal.TargetMapHex))
+            if (IsBurbCoastal(goal.TargetMapHex))
             {
                 updateDesiredUnitsForCoastalBurbGoal(goal);
             }
@@ -176,23 +178,28 @@ public class Ai
                     break;
                 }
             }
-
-            if (isInPosition)
+            int randomGo = random.Next(0, 2);
+            if (isInPosition || randomGo > 0)
             {
                 foreach (AiUnit builtAiUnit in goal.ActualUnits)
                 {
                     builtAiUnit.ShouldMoveToTarget = true;
                 }
-                Console.WriteLine("Ai.evaluateGoal(): attack ready for : " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                Console.WriteLine("Ai.evaluateGoal(): attack ready for " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
             }
         }
-        else if (goal.ActualUnits.Count+2 < goal.DesiredUnits.Count)
+        else if (goal.ActualUnits.Count + 2 < goal.DesiredUnits.Count && goal.IsGoalStarted)
         {
+            bool IsMoveToTarget = true;
             // Attack already in progress, but failed and AI needs to mass troops again.
             foreach (AiUnit builtAiUnit in goal.ActualUnits)
             {
+                if (!builtAiUnit.ShouldMoveToTarget)
+                    IsMoveToTarget = false;
                 builtAiUnit.ShouldMoveToTarget = false;
             }
+            if (IsMoveToTarget)
+                Console.WriteLine("Ai.evaluateGoal(): reset for new assault: " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
         }
         // goal is complete
         if ("conquer".Equals(goal.Type) && goal.TargetMapHex.Burb != null && goal.TargetMapHex.Burb.OwnerColor.Equals(Faction.Color))
@@ -296,6 +303,27 @@ public class Ai
         foreach (AiUnit aiUnit in goal.ActualUnits)
         {
             UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
+            if (aiUnit.Unit != null && aiUnit.LastMapHex != null && aiUnit.Unit.ActionQueue.Count > 0)
+            {
+                if (aiUnit.Unit.X == aiUnit.LastMapHex.X && aiUnit.Unit.Y == aiUnit.LastMapHex.Y &&
+                    !aiUnit.Unit.IsLoading && !aiUnit.Unit.IsUnloading)
+                {
+                    aiUnit.BlockedRounds += 1;
+                    if (aiUnit.BlockedRounds >= 8)
+                    {
+                        Console.WriteLine("moveUnits(): Unblocking unit " + aiUnit.Unit.Id + " at " + aiUnit.Unit.X + "," + aiUnit.Unit.Y);
+                        aiUnit.Unit.ActionQueue.Clear();
+                        randomMovement(aiUnit.Unit);
+                        aiUnit.LastMapHex = map.Hexes[aiUnit.Unit.Y, aiUnit.Unit.X];
+                        aiUnit.BlockedRounds = 0;
+                        continue;
+                    }
+                }
+            }
+            else
+                aiUnit.BlockedRounds = 0;
+            aiUnit.LastMapHex = map.Hexes[aiUnit.Unit.Y, aiUnit.Unit.X];
+
             if ("conquer".Equals(goal.Type) && (aiUnit.ShouldMoveToTarget || goal.Enemies == 0))
             {
                 Console.WriteLine("Ai.moveUnits(): ShouldMoveToTarget " + aiUnit.Unit.Id + " to " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
@@ -325,14 +353,16 @@ public class Ai
                 MapHex foundMapHex = findHexAroundBurb(goal, aiUnit);
                 if (foundMapHex != null)
                 {
-                    Console.WriteLine("Ai.moveUnits(): DistanceFromTarget " + aiUnit.Unit.Id + " to " + foundMapHex.X + "," + foundMapHex.Y);
-                    moveUnit(unitType,  aiUnit.Unit , foundMapHex);
-                count += 1;
+                    Console.WriteLine("Ai.moveUnits(): DistanceFromTarget=" + aiUnit.DistanceFromTarget + ", " + aiUnit.Unit.Id + " to " + foundMapHex.X + "," + foundMapHex.Y);
+                    moveUnit(unitType, aiUnit.Unit, foundMapHex);
+                    count += 1;
                 }
             }
         }
         return count;
     }
+
+
 
     private void moveUnit(UnitType unitType, Unit unit, MapHex toHex)
     {
@@ -361,7 +391,7 @@ public class Ai
                 {
                     unit.addUnitAction(moveAction);
                 }
-            }            
+            }
         }
         if (unit.ActionQueue.Count <= 0)
         {
@@ -369,7 +399,7 @@ public class Ai
             unitAction.Action = "move";
             unitAction.TargetX = toHex.X;
             unitAction.TargetY = toHex.Y;
-            unit.setUnitAction(unitAction);                    
+            unit.setUnitAction(unitAction);
         }
     }
 
@@ -389,7 +419,7 @@ public class Ai
             isUnitInPosition = true;
 
         return isUnitInPosition;
-        
+
     }
 
     private MapHex findHexAroundBurb(MapHex burbHex, AiUnit aiUnit, int distance)
@@ -434,7 +464,7 @@ public class Ai
         {
             Console.WriteLine("Ai.findHexAroundBurb(): could not find hex around " + burbHex.X + "," + burbHex.Y);
         }
-        return foundMapHex;        
+        return foundMapHex;
     }
 
     private MapHex findHexAroundBurb(AiGoal goal, AiUnit aiUnit)
@@ -693,14 +723,14 @@ public class Ai
     {
         if (targetXyToGoal.ContainsKey(burbHex.X + "," + burbHex.Y))
             return;
-        bool isCoastal = isBurbCoastal(burbHex);
+        bool isCoastal = IsBurbCoastal(burbHex);
         if (isCoastal)
             conquerCoastalBurbGoal(burbHex);
         else
             conquerInteriorBurbGoal(burbHex);
     }
 
-    private bool isBurbCoastal(MapHex burbHex)
+    private bool IsBurbCoastal(MapHex burbHex)
     {
         bool isCoastal = false;
         List<MapHex> neighbors = map.getSurroundingHexesList(burbHex);

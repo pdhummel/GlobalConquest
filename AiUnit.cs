@@ -9,6 +9,8 @@ public class AiUnit
     public int DistanceFromTarget { get; set; }
     public bool ShouldMoveToTarget { get; set; } = false;
     public Unit? Unit { get; set; }
+    public MapHex? LastMapHex { get; set; }
+    public int BlockedRounds { get; set; } = 0;
 
     public AiUnit()
     {
@@ -28,7 +30,7 @@ public class AiUnit
     public override int GetHashCode()
     {
         // Combine hash codes of relevant properties
-        return HashCode.Combine(Ticks, UnitType); 
+        return HashCode.Combine(Ticks, UnitType);
     }
 
 }
