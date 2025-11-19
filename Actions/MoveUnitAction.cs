@@ -64,6 +64,26 @@ public class MoveUnitAction : PlayerAction
                             existingUnit?.addUnitAction(moveAction);
                         }
                     }
+                    else
+                    {
+                        existingUnit?.setUnitAction(unitAction);
+                    }
+                }
+                else if ((!"sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)) &&
+                    (!"sea".Equals(destination.Terrain) || "swamp".Equals(destination.Terrain) || "marsh".Equals(destination.Terrain)))
+                {
+                    List<UnitAction> path = gameState.Map.determineLandPath(mapHex, destination);
+                    if (path != null && path.Count > 0)
+                    {
+                        foreach (UnitAction moveAction in path)
+                        {
+                            existingUnit?.addUnitAction(moveAction);
+                        }
+                    }
+                    else
+                    {
+                        existingUnit?.setUnitAction(unitAction);
+                    }
                 }
                 else
                 {

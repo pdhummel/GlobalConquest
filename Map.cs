@@ -600,16 +600,26 @@ public class Map
 
     public List<UnitAction> determineSeaPath(MapHex origin, MapHex destination)
     {
-        Console.WriteLine("determineSeaPath(): from " + origin.X + "," + origin.Y + " to " + destination.X + "," + destination.Y);
+        return determinePath(seaNodesGraph, origin, destination);
+    }
+
+    public List<UnitAction> determineLandPath(MapHex origin, MapHex destination)
+    {
+        return determinePath(landNodesGraph, origin, destination);
+    }
+
+    public List<UnitAction> determinePath(Dictionary<string, Node> graph, MapHex origin, MapHex destination)
+    {
+        Console.WriteLine("determinePath(): from " + origin.X + "," + origin.Y + " to " + destination.X + "," + destination.Y);
         List<UnitAction> path = new List<UnitAction>();
         Node originNode = new Node(origin);
         Node destinationNode = new Node(destination);
-        Dictionary<string, string> previousNodes = DijkstraAlgorithm.FindShortestPaths(seaNodesGraph, originNode.Name);
+        Dictionary<string, string> previousNodes = DijkstraAlgorithm.FindShortestPaths(graph, originNode.Name);
         Node node = destinationNode;
         List<string> nodesInPath = DijkstraAlgorithm.ReconstructPath(previousNodes, originNode.Name, destinationNode.Name);
         foreach (string nodeName in nodesInPath)
         {
-            Console.WriteLine("determineSeaPath(): " + nodeName);
+            Console.WriteLine("determinePath(): " + nodeName);
             UnitAction unitAction = new UnitAction();
             unitAction.Action = "move";
             string[] parts = nodeName.Split(",");
@@ -623,13 +633,15 @@ public class Map
                 path.Add(unitAction);
             }
         }
-        Console.WriteLine("determineSeaPath(): path=" + path.Count);
+        Console.WriteLine("determinePath(): path=" + path.Count);
         return path;
     }
 
     private void buildNodesForShortestPath()
     {
         Console.WriteLine("buildNodesForShortestPath(): enter");
+        int swampCount = 0;
+        int burbCount = 0;
         for (int y = 0; y < Y; y++)
         {
             for (int x = 0; x < X; x++)
@@ -647,7 +659,11 @@ public class Map
                 }
                 node.Edges = edges;
 
-                if ("sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain))
+                if ("swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain))
+                    swampCount += 1;
+                if (mapHex.Burb != null)
+                    burbCount += 1;
+                if (("sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)))
                 {
                     Node seaNode = new Node(mapHex);
                     seaNodesGraph[seaNode.Name] = seaNode;
@@ -655,7 +671,8 @@ public class Map
                     foreach (MapHex neighbor in neighbors)
                     {
                         Node targetNode = new Node(neighbor);
-                        if ("sea".Equals(neighbor.Terrain) || "swamp".Equals(neighbor.Terrain) || "marsh".Equals(neighbor.Terrain))
+                        if (("sea".Equals(neighbor.Terrain) || "swamp".Equals(neighbor.Terrain) || "marsh".Equals(neighbor.Terrain)) &&
+                            (neighbor.Burb == null))
                         {
                             Edge edge = new Edge(targetNode);
                             seaEdges.Add(edge);
@@ -664,7 +681,7 @@ public class Map
                     seaNode.Edges = seaEdges;
                 }
 
-                if (!"sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain))
+                if ((!"sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)))
                 {
                     Node landNode = new Node(mapHex);
                     landNodesGraph[node.Name] = node;
@@ -672,7 +689,8 @@ public class Map
                     foreach (MapHex neighbor in neighbors)
                     {
                         Node targetNode = new Node(neighbor);
-                        if (!"sea".Equals(neighbor.Terrain) || "swamp".Equals(neighbor.Terrain) || "marsh".Equals(neighbor.Terrain))
+                        if ((!"sea".Equals(neighbor.Terrain) || "swamp".Equals(neighbor.Terrain) || "marsh".Equals(neighbor.Terrain)) &&
+                            (neighbor.Burb == null))
                         {
                             Edge edge = new Edge(targetNode);
                             landEdges.Add(edge);
@@ -683,7 +701,8 @@ public class Map
 
             }
         }
-        Console.WriteLine("buildNodesForShortestPath(): allNodes=" + allNodesGraph.Count + ", seaNodes=" + seaNodesGraph.Count + ", landNodes=" + landNodesGraph.Count);
+        Console.WriteLine("buildNodesForShortestPath(): allNodes=" + allNodesGraph.Count + ", seaNodes=" + seaNodesGraph.Count +
+                          ", landNodes=" + landNodesGraph.Count + ", burbCount=" + burbCount + ", swampCount=" + swampCount);
     }
 
 

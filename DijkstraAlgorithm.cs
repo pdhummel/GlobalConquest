@@ -31,16 +31,21 @@ public class DijkstraAlgorithm
             }
             visited.Add(currentNodeId);
 
-            foreach (var edge in graph[currentNodeId].Edges)
+            if (graph.ContainsKey(currentNodeId))
             {
-                var neighborId = edge.Target.Name;
-                var newDistance = distances[currentNodeId] + edge.Weight;
-
-                if (newDistance < distances[neighborId])
+                foreach (var edge in graph[currentNodeId].Edges)
                 {
-                    distances[neighborId] = newDistance;
-                    previousNodes[neighborId] = currentNodeId;
-                    priorityQueue.Enqueue(neighborId, newDistance);
+                    var neighborId = edge.Target.Name;
+                    var newDistance = int.MaxValue;
+                    if (distances.ContainsKey(currentNodeId))
+                        newDistance = distances[currentNodeId] + edge.Weight;
+
+                    if (newDistance < distances[neighborId])
+                    {
+                        distances[neighborId] = newDistance;
+                        previousNodes[neighborId] = currentNodeId;
+                        priorityQueue.Enqueue(neighborId, newDistance);
+                    }
                 }
             }
         }
@@ -96,6 +101,4 @@ public class Edge
         Target = target;
         Weight = weight;
     }
-
-
 }

@@ -351,6 +351,7 @@ public class Server
     private void OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod)
     {
         var jsonString = reader.GetString();
+        Console.WriteLine("Server.OnNetworkReceive(): " + jsonString);
         reader.Recycle(); // Free up the data reader
         PlayerAction? action =
                 JsonSerializer.Deserialize<PlayerAction>(jsonString);
@@ -361,10 +362,11 @@ public class Server
         if ("plan".Equals(gameState.CurrentPhase))
         {
             executeMethod?.Invoke(subClassAction, parameters);
+            Console.WriteLine("OnNetworkReceive(): invoked method");
         }
         else
         {
-            Console.WriteLine("Skipping action, currentPhase=" + gameState.CurrentPhase);
+            Console.WriteLine("OnNetworkReceive(): Skipping action, currentPhase=" + gameState.CurrentPhase);
         }
 
 

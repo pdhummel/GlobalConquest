@@ -81,7 +81,7 @@ public class Client
         NetDataWriter writer = new();
         writer.Put(data); // Add your data
         serverPeer?.Send(writer, DeliveryMethod.ReliableOrdered);
-        Console.WriteLine("SendData(): " + peerIdentifier + " Client sent data " + data);
+        Console.WriteLine("Client.SendData(): " + peerIdentifier + " Client sent data " + data);
     }
 
     public void SendAction(string peerIdentifier, PlayerAction action)
@@ -178,7 +178,7 @@ public class Client
             {
                 GameState.Map.Hexes = new MapHex[GameState.GameSettings.Height, GameState.GameSettings.Width];
             }
-                
+
             for (int liY = 0; liY < GameState.GameSettings.Height; liY++)
             {
                 for (int liX = 0; liX < GameState.GameSettings.Width; liX++)
