@@ -513,7 +513,7 @@ public class Map
         return hexes;
     }
 
-    public void checkBurbsForOwner()
+    public void checkBurbsForOwner(Server server)
     {
 
         for (int liY = 0; liY < Y; liY++)
@@ -521,11 +521,11 @@ public class Map
             for (int liX = 0; liX < X; liX++)
             {
                 MapHex mapHex = Hexes[liY, liX];
-                checkBurbOwner(mapHex);
+                checkBurbOwner(server, mapHex);
             }
         }
     }
-    public void checkBurbOwner(MapHex mapHex)
+    public void checkBurbOwner(Server server, MapHex mapHex)
     {
         //MapHex mapHex = Hexes[y, x];
         if (mapHex.Burb != null)
@@ -588,15 +588,42 @@ public class Map
                             return;
                     }
                 }
-                if (color != null)
+                if (mapHex.Burb != null && color != null)
+                {
+                    string previousOwnerColor = mapHex.Burb.OwnerColor;
                     mapHex.Burb.OwnerColor = color;
+                    if (previousOwnerColor != null && ! previousOwnerColor.Equals(color))
+                    {
+                        server.sendGameStateAndMapHex(mapHex.X, mapHex.Y);
+                        GameEvent gameEvent = new GameEvent("burbCaptured");
+                        gameEvent.EnemyColor = previousOwnerColor;
+                        gameEvent.MapHex = mapHex;
+                        server.sendGamePlayEvent(color, gameEvent);
+                        gameEvent.EventType = "burbLost";
+                        gameEvent.EnemyColor = color;
+                        server.sendGamePlayEvent(previousOwnerColor, gameEvent);
+                    }
+                }
             }
             else
             {
+                string previousOwnerColor = mapHex.Burb.OwnerColor;
                 Unit unit = mapHex.getUnit();
-                if (unit != null)
+                if (previousOwnerColor != null && unit != null)
                 {
                     mapHex.Burb.OwnerColor = unit.Color;
+                    if (! previousOwnerColor.Equals(unit.Color))
+                    {
+                        server.sendGameStateAndMapHex(mapHex.X, mapHex.Y);
+                        GameEvent gameEvent = new GameEvent("burbCaptured");
+                        gameEvent.EnemyColor = previousOwnerColor;
+                        gameEvent.MapHex = mapHex;
+                        server.sendGamePlayEvent(unit.Color, gameEvent);
+                        gameEvent.EventType = "burbLost";
+                        gameEvent.EnemyColor = unit.Color;
+                        server.sendGamePlayEvent(previousOwnerColor, gameEvent);
+
+                    }
                 }
             }
         }

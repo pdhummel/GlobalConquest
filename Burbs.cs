@@ -107,7 +107,8 @@ public class Burbs
                         suburb.ParentBurbName = mapHex.Burb.Name;
                         suburb.X = suburbHex.X;
                         suburb.Y = suburbHex.Y;
-                    }                    
+                    }   
+                    suburb.OwnerColor = burb.OwnerColor;
                     suburbHex.Burb = suburb;
                 }                
             }            

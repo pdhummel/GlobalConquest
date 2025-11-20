@@ -21,6 +21,8 @@ public class Client
     public GameState GameState { get; set; } = new GameState();
     public JoinGameValues JoinGameValues { get; set; }
 
+    public List<GameEvent> GamePlayEvents { get; set; } = new List<GameEvent>();
+
     public Client(GlobalConquestGame gcGame)
     {
         GlobalConquestGame = gcGame;
@@ -118,8 +120,8 @@ public class Client
         var jsonString = reader.GetString();
         //GameState oldGameState = GameState;
         GameEvent? gameEvent = JsonSerializer.Deserialize<GameEvent>(jsonString);
-        //if (gameEvent != null)
-        //    Console.WriteLine("OnNetworkReceive(): gameEvent=" + gameEvent.EventType);
+        handleGamePlayEvent(gameEvent);
+
         if (gameEvent != null && "mapUpdate".Equals(gameEvent.EventType))
         {
             updateMap(gameEvent);
@@ -157,6 +159,16 @@ public class Client
         }
 
         reader.Recycle(); // Free up the data reader
+    }
+
+    private void handleGamePlayEvent(GameEvent gameEvent)
+    {
+        if (gameEvent == null || ! gameEvent.IsGamePlayEvent())
+            return;
+        Console.WriteLine("handleGamePlayEvent(): gameEvent=" + gameEvent.EventType);
+        gameEvent.handleGamePlayEvent(GlobalConquestGame);
+        GamePlayEvents.Add(gameEvent);
+        GameState.GamePlayEvents = GamePlayEvents;
     }
 
     private void updateMap(GameEvent gameEvent)

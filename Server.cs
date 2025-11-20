@@ -212,6 +212,7 @@ public class Server
         }
     }
 
+
     public void sendGameState(NetPeer peer)
     {
         NetDataWriter writer = new NetDataWriter();
@@ -298,6 +299,58 @@ public class Server
             gameEvent.MapHexBuffer = mapHexBuffer;
             gameEvent.GameState = null;
             gameEvent.IsLastMapHexBufferUpdate = isLast;
+            string jsonString = JsonSerializer.Serialize(gameEvent);
+            writer.Put(jsonString);
+            peer.Send(writer, DeliveryMethod.ReliableOrdered);
+            writer.Reset();
+        }
+    }
+
+    public void sendGamePlayEvent(GameEvent gameEvent)
+    {
+        if (server != null)
+        {
+            int count = server.ConnectedPeerList.Count;
+            for (int i = 0; i < count; i++)
+            {
+                if (i < server.ConnectedPeerList.Count)
+                {
+                    NetPeer peer = server.ConnectedPeerList[i];
+                    sendGamePlayEvent(peer, gameEvent);
+                }
+                else
+                {
+                    Console.WriteLine("sendGamePlayEvent(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
+                }
+            }
+        }
+
+    }
+
+
+    public void sendGamePlayEvent(string color, GameEvent gameEvent)
+    {
+        NetDataWriter writer = new NetDataWriter();
+        if (server != null)
+        {
+            if (gameState.Players.colorToPlayer.ContainsKey(color))
+            {
+                Player player = gameState.Players.colorToPlayer[color];
+                NetPeer peer = PlayerNameToPeer[player.Name];
+                sendGamePlayEvent(peer, gameEvent);
+            }
+            else
+            {
+                //Console.WriteLine("sendGamePlayEvent(): NetPeer not found for " + color);
+            }
+        }        
+    }
+
+    public void sendGamePlayEvent(NetPeer peer, GameEvent gameEvent)
+    {
+        NetDataWriter writer = new NetDataWriter();
+        if (server != null)
+        {
             string jsonString = JsonSerializer.Serialize(gameEvent);
             writer.Put(jsonString);
             peer.Send(writer, DeliveryMethod.ReliableOrdered);

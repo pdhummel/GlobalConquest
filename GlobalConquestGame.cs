@@ -15,6 +15,9 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Point = Microsoft.Xna.Framework.Point;
 using System.Numerics;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
+using System.IO;
 
 
 namespace GlobalConquest;
@@ -53,6 +56,9 @@ public class GlobalConquestGame : Game
     public bool IsShowDestinations { get; set; }
 
     public GameControl GameControl { get; set; } = new GameControl();
+    //public Dictionary<string, SoundEffect> sounds = new Dictionary<string, SoundEffect>();
+    public Dictionary<string, Song> songs = new Dictionary<string, Song>();
+    public Dictionary<string, SoundEffect> soundEffects = new Dictionary<string, SoundEffect>();
 
     public GlobalConquestGame()
     {
@@ -136,6 +142,56 @@ public class GlobalConquestGame : Game
 
         drawPixel = new Texture2D(GraphicsDevice, 1, 1);
         drawPixel.SetData(new[] { Color.White });
+
+        loadSoundEffect("burbCaptured");
+        loadSoundEffect("burbLost");
+        loadSoundEffect("enemyPlayerLostGame");
+        loadSoundEffect("enemyUnitAttacked");
+        loadSoundEffect("enemyUnitDestroyed");
+        loadSoundEffect("playerLostGame");
+        loadSoundEffect("playerWonGame1");
+        loadSoundEffect("playerWonGame2");
+        loadSoundEffect("unitAttacked");
+        loadSoundEffect("unitDestroyed1");
+        loadSoundEffect("unitDestroyed2");
+        loadSoundEffect("comcenAttacked");
+    }
+
+    private void loadSoundEffect(string soundEffectEventName)
+    {
+        SoundEffect soundEffect = Content.Load<SoundEffect>(soundEffectEventName);
+        soundEffects[soundEffectEventName] = soundEffect;
+
+        //Song soundEffect = Content.Load<Song>(soundEffectEventName);
+        //string soundEffectFilePath = "Content/" + soundEffectEventName + ".mp3"; 
+        //Uri songUri = new Uri(soundEffectFilePath, UriKind.Relative);
+        //Song song = Song.FromUri(soundEffectEventName, songUri);
+        //songs[soundEffectEventName] = song;
+
+        //using (var stream = File.OpenRead(soundEffectFilePath))
+        //{
+        //    SoundEffect soundEffect = SoundEffect.FromStream(stream);
+        //    soundEffects[soundEffectEventName] = soundEffect;
+        //}
+    }
+
+    public void playSoundEffect(string soundEffectEventName)
+    {
+        if (soundEffects.ContainsKey(soundEffectEventName))
+        {
+            Console.WriteLine("playSoundEffect(): " + soundEffectEventName);
+            SoundEffect soundEffect = soundEffects[soundEffectEventName];
+            soundEffect.Play();  
+
+            //Song song = songs[soundEffectEventName];
+            //if (MediaPlayer.State != MediaState.Stopped)
+            //{
+            //    MediaPlayer.Stop(); // stop current audio playback if playing or paused.
+            //}
+            // Play the selected song reference.
+            //MediaPlayer.Play(song);
+            //MediaPlayer.Stop();
+        }
     }
 
     public void HexMapLoadContent()

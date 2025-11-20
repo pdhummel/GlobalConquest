@@ -56,7 +56,7 @@ The game is being designed with known differences from the original.
 - [ ] AI opponents
   - [x] Infantry support with brute force pathing.
   - [x] Sea units and sea pathing.
-  - [ ] Move blocked and idle units.
+  - [ ] Move blocked.
   - [x] Advanced land unit pathing.
   - [x] Exploration goals.
     - [x] spy
@@ -177,5 +177,7 @@ This is best supported by mouse and keyboard. However, some effort has been made
 - [ ] Shouldn't be able to see pathing of enemy units.
 - [ ] Game controller cannot change comboboxes.
 - [ ] Game controller cannot navigate nested menus -- i.e., File, View.
+- [x] Conquest of burb does not show new ownership -- manually need to refresh hex.
+
 
 

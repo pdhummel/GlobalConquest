@@ -145,6 +145,18 @@
 /processorParam:TextureFormat=Color
 /build:amber-transport-tank-48x48.png
 
+#begin burbCaptured.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:burbCaptured.wav
+
+#begin burbLost.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:burbLost.wav
+
 #begin capital-72x72.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -168,6 +180,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:city-hex-72x72.png
+
+#begin comcenAttacked.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:comcenAttacked.wav
 
 #begin cyan-battleship-48x48.png
 /importer:TextureImporter
@@ -312,6 +330,24 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:desert-flat-hex-72x72.png
+
+#begin enemyPlayerLostGame.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:enemyPlayerLostGame.wav
+
+#begin enemyUnitAttacked.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:enemyUnitAttacked.wav
+
+#begin enemyUnitDestroyed.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:enemyUnitDestroyed.wav
 
 #begin forest-flat-hex-72x72.png
 /importer:TextureImporter
@@ -639,6 +675,24 @@
 /processorParam:TextureFormat=Color
 /build:ocher-transport-tank-48x48.png
 
+#begin playerLostGame.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:playerLostGame.wav
+
+#begin playerWonGame1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:playerWonGame1.wav
+
+#begin playerWonGame2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:playerWonGame2.wav
+
 #begin sea-flat-hex-72x72.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -674,6 +728,24 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:town-hex-72x72.png
+
+#begin unitAttacked.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:unitAttacked.wav
+
+#begin unitDestroyed1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:unitDestroyed1.wav
+
+#begin unitDestroyed2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:unitDestroyed2.wav
 
 #begin unknown-flat-hex-72x72.png
 /importer:TextureImporter

@@ -106,7 +106,7 @@ public class GameLogic
                 return;
             Thread.Sleep(1000);
         }
-        gameState.Map.checkBurbsForOwner();
+        gameState.Map.checkBurbsForOwner(server);
         calculateScore(server, units);
         checkForEndOfGame(server);
 
@@ -533,6 +533,13 @@ public class GameLogic
             if (unit.StrengthPoints > 0)
             {
                 unitToAttack.StrengthPoints -= damage;
+                GameEvent gameEvent = new GameEvent("enemyUnitAttacked");
+                gameEvent.MapHex = map.Hexes[unitToAttack.Y, unitToAttack.X];
+                gameEvent.Unit = unitToAttack;
+                gameEvent.EnemyColor = unitToAttack.Color;
+                server.sendGamePlayEvent(unit.Color, gameEvent);
+                gameEvent.EventType = "unitAttacked";
+                server.sendGamePlayEvent(unitToAttack.Color, gameEvent);
                 Console.WriteLine("checkForCombat(): " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y + " suffered " + damage + " damage: " + unitToAttack.StrengthPoints);
             }
             else
@@ -558,14 +565,30 @@ public class GameLogic
             {
                 Console.WriteLine("checkForCombat(): destroyed unit " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
                 unitToAttack.StrengthPoints = 0;
+
+                GameEvent gameEvent = new GameEvent("enemyUnitDestroyed");
+                gameEvent.MapHex = map.Hexes[unitToAttack.Y, unitToAttack.X];
+                gameEvent.Unit = unitToAttack;
+                gameEvent.EnemyColor = unitToAttack.Color;
+                server.sendGamePlayEvent(unit.Color, gameEvent);
+                gameEvent.EventType = "unitDestroyed";
+                server.sendGamePlayEvent(unitToAttack.Color, gameEvent);
+
                 map.UnitIdToUnit.Remove(unitToAttack.Id);
                 map.ColorToUnitIds[unitToAttack.Color].Remove(unitToAttack.Id);
                 MapHex deadUnitMapHex = map.Hexes[unitToAttack.Y, unitToAttack.X];
                 unit.lastTargetUnitVector = new Vector2(-1, -1);
+
                 if (deadUnitMapHex.Units.Count > 0)
                     deadUnitMapHex.Units.RemoveAt(0);
                 if ("comcen".Equals(unitToAttack.UnitType))
                 {
+                    gameEvent = new GameEvent("enemyPlayerLostGame");
+                    gameEvent.EnemyColor = unitToAttack.Color;
+                    server.sendGamePlayEvent(unit.Color, gameEvent);
+                    gameEvent.EventType = "playerLostGame";
+                    server.sendGamePlayEvent(unitToAttack.Color, gameEvent);
+
                     Faction faction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
                     faction.HasComCen = false;
                 }
@@ -921,7 +944,7 @@ public class GameLogic
         GameState gameState = server.gameState;
         int commandCenters = 0;
         bool gameOver = false;
-        string victor = "grey";
+        string victoriousColor = "grey";
         string candidate = null;
         List<string> colors = ["amber", "magenta", "cyan", "ocher"];
 
@@ -939,7 +962,7 @@ public class GameLogic
                     maxColor = color;
                 }
             }
-            victor = maxColor;
+            victoriousColor = maxColor;
             gameOver = true;
         }
 
@@ -957,7 +980,7 @@ public class GameLogic
         }
         if (commandCenters <= 1 && gameState.GameSettings.NumberOfHumans > 1)
         {
-            victor = candidate;
+            victoriousColor = candidate;
             gameOver = true;
             Console.WriteLine("checkForVictory(): commandCenters=" + commandCenters);
         }
@@ -983,7 +1006,7 @@ public class GameLogic
                 if (color.Equals(gameState.Map.getCapitalHex().Burb.OwnerColor))
                 {
                     Console.WriteLine("checkForVictory(): + metro owner=" + color);
-                    victor = color;
+                    victoriousColor = color;
                     gameOver = true;
                 }
             }
@@ -992,11 +1015,24 @@ public class GameLogic
         if (gameOver)
         {
             server.gameState.CurrentPhase = "gameOver";
-            gameState.VictoriousColor = victor;
+            gameState.VictoriousColor = victoriousColor;
             server.sendGameState();
+            GameEvent gameEvent = new GameEvent("playerWonGame");
+            server.sendGamePlayEvent(victoriousColor, gameEvent);
+            gameEvent.EventType = "enemyPlayerWonGame";
+            gameEvent.EnemyColor = victoriousColor;
+            foreach (string color in colors)
+            {
+                if (!color.Equals(victoriousColor))
+                {
+                    server.sendGamePlayEvent(color, gameEvent);
+                }
+            }
+            gameEvent.EventType = "gameOver";
+            server.sendGamePlayEvent(gameEvent);
         }
 
-        return victor;
+        return victoriousColor;
     }
 
     private void calculateScore(Server server, List<Unit> units)
