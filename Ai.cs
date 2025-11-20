@@ -15,6 +15,7 @@ public class Ai
     List<MapHex> metroSurroundingHexesList;
     List<MapHex> dockList = new List<MapHex>();
     List<AiGoal> goals = new List<AiGoal>();
+    List<AiGoal> exploreGoals = new List<AiGoal>();
     Dictionary<string, AiGoal> targetXyToGoal = new Dictionary<string, AiGoal>();
 
     Unit spy;
@@ -120,6 +121,11 @@ public class Ai
                     randomGoal = secondConquestGoal;
                 else if (conquestGoalsInProgress.Count > 0 && targetXyToGoal.ContainsKey(conquestGoalsInProgress.ToList<string>()[0]))
                     randomGoal = targetXyToGoal[conquestGoalsInProgress.ToList<string>()[0]];
+            }
+            else if ("explore".Equals(randomGoal.Type))
+            {
+                index = random.Next(0, exploreGoals.Count);
+                randomGoal = exploreGoals[index];
             }
             Console.WriteLine("Ai.processGoal(): random goal for " + Faction.Color + " " + randomGoal.Type + " at " + randomGoal.TargetMapHex.X + "," + randomGoal.TargetMapHex.Y);
             processGoal(goalsToKeep, randomGoal);
@@ -316,8 +322,7 @@ public class Ai
             if (aiUnit.Unit != null && aiUnit.LastMapHex != null && aiUnit.Unit.ActionQueue.Count > 0)
             {
                 // See if there is an empty nearby burb to claim
-                freeBurb(aiUnit.Unit, 1);
-                if (aiUnit.Unit.ActionQueue.Count > 0)
+                if (freeBurb(aiUnit.Unit, 1))
                     continue;
 
                 if (aiUnit.Unit.X == aiUnit.LastMapHex.X && aiUnit.Unit.Y == aiUnit.LastMapHex.Y &&
@@ -328,7 +333,6 @@ public class Ai
                     {
                         Console.WriteLine("moveUnits(): Unblocking unit " + aiUnit.Unit.Id + " at " + aiUnit.Unit.X + "," + aiUnit.Unit.Y);
                         aiUnit.Unit.ActionQueue.Clear();
-                        //freeBurb(aiUnit.Unit);
                         if (aiUnit.Unit.ActionQueue.Count <= 0)
                             randomMovement(aiUnit.Unit);
                         aiUnit.LastMapHex = map.Hexes[aiUnit.Unit.Y, aiUnit.Unit.X];
@@ -340,7 +344,8 @@ public class Ai
             else
                 aiUnit.BlockedRounds = 0;
             aiUnit.LastMapHex = map.Hexes[aiUnit.Unit.Y, aiUnit.Unit.X];
-
+            // TODO: figure out if there is only 1 enemy which has less than 40 strength -- 2 infantry
+            //                                                     less than 30 strength -- 1 infantry
             if ("conquer".Equals(goal.Type) && (aiUnit.ShouldMoveToTarget || goal.Enemies == 0))
             {
                 Console.WriteLine("Ai.moveUnits(): ShouldMoveToTarget " + aiUnit.Unit.Id + " to " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
@@ -632,15 +637,19 @@ public class Ai
         }
     }
 
-    private void freeBurb(Unit unit)
+    private bool freeBurb(Unit unit)
     {
-        freeBurb(unit, 3);
+        return freeBurb(unit, 3);
     }
 
-    private void freeBurb(Unit unit, int range)
+    private bool freeBurb(Unit unit, int range)
     {
+        bool isBurbToFree = false;
         if (unit != null && unit.StrengthPoints > 0)
         {
+            UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+            if ("sea".Equals(unitType.LandOrSea))
+                return false;
             MapHex unitHex = map.Hexes[unit.Y, unit.X];
             foreach (string burbKey in gameState.Burbs.HexXyToBurb.Keys)
             {
@@ -666,12 +675,14 @@ public class Ai
                         unitAction.TargetX = burbHex.X;
                         unitAction.TargetY = burbHex.Y;
                         unit.setUnitAction(unitAction);
+                        isBurbToFree = true;
                         Console.WriteLine("Ai.freeBurb(): " + unit.Id + " to " + burbHex.X + "," + burbHex.Y);
                         break;
                     }
                 }
             }
         }
+        return isBurbToFree;
     }
 
 
@@ -682,8 +693,13 @@ public class Ai
         createExploreMetroGoal(rightMetroHex);
         AiGoal exploreMetro = createExploreMetroGoal(diagonalMetroHex);
         exploreMetro.UseRandomMovement = true;
-        createExploreGoal();
+        createExploreCapitalGoal();
+        AiGoal topLevelExploreGoal = new AiGoal();
+        topLevelExploreGoal.Type = "explore";
+
     }
+
+
 
     private void createDefendMetroGoal()
     {
@@ -734,11 +750,11 @@ public class Ai
         infantry.InitialPosition = metro;
         infantry.UnitType = "infantry";
         exploreMetro.DesiredUnits.Add(infantry);
-        goals.Add(exploreMetro);
+        exploreGoals.Add(exploreMetro);
         return exploreMetro;
     }
 
-    private void createExploreGoal()
+    private void createExploreCapitalGoal()
     {
         AiGoal exploreGoal = new AiGoal();
         exploreGoal.Type = "explore";
@@ -748,7 +764,7 @@ public class Ai
         infantry.UnitType = "infantry";
         infantry.DistanceFromTarget = 5;
         exploreGoal.DesiredUnits.Add(infantry);
-        goals.Add(exploreGoal);
+        exploreGoals.Add(exploreGoal);
     }
 
     private void createDefendBurbGoal(MapHex burbHex)
