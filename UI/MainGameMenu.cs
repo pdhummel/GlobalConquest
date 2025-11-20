@@ -61,6 +61,14 @@ public class MainGameMenu
             burbMenuItemSelected();
         };
 
+        MenuItem clientLogMenuItem = new MenuItem("Client Log", "Client Log");
+        clientLogMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.clientLogMenuItem";
+        viewMenuItem.Items.Add(clientLogMenuItem);
+        clientLogMenuItem.Selected += (s, a) =>
+        {
+            clientLogMenuItemSelected();
+        };
+
         //viewMenuItem.Items.Add(new MenuItem("Airplanes", "Airplanes"));
         //viewMenuItem.Items.Add(new MenuItem("Treaties", "Treaties"));
 
@@ -115,6 +123,13 @@ public class MainGameMenu
         BurbWindow burbWindow = new BurbWindow();
         burbWindow.showBurbWindow(mainGameScreen);
     }
+
+    public void clientLogMenuItemSelected()
+    {
+        ClientLogWindow clientLogWindow = new ClientLogWindow();
+        clientLogWindow.showClientLogWindow(mainGameScreen);
+    }
+
 
     public void executeMenuItemSelected()
     {

@@ -21,7 +21,7 @@ public class Client
     public GameState GameState { get; set; } = new GameState();
     public JoinGameValues JoinGameValues { get; set; }
 
-    public List<GameEvent> GamePlayEvents { get; set; } = new List<GameEvent>();
+    //public List<GameEvent> GamePlayEvents { get; set; } = new List<GameEvent>();
 
     public Client(GlobalConquestGame gcGame)
     {
@@ -166,9 +166,10 @@ public class Client
         if (gameEvent == null || ! gameEvent.IsGamePlayEvent())
             return;
         Console.WriteLine("handleGamePlayEvent(): gameEvent=" + gameEvent.EventType);
+        gameEvent.Ticks = DateTime.Now.Ticks;
+        gameEvent.Turn = GameState.CurrentTurn;
+        gameEvent.Round = GameState.CurrentRound;
         gameEvent.handleGamePlayEvent(GlobalConquestGame);
-        GamePlayEvents.Add(gameEvent);
-        GameState.GamePlayEvents = GamePlayEvents;
     }
 
     private void updateMap(GameEvent gameEvent)

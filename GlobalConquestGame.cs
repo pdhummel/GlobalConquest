@@ -59,6 +59,7 @@ public class GlobalConquestGame : Game
     //public Dictionary<string, SoundEffect> sounds = new Dictionary<string, SoundEffect>();
     public Dictionary<string, Song> songs = new Dictionary<string, Song>();
     public Dictionary<string, SoundEffect> soundEffects = new Dictionary<string, SoundEffect>();
+    public List<GameEvent> GamePlayEvents { get; set; } = new List<GameEvent>();
 
     public GlobalConquestGame()
     {
@@ -161,36 +162,25 @@ public class GlobalConquestGame : Game
     {
         SoundEffect soundEffect = Content.Load<SoundEffect>(soundEffectEventName);
         soundEffects[soundEffectEventName] = soundEffect;
-
-        //Song soundEffect = Content.Load<Song>(soundEffectEventName);
-        //string soundEffectFilePath = "Content/" + soundEffectEventName + ".mp3"; 
-        //Uri songUri = new Uri(soundEffectFilePath, UriKind.Relative);
-        //Song song = Song.FromUri(soundEffectEventName, songUri);
-        //songs[soundEffectEventName] = song;
-
-        //using (var stream = File.OpenRead(soundEffectFilePath))
-        //{
-        //    SoundEffect soundEffect = SoundEffect.FromStream(stream);
-        //    soundEffects[soundEffectEventName] = soundEffect;
-        //}
     }
 
     public void playSoundEffect(string soundEffectEventName)
     {
         if (soundEffects.ContainsKey(soundEffectEventName))
         {
-            Console.WriteLine("playSoundEffect(): " + soundEffectEventName);
             SoundEffect soundEffect = soundEffects[soundEffectEventName];
             soundEffect.Play();  
+        }
+    }
 
-            //Song song = songs[soundEffectEventName];
-            //if (MediaPlayer.State != MediaState.Stopped)
-            //{
-            //    MediaPlayer.Stop(); // stop current audio playback if playing or paused.
-            //}
-            // Play the selected song reference.
-            //MediaPlayer.Play(song);
-            //MediaPlayer.Stop();
+    public void addGamePlayEvent(GameEvent gameEvent)
+    {
+        GamePlayEvents.Add(gameEvent);
+        int maxSize = 25;
+        if (GamePlayEvents.Count > maxSize)
+        {
+            // Remove the first (Count - maxSize) elements
+            GamePlayEvents.RemoveRange(0, GamePlayEvents.Count - maxSize);
         }
     }
 

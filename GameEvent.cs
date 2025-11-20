@@ -29,6 +29,9 @@ public class GameEvent
     // gameOver
     public string EventType { get; set; }
     public long Ticks { get; set; }
+    public int Turn { get; set; }
+    public int Round { get; set; }
+
     public List<MapHex>? MapHexBuffer { get; set; } = new List<MapHex>();
     public bool IsLastMapHexBufferUpdate {get; set;} = false;
     public GameState? GameState { get; set; }
@@ -39,6 +42,7 @@ public class GameEvent
     public Unit? Unit { get; set; }
     public string? EnemyColor { get; set; }
     public string? EventString { get; set; }
+
 
 
     public HashSet<string> GamePlayEvents { get; set; } = new HashSet<string>();
@@ -138,11 +142,19 @@ public class GameEvent
 
     public string GetLocation()
     {
+        return GetLocation(false);
+    }
+    public string GetLocation(bool returnEmpty)
+    {
         string location = "[location]";
+        if (returnEmpty)
+            location = "";
         if (MapHex != null)
             location = MapHex.X + "," + MapHex.Y;
         return location;
     }
+
+
 
     public string GetBurbType()
     {
@@ -204,7 +216,7 @@ public class GameEvent
         {
             Game.playSoundEffect("comcenAttacked");
         }
-
+        Game.addGamePlayEvent(this);
     }
 
     public void unitDestroyedHandler()
@@ -213,24 +225,28 @@ public class GameEvent
         EventString = GetUnitType() + " at " + GetLocation() + " destroyed.";
         Game.playSoundEffect(EventType + "1");
         Game.playSoundEffect(EventType + "2");
+        Game.addGamePlayEvent(this);
     }
 
     public void unitMovementBlockedHandler() 
     {
         // Movement blocked for UnitType at MapHex
         EventString = "Movement blocked for " + GetUnitType() + " at " + GetLocation() + ".";
+        //Game.addGamePlayEvent(this);
     }
 
     public void unitSufferedAttritionHandler() 
     {
         // UnitType at MapHex suffered attrition
         EventString = GetUnitType() + " at " + GetLocation() + " suffered attrition.";
+        Game.addGamePlayEvent(this);
     }
 
     public void enemyUnitDiscoveredHandler()
     {
         // EnemyColor UnitType discovered at MapHex
         EventString = GetEnemyColor() + " " + GetUnitType() + " discovered at " + GetLocation();
+        //Game.addGamePlayEvent(this);
     } 
 
     public void enemyUnitAttackedHandler() 
@@ -238,6 +254,7 @@ public class GameEvent
         // EnemyColor UnitType attacked at MapHex
         EventString = GetEnemyColor() + " " + GetUnitType() + " attacked at " + GetLocation();
         //Game.playSoundEffect(EventType);
+        //Game.addGamePlayEvent(this);
     }
 
     public void enemyUnitDestroyedHandler()
@@ -245,12 +262,14 @@ public class GameEvent
         // EnemyColor UnitType destroyed at MapHex
         EventString = GetEnemyColor() + " " + GetUnitType() + " destroyed at " + GetLocation();
         Game.playSoundEffect(EventType);
+        Game.addGamePlayEvent(this);
     }
 
     public void burbDiscoveredHandler()
     {
         // EnemyColor BurbType BurbName discovered at MapHex
         EventString = GetEnemyColor() + " " + GetBurbType() + " " + GetBurbName() + " discovered at " + GetLocation();
+        Game.addGamePlayEvent(this);
     }
 
     public void burbCapturedHandler()
@@ -258,6 +277,7 @@ public class GameEvent
         // BurbType BurbName captured at MapHex
         EventString =  GetBurbType() + " " + GetBurbName() + " captured from " + GetEnemyColor() + " at " + GetLocation();
         Game.playSoundEffect(EventType);
+        Game.addGamePlayEvent(this);
     }
 
     public void burbLostHandler()
@@ -265,12 +285,14 @@ public class GameEvent
         // BurbType BurbName lost at MapHex
         EventString =  GetBurbType() + " " + GetBurbName() + " lost to " + GetEnemyColor() + " at " + GetLocation();
         Game.playSoundEffect(EventType);
+        Game.addGamePlayEvent(this);
     }
 
     public void playerLostGameHandler() {      
         // Game Lost
         EventString = "You Lost the Game.";
         Game.playSoundEffect(EventType);
+        Game.addGamePlayEvent(this);
     }
 
     public void playerWonGameHandler() {    
@@ -278,6 +300,7 @@ public class GameEvent
         EventString = "You Won the Game.";
         //Game.playSoundEffect(EventType + "1");
         Game.playSoundEffect(EventType + "2");
+        Game.addGamePlayEvent(this);
     }
 
     public void enemyPlayerLostGameHandler() 
@@ -285,18 +308,21 @@ public class GameEvent
         // EnemyColor Lost Game
         EventString = GetEnemyColor() + " Lost the Game.";
         Game.playSoundEffect(EventType);
+        Game.addGamePlayEvent(this);
     }
 
     public void enemyPlayerWonGameHandler() 
     {  
         // EnemyColor Won Game
         EventString = GetEnemyColor() + " Won the Game.";
+        Game.addGamePlayEvent(this);
     }
 
     public void gameOverHandler() 
     {            
         // Game Over
         EventString = "The Game is Over.";
+        Game.addGamePlayEvent(this);
     }
 
 

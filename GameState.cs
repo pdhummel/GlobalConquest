@@ -28,8 +28,6 @@ public class GameState
     public string VictoriousColor { get; set; } = "grey";
     public long Ticks { get; set; } = 0;
 
-    public List<GameEvent> GamePlayEvents {get; set; } = new List<GameEvent>();
-
 
     // if any of the data elements in the entities change above, then this version should be bumped.
     public string Version { get; set; } = "v0.4.3";
