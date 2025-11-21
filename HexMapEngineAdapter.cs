@@ -202,19 +202,6 @@ class HexMapEngineAdapter
         Myra.MyraEnvironment.Game = game;
     }
 
-    public void placeUnit(int x, int y, string unitType, string color)
-    {
-        Unit unit = new Unit();
-        unit.Color = color;
-        unit.UnitType = unitType;
-        PlaceUnitAction action = new PlaceUnitAction();
-        action.Unit = unit;
-        action.X = x;
-        action.Y = y;
-        action.ClassType = "GlobalConquest.Actions.PlaceUnitAction";
-        gcGame.Client?.SendAction(gcGame.Client.ClientIdentifier, action);
-    }
-
     public void updateMap()
     {
         HexTileMapLoad loHexTileMapLoad = new HexMapEngine.Classes.HexTileMapLoad(hexHeight, hexWidth);

@@ -63,8 +63,8 @@ The game is being designed with known differences from the original.
     - [x] infantry
     - [x] sea units (sub)
   - [ ] Conquest goals.
-    - [ ] Mass attack force.
-    - [ ] Reset after failed attack.
+    - [x] Mass attack force.
+    - [x] Reset after failed attack.
   - [x] Defense goals.
     - [x] infantry
     - [x] subs
@@ -178,6 +178,8 @@ This is best supported by mouse and keyboard. However, some effort has been made
 - [ ] Game controller cannot change comboboxes.
 - [ ] Game controller cannot navigate nested menus -- i.e., File, View.
 - [x] Conquest of burb does not show new ownership -- manually need to refresh hex.
+- [x] Null object reference in DeleteMoveUnitAction. Observed during game play w/G.
+- [ ] The AI does not play well and is not competitive.
 
 
 

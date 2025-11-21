@@ -1,3 +1,4 @@
+using System.Security.RightsManagement;
 using System.Text.Json;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
@@ -647,12 +648,11 @@ public class Map
 
     public List<UnitAction> determinePath(Dictionary<string, Node> graph, MapHex origin, MapHex destination)
     {
-        //Console.WriteLine("determinePath(): from " + origin.X + "," + origin.Y + " to " + destination.X + "," + destination.Y);
+        Console.WriteLine("determinePath(): from " + origin.X + "," + origin.Y + " to " + destination.X + "," + destination.Y);
         List<UnitAction> path = new List<UnitAction>();
         Node originNode = new Node(origin);
         Node destinationNode = new Node(destination);
         Dictionary<string, string> previousNodes = DijkstraAlgorithm.FindShortestPaths(graph, originNode.Name);
-        Node node = destinationNode;
         List<string> nodesInPath = DijkstraAlgorithm.ReconstructPath(previousNodes, originNode.Name, destinationNode.Name);
         foreach (string nodeName in nodesInPath)
         {
@@ -701,7 +701,7 @@ public class Map
                 if (mapHex.Burb != null)
                     burbCount += 1;
                 if (("sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)) &&
-                    (mapHex.Burb == null))
+                    (mapHex.Burb == null || "dock".Equals(mapHex.Burb.Type)))
                 {
                     Node seaNode = new Node(mapHex);
                     seaNodesGraph[seaNode.Name] = seaNode;
@@ -710,7 +710,7 @@ public class Map
                     {
                         Node targetNode = new Node(neighbor);
                         if (("sea".Equals(neighbor.Terrain) || "swamp".Equals(neighbor.Terrain) || "marsh".Equals(neighbor.Terrain)) &&
-                            (neighbor.Burb == null))
+                            (neighbor.Burb == null || "dock".Equals(neighbor.Burb.Type)))
                         {
                             Edge edge = new Edge(targetNode);
                             seaEdges.Add(edge);
@@ -742,5 +742,29 @@ public class Map
                           ", landNodes=" + landNodesGraph.Count + ", burbCount=" + burbCount + ", swampCount=" + swampCount);
     }
 
+    public void restoreMap(Burbs burbs)
+    {
+        List<string> colors = ["amber", "ocher", "magenta", "cyan", "grey"];
+        foreach (string color in colors)
+        {
+            ColorToUnitIds[color] = new HashSet<string>();
+        }
+
+        addFixedBurbs(burbs);
+        buildNodesForShortestPath();
+        for (int y=0; y < Y; y++)
+        {
+            for (int x=0; x < X; x++)
+            {
+                MapHex mapHex = Hexes[y, x];
+                Unit unit = mapHex.getUnit();
+                if (unit != null)
+                {
+                    ColorToUnitIds[unit.Color].Add(unit.Id);
+                    UnitIdToUnit[unit.Id] = unit;
+                }
+            }
+        }
+    }
 
 }

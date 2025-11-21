@@ -29,6 +29,8 @@ public class PursueUnitAction : PlayerAction
         {
             MapHex mapHex = gameState.Map.Hexes[Unit.Y, Unit.X];
             Unit existingUnit = mapHex.getUnit();
+            if (existingUnit == null)
+                return;
             UnitAction unitAction = new UnitAction();
             unitAction.Action = "move";
             unitAction.TargetX = UnitToPursueX;

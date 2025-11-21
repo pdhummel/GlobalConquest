@@ -36,6 +36,8 @@ public class MoveUnitAction : PlayerAction
         {
             MapHex mapHex = gameState.Map.Hexes[Unit.Y, Unit.X];
             Unit existingUnit = mapHex.getUnit();
+            if (existingUnit == null)
+                return;
 
             // TODO: why am I doing this?
             if (existingUnit.UnitIdToPursue != null)

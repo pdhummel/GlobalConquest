@@ -305,9 +305,9 @@ public class BurbWindow
         action.Unit = new Unit();
         action.Unit.Owner = faction;
         action.Unit.Color = faction.Color;
-        if ("infantry".Equals(unitTypeName) && ("dock".Equals(targetHex.Burb.Type)))
+        if ("infantry".Equals(unitTypeName) && "dock".Equals(targetHex.Burb.Type))
             unitTypeName = "transport-infantry";
-        if (("tank".Equals(unitTypeName) || "armor".Equals(unitTypeName)) && ("dock".Equals(targetHex.Burb.Type)))
+        if (("tank".Equals(unitTypeName) || "armor".Equals(unitTypeName)) && "dock".Equals(targetHex.Burb.Type))
             unitTypeName = "transport-tank";
         action.Unit.UnitType = unitTypeName;
         action.Unit.X = targetHex.X;

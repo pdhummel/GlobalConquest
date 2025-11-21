@@ -32,10 +32,13 @@ public class ChangeUnitContextAction : PlayerAction
         {
             MapHex mapHex = gameState.Map.Hexes[Unit.Y, Unit.X];
             Unit existingUnit = mapHex.getUnit();
-            existingUnit.IsBlitzing = IsBlitzing;
-            existingUnit.IsSneaking = IsSneaking;
-            existingUnit.RoundsToWait = RoundsToWait;
-            server.sendGameStateAndMapHex(Unit.X, Unit.Y);
+            if (existingUnit != null)
+            {
+                existingUnit.IsBlitzing = IsBlitzing;
+                existingUnit.IsSneaking = IsSneaking;
+                existingUnit.RoundsToWait = RoundsToWait;
+                server.sendGameStateAndMapHex(Unit.X, Unit.Y);
+            }
         }
     }
 }
