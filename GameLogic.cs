@@ -878,6 +878,13 @@ public class GameLogic
 
     private void digInInfantry(Server server, Unit unit)
     {
+        Map map = server.gameState.Map;
+        MapHex mapHex = map.Hexes[unit.Y, unit.X];
+        Unit unitToCheck = mapHex.getUnit();
+        if (unitToCheck == null)
+            return;
+        if (!("infantry".Equals(unitToCheck.UnitType) || "dug-in-infantry".Equals(unitToCheck.UnitType)))
+            return;
         string unitXy = makeXyString(unit.X, unit.Y);
         if (infantryUnitsXy.Contains(unitXy))
         {
@@ -1423,13 +1430,6 @@ public class GameLogic
         }
         newGameState.Map.restoreMap(newGameState.Burbs);
         server.gameState = newGameState;
-        foreach (string color in colors)
-        {
-            Faction faction = server.gameState.Factions.ColorToFaction[color];
-            faction.Ai = new Ai();
-            faction.Ai.initialize(server);
-        }
-
         server.gameState.CurrentTurn += 1;
     }
 

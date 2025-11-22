@@ -229,10 +229,10 @@ public class Client
                     GlobalConquestGame?.HexMapLoadContent();
                     isLoadContentComplete = true;
                 }
-
+                else if (gameEvent.IsLastMapHexBufferUpdate)
+                    GlobalConquestGame?.HexMapLoadContent();
             }
         }
-
     }
 
     private void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)

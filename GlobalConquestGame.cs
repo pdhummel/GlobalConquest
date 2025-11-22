@@ -192,6 +192,7 @@ public class GlobalConquestGame : Game
             hexMapEngineAdapter.LoadContent();
             miniMapHexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
             miniMapHexMapEngineAdapter.LoadContent();
+            hexMapEngineAdapter.updateMap();
 
 
             if (MainGameScreen != null && MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
