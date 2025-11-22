@@ -13,6 +13,12 @@ With real time games, players take actions simultaneously and those actions are 
 The Global Conquest hybrid approach allows for players to simultaneously plan their actions, but then action resolution happens separately without further player interaction during an execution phase. Different execution trigger configurations allow the game to more closely resemble a turn-based game or even approach a real-time game experience.
 The planning and execution phase system make it similar to tactical combat games like Baulder's Gate 3 or XCom, but abstracted to a strategic level.
 
+
+
+![Original Global ConquestScreenshot](Original-GC-1992-Screenshot.png "Original Global Conquest")
+
+![Global Conquest 2025 Screenshot](GC2025-Screenshot.png "Global Conquest 2025")
+
 ## Project Goals and Designed Deviations
 To recreate the hybrid, modified real-time experience of Global Conquest, so that is playable on modern computers over the internet.
 
