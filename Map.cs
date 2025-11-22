@@ -763,6 +763,11 @@ public class Map
                     ColorToUnitIds[unit.Color].Add(unit.Id);
                     UnitIdToUnit[unit.Id] = unit;
                 }
+
+                //if (mapHex.Burb != null && mapHex.Burb.Name != null)
+                //{
+                //    burbs.NameToBurb[mapHex.Burb.Name] = mapHex.Burb;
+                //}
             }
         }
     }

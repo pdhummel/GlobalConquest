@@ -1243,6 +1243,136 @@ public class GameLogic
         }
     }
 
+    public void saveGame(Server server, string fullFilePath)
+    {
+        GameState gameState = server.gameState;
+        string jsonString = JsonSerializer.Serialize(server.gameState);
+
+        string? saveDirectory = Path.GetDirectoryName(fullFilePath);
+        string? fileName = Path.GetFileName(fullFilePath);
+        if (!Directory.Exists(saveDirectory))
+        {
+            string currentUser = Environment.UserName;
+            string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest";
+            if (!Directory.Exists(gcDirectory))
+            {
+                Directory.CreateDirectory(gcDirectory);
+            }
+            saveDirectory = gcDirectory;            
+        }
+        string dataDirectory = saveDirectory + "\\Data\\";
+        if (!Directory.Exists(dataDirectory))
+        {
+            Directory.CreateDirectory(dataDirectory);
+        }
+
+        // Save the gameState and map hexes to the dataDirectory
+        string file = "GameState-" + gameState.Version + "-" + gameState.CurrentTurn + ".json";
+        string filePath = dataDirectory + file;
+        File.WriteAllText(filePath, jsonString);
+        for (int y = 0; y < gameState.Map.Y; y++)
+        {
+            for (int x = 0; x < gameState.Map.X; x++)
+            {
+                MapHex mapHex = gameState.Map.Hexes[y, x];
+                jsonString = JsonSerializer.Serialize(mapHex);
+                file = "MapHex-" + gameState.Version + "-" + gameState.CurrentTurn + "-" + x + "." + y + ".json";
+                filePath = dataDirectory + file;
+                File.WriteAllText(filePath, jsonString);
+
+            }
+        }
+
+        // Save the contents of the saveDirectory to a zip file and then clear out the data directory.
+        string zipFilePath = saveDirectory + "\\" + fileName;
+        if (File.Exists(zipFilePath))
+            File.Delete(zipFilePath);
+        if (!File.Exists(zipFilePath))
+            ZipFile.CreateFromDirectory(dataDirectory, zipFilePath, CompressionLevel.Optimal, true);
+        Directory.Delete(dataDirectory, true);
+        Console.WriteLine("saveGame(): complete");
+
+    }
+
+
+    public void loadGame(Server server, string fullFilePath)
+    {
+        GameState gameState = server.gameState;
+        string jsonString = JsonSerializer.Serialize(server.gameState);
+
+        string? loadDirectory = Path.GetDirectoryName(fullFilePath);
+        string? fileName = Path.GetFileName(fullFilePath);
+
+        if (!Directory.Exists(loadDirectory) || ! File.Exists(fileName))
+        {
+            string currentUser = Environment.UserName;
+            string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest";
+            loadDirectory = gcDirectory;
+        }
+        string tempDirectory = loadDirectory + "\\Temp";
+        fullFilePath = loadDirectory + "\\" + fileName;
+        ZipFile.ExtractToDirectory(fullFilePath, tempDirectory);
+
+        string dataDirectory = tempDirectory + "\\Data\\";
+
+        // Recreate the game state from the GameState json file.
+        string searchPattern = "GameState-*.json";
+        string[] files = Directory.GetFiles(dataDirectory, searchPattern);
+        string file = files[0];
+        string filePath = file;        
+        jsonString = File.ReadAllText(filePath);
+        GameState? newGameState = JsonSerializer.Deserialize<GameState>(jsonString);
+
+        // Create the map object in the new game state.
+        if (newGameState.Map == null)
+        {
+            newGameState.Map = new Map();
+            newGameState.Map.X = newGameState.GameSettings.Width;
+            newGameState.Map.Y = newGameState.GameSettings.Height;
+            newGameState.Map.VisibilityMode = newGameState.GameSettings.Visibility;
+        }
+        // Recreate the map from the map hex files.
+        searchPattern = "MapHex-*.json";
+        files = Directory.GetFiles(dataDirectory, searchPattern);
+        if (newGameState.Map.Hexes == null)
+        {
+            MapHex[,] hexes = new MapHex[newGameState.GameSettings.Height, newGameState.GameSettings.Width];
+            newGameState.Map.Hexes = hexes;
+        }
+        foreach (string mapHexFile in files)
+        {
+            filePath = mapHexFile;
+            jsonString = File.ReadAllText(filePath);
+            MapHex mapHex = JsonSerializer.Deserialize<MapHex>(jsonString);
+            newGameState.Map.Hexes[mapHex.Y, mapHex.X] = mapHex;
+        }
+        Directory.Delete(tempDirectory, true);
+
+        newGameState.UnitTypes.defineUnitTypes();
+        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        //foreach (string color in colors)
+        //{
+        //    if (newGameState.Players.colorToPlayer.ContainsKey(color))
+        //    {
+        //        Player player = newGameState.Players.colorToPlayer[color];
+        //        newGameState.Players.RemovePlayer(newGameState, player.Name);
+        //    }
+        //}
+        newGameState.Map.restoreMap(newGameState.Burbs);
+        server.gameState = newGameState;
+        foreach (string color in colors)
+        {
+            Faction faction = server.gameState.Factions.ColorToFaction[color];
+            faction.Ai = new Ai();
+            faction.Ai.Faction = faction;
+            faction.Ai.initialize(server);
+        }
+
+        server.syncAllMapHexes();
+    }
+
+
+
     public void restoreGame(Server server)
     {
         string currentUser = Environment.UserName;
@@ -1293,6 +1423,13 @@ public class GameLogic
         }
         newGameState.Map.restoreMap(newGameState.Burbs);
         server.gameState = newGameState;
+        foreach (string color in colors)
+        {
+            Faction faction = server.gameState.Factions.ColorToFaction[color];
+            faction.Ai = new Ai();
+            faction.Ai.initialize(server);
+        }
+
         server.gameState.CurrentTurn += 1;
     }
 

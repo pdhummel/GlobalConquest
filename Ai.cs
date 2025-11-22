@@ -65,6 +65,22 @@ public class Ai
 
     private void addGoals()
     {
+        if (gameState == null)
+        {
+            Console.WriteLine("addGoals(): gameState is null");
+            return;
+        }
+        if (gameState.Burbs == null)
+        {
+            Console.WriteLine("addGoals(): gameState.Burbs is null");
+            return;
+        }
+        if (gameState == null)
+        {
+            Console.WriteLine("addGoals(): gameState.Burbs.NameToBurb is null");
+            return;
+        }
+
         foreach (string key in gameState.Burbs.NameToBurb.Keys)
         {
             Burb burb = gameState.Burbs.NameToBurb[key];

@@ -7,6 +7,8 @@ using Myra.Graphics2D.UI;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Color = Microsoft.Xna.Framework.Color;
+using Myra.Graphics2D.UI.File;
+using FileDialog = Myra.Graphics2D.UI.File.FileDialog;
 namespace GlobalConquest.UI;
 
 public class MainGameMenu
@@ -16,6 +18,10 @@ public class MainGameMenu
     MenuItem destinationsMenuItem = new MenuItem("Destinations", "&Destinations");
     MenuItem fileMenuItem = new MenuItem("File", "&File");
     MenuItem viewMenuItem = new MenuItem("View", "&View");
+
+    MenuItem saveMenuItem = new MenuItem("Save", "&Save");
+    MenuItem loadMenuItem = new MenuItem("Load", "Load");
+
     MainGameScreen mainGameScreen;
 
     public MainGameMenu(MainGameScreen mainGameScreen)
@@ -27,10 +33,17 @@ public class MainGameMenu
         executeMenuItem.Color = Color.Yellow;
         destinationsMenuItem.Color = Color.Yellow;
         // File - Save, Load, Resign, Restart
-        MenuItem todoMenuItem = new MenuItem("TODO", "TODO");
-        fileMenuItem.Items.Add(todoMenuItem);
-        //fileMenuItem.Items.Add(new MenuItem("Save", "Save"));
-        //fileMenuItem.Items.Add(new MenuItem("Load", "Load"));
+        fileMenuItem.Items.Add(saveMenuItem);
+        saveMenuItem.Selected += (s, a) =>
+        {
+            saveMenuItemSelected();
+        };        
+        fileMenuItem.Items.Add(loadMenuItem);
+        loadMenuItem.Selected += (s, a) =>
+        {
+            loadMenuItemSelected();
+        };        
+
         //fileMenuItem.Items.Add(new MenuItem("Resign", "Resign"));
         //fileMenuItem.Items.Add(new MenuItem("Restart", "Restart"));
 
@@ -93,7 +106,7 @@ public class MainGameMenu
         actionMapper.registerSelectedIndex(horizontalMenu.Id, 0, executeMenuItem.Id);
         actionMapper.registerControlMethod(destinationsMenuItem.Id, this, "destinationsMenuItemSelected");
         actionMapper.registerSelectedIndex(horizontalMenu.Id, 1, destinationsMenuItem.Id);
-        // TODO: this doesn't work and is actually horizontalMenu-viewMenuItem-refreshStateMenuItem.
+        // TODO: this doesn't work with the game controller and is actually horizontalMenu-viewMenuItem-refreshStateMenuItem.
         actionMapper.registerControlMethod(refreshStateMenuItem.Id, this, "refreshStateMenuItemSelected");
         actionMapper.registerSelectedIndex(horizontalMenu.Id, 2, refreshStateMenuItem.Id);
 
@@ -143,6 +156,82 @@ public class MainGameMenu
     public void destinationsMenuItemSelected()
     {
         mainGameScreen.gcGame.IsShowDestinations = !mainGameScreen.gcGame.IsShowDestinations;
+    }
+
+    public void saveMenuItemSelected()
+    {
+        string currentUser = Environment.UserName;
+        string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\";        
+        FileDialog dialog = new FileDialog(FileDialogMode.SaveFile)
+        {
+            Filter = "*.zip",
+            Folder = gcDirectory
+        };
+
+        dialog.Closed += (s, a) =>
+        {
+            if (!dialog.Result)
+            {
+                // "Cancel" or Escape
+                return;
+            }
+
+            // "Ok" or Enter
+            string fileName = dialog.FilePath;
+            Console.WriteLine("dialog=" + fileName);
+            Client client = mainGameScreen.gcGame.Client;
+            SaveGameAction action = new SaveGameAction();
+            action.FullFilePath = fileName;
+            action.ClientIdentifier = client.ClientIdentifier;
+            action.ClassType = "GlobalConquest.Actions.SaveGameAction";
+            client.SendAction(client.ClientIdentifier, action);
+            Window window = new Window
+            {
+                Title = "Save Game in Progress"
+            };
+            window.ShowModal(mainGameScreen.grid.Desktop);
+
+        };
+
+        dialog.ShowModal(mainGameScreen.grid.Desktop);
+    }
+
+    public void loadMenuItemSelected()
+    {
+        string currentUser = Environment.UserName;
+        string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\";        
+        FileDialog dialog = new FileDialog(FileDialogMode.OpenFile)
+        {
+            Filter = "*.zip",
+            Folder = gcDirectory
+        };
+
+        dialog.Closed += (s, a) =>
+        {
+            if (!dialog.Result)
+            {
+                // "Cancel" or Escape
+                return;
+            }
+
+            // "Ok" or Enter
+            string fileName = dialog.FilePath;
+            Console.WriteLine("dialog=" + fileName);
+            Client client = mainGameScreen.gcGame.Client;
+            LoadGameAction action = new LoadGameAction();
+            action.FullFilePath = fileName;
+            action.ClientIdentifier = client.ClientIdentifier;
+            action.ClassType = "GlobalConquest.Actions.LoadGameAction";
+            client.SendAction(client.ClientIdentifier, action);
+            Window window = new Window
+            {
+                Title = "Load Game in Progress"
+            };
+            window.ShowModal(mainGameScreen.grid.Desktop);
+
+        };
+
+        dialog.ShowModal(mainGameScreen.grid.Desktop);
     }
 
 }
