@@ -392,7 +392,7 @@ public class Server
         else
         {
             request.Reject();
-            Console.WriteLine("OnConnectionRequest(): connection rejected by Server");
+            Console.WriteLine("OnConnectionRequest(): connection rejected by Server b/c limit to connected peers. (player count)");
         }
     }
 
@@ -421,7 +421,6 @@ public class Server
         {
             Console.WriteLine("OnNetworkReceive(): Skipping action, currentPhase=" + gameState.CurrentPhase);
         }
-
 
     }
 

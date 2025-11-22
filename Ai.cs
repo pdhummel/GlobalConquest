@@ -173,6 +173,17 @@ public class Ai
     {
         if (goal.IsOngoingGoal)
             return false;
+
+        // goal is complete
+        if ("conquer".Equals(goal.Type) && goal.TargetMapHex.Burb != null && goal.TargetMapHex.Burb.OwnerColor.Equals(Faction.Color))
+        {
+            Console.WriteLine("Ai.evaluateGoal(): goal complete: " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+            if (targetXyToGoal.ContainsKey(goal.TargetMapHex.X + "," + goal.TargetMapHex.Y))
+                targetXyToGoal.Remove(goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+            createDefendBurbGoal(goal.TargetMapHex);
+            return true;
+        }
+
         // Expand DesiredUnits if enemy count increases.
         if ("conquer".Equals(goal.Type))
         {
@@ -222,15 +233,6 @@ public class Ai
             }
             if (IsMoveToTarget)
                 Console.WriteLine("Ai.evaluateGoal(): reset for new assault: " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
-        }
-        // goal is complete
-        if ("conquer".Equals(goal.Type) && goal.TargetMapHex.Burb != null && goal.TargetMapHex.Burb.OwnerColor.Equals(Faction.Color))
-        {
-            Console.WriteLine("Ai.evaluateGoal(): goal complete: " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
-            if (targetXyToGoal.ContainsKey(goal.TargetMapHex.X + "," + goal.TargetMapHex.Y))
-                targetXyToGoal.Remove(goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
-            createDefendBurbGoal(goal.TargetMapHex);
-            return true;
         }
         return false;
     }
@@ -417,12 +419,17 @@ public class Ai
 
     private void moveUnit(UnitType unitType, Unit unit, MapHex toHex)
     {
+        Dictionary<string, Node> graph = new Dictionary<string, Node>();
+        Dictionary<string, Node> seaGraph = new Dictionary<string, Node>();
+        Dictionary<string, Node> landGraph = new Dictionary<string, Node>();
         if (unit == null || toHex == null)
             return;
         MapHex fromHex = map.Hexes[unit.Y, unit.X];
         if ("sea".Equals(unitType.LandOrSea))
         {
-            List<UnitAction> path = gameState.Map.determineSeaPath(fromHex, toHex);
+            gameState.Map.buildNodesForShortestPath(true, null, seaGraph, null);
+            List<UnitAction> path = gameState.Map.determinePath(seaGraph, fromHex, toHex);
+            //List<UnitAction> path = gameState.Map.determineSeaPath(fromHex, toHex);
             if (path != null && path.Count > 0)
             {
                 unit.ActionQueue.Clear();
@@ -430,11 +437,14 @@ public class Ai
                 {
                     unit.addUnitAction(moveAction);
                 }
+                Console.WriteLine("moveUnit(): path=" + path.Count);
             }
         }
         else if (!"sea".Equals(unitType.LandOrSea) && !"sea".Equals(fromHex.Terrain))
         {
-            List<UnitAction> path = gameState.Map.determineLandPath(fromHex, toHex);
+            gameState.Map.buildNodesForShortestPath(true, null, null, landGraph);
+            List<UnitAction> path = gameState.Map.determinePath(landGraph, fromHex, toHex);
+            //List<UnitAction> path = gameState.Map.determineLandPath(fromHex, toHex);
             if (path != null && path.Count > 0)
             {
                 unit.ActionQueue.Clear();
@@ -442,6 +452,22 @@ public class Ai
                 {
                     unit.addUnitAction(moveAction);
                 }
+                Console.WriteLine("moveUnit(): path=" + path.Count);
+            }
+        }
+        else
+        {
+            gameState.Map.buildNodesForShortestPath(true, graph, null, null);
+            List<UnitAction> path = gameState.Map.determinePath(graph, fromHex, toHex);
+            //List<UnitAction> path = gameState.Map.determinePath(fromHex, toHex);
+            if (path != null && path.Count > 0)
+            {
+                unit.ActionQueue.Clear();
+                foreach (UnitAction moveAction in path)
+                {
+                    unit.addUnitAction(moveAction);
+                }
+                Console.WriteLine("moveUnit(): path=" + path.Count);
             }
         }
         if (unit.ActionQueue.Count <= 0)
@@ -451,6 +477,7 @@ public class Ai
             unitAction.TargetX = toHex.X;
             unitAction.TargetY = toHex.Y;
             unit.setUnitAction(unitAction);
+            Console.WriteLine("moveUnit(): single unitAction used.");
         }
     }
 
@@ -629,26 +656,28 @@ public class Ai
     {
         if (unit != null && unit.StrengthPoints > 0)
         {
+            UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
             //Console.WriteLine("Ai.randomMovement(): " + unit.UnitType);
             // 0=capital, 1=left, 2=right, 3=diagonal
-            MapHex mapHex = null;
+            MapHex targetHex = null;
             int randomNumber = random.Next(0, 4);
             if (randomNumber == 0)
-                mapHex = Server.gameState.Map.getCapitalHex();
+                targetHex = Server.gameState.Map.getCapitalHex();
             else if (randomNumber == 1)
-                mapHex = Server.gameState.Map.LeftMetro[Faction.Color];
+                targetHex = Server.gameState.Map.LeftMetro[Faction.Color];
             else if (randomNumber == 2)
-                mapHex = Server.gameState.Map.RightMetro[Faction.Color];
+                targetHex = Server.gameState.Map.RightMetro[Faction.Color];
             else if (randomNumber == 3)
-                mapHex = Server.gameState.Map.DiagonalMetro[Faction.Color];
-            if (mapHex != null)
+                targetHex = Server.gameState.Map.DiagonalMetro[Faction.Color];
+            if (targetHex != null)
             {
-                UnitAction unitAction = new UnitAction();
-                unitAction.Action = "move";
-                unitAction.TargetX = mapHex.X;
-                unitAction.TargetY = mapHex.Y;
-                unit.setUnitAction(unitAction);
-                Console.WriteLine("Ai.randomMovement(): " + unit.Id + " to " + mapHex.X + "," + mapHex.Y);
+                moveUnit(unitType, unit, targetHex);
+                //UnitAction unitAction = new UnitAction();
+                //unitAction.Action = "move";
+                //unitAction.TargetX = targetHex.X;
+                //unitAction.TargetY = targetHex.Y;
+                //unit.setUnitAction(unitAction);
+                Console.WriteLine("Ai.randomMovement(): " + unit.Id + " to " + targetHex.X + "," + targetHex.Y);
             }
         }
     }
@@ -686,11 +715,12 @@ public class Ai
                     float distance = map.calculateDistance(unitHex, burbHex);
                     if (distance <= range)
                     {
-                        UnitAction unitAction = new UnitAction();
-                        unitAction.Action = "move";
-                        unitAction.TargetX = burbHex.X;
-                        unitAction.TargetY = burbHex.Y;
-                        unit.setUnitAction(unitAction);
+                        moveUnit(unitType, unit, burbHex);
+                        //UnitAction unitAction = new UnitAction();
+                        //unitAction.Action = "move";
+                        //unitAction.TargetX = burbHex.X;
+                        //unitAction.TargetY = burbHex.Y;
+                        //unit.setUnitAction(unitAction);
                         isBurbToFree = true;
                         Console.WriteLine("Ai.freeBurb(): " + unit.Id + " to " + burbHex.X + "," + burbHex.Y);
                         break;

@@ -53,7 +53,7 @@ The game is being designed with known differences from the original.
   - [x] pursue
 
 ### Milestone 4
-- [ ] AI opponents
+- [x] AI opponents
   - [x] Infantry support with brute force pathing.
   - [x] Sea units and sea pathing.
   - [ ] Move blocked.
@@ -62,7 +62,7 @@ The game is being designed with known differences from the original.
     - [x] spy
     - [x] infantry
     - [x] sea units (sub)
-  - [ ] Conquest goals.
+  - [x] Conquest goals.
     - [x] Mass attack force.
     - [x] Reset after failed attack.
   - [x] Defense goals.
@@ -93,10 +93,12 @@ The game is being designed with known differences from the original.
 - [ ] AI support for planes.
 
 ### Milestone 6
-- [ ] Host Game and Join Game setting validations.
+- [ ] Add validations for Host Game and Join Game screens.
 - [ ] Save and load game.
 - [ ] Resign.
 - [ ] Playback.
+- [ ] Allow for Non-player observers.
+    - [ ] Differentiate between visibility for units vs. humans.
 
 ### Milestone 7
 - [ ] Improved Economics

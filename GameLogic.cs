@@ -283,6 +283,8 @@ public class GameLogic
             Unit hexUnit = hex.getUnit();
             if (hexUnit != null)
             {
+                if (hexUnit.Color == unit.Color)
+                    continue;
                 bool isHexUnitMoving = false;
                 if (hexUnit.ActionQueue.Count > 0)
                     isHexUnitMoving = true;
