@@ -14,9 +14,11 @@ The Global Conquest hybrid approach allows for players to simultaneously plan th
 The planning and execution phase system make it similar to tactical combat games like Baulder's Gate 3 or XCom, but abstracted to a strategic level.
 
 
-
+## Screenshots
+### Original 1992 DOS Game
 ![Original Global ConquestScreenshot](Original-GC-1992-Screenshot.png "Original Global Conquest")
 
+### WIP for Globabl Conquest 2025
 ![Global Conquest 2025 Screenshot](GC2025-Screenshot.png "Global Conquest 2025")
 
 ## Project Goals and Designed Deviations
