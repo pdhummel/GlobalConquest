@@ -171,7 +171,7 @@ public class GlobalConquestGame : Game
         if (soundEffects.ContainsKey(soundEffectEventName))
         {
             SoundEffect soundEffect = soundEffects[soundEffectEventName];
-            soundEffect.Play();  
+            soundEffect.Play();
         }
     }
 

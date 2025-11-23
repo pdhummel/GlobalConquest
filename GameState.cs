@@ -26,7 +26,7 @@ public class GameState
     public UnitTypes UnitTypes { get; set; }
     public Burbs Burbs { get; set; }
 
-    public Airplanes Airplanes {get; set; }
+    public Airplanes Airplanes { get; set; }
     public string VictoriousColor { get; set; } = "grey";
     public long Ticks { get; set; } = 0;
 
@@ -86,21 +86,20 @@ public class GameState
         spy.UnitType = "spy";
         spy.Color = color;
 
+        Unit plane1 = new Unit();
+        plane1.UnitType = "plane";
+        plane1.Color = color;
 
         if ("Omniscient".Equals(GameSettings.Visibility))
         {
             comcen.setOmniVisibility();
-            tank1.setOmniVisibility();
-            tank2.setOmniVisibility();
-            infantry.setOmniVisibility();
+            plane1.setOmniVisibility();
             spy.setOmniVisibility();
         }
         else
         {
             comcen.setBaseVisibility();
-            tank1.setBaseVisibility();
-            tank2.setBaseVisibility();
-            infantry.setBaseVisibility();
+            plane1.setBaseVisibility();
             spy.setBaseVisibility();
         }
         if (color.Equals("amber"))
@@ -109,6 +108,7 @@ public class GameState
             List<string> directions = ["northWest", "northEast", "southWest", "southEast"];
             placeUnit(metroHex, directions, comcen);
             Map.placeNewUnit(spy, metroHex);
+            //Map.placeNewUnit(plane1, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
@@ -139,6 +139,10 @@ public class GameState
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
+
+        comcen.Airplane = plane1;
+        plane1.ParentUnitId = comcen.Id;
+
     }
 
     private void placeUnit(MapHex metroHex, List<string> directions, Unit unit)

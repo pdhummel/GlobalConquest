@@ -12,6 +12,7 @@ public class MapHex
     public Dictionary<string, bool> Visibility { get; set; } = new Dictionary<string, bool>();
 
     public List<Unit> Units { get; set; } = new List<Unit>();
+    public Unit Airplane { get; set; }
 
     public Burb? Burb { get; set; }
     public long Ticks { get; set; } = DateTime.Now.Ticks;
@@ -58,15 +59,19 @@ public class MapHex
             Units.Add(unit);
     }
 
-    public Unit getAirplane()
+    public Unit getAnyAirplaneAtHex()
     {
+        if (Airplane != null)
+            return Airplane;
         Unit unit = getUnit();
+        if ("plane".Equals(unit.UnitType))
+        {
+            return unit;
+        }
         if (unit != null)
             return unit.Airplane;
         return null;
     }
-
-
 
     public override bool Equals(object obj)
     {
@@ -91,7 +96,7 @@ public class MapHex
         int unitHashCode = 0;
         if (unit != null)
             unitHashCode = unit.GetHashCode();
-        return HashCode.Combine(Terrain, Y, X, Visibility, unitHashCode); 
+        return HashCode.Combine(Terrain, Y, X, Visibility, unitHashCode);
     }
 
 }

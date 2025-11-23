@@ -164,11 +164,19 @@ public class Map
         placeNewUnit(unit, mapHex.X, mapHex.Y);
     }
 
+    public void placeNewPlane(Unit unit, MapHex mapHex)
+    {
+        placeNewUnit(unit, mapHex.X, mapHex.Y);
+    }
+
     public void placeNewUnit(Unit unit, int x, int y)
     {
-        if (x >= 0 && x < X && y >= 0 && y < Y)
+        if (unit != null && x >= 0 && x < X && y >= 0 && y < Y)
         {
-            Hexes[y, x].setUnit(unit);
+            if ("plane".Equals(unit.UnitType))
+                Hexes[y, x].Airplane = unit;
+            else
+                Hexes[y, x].setUnit(unit);
             unit.HomeBurbX = x;
             unit.HomeBurbY = y;
             unit.OriginalBurbX = x;
@@ -593,7 +601,7 @@ public class Map
                 {
                     string previousOwnerColor = mapHex.Burb.OwnerColor;
                     mapHex.Burb.OwnerColor = color;
-                    if (previousOwnerColor != null && ! previousOwnerColor.Equals(color))
+                    if (previousOwnerColor != null && !previousOwnerColor.Equals(color))
                     {
                         server.sendGameStateAndMapHex(mapHex.X, mapHex.Y);
                         GameEvent gameEvent = new GameEvent("burbCaptured");
@@ -613,7 +621,7 @@ public class Map
                 if (previousOwnerColor != null && unit != null)
                 {
                     mapHex.Burb.OwnerColor = unit.Color;
-                    if (! previousOwnerColor.Equals(unit.Color))
+                    if (!previousOwnerColor.Equals(unit.Color))
                     {
                         server.sendGameStateAndMapHex(mapHex.X, mapHex.Y);
                         GameEvent gameEvent = new GameEvent("burbCaptured");
@@ -685,7 +693,7 @@ public class Map
         buildNodesForShortestPath(false, this.allNodesGraph, this.seaNodesGraph, this.landNodesGraph);
     }
 
-    public void buildNodesForShortestPath(bool shouldAvoidUnits, Dictionary<string, Node> graph, 
+    public void buildNodesForShortestPath(bool shouldAvoidUnits, Dictionary<string, Node> graph,
                                            Dictionary<string, Node> seaGraph, Dictionary<string, Node> landGraph)
     {
         Console.WriteLine("buildNodesForShortestPath(): enter");
@@ -785,9 +793,9 @@ public class Map
 
         addFixedBurbs(burbs);
         buildNodesForShortestPath();
-        for (int y=0; y < Y; y++)
+        for (int y = 0; y < Y; y++)
         {
-            for (int x=0; x < X; x++)
+            for (int x = 0; x < X; x++)
             {
                 MapHex mapHex = Hexes[y, x];
                 Unit unit = mapHex.getUnit();

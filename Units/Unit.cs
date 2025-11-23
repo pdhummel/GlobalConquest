@@ -23,7 +23,12 @@ public class Unit
     public int Y { get; set; }
     public int X { get; set; }
 
-    public Unit? ParentUnit { get; set; }
+    // If this unit is a plane, it may have a ParentUnit such as a comcen or carrier.
+    // When a plane is a child, the X,Y are inherited from the ParentUnit.
+    // Alternatively, a plane could reside on a burb maphex and have a meaningful X and Y.
+    public string? ParentUnitId { get; set; }
+
+    // if this unit is a carrier or comcen, it may have an Airplane associated with it.
     public Unit? Airplane { get; set; }
 
     // Global Conquest Manual - Technical Notes - p79-83

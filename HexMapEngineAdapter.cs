@@ -195,13 +195,13 @@ class HexMapEngineAdapter
         units["cyan-spy"] = cyanSpy;
 
         Texture2D magentaPlane = game.Content.Load<Texture2D>("magenta-plane-30px");
-        units["magentaPlane"] = magentaPlane;
+        units["magenta-plane"] = magentaPlane;
         Texture2D amberPlane = game.Content.Load<Texture2D>("magenta-plane-30px");
-        units["amberPlane"] = amberPlane;
+        units["amber-plane"] = amberPlane;
         Texture2D cyanPlane = game.Content.Load<Texture2D>("magenta-plane-30px");
-        units["cyanPlane"] = magentaPlane;
+        units["cyan-plane"] = magentaPlane;
         Texture2D ocherPlane = game.Content.Load<Texture2D>("magenta-plane-30px");
-        units["ocherPlane"] = magentaPlane;
+        units["ocher-plane"] = magentaPlane;
 
 
 
@@ -297,21 +297,106 @@ class HexMapEngineAdapter
         {
             for (int liX = 0; liX < hexWidth; liX++)
             {
+                Player player = identifySelf();
                 Unit unit = hexes[liY, liX].getUnit();
                 if (unit != null && unit.StrengthPoints > 0)
                 {
                     string unitTypeId = unit.Color + "-" + unit.UnitType;
-                    Player player = identifySelf();
                     if (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor])
                     {
-                        if (unit.ParentUnit == null || gcGame.IsShowAirplanes)
+                        if (unit.ParentUnitId == null || gcGame.IsShowAirplanes)
                             drawUnitAtHex(liY, liX, unitTypeId);
                         if (unit.Airplane != null && gcGame.IsShowAirplanes)
                         {
+                            //Console.WriteLine("DrawUnits(): plane found on unit");
                             drawUnitAtHex(liY, liX, unit.Color + "-plane");
                         }
                     }
                 }
+                Unit plane = hexes[liY, liX].Airplane;
+                if (plane != null && plane.StrengthPoints > 0)
+                {
+                    string unitTypeId = unit.Color + "-" + unit.UnitType;
+                    if (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor])
+                    {
+                        if (plane != null && gcGame.IsShowAirplanes)
+                        {
+                            //Console.WriteLine("DrawUnits(): plane found on hex");
+                            drawUnitAtHex(liY, liX, unit.Color + "-plane");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void drawUnitAtHex(int row, int column, string unitTypeId)
+    {
+        Vector2 currentPixelPosition = this.getCurrentPixelPosition();
+        Vector2 rowColVector = new Vector2(column, row);
+        Vector2 pixelVector = ConvertHexToPixels(rowColVector);
+        //Console.WriteLine("drawUnitAtHex(): row=" + row + ", col=" + column +
+        //    ", currentPixelX=" + currentPixelPosition.X + ", currentPixelY=" + currentPixelPosition.Y +
+        //    ", pixelX=" + pixelVector.X + ", PixelY=" + pixelVector.Y
+        //);
+        if (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS < currentPixelPosition.X ||
+            pixelVector.X > currentPixelPosition.X + gcGame.MainGameScreen.MapPanel.Width ||
+            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS < currentPixelPosition.Y ||
+            pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.MapPanel.Height
+           )
+        {
+            if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+                return;
+        }
+
+        if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+        {
+            if (unitTypeId.Contains("plane"))
+            {
+                pixelVector.X += 20 - currentPixelPosition.X;
+                pixelVector.Y += 19 - currentPixelPosition.Y;
+            }
+            else
+            {
+                pixelVector.X += 10 - currentPixelPosition.X;
+                pixelVector.Y += 9 - currentPixelPosition.Y;
+            }
+        }
+        else
+        {
+            pixelVector.X += 10;
+            pixelVector.Y += 9;
+        }
+        if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
+            (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
+            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height) ||
+            pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS / 2
+            )
+        {
+            return;
+        }
+        float layerDepth = 0.5f;
+        if (unitTypeId.Contains("plane"))
+            layerDepth = 0.35f;
+        coSpriteBatch.Draw(
+                            units[unitTypeId],
+                            pixelVector,
+                            null,
+                            Color.White,
+                            0.0f,
+                            Vector2.Zero,
+                            new Vector2(1.0f, 1.0f),
+                            SpriteEffects.None,
+                            layerDepth  // higher number at bottom
+                            );
+        if (gcGame.IsShowDestinations)
+        {
+            Player player = identifySelf();
+            MapHex mapHex = gcGame.Client.GameState.Map.Hexes[row, column];
+            Unit unit = mapHex.getUnit();
+            if (unit != null && unit.Color.Equals(player.FactionColor))
+            {
+                gcGame.DrawPathForUnit(unit);
             }
         }
     }
@@ -497,7 +582,7 @@ class HexMapEngineAdapter
                                 Vector2.Zero,
                                 new Vector2(1.0f, 1.0f),
                                 SpriteEffects.None,
-                                0.75f
+                                0.75f  // higher number at bottom
                                 );
             return;
         }
@@ -510,71 +595,10 @@ class HexMapEngineAdapter
                             Vector2.Zero,
                             new Vector2(1.0f, 1.0f),
                             SpriteEffects.None,
-                            0.75f
+                            0.75f  // higher number at bottom
                             );
 
 
-    }
-
-
-    private void drawUnitAtHex(int row, int column, string unitTypeId)
-    {
-        Vector2 currentPixelPosition = this.getCurrentPixelPosition();
-        Vector2 rowColVector = new Vector2(column, row);
-        Vector2 pixelVector = ConvertHexToPixels(rowColVector);
-        //Console.WriteLine("drawUnitAtHex(): row=" + row + ", col=" + column +
-        //    ", currentPixelX=" + currentPixelPosition.X + ", currentPixelY=" + currentPixelPosition.Y +
-        //    ", pixelX=" + pixelVector.X + ", PixelY=" + pixelVector.Y
-        //);
-        if (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS < currentPixelPosition.X ||
-            pixelVector.X > currentPixelPosition.X + gcGame.MainGameScreen.MapPanel.Width ||
-            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS < currentPixelPosition.Y ||
-            pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.MapPanel.Height
-           )
-        {
-            if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
-                return;
-        }
-
-        if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
-        {
-            pixelVector.X += 10 - currentPixelPosition.X;
-            pixelVector.Y += 9 - currentPixelPosition.Y;
-        }
-        else
-        {
-            pixelVector.X += 10;
-            pixelVector.Y += 9;
-        }
-        if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
-            (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
-            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height) ||
-            pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS / 2
-            )
-        {
-            return;
-        }
-        coSpriteBatch.Draw(
-                            units[unitTypeId],
-                            pixelVector,
-                            null,
-                            Color.White,
-                            0.0f,
-                            Vector2.Zero,
-                            new Vector2(1.0f, 1.0f),
-                            SpriteEffects.None,
-                            0.5f
-                            );
-        if (gcGame.IsShowDestinations)
-        {
-            Player player = identifySelf();
-            MapHex mapHex = gcGame.Client.GameState.Map.Hexes[row, column];
-            Unit unit = mapHex.getUnit();
-            if (unit != null && unit.Color.Equals(player.FactionColor))
-            {
-                gcGame.DrawPathForUnit(unit);
-            }
-        }
     }
 
     // A row is like a snake, it goes up or down per column
@@ -750,7 +774,7 @@ class HexMapEngineAdapter
                                 Vector2.Zero,
                                 new Vector2(1.0f, 1.0f),
                                 SpriteEffects.None,
-                                0.85f
+                                0.85f // higher number at bottom - .85=hex, .75=burb, .5=unit, .35=plane
                                 );
             return;
         }
@@ -763,7 +787,7 @@ class HexMapEngineAdapter
                             Vector2.Zero,
                             new Vector2(1.0f, 1.0f),
                             SpriteEffects.None,
-                            0.85f
+                            0.85f // higher number at bottom
                             );
 
 

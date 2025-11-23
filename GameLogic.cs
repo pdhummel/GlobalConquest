@@ -28,9 +28,15 @@ public class GameLogic
         Server? server = this.server;
         GameState gameState = server.gameState;
         gameState.CurrentPhase = "execution";
-        server.sendGameState();
 
         List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        foreach (string color in colors)
+        {
+            Faction faction = gameState.Factions.ColorToFaction[color];
+            faction.Status = "executing";
+        }
+        server.sendGameState();
+
         foreach (string color in colors)
         {
             bool isFactionAi = true;
@@ -962,7 +968,7 @@ public class GameLogic
             {
                 metroOwnerCount[color] = 0;
             }
-            if (! metroOwnerCount.ContainsKey(gameState.Map.getMetroHex(color).Burb.OwnerColor))
+            if (!metroOwnerCount.ContainsKey(gameState.Map.getMetroHex(color).Burb.OwnerColor))
                 metroOwnerCount[gameState.Map.getMetroHex(color).Burb.OwnerColor] = 1;
             metroOwnerCount[gameState.Map.getMetroHex(color).Burb.OwnerColor] += 1;
         }
@@ -1230,7 +1236,7 @@ public class GameLogic
             if (Directory.Exists(gcDataDirectory))
             {
                 Directory.Delete(gcDataDirectory, true);
-                Directory.CreateDirectory(gcDataDirectory);                
+                Directory.CreateDirectory(gcDataDirectory);
             }
         }
 
@@ -1267,7 +1273,7 @@ public class GameLogic
             {
                 Directory.CreateDirectory(gcDirectory);
             }
-            saveDirectory = gcDirectory;            
+            saveDirectory = gcDirectory;
         }
         string dataDirectory = saveDirectory + "\\Data\\";
         if (!Directory.Exists(dataDirectory))
@@ -1312,7 +1318,7 @@ public class GameLogic
         string? loadDirectory = Path.GetDirectoryName(fullFilePath);
         string? fileName = Path.GetFileName(fullFilePath);
 
-        if (!Directory.Exists(loadDirectory) || ! File.Exists(fileName))
+        if (!Directory.Exists(loadDirectory) || !File.Exists(fileName))
         {
             string currentUser = Environment.UserName;
             string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest";
@@ -1328,7 +1334,7 @@ public class GameLogic
         string searchPattern = "GameState-*.json";
         string[] files = Directory.GetFiles(dataDirectory, searchPattern);
         string file = files[0];
-        string filePath = file;        
+        string filePath = file;
         jsonString = File.ReadAllText(filePath);
         GameState? newGameState = JsonSerializer.Deserialize<GameState>(jsonString);
 
@@ -1359,14 +1365,6 @@ public class GameLogic
 
         newGameState.UnitTypes.defineUnitTypes();
         List<string> colors = ["amber", "ocher", "magenta", "cyan"];
-        //foreach (string color in colors)
-        //{
-        //    if (newGameState.Players.colorToPlayer.ContainsKey(color))
-        //    {
-        //        Player player = newGameState.Players.colorToPlayer[color];
-        //        newGameState.Players.RemovePlayer(newGameState, player.Name);
-        //    }
-        //}
         newGameState.Map.restoreMap(newGameState.Burbs);
         server.gameState = newGameState;
         foreach (string color in colors)
@@ -1392,7 +1390,7 @@ public class GameLogic
         string searchPattern = "GameState-*.json";
         string[] files = Directory.GetFiles(gcDataDirectory, searchPattern);
         string file = files[0];
-        string filePath = file;        
+        string filePath = file;
         string jsonString = File.ReadAllText(filePath);
         GameState? newGameState = JsonSerializer.Deserialize<GameState>(jsonString);
 
