@@ -16,6 +16,7 @@ public class MainGameMenu
     HorizontalMenu horizontalMenu = new HorizontalMenu();
     MenuItem executeMenuItem = new MenuItem("Execute", "&Execute!");
     MenuItem destinationsMenuItem = new MenuItem("Destinations", "&Destinations");
+    MenuItem airplanesMenuItem = new MenuItem("Airplanes", "&Airplanes");
     MenuItem fileMenuItem = new MenuItem("File", "&File");
     MenuItem viewMenuItem = new MenuItem("View", "&View");
 
@@ -26,12 +27,15 @@ public class MainGameMenu
 
     public MainGameMenu(MainGameScreen mainGameScreen)
     {
+        this.mainGameScreen = mainGameScreen;
         horizontalMenu.Id = "MainGameMenu.horizontalMenu";
         executeMenuItem.Id = "MainGameMenu.horizontalMenu.executeMenuItem";
-        destinationsMenuItem.Id = "MainGameMenu.horizontalMenu.destinationsMenuItem";
-        this.mainGameScreen = mainGameScreen;
         executeMenuItem.Color = Color.Yellow;
+        destinationsMenuItem.Id = "MainGameMenu.horizontalMenu.destinationsMenuItem";
         destinationsMenuItem.Color = Color.Yellow;
+        airplanesMenuItem.Id = "MainGameMenu.horizontalMenu.airplanesMenuItem";
+        airplanesMenuItem.Color = Color.Yellow;
+
         // File - Save, Load, Resign, Restart
         fileMenuItem.Items.Add(saveMenuItem);
         saveMenuItem.Selected += (s, a) =>
@@ -96,8 +100,14 @@ public class MainGameMenu
             destinationsMenuItemSelected();
         };
 
+        airplanesMenuItem.Selected += (s, a) =>
+        {
+            airplanesMenuItemSelected();
+        };
+
         horizontalMenu.Items.Add(executeMenuItem);
         horizontalMenu.Items.Add(destinationsMenuItem);
+        horizontalMenu.Items.Add(airplanesMenuItem);
         horizontalMenu.Items.Add(fileMenuItem);
         horizontalMenu.Items.Add(viewMenuItem);
         mainGameScreen.MainGameMenuPanel.Widgets.Add(horizontalMenu);
@@ -106,6 +116,8 @@ public class MainGameMenu
         actionMapper.registerSelectedIndex(horizontalMenu.Id, 0, executeMenuItem.Id);
         actionMapper.registerControlMethod(destinationsMenuItem.Id, this, "destinationsMenuItemSelected");
         actionMapper.registerSelectedIndex(horizontalMenu.Id, 1, destinationsMenuItem.Id);
+        actionMapper.registerControlMethod(airplanesMenuItem.Id, this, "airplanesMenuItemSelected");
+        actionMapper.registerSelectedIndex(horizontalMenu.Id, 1, airplanesMenuItem.Id);
         // TODO: this doesn't work with the game controller and is actually horizontalMenu-viewMenuItem-refreshStateMenuItem.
         actionMapper.registerControlMethod(refreshStateMenuItem.Id, this, "refreshStateMenuItemSelected");
         actionMapper.registerSelectedIndex(horizontalMenu.Id, 2, refreshStateMenuItem.Id);
@@ -156,6 +168,11 @@ public class MainGameMenu
     public void destinationsMenuItemSelected()
     {
         mainGameScreen.gcGame.IsShowDestinations = !mainGameScreen.gcGame.IsShowDestinations;
+    }
+
+    public void airplanesMenuItemSelected()
+    {
+        mainGameScreen.gcGame.IsShowAirplanes = !mainGameScreen.gcGame.IsShowAirplanes;
     }
 
     public void saveMenuItemSelected()

@@ -194,13 +194,18 @@ class HexMapEngineAdapter
         Texture2D cyanSpy = game.Content.Load<Texture2D>("cyan-spy-48x48");
         units["cyan-spy"] = cyanSpy;
 
-        Texture2D magentaPlane = game.Content.Load<Texture2D>("magenta-plane-30px");
+        // magenta-plane-white-30px
+        // magenta-plane-black-30px
+        // magenta-plane-transparent-30px
+        // magenta-plane-whitef-30px
+        // magenta-plane-blackf-30px
+        Texture2D magentaPlane = game.Content.Load<Texture2D>("magenta-plane-black-30px");
         units["magenta-plane"] = magentaPlane;
-        Texture2D amberPlane = game.Content.Load<Texture2D>("magenta-plane-30px");
+        Texture2D amberPlane = game.Content.Load<Texture2D>("amber-plane-black-30px");
         units["amber-plane"] = amberPlane;
-        Texture2D cyanPlane = game.Content.Load<Texture2D>("magenta-plane-30px");
+        Texture2D cyanPlane = game.Content.Load<Texture2D>("cyan-plane-black-30px");
         units["cyan-plane"] = magentaPlane;
-        Texture2D ocherPlane = game.Content.Load<Texture2D>("magenta-plane-30px");
+        Texture2D ocherPlane = game.Content.Load<Texture2D>("ocher-plane-black-30px");
         units["ocher-plane"] = magentaPlane;
 
 
