@@ -476,6 +476,18 @@
 /processorParam:TextureFormat=Color
 /build:magenta-metro-72x72.png
 
+#begin magenta-plane-30px.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:magenta-plane-30px.png
+
 #begin magenta-spy-48x48.png
 /importer:TextureImporter
 /processor:TextureProcessor

@@ -194,6 +194,16 @@ class HexMapEngineAdapter
         Texture2D cyanSpy = game.Content.Load<Texture2D>("cyan-spy-48x48");
         units["cyan-spy"] = cyanSpy;
 
+        Texture2D magentaPlane = game.Content.Load<Texture2D>("magenta-plane-30px");
+        units["magentaPlane"] = magentaPlane;
+        Texture2D amberPlane = game.Content.Load<Texture2D>("magenta-plane-30px");
+        units["amberPlane"] = amberPlane;
+        Texture2D cyanPlane = game.Content.Load<Texture2D>("magenta-plane-30px");
+        units["cyanPlane"] = magentaPlane;
+        Texture2D ocherPlane = game.Content.Load<Texture2D>("magenta-plane-30px");
+        units["ocherPlane"] = magentaPlane;
+
+
 
         Console.WriteLine("HexMapEngineAdapter.LoadContent(): hexHeight=" + hexHeight + ", hexWidth=" + hexWidth);
         updateMap();
@@ -290,11 +300,16 @@ class HexMapEngineAdapter
                 Unit unit = hexes[liY, liX].getUnit();
                 if (unit != null && unit.StrengthPoints > 0)
                 {
-                    string unitId = unit.Color + "-" + unit.UnitType;
+                    string unitTypeId = unit.Color + "-" + unit.UnitType;
                     Player player = identifySelf();
                     if (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor])
                     {
-                        drawUnitAtHex(liY, liX, unitId);
+                        if (unit.ParentUnit == null || gcGame.IsShowAirplanes)
+                            drawUnitAtHex(liY, liX, unitTypeId);
+                        if (unit.Airplane != null && gcGame.IsShowAirplanes)
+                        {
+                            drawUnitAtHex(liY, liX, unit.Color + "-plane");
+                        }
                     }
                 }
             }

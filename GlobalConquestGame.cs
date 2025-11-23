@@ -55,6 +55,8 @@ public class GlobalConquestGame : Game
     bool isMultiHexMove = false;
     public bool IsShowDestinations { get; set; }
 
+    public bool IsShowAirplanes { get; set; }
+
     public GameControl GameControl { get; set; } = new GameControl();
     //public Dictionary<string, SoundEffect> sounds = new Dictionary<string, SoundEffect>();
     public Dictionary<string, Song> songs = new Dictionary<string, Song>();

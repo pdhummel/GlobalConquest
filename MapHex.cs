@@ -58,6 +58,14 @@ public class MapHex
             Units.Add(unit);
     }
 
+    public Unit getAirplane()
+    {
+        Unit unit = getUnit();
+        if (unit != null)
+            return unit.Airplane;
+        return null;
+    }
+
 
 
     public override bool Equals(object obj)

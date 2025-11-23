@@ -23,6 +23,9 @@ public class Unit
     public int Y { get; set; }
     public int X { get; set; }
 
+    public Unit? ParentUnit { get; set; }
+    public Unit? Airplane { get; set; }
+
     // Global Conquest Manual - Technical Notes - p79-83
     // Units start with 100 strength points. When strength equals zero the unit is dead.
     public int StrengthPoints { get; set; } = 100;

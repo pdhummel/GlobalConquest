@@ -64,7 +64,7 @@ The game is being designed with known differences from the original.
 - [x] AI opponents
   - [x] Infantry support with brute force pathing.
   - [x] Sea units and sea pathing.
-  - [ ] Move blocked.
+  - [x] Move blocked.
   - [x] Advanced land unit pathing.
   - [x] Exploration goals.
     - [x] spy
