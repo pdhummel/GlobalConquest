@@ -302,8 +302,9 @@ class HexMapEngineAdapter
         {
             for (int liX = 0; liX < hexWidth; liX++)
             {
+                MapHex mapHex = hexes[liY, liX];
                 Player player = identifySelf();
-                Unit unit = hexes[liY, liX].getUnit();
+                Unit unit = mapHex.getUnit();
                 if (unit != null && unit.StrengthPoints > 0)
                 {
                     string unitTypeId = unit.Color + "-" + unit.UnitType;
@@ -318,16 +319,17 @@ class HexMapEngineAdapter
                         }
                     }
                 }
-                Unit plane = hexes[liY, liX].Airplane;
+                Unit plane = mapHex.Airplane;
                 if (plane != null && plane.StrengthPoints > 0)
                 {
-                    string unitTypeId = unit.Color + "-" + unit.UnitType;
-                    if (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor])
+                    string unitTypeId = plane.Color + "-" + plane.UnitType;
+                    // TODO: figure out plane visibility settings
+                    if (mapHex.Visibility.ContainsKey(player.FactionColor) && mapHex.Visibility[player.FactionColor])
                     {
                         if (plane != null && gcGame.IsShowAirplanes)
                         {
                             //Console.WriteLine("DrawUnits(): plane found on hex");
-                            drawUnitAtHex(liY, liX, unit.Color + "-plane");
+                            drawUnitAtHex(liY, liX, unitTypeId);
                         }
                     }
                 }

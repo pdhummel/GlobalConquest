@@ -58,8 +58,6 @@ public class GlobalConquestGame : Game
     public bool IsShowAirplanes { get; set; }
 
     public GameControl GameControl { get; set; } = new GameControl();
-    //public Dictionary<string, SoundEffect> sounds = new Dictionary<string, SoundEffect>();
-    public Dictionary<string, Song> songs = new Dictionary<string, Song>();
     public Dictionary<string, SoundEffect> soundEffects = new Dictionary<string, SoundEffect>();
     public List<GameEvent> GamePlayEvents { get; set; } = new List<GameEvent>();
 

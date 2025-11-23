@@ -1,6 +1,7 @@
 using GlobalConquest;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
+using GumRuntime;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
@@ -81,10 +82,14 @@ public class BurbWindow
 
         if (player.FactionColor.Equals(burb.OwnerColor) && faction.Money > 0)
         {
-            if (("town".Equals(burb.Type) || "village".Equals(burb.Type)) && mapHex.getUnit() != null)
+            // plane
+            if (row == 9 && ("town".Equals(burb.Type) || "village".Equals(burb.Type)) && mapHex.Airplane != null)
             {
-                // no space to build
-                return;
+                return; // no space to build planes
+            }
+            else if (("town".Equals(burb.Type) || "village".Equals(burb.Type)) && mapHex.getUnit() != null)
+            {
+                return; // no space to build
             }
             // TODO: check cities, metros, capital for space to build
 
@@ -132,16 +137,16 @@ public class BurbWindow
 
         List<string> dockDirections = new List<string>();
         List<string> landDirections = new List<string>();
+        List<string> airDirections = new List<string>();
         List<string> openSpaceDirections = new List<string>();
-        bool burbHasOpenSpace = false;
-        bool burbHasOpenDock = false;
-        bool burbHasOpenLand = false;
         if (mapHex.getUnit() == null)
         {
-            burbHasOpenSpace = true;
-            burbHasOpenLand = true;
             openSpaceDirections.Add("center");
             landDirections.Add("center");
+        }
+        if (mapHex.Airplane == null)
+        {
+            airDirections.Add("center");
         }
 
         if ("city".Equals(burb.Type) || "capital".Equals(burb.Type) || "metro".Equals(burb.Type))
@@ -155,22 +160,24 @@ public class BurbWindow
                     MapHex neighbor = neighbors[direction];
                     if (neighbor.getUnit() == null)
                     {
-                        burbHasOpenSpace = true;
-                        //Console.WriteLine("showPurchaseUnit(): " + neighbor.Burb.Type);
                         if ("dock".Equals(neighbor.Burb.Type))
                         {
-                            burbHasOpenDock = true;
                             dockDirections.Add(direction);
                             openSpaceDirections.Add(direction);
                         }
 
                         if ("suburb".Equals(neighbor.Burb.Type))
                         {
-                            burbHasOpenLand = true;
                             landDirections.Add(direction);
                             openSpaceDirections.Add(direction);
                         }
-
+                    }
+                    if (neighbor.Airplane == null)
+                    {
+                        if ("suburb".Equals(neighbor.Burb.Type))
+                        {
+                            airDirections.Add(direction);
+                        }
                     }
                 }
             }
@@ -209,8 +216,8 @@ public class BurbWindow
         addLabelToGrid(grid, 9, 1, "35");
 
         List<int> rows = [];
-        List<int> landUnitRows = [3, 4, 8, 9];
-        landUnitRows = [3, 4, 8];
+        List<int> airUnitRows = [9];
+        List<int> landUnitRows = [3, 4, 8];
         List<int> seaUnitRows = [5, 6, 7];
         Dictionary<int, int> costByRow = new Dictionary<int, int>();
         costByRow[3] = 25;
@@ -235,7 +242,13 @@ public class BurbWindow
                 addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, dockDirections);
             }
         }
-
+        foreach (int row in airUnitRows)
+        {
+            if (costByRow[row] <= faction.Money)
+            {
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, airDirections);
+            }
+        }
         window.Closed += (s, a) =>
         {
         };
