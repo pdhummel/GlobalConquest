@@ -64,11 +64,24 @@ public class PlaneUnitType : UnitType
 
         if (enemyPlane != null)
         {
+            // If your opponents attempt an air strike against your forces and the strike 
+            // is within 10 spaces of your planes, 
+            // your planes will automatically defend against the attack. 
+            // If your plane survives this defense, it will need even more rest than usual. 
+            // Planes need an additional 1/2 turn of rest (i.e., are unavailable) per attack they defend against.
             enemyPlane.turnsUnavailable += 0.5f;
         }
         int multiplier = 1;
-        if (isMediumRangeMission(gameState, targetMapHex))
+        if (isShortRangeMission(gameState, targetMapHex))
+        {
+            multiplier = 1;
+            plane.turnsUnavailable += 1;
+        }
+        else if (isMediumRangeMission(gameState, targetMapHex))
+        {
             multiplier = 2;
+            plane.turnsUnavailable += 2;
+        }
         outcome = resolveMission(gameState, plane, isDogfight, isEnemyGrounded, enemyPlane, multiplier);
         return outcome;
     }

@@ -189,11 +189,17 @@ public class GameLogic
                 {
                     scanUnits(server, unit);
                     scanTerrain(server, unit);
-                    if (unit.Airplane != null)
+                    if (unit.Airplane != null && unit.Airplane.turnsUnavailable <= 0)
                     {
                         scanUnits(server, unit.Airplane);
                         scanTerrain(server, unit.Airplane);
                     }
+                }
+                Unit plane = mapHex.Airplane;
+                if (plane != null && plane.turnsUnavailable <= 0)
+                {
+                    scanUnits(server, plane);
+                    scanTerrain(server, plane);                    
                 }
             }
         }
@@ -275,13 +281,20 @@ public class GameLogic
 
     private void scanUnits(Server server, Unit unit)
     {
+        Map map = server.gameState.Map;
+        MapHex mapHex = map.Hexes[unit.Y, unit.X];
+        UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+        scanUnits(server, unit, unitType);
+    }
+
+    public void scanUnits(Server server, Unit unit, UnitType unitType)
+    {
         // A sneaking unit can't see other units at all.
         if (unit.IsSneaking)
             return;
 
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
-        UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
         bool isUnitMoving = false;
         if (unit.ActionQueue.Count > 0)
             isUnitMoving = true;
@@ -361,6 +374,13 @@ public class GameLogic
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
         UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+        scanTerrain(server, unit, unitType);
+    }
+
+    public void scanTerrain(Server server, Unit unit, UnitType unitType)
+    {
+        Map map = server.gameState.Map;
+        MapHex mapHex = map.Hexes[unit.Y, unit.X];
         HashSet<MapHex> hexesToScan = map.getMapHexesInRange(mapHex, unitType.DiscoveryRange);
         //Console.WriteLine("hexes to scan=" + hexesToScan.Count);
         foreach (MapHex hex in hexesToScan)

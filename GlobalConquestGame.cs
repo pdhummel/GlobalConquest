@@ -673,9 +673,21 @@ public class GlobalConquestGame : Game
                     lastSelectedUnit = unit;
                 }
             }
-            else if (ReconMode) // TODO: add other conditions
+            else if (ReconMode && (previousSelectedHex != null || previousSelectedUnit != null) && lastSelectedHex != null) // TODO: add other conditions
             {
                 // TODO: Recon Action
+                ReconAction action = new ReconAction();
+                action.ClassType = "GlobalConquest.Actions.ReconAction";
+                action.ClientIdentifier = Client.ClientIdentifier;
+                Unit plane = null;
+                if (previousSelectedUnit != null && previousSelectedUnit.Airplane != null)
+                    action.Plane = previousSelectedUnit.Airplane;
+                else if (previousSelectedHex  != null && previousSelectedHex.Airplane != null)
+                    action.Plane = previousSelectedHex.Airplane;
+                action.ReconX = lastSelectedHex.X;
+                action.ReconY = lastSelectedHex.Y;
+                Client.SendAction(Client.ClientIdentifier, action);
+                Console.WriteLine("handleLeftClick(): recon at " + action.ReconX + "," + action.ReconY);
                 ReconMode = false;
                 if (!PursueMode && !MoveMode && !ReconMode && lastSelectedHex != null)
                 {

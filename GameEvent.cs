@@ -66,6 +66,7 @@ public class GameEvent
             "enemyUnitAttacked",    // EnemyColor UnitType attacked at MapHex 
             "unitDestroyed",        // UnitType at MapHex destroyed           
             "enemyUnitDestroyed",   // EnemyColor UnitType destroyed at MapHex
+            "airplaneMissionFailed",
             "playerLostGame",       // Game Lost           
             "enemyPlayerLostGame",  // EnemyColor Lost Game
             "playerWonGame",        // Game Won           
@@ -322,6 +323,12 @@ public class GameEvent
     {            
         // Game Over
         EventString = "The Game is Over.";
+        Game.addGamePlayEvent(this);
+    }
+
+    public void airplaneMissionFailedHandler()
+    {
+        EventString = "Air mission failed for " + GetUnitType() + " at " + GetLocation() + ".";
         Game.addGamePlayEvent(this);
     }
 
