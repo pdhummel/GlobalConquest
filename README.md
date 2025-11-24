@@ -85,9 +85,9 @@ The game is being designed with known differences from the original.
 
 ### Milestone 5
 - [ ] Airplanes
-  - [ ] A plane can occupy any land burb hex. (separate layer from regular units)
+  - [x] A plane can occupy any land burb hex. (separate layer from regular units)
   - [ ] A plane can occupy a comcen or a carrier.
-  - [ ] Airplanes screen view.
+  - [x] Airplanes view.
   - [ ] Airplane Actions
     - [ ] Recon
     - [ ] Strike

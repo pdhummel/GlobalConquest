@@ -48,6 +48,8 @@ public class ContextMenu
         HideContextMenu();
         if (unit == null)
             return;
+        Map map = MainGameScreen.gcGame.Client.GameState.Map;
+        mapHex = map.Hexes[unit.Y, unit.X];
 
         verticalMenu = new VerticalMenu();
         verticalMenu.Id = "ContextMenu.verticalMenu";
@@ -300,6 +302,65 @@ public class ContextMenu
         //container.SetKeyboardFocus();
     }
 
+    public void ShowContextMenuForPlane(Unit plane)
+    {
+        if (!IsShowContextMenu)
+        {
+            return;
+        }
+        verticalMenu = new VerticalMenu();
+        verticalMenu.Id = "ContextMenu.verticalMenu";
+        Map map = MainGameScreen.gcGame.Client.GameState.Map;
+        mapHex = map.Hexes[plane.Y, plane.X];
+        HideContextMenu();
+
+        // actionMapper allows our game controller to invoke menu items
+        GameControlActionMapper actionMapper = gcGame.GameControl.GameControlActionMapper;
+        int itemIndex = 0;
+
+        var container = new VerticalStackPanel
+        {
+            Spacing = 4
+        };
+
+        var shortReconMenuItem = new MenuItem();
+        shortReconMenuItem.Id = "ContextMenu.verticalMenu.shortReconMenuItem";
+        shortReconMenuItem.Text = "short Recon";
+        shortReconMenuItem.Selected += (s, a) =>
+        {
+            shortReconMenuItemSelected();
+        };
+        verticalMenu.Items.Add(shortReconMenuItem);
+        actionMapper.registerControlMethod(shortReconMenuItem.Id, this, "shortReconMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, shortReconMenuItem.Id);
+        itemIndex += 1;
+
+
+        var refreshMapHexMenuItem = new MenuItem();
+        refreshMapHexMenuItem.Id = "ContextMenu.verticalMenu.refreshMapHexMenuItem";
+        refreshMapHexMenuItem.Text = "Refresh";
+        refreshMapHexMenuItem.Selected += (s, a) =>
+        {
+            refreshMapHexMenuItemSelected();
+        };
+        verticalMenu.Items.Add(refreshMapHexMenuItem);
+        actionMapper.registerControlMethod(refreshMapHexMenuItem.Id, this, "refreshMapHexMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, refreshMapHexMenuItem.Id);
+        itemIndex += 1;
+
+
+        container.Widgets.Add(verticalMenu);
+
+        MapPanel.Widgets.Add(container);
+        container.Left = gcGame.GameControl.currentMouseState.X;
+        container.Top = gcGame.GameControl.currentMouseState.Y;
+        container.Visible = true;
+        IsShowContextMenu = false;
+        //container.AcceptsKeyboardFocus = true;
+        //container.SetKeyboardFocus();
+    }
+
+
     public void moveMenuItemSelected()
     {
         DeleteMoveUnitAction deleteAction = new DeleteMoveUnitAction();
@@ -462,6 +523,11 @@ public class ContextMenu
         action.X = mapHex.X;
         action.Y = mapHex.Y;
         gcGame.Client.SendAction(player.Name, action);
+        HideContextMenu();
+    }
+
+    public void shortReconMenuItemSelected()
+    {
         HideContextMenu();
     }
 }

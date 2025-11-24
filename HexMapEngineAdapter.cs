@@ -204,9 +204,9 @@ class HexMapEngineAdapter
         Texture2D amberPlane = game.Content.Load<Texture2D>("amber-plane-black-30px");
         units["amber-plane"] = amberPlane;
         Texture2D cyanPlane = game.Content.Load<Texture2D>("cyan-plane-black-30px");
-        units["cyan-plane"] = magentaPlane;
+        units["cyan-plane"] = cyanPlane;
         Texture2D ocherPlane = game.Content.Load<Texture2D>("ocher-plane-black-30px");
-        units["ocher-plane"] = magentaPlane;
+        units["ocher-plane"] = ocherPlane;
 
 
 

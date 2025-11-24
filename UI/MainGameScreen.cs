@@ -178,7 +178,10 @@ public class MainGameScreen
     }
     public void ShowContextMenu(Unit unit)
     {
-        ContextMenu.ShowContextMenu(unit);
+        if ("plane".Equals(unit.UnitType))
+            ContextMenu.ShowContextMenuForPlane(unit);
+        else
+            ContextMenu.ShowContextMenu(unit);
     }
     public void ShowContextMenu(MapHex mapHex)
     {
