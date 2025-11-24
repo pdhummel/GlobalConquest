@@ -18,6 +18,7 @@ using System.Numerics;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
 using System.IO;
+using GlobalConquest.HexMapEngine.Structures;
 
 
 namespace GlobalConquest;
@@ -46,6 +47,7 @@ public class GlobalConquestGame : Game
     public Unit? lastSelectedUnit;
     public Burb? lastSelectedBurb;
     public bool MoveMode { get; set; } = false;
+    public bool ReconMode { get; set; } = false;
     public bool PursueMode { get; set; } = false;
     public JoinGameValues MyJoinGameValues { get; set; }
 
@@ -317,6 +319,18 @@ public class GlobalConquestGame : Game
                 MainGameScreen.HideContextMenu();
                 DrawLine(hexPixelVector);
             }
+            else if (ReconMode && lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
+            {
+                Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
+                MainGameScreen.HideContextMenu();
+                PlaneUnitType planeType = new PlaneUnitType();
+                int shortRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.shortRangeHexes;
+                Globals.spriteBatch.DrawCircle(hexPixelVector, shortRadius, 32, Color.Red);
+                int mediumRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.mediumRangeHexes;
+                Globals.spriteBatch.DrawCircle(hexPixelVector, mediumRadius, 32, Color.Red);
+
+            }
+
             if (lastSelectedUnit != null)
             {
                 DrawPathForUnit(lastSelectedUnit);
@@ -607,7 +621,7 @@ public class GlobalConquestGame : Game
                 handleClickMouseOnMap();
                 sendMoveAction(previousSelectedHex, previousSelectedUnit);
             }
-            if (!PursueMode && !MoveMode && lastSelectedHex != null)
+            if (!PursueMode && !MoveMode && !ReconMode && lastSelectedHex != null)
             {
                 Unit unit = lastSelectedHex.getUnit();
                 lastSelectedUnit = unit;
@@ -653,12 +667,23 @@ public class GlobalConquestGame : Game
                     Console.WriteLine("handleLeftClick(): pursueAction sent");
                 }
                 PursueMode = false;
-                if (!PursueMode && !MoveMode && lastSelectedHex != null)
+                if (!PursueMode && !MoveMode && !ReconMode && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
                 }
             }
+            else if (ReconMode) // TODO: add other conditions
+            {
+                // TODO: Recon Action
+                ReconMode = false;
+                if (!PursueMode && !MoveMode && !ReconMode && lastSelectedHex != null)
+                {
+                    Unit unit = lastSelectedHex.getUnit();
+                    lastSelectedUnit = unit;
+                }
+            }
+
         }
     }
 
@@ -675,6 +700,8 @@ public class GlobalConquestGame : Game
         {
             MainGameScreen.HideContextMenu();
             MoveMode = false;
+            PursueMode = false;
+            ReconMode = false;
             Vector2 selectedHexVector = handleClickMouseOnMap();
             Player player = identifySelf();
             if (selectedHexVector.X >= 0 && selectedHexVector.Y >= 0 &&
@@ -684,6 +711,8 @@ public class GlobalConquestGame : Game
                 lastSelectedUnit = unit;
                 Burb burb = lastSelectedHex.Burb;
                 lastSelectedBurb = burb;
+                // Since planes are always on other units or in burbs,
+                // no additional logic is needed.
                 if (unit != null)
                 {
                     if (unit.Color.Equals(player.FactionColor))
@@ -707,6 +736,19 @@ public class GlobalConquestGame : Game
 
             }
         }
+    }
+
+    private Vector2 handleClickMouseOnMap()
+    {
+        Vector2 selectedHexVector = findHexVectorFromPixels(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
+        if (selectedHexVector.X >= 0 && selectedHexVector.Y >= 0 &&
+            selectedHexVector.X < Client.GameState.GameSettings.Width && selectedHexVector.Y < Client.GameState.GameSettings.Height)
+        {
+            lastSelectedHex = Client?.GameState.Map.Hexes[(int)selectedHexVector.Y, (int)selectedHexVector.X];
+            if (!MoveMode && !PursueMode && !ReconMode)
+                lastSelectedUnit = lastSelectedHex.getUnit();
+        }
+        return selectedHexVector;
     }
 
     public void scrollRight()
@@ -766,18 +808,6 @@ public class GlobalConquestGame : Game
         }
     }
 
-    private Vector2 handleClickMouseOnMap()
-    {
-        Vector2 selectedHexVector = findHexVectorFromPixels(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
-        if (selectedHexVector.X >= 0 && selectedHexVector.Y >= 0 &&
-            selectedHexVector.X < Client.GameState.GameSettings.Width && selectedHexVector.Y < Client.GameState.GameSettings.Height)
-        {
-            lastSelectedHex = Client?.GameState.Map.Hexes[(int)selectedHexVector.Y, (int)selectedHexVector.X];
-            if (!MoveMode)
-                lastSelectedUnit = lastSelectedHex.getUnit();
-        }
-        return selectedHexVector;
-    }
 
     private Vector2 findHexVectorFromPixels(int x, int y)
     {

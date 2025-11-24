@@ -323,16 +323,16 @@ public class ContextMenu
             Spacing = 4
         };
 
-        var shortReconMenuItem = new MenuItem();
-        shortReconMenuItem.Id = "ContextMenu.verticalMenu.shortReconMenuItem";
-        shortReconMenuItem.Text = "short Recon";
-        shortReconMenuItem.Selected += (s, a) =>
+        var reconMenuItem = new MenuItem();
+        reconMenuItem.Id = "ContextMenu.verticalMenu.reconMenuItem";
+        reconMenuItem.Text = "Recon";
+        reconMenuItem.Selected += (s, a) =>
         {
-            shortReconMenuItemSelected();
+            reconMenuItemSelected();
         };
-        verticalMenu.Items.Add(shortReconMenuItem);
-        actionMapper.registerControlMethod(shortReconMenuItem.Id, this, "shortReconMenuItemSelected");
-        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, shortReconMenuItem.Id);
+        verticalMenu.Items.Add(reconMenuItem);
+        actionMapper.registerControlMethod(reconMenuItem.Id, this, "reconMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, reconMenuItem.Id);
         itemIndex += 1;
 
 
@@ -526,8 +526,14 @@ public class ContextMenu
         HideContextMenu();
     }
 
-    public void shortReconMenuItemSelected()
+    public void reconMenuItemSelected()
+    {
+        gcGame.ReconMode = true;
+        HideContextMenu();
+    }
+    public void strikeMenuItemSelected()
     {
         HideContextMenu();
     }
+
 }

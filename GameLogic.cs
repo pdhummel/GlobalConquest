@@ -189,6 +189,11 @@ public class GameLogic
                 {
                     scanUnits(server, unit);
                     scanTerrain(server, unit);
+                    if (unit.Airplane != null)
+                    {
+                        scanUnits(server, unit.Airplane);
+                        scanTerrain(server, unit.Airplane);
+                    }
                 }
             }
         }

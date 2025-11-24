@@ -46,6 +46,21 @@ public class Unit
 
     public int MoveSteps { get; set; } = 0;
 
+    // After flying a mission, a plane is unavailable for one turn 
+    // (for short range missions and medium range transfers) 
+    // or two turns (for the medium missions and long transfers). 
+    // Kamikaze missions kill your plane.
+    //
+    // While resting, a plane cannot scan for enemy units 
+    // (thus "seen" units may disappear)
+    //
+    // If your opponents attempt an air strike against your forces and the strike 
+    // is within 10 spaces of your planes, 
+    // your planes will automatically defend against the attack. 
+    // If your plane survives this defense, it will need even more rest than usual. 
+    // Planes need an additional 1/2 turn of rest (i.e., are unavailable) per attack they defend against.
+    public float turnsUnavailable;
+
 
     public Dictionary<string, bool> Visibility { get; set; } = new Dictionary<string, bool>();
     public Dictionary<string, int> RoundsToBeSeen { get; set; } = new Dictionary<string, int>();
