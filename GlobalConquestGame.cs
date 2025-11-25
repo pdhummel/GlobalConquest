@@ -385,7 +385,7 @@ public class GlobalConquestGame : Game
             }
             else if (player != null && lastSelectedUnit.Color.Equals(player.FactionColor) && 
                 Client != null &&
-                MainGameScreen.IsShowContextMenu() && IsAllowedToPlan())
+                MainGameScreen.IsShowContextMenu() && IsAllowedToPlan() && !IsShowAirplanes)
                 {
                     //Console.WriteLine("Draw(): ShowContextMenu 4");
                     MainGameScreen?.ShowContextMenu(lastSelectedUnit);
@@ -396,7 +396,7 @@ public class GlobalConquestGame : Game
             //Console.WriteLine("Draw(): ShowContextMenu 5");
             MainGameScreen?.ShowContextMenu(lastSelectedHex.Airplane);
         }
-        else if (lastSelectedHex != null && lastSelectedBurb != null)
+        else if (lastSelectedHex != null && lastSelectedBurb != null && !IsShowAirplanes)
         {
             Player player = identifySelf();
             Burb parentBurb = null;
@@ -727,7 +727,7 @@ public class GlobalConquestGame : Game
                 // no additional logic is needed.
                 if (unit != null)
                 {
-                    if (unit.Color.Equals(player.FactionColor))
+                    if (unit.Color.Equals(player.FactionColor) && unit.StrengthPoints > 0 && unit.TurnsUnavailable <= 0)
                     {
                         MainGameScreen.ContextMenu.IsShowContextMenu = true;
                     }

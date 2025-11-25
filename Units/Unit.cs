@@ -59,7 +59,7 @@ public class Unit
     // your planes will automatically defend against the attack. 
     // If your plane survives this defense, it will need even more rest than usual. 
     // Planes need an additional 1/2 turn of rest (i.e., are unavailable) per attack they defend against.
-    public float turnsUnavailable;
+    public float TurnsUnavailable {get; set; }
 
 
     public Dictionary<string, bool> Visibility { get; set; } = new Dictionary<string, bool>();
@@ -150,6 +150,89 @@ public class Unit
         {
             ActionQueue.Add(unitAction);
         }
+    }
+
+    public Unit clone()
+    {
+        Unit unit = new Unit();
+
+        unit.Color = Color;
+        unit.X = X;
+        unit.Y = Y;
+        unit.UnitType = UnitType;
+        unit.Airplane = Airplane;
+        unit.ParentUnitId = ParentUnitId;
+        unit.Id = Id;
+        unit.HomeBurbX = HomeBurbX;
+        unit.HomeBurbY = HomeBurbY;
+        unit.Owner = Owner;
+        unit.StrengthPoints = StrengthPoints;
+        return unit;
+    }
+
+    public void updateGameStatePlane(GameState gameState, Unit planeWithNewValues)
+    {
+        Map map = gameState.Map;
+        MapHex planeHex = map.Hexes[planeWithNewValues.Y, planeWithNewValues.X];
+        if (planeWithNewValues.ParentUnitId != null)
+        {
+            if (map.UnitIdToUnit.ContainsKey(planeWithNewValues.ParentUnitId))
+            {
+                Unit parentUnit = map.UnitIdToUnit[planeWithNewValues.ParentUnitId];
+                if (parentUnit != null && parentUnit.Airplane != null)
+                    parentUnit.Airplane.copyPlaneValues(parentUnit.Airplane, planeWithNewValues);
+            }
+        }
+        else if (planeHex.Airplane != null)
+        {
+            if (planeHex.Airplane != null)
+                planeHex.Airplane.copyPlaneValues(planeHex.Airplane, planeWithNewValues);
+        }
+    }
+
+    private void copyPlaneValues(Unit planeToUpdate, Unit planeWithNewValues)
+    {
+        //Id = unit.Id;
+        //Color = unit.Color;
+        //UnitType = unit.UnitType;
+        //Owner = unit.Owner;
+        //HomeBurbX = unit.HomeBurbX;
+        //HomeBurbY = unit.HomeBurbY;
+        //if (planeToUpdate.Airplane == null)
+        //    Airplane = planeWithNewValues.Airplane;
+        if (planeToUpdate.ParentUnitId == null)
+            planeToUpdate.ParentUnitId = planeWithNewValues.ParentUnitId;
+        planeToUpdate.X = planeWithNewValues.X;
+        planeToUpdate.Y = planeWithNewValues.Y;
+        planeToUpdate.StrengthPoints = planeWithNewValues.StrengthPoints;
+        planeToUpdate.TurnsUnavailable = planeWithNewValues.TurnsUnavailable;
+    }
+
+    private void copyValues(Unit unit)
+    {
+        //Id = unit.Id;
+        //Color = unit.Color;
+        //UnitType = unit.UnitType;
+        //Owner = unit.Owner;
+        //HomeBurbX = unit.HomeBurbX;
+        //HomeBurbY = unit.HomeBurbY;
+        if (Airplane == null)
+            Airplane = unit.Airplane;
+        if (ParentUnitId == null)
+            ParentUnitId = unit.ParentUnitId;
+        X = unit.X;
+        Y = unit.Y;
+        StrengthPoints = unit.StrengthPoints;
+        TurnsUnavailable = unit.TurnsUnavailable;
+        IsBlitzing = unit.IsBlitzing;
+        IsSneaking = unit.IsSneaking;
+        IsLoading = unit.IsLoading;
+        IsUnloading = unit.IsUnloading;
+        //Visibility = unit.Visibility;
+        //ActionQueue = unit.ActionQueue;
+        UnitIdToPursue = unit.UnitIdToPursue;
+        UnitToPursueX = unit.UnitToPursueX;
+        UnitToPursueY = unit.UnitToPursueY;
     }
 
     public override bool Equals(object obj)

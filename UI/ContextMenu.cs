@@ -44,7 +44,6 @@ public class ContextMenu
         {
             return;
         }
-        //Console.WriteLine("ShowContextMenu(): " + IsShowContextMenu);
         HideContextMenu();
         if (unit == null)
             return;
@@ -308,11 +307,15 @@ public class ContextMenu
         {
             return;
         }
+        HideContextMenu();
+        if (plane == null || plane.StrengthPoints <= 0 || plane.TurnsUnavailable > 0)
+        {
+            return;
+        }
         verticalMenu = new VerticalMenu();
         verticalMenu.Id = "ContextMenu.verticalMenu";
         Map map = MainGameScreen.gcGame.Client.GameState.Map;
         mapHex = map.Hexes[plane.Y, plane.X];
-        HideContextMenu();
 
         // actionMapper allows our game controller to invoke menu items
         GameControlActionMapper actionMapper = gcGame.GameControl.GameControlActionMapper;
@@ -334,7 +337,6 @@ public class ContextMenu
         actionMapper.registerControlMethod(reconMenuItem.Id, this, "reconMenuItemSelected");
         actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, reconMenuItem.Id);
         itemIndex += 1;
-
 
         var refreshMapHexMenuItem = new MenuItem();
         refreshMapHexMenuItem.Id = "ContextMenu.verticalMenu.refreshMapHexMenuItem";

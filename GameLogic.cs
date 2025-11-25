@@ -189,14 +189,14 @@ public class GameLogic
                 {
                     scanUnits(server, unit);
                     scanTerrain(server, unit);
-                    if (unit.Airplane != null && unit.Airplane.turnsUnavailable <= 0)
+                    if (unit.Airplane != null && unit.Airplane.TurnsUnavailable <= 0)
                     {
                         scanUnits(server, unit.Airplane);
                         scanTerrain(server, unit.Airplane);
                     }
                 }
                 Unit plane = mapHex.Airplane;
-                if (plane != null && plane.turnsUnavailable <= 0)
+                if (plane != null && plane.TurnsUnavailable <= 0)
                 {
                     scanUnits(server, plane);
                     scanTerrain(server, plane);                    

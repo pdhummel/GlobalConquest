@@ -3,9 +3,9 @@ namespace GlobalConquest.Units;
 public class PlaneUnitType : UnitType
 {
 
-    public int shortRangeHexes = 3;
-    public int mediumRangeHexes = 6;
-    public int longRangeHexes = 12;
+    public int shortRangeHexes = 4;
+    public int mediumRangeHexes = 8;
+    public int longRangeHexes = 20;
 
 
 
@@ -46,12 +46,11 @@ public class PlaneUnitType : UnitType
         AirplaneMissionOutcome outcome = new AirplaneMissionOutcome();
         bool isDogfight = false;
         bool isEnemyGrounded = true;
-        HashSet<MapHex> dogFightHexes = map.getMapHexesInRange(targetMapHex, 1);
-        Unit enemyPlane = getEnemyPlaneForDogfight(gameState, targetMapHex);
+        Unit enemyPlane = getEnemyPlaneForDogfight(gameState, targetMapHex, plane.Color);
         if (enemyPlane != null)
         {
             isDogfight = true;
-            if (enemyPlane.turnsUnavailable > 0)
+            if (enemyPlane.TurnsUnavailable > 0)
                 isEnemyGrounded = true;
             else
                 isEnemyGrounded = false;
@@ -59,7 +58,7 @@ public class PlaneUnitType : UnitType
 
         if (!isDogfight)
         {
-            enemyPlane = getNearbyEnemyPlane(gameState, targetMapHex);
+            enemyPlane = getNearbyEnemyPlane(gameState, targetMapHex, plane.Color);
         }
 
         if (enemyPlane != null)
@@ -69,46 +68,53 @@ public class PlaneUnitType : UnitType
             // your planes will automatically defend against the attack. 
             // If your plane survives this defense, it will need even more rest than usual. 
             // Planes need an additional 1/2 turn of rest (i.e., are unavailable) per attack they defend against.
-            enemyPlane.turnsUnavailable += 0.5f;
+            enemyPlane.TurnsUnavailable += 0.5f;
         }
         int multiplier = 1;
         if (isShortRangeMission(gameState, targetMapHex))
         {
+            outcome.IsShortRangeMission = true;
             multiplier = 1;
-            plane.turnsUnavailable += 1;
+            plane.TurnsUnavailable += 1;
+            //Console.WriteLine("determineMissionOutcome(): turnsUnavailable=" + plane.turnsUnavailable);
         }
         else if (isMediumRangeMission(gameState, targetMapHex))
         {
+            outcome.IsMediumRangeMission = true;
             multiplier = 2;
-            plane.turnsUnavailable += 2;
+            plane.TurnsUnavailable += 2;
+            //Console.WriteLine("determineMissionOutcome(): turnsUnavailable=" + plane.turnsUnavailable);
         }
-        outcome = resolveMission(gameState, plane, isDogfight, isEnemyGrounded, enemyPlane, multiplier);
+        outcome = resolveMission(outcome, gameState, plane, isDogfight, isEnemyGrounded, enemyPlane, multiplier);
+        outcome.Plane = plane;
         return outcome;
     }
 
-    AirplaneMissionOutcome resolveMission(GameState gameState, Unit plane, 
+    AirplaneMissionOutcome resolveMission(AirplaneMissionOutcome outcome, 
+      GameState gameState, Unit plane, 
       bool isDogfight, bool isEnemyGrounded, Unit? enemyPlane, int multiplier)
     {
-        AirplaneMissionOutcome outcome = new AirplaneMissionOutcome();
         int chance = rand.Next(0, 100);
 
         if (isDogfight && isEnemyGrounded)
         {
             outcome.EnemyPlane = enemyPlane;
-            
-            if (chance < 10)
+            int shotDownProbability = 10 * multiplier;
+            int enemyShotDownProbability = 25;
+            int missionFailedProbability = 50;
+            if (chance < shotDownProbability)
             {
                 outcome.IsPlaneShotDown = true;
                 outcome.IsMissionSuccessful = false;
                 handlePlaneShotDown(gameState, plane);
             }
-            else if (chance < 35)
+            else if (chance < shotDownProbability + enemyShotDownProbability)
             {
                 outcome.IsEnemyPlaneShotDown = true;
                 outcome.IsMissionSuccessful = false;
                 handlePlaneShotDown(gameState, enemyPlane);
             }
-            else if (chance < 75)
+            else if (chance < shotDownProbability + enemyShotDownProbability + missionFailedProbability)
             {
                 outcome.IsMissionSuccessful = false;
             }
@@ -121,13 +127,15 @@ public class PlaneUnitType : UnitType
         else if (isDogfight && !isEnemyGrounded)
         {
             outcome.EnemyPlane = enemyPlane;
-            if (chance < 25)
+            int shotDownProbability = 25 * multiplier;
+            int enemyShotDownProbability = 25;
+            if (chance < shotDownProbability)
             {
                 outcome.IsPlaneShotDown = true;
                 outcome.IsMissionSuccessful = false;
                 handlePlaneShotDown(gameState, plane);
             }
-            else if (chance < 50)
+            else if (chance < shotDownProbability + enemyShotDownProbability)
             {
                 outcome.IsEnemyPlaneShotDown = true;
                 outcome.IsMissionSuccessful = false;
@@ -140,8 +148,12 @@ public class PlaneUnitType : UnitType
         }
         else if (enemyPlane != null)
         {
+            // If your target is between two and 10 spaces from an enemy plane, 
+            // the probability of your air mission failing ranges anywhere from 10% to 50%; 
+            // one third of those failures will end up resulting in a lost plane.
+            int missionFailedProbability = 10 * multiplier;
             outcome.EnemyPlane = enemyPlane;
-            int randomness = rand.Next(10, 50+1);
+            int randomness = rand.Next(missionFailedProbability, 50+1);
             if (chance < randomness)
             {
                 outcome.IsMissionSuccessful = false;
@@ -159,7 +171,8 @@ public class PlaneUnitType : UnitType
         }
         else
         {
-            if (chance < 10)
+            int missionFailed = 10 * multiplier;
+            if (chance < missionFailed)
             {
                 outcome.IsMissionSuccessful = false;
             }
@@ -190,7 +203,7 @@ public class PlaneUnitType : UnitType
         
     }
 
-    Unit getEnemyPlaneForDogfight(GameState gameState, MapHex targetMapHex)
+    Unit getEnemyPlaneForDogfight(GameState gameState, MapHex targetMapHex, string color)
     {
         Map map = gameState.Map;
         HashSet<MapHex> dogFightHexes = map.getMapHexesInRange(targetMapHex, 1);
@@ -198,30 +211,33 @@ public class PlaneUnitType : UnitType
         foreach (MapHex mapHex in dogFightHexes)
         {
             Unit hexUnit = mapHex.getUnit();
-            if (mapHex.Airplane != null && enemyPlane == null && mapHex.Airplane.turnsUnavailable <= 0)
+            if (mapHex.Airplane != null && enemyPlane == null && !color.Equals(mapHex.Airplane.Color) && 
+                mapHex.Airplane.TurnsUnavailable <= 0)
             {
                 enemyPlane = mapHex.Airplane;
                 break;
             }
-            else if (hexUnit != null && hexUnit.Airplane != null && enemyPlane == null && hexUnit.Airplane.turnsUnavailable <= 0)
+            else if (hexUnit != null && hexUnit.Airplane != null && enemyPlane == null && 
+                    !color.Equals(mapHex.Airplane.Color) && hexUnit.Airplane.TurnsUnavailable <= 0)
             {
                 enemyPlane = hexUnit.Airplane;
                 break;
             }
-            else if (mapHex.Airplane != null && enemyPlane == null)
+            else if (mapHex.Airplane != null && enemyPlane == null && !color.Equals(mapHex.Airplane.Color))
             {
                 enemyPlane = mapHex.Airplane;
             }
-            else if (hexUnit != null && hexUnit.Airplane != null && enemyPlane == null)
+            else if (hexUnit != null && hexUnit.Airplane != null && enemyPlane == null && !color.Equals(mapHex.Airplane.Color))
             {
                 enemyPlane = hexUnit.Airplane;
             }
         }
-
+        if (enemyPlane != null)
+            Console.WriteLine("getEnemyPlaneForDogfight(): enemyPlane=" + enemyPlane.X + "," + enemyPlane.Y);
         return enemyPlane;
     }
 
-    Unit getNearbyEnemyPlane(GameState gameState, MapHex targetMapHex)
+    Unit getNearbyEnemyPlane(GameState gameState, MapHex targetMapHex, string color)
     {
         Unit enemyPlane = null;
         Map map = gameState.Map;
@@ -229,17 +245,19 @@ public class PlaneUnitType : UnitType
         foreach (MapHex mapHex in enemyPlaneHexes)
         {
             Unit hexUnit = mapHex.getUnit();
-            if (mapHex.Airplane != null)
+            if (mapHex.Airplane != null && !color.Equals(mapHex.Airplane.Color))
             {
                 enemyPlane = mapHex.Airplane;
                 break;
             }
-            else if (hexUnit != null && hexUnit.Airplane != null)
+            else if (hexUnit != null && hexUnit.Airplane != null && !color.Equals(hexUnit.Airplane.Color))
             {
                 enemyPlane = hexUnit.Airplane;
                 break;
             }
         }
+        if (enemyPlane != null)
+            Console.WriteLine("getNearbyEnemyPlane(): enemyPlane=" + enemyPlane.X + "," + enemyPlane.Y);
         return enemyPlane;
     }
 
@@ -413,4 +431,6 @@ public class PlaneUnitType : UnitType
 
         return unitType;
     }
+
+
 }

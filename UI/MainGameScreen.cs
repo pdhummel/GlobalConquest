@@ -178,9 +178,9 @@ public class MainGameScreen
     }
     public void ShowContextMenu(Unit unit)
     {
-        if ("plane".Equals(unit.UnitType))
+        if ("plane".Equals(unit.UnitType) && unit.TurnsUnavailable <= 0 && unit.StrengthPoints > 0)
             ContextMenu.ShowContextMenuForPlane(unit);
-        else
+        else if (! gcGame.IsShowAirplanes)
             ContextMenu.ShowContextMenu(unit);
     }
     public void ShowContextMenu(MapHex mapHex)

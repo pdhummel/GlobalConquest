@@ -22,9 +22,8 @@ public class ReconAction : PlayerAction
     public new void execute(NetPeer peer, Object serverObj)
     {
         Console.WriteLine("ReconAction.execute()");
-        if (Plane == null || Plane.StrengthPoints <= 0 || Plane.turnsUnavailable > 0)
+        if (Plane == null)
         {
-            Console.WriteLine("ReconAction.execute(): plane is unavailable");
             return;
         }
         Server server = (Server)serverObj;
@@ -35,68 +34,94 @@ public class ReconAction : PlayerAction
             MapHex planeHex = map.Hexes[Plane.Y, Plane.X];
             MapHex mapHex = map.Hexes[ReconY, ReconX];
             PlaneUnitType planeType = new PlaneUnitType();
+            Unit parentUnit = null;
             Unit existingPlane = null;
             if (Plane.ParentUnitId != null)
             {
                 if (map.UnitIdToUnit.ContainsKey(Plane.ParentUnitId))
                 {
-                    Unit parentUnit = map.UnitIdToUnit[Plane.ParentUnitId];
-                    existingPlane.X = parentUnit.X;
-                    existingPlane.Y = parentUnit.Y;
+                    parentUnit = map.UnitIdToUnit[Plane.ParentUnitId];
                     existingPlane = parentUnit.Airplane;
-                    planeHex = map.Hexes[existingPlane.Y, existingPlane.X];
+                    if (existingPlane != null)
+                    {
+                        existingPlane.X = parentUnit.X;
+                        existingPlane.Y = parentUnit.Y;
+                        existingPlane = parentUnit.Airplane;
+                        planeHex = map.Hexes[existingPlane.Y, existingPlane.X];
+                    }
                 }
             }
             if (Plane.ParentUnitId == null)
             {
                 existingPlane = planeHex.Airplane; 
             }
-            if (existingPlane != null)
+            if (existingPlane == null  || existingPlane.StrengthPoints <= 0 || existingPlane.TurnsUnavailable > 0)
             {
-                AirplaneMissionOutcome outcome = planeType.determineMissionOutcome(gameState, existingPlane, mapHex);
-                if (outcome.IsMissionSuccessful)
-                {
-                    // Recon missions uncover any terrain within a radius of 8 spaces from the chosen spot and 
-                    // any units within 12 spaces.
-                    // This logic essentially creates a dummy plane and dummy unitType for 
-                    // the scan methods.
-                    GameLogic gameLogic = new GameLogic();
-                    planeType.ScanningRange = 12;
-                    planeType.DiscoveryRange = 8;
-                    Plane.X = ReconX;
-                    Plane.Y = ReconY;
-                    gameLogic.scanUnits(server, Plane, planeType);
-                    gameLogic.scanTerrain(server, Plane, planeType);
-                    Console.WriteLine("execute(): recon scans complete");
-                }
-                else if (outcome.IsEnemyPlaneShotDown)
-                {
-                    GameEvent gameEvent = new GameEvent("enemyUnitDestroyed");
-                    gameEvent.MapHex = map.Hexes[outcome.EnemyPlane.Y, outcome.EnemyPlane.X];
-                    gameEvent.Unit = outcome.EnemyPlane;
-                    gameEvent.EnemyColor = outcome.EnemyPlane.Color;
-                    server.sendGamePlayEvent(Plane.Color, gameEvent);
-                    gameEvent.EventType = "unitDestroyed";
-                    server.sendGamePlayEvent(outcome.EnemyPlane.Color, gameEvent);
-                }
-                else if (outcome.IsPlaneShotDown)
-                {
-                    GameEvent gameEvent = new GameEvent("unitDestroyed");
-                    gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
-                    gameEvent.Unit = Plane;
-                    gameEvent.EnemyColor = outcome.EnemyPlane.Color;
-                    server.sendGamePlayEvent(Plane.Color, gameEvent);
-                }
-                else
-                {
-                    GameEvent gameEvent = new GameEvent("airplaneMissionFailed");
-                    gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
-                    gameEvent.Unit = Plane;
-                    server.sendGamePlayEvent(Plane.Color, gameEvent);                    
-                }
-                Console.WriteLine("execute(): recon action complete");
+                Console.WriteLine("ReconAction.execute(): plane is unavailable");
+                return;
             }
 
+            AirplaneMissionOutcome outcome = planeType.determineMissionOutcome(gameState, existingPlane, mapHex);
+            if (parentUnit != null && parentUnit.Airplane != null)
+            {
+                parentUnit.Airplane = outcome.Plane;
+            }
+            else if (planeHex != null && planeHex.Airplane != null)
+            {
+                planeHex.Airplane = outcome.Plane;
+            }
+            Console.WriteLine("execute(): turnsUnavailable=" + existingPlane.TurnsUnavailable);
+            //Console.WriteLine("execute(): outcome.turnsUnavailable=" + outcome.Plane.turnsUnavailable);
+            if (outcome.IsMissionSuccessful)
+            {
+                // Recon missions uncover any terrain within a radius of 8 spaces from the chosen spot and 
+                // any units within 12 spaces.
+                // This logic essentially creates a dummy plane and dummy unitType for 
+                // the scan methods.
+                GameLogic gameLogic = new GameLogic();
+                Unit fakePlane = Plane.clone();;
+                fakePlane.X = ReconX;
+                fakePlane.Y = ReconY;
+                planeType.ScanningRange = 12;
+                planeType.DiscoveryRange = 8;
+                gameLogic.scanUnits(server, fakePlane, planeType);
+                gameLogic.scanTerrain(server, fakePlane, planeType);
+                server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
+                Console.WriteLine("execute(): recon scans complete");
+            }
+            else if (outcome.IsEnemyPlaneShotDown)
+            {
+                GameEvent gameEvent = new GameEvent("enemyUnitDestroyed");
+                gameEvent.MapHex = map.Hexes[outcome.EnemyPlane.Y, outcome.EnemyPlane.X];
+                gameEvent.Unit = outcome.EnemyPlane;
+                gameEvent.EnemyColor = outcome.EnemyPlane.Color;
+                server.sendGamePlayEvent(Plane.Color, gameEvent);
+                gameEvent.EventType = "unitDestroyed";
+                server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
+                server.sendGameStateAndMapHex(outcome.EnemyPlane.X, outcome.EnemyPlane.Y);
+                server.sendGamePlayEvent(outcome.EnemyPlane.Color, gameEvent);
+            }
+            else if (outcome.IsPlaneShotDown)
+            {
+                GameEvent gameEvent = new GameEvent("unitDestroyed");
+                gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
+                gameEvent.Unit = Plane;
+                gameEvent.EnemyColor = outcome.EnemyPlane.Color;
+                server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
+                server.sendGameStateAndMapHex(outcome.EnemyPlane.X, outcome.EnemyPlane.Y);
+                server.sendGamePlayEvent(Plane.Color, gameEvent);
+            }
+            else
+            {
+                GameEvent gameEvent = new GameEvent("airplaneMissionFailed");
+                gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
+                gameEvent.Unit = Plane;
+                server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
+                server.sendGamePlayEvent(Plane.Color, gameEvent);     
+            }
+            Console.WriteLine("execute(): recon action complete");
         }
+
+
     }
 }
