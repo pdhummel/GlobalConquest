@@ -144,7 +144,7 @@ public class AirstrikeAction : PlayerAction
                     }
                     else
                     {
-                        GameEvent gameEvent = new GameEvent("airplaneMissionSuceeded");
+                        GameEvent gameEvent = new GameEvent("airplaneStrikeSuceeded");
                         gameEvent.MapHex = targetMapHex;
                         gameEvent.Unit = existingPlane;
                         gameEvent.EnemyColor = targetUnit.Color;

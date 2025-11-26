@@ -87,7 +87,8 @@ public class BurbWindow
             {
                 return; // no space to build planes
             }
-            else if (("town".Equals(burb.Type) || "village".Equals(burb.Type)) && mapHex.getUnit() != null)
+            else if (("town".Equals(burb.Type) || "village".Equals(burb.Type)) && 
+                     (mapHex.getUnit() != null && mapHex.Airplane != null))
             {
                 return; // no space to build
             }
