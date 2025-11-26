@@ -1,0 +1,132 @@
+using System.Text.Json;
+using GlobalConquest.Units;
+using LiteNetLib;
+namespace GlobalConquest.Actions;
+
+public class TransferAction : PlayerAction
+{
+    public Unit Plane {get; set;}
+    public int DestinationX { get; set; }
+    public int DestinationY { get; set; }
+
+    public new void deserializeAndExecute(NetPeer peer, Object serverObj)
+    {
+        if (MessageAsJson != null)
+        {
+            TransferAction? action =
+                    JsonSerializer.Deserialize<TransferAction>(this.MessageAsJson);
+            action?.execute(peer, serverObj);
+        }
+    }
+
+    public new void execute(NetPeer peer, Object serverObj)
+    {
+        Console.WriteLine("TransferAction.execute()");
+        if (Plane == null)
+        {
+            return;
+        }
+        Server server = (Server)serverObj;
+        GameState gameState = server.gameState;
+        Map map = gameState.Map;
+        if (DestinationX >= 0 && DestinationX < map.X && DestinationY >= 0 && DestinationY < map.Y)
+        {
+            PlaneUnitType planeType = new PlaneUnitType();
+            MapHex planeHex = planeType.getPlaneMapHex(map, Plane);
+            MapHex destinationHex = map.Hexes[DestinationY, DestinationX];
+            Unit existingPlane = planeType.getExistingPlane(map, Plane);
+            if (existingPlane == null  || existingPlane.StrengthPoints <= 0 || existingPlane.TurnsUnavailable > 0)
+            {
+                Console.WriteLine("TransferAction.execute(): plane is unavailable");
+                if (existingPlane != null)
+                {
+                    Console.WriteLine("TransferAction.execute(): existingPlane: " + existingPlane.StrengthPoints + ", " + 
+                                       existingPlane.TurnsUnavailable);
+                }
+                return;
+            }
+            // Destination should be an unoccupied friendly comcen or carrier OR
+            // unoccupied airfield (burb center or land suburb) of a friendly burb.
+            bool useTargetUnit = false;
+            bool useTargetHex = false;
+            MapHex targetMapHex = map.Hexes[DestinationY, DestinationX];
+            Unit targetUnit = targetMapHex.getUnit();
+            if (targetUnit != null && targetUnit.Color.Equals(Plane.Color) &&
+                ("comcen".Equals(targetUnit.UnitType) || "carrier".Equals(targetUnit.UnitType)) &&
+                targetUnit.Airplane == null
+               )
+            {
+                useTargetUnit = true;
+            }
+            else if (targetMapHex.Burb != null && targetMapHex.Burb.OwnerColor.Equals(Plane.Color) &&
+                     !"dock".Equals(targetMapHex.Burb.Type) &&
+                     targetMapHex.Airplane == null)
+            {
+                useTargetHex = true;
+            }
+            if (!useTargetUnit && !useTargetHex)
+            {
+                Console.WriteLine("TransferAction.execute(): destination is not valid for transfer.");
+                if (targetUnit != null)
+                    Console.WriteLine("TransferAction.execute(): targetUnit=" + targetUnit.Airplane);
+                if (targetMapHex != null)
+                    Console.WriteLine("TransferAction.execute(): targetHex=" + targetMapHex.Airplane);
+                return;
+            }
+
+            AirplaneMissionOutcome outcome = planeType.determineMissionOutcome(gameState, existingPlane, destinationHex);
+            if (!outcome.IsShortRangeMission && !outcome.IsMediumRangeMission && !outcome.IsLongRangeMission)
+            {
+                Console.WriteLine("TransferAction.execute(): target hex is not in range.");
+                return;
+            }
+            if (outcome.IsMissionSuccessful)
+            {
+                // Leave the old location.
+                Unit parentUnit = planeType.getParentUnit(map, existingPlane);
+                if (parentUnit != null)
+                {
+                    parentUnit.Airplane = null;
+                }
+                else
+                {
+                    planeHex.Airplane = null;
+                }
+                existingPlane.ParentUnitId = null;
+
+                // Move to the new location.
+                if (useTargetUnit)
+                {
+                    targetUnit.Airplane = existingPlane;
+                    existingPlane.ParentUnitId = targetUnit.Id;
+                    Console.WriteLine("TransferAction.execute(): targetUnitId=" + targetUnit.Id);
+                }
+                else if (useTargetHex)
+                {
+                    existingPlane.Y = targetMapHex.Y;
+                    existingPlane.X = targetMapHex.X;
+                    targetMapHex.Airplane = existingPlane;
+                }
+
+                GameEvent gameEvent = new GameEvent("airplaneMissionSuceeded");
+                gameEvent.MapHex = targetMapHex;
+                gameEvent.Unit = existingPlane;
+                server.sendGamePlayEvent(Plane.Color, gameEvent);             
+                server.sendGameStateAndMapHex(planeHex.X, planeHex.Y);
+                server.sendGameStateAndMapHex(targetMapHex.X, targetMapHex.Y);
+                Console.WriteLine("execute(): transfer complete");
+            }
+            else
+            {
+                GameEvent gameEvent = new GameEvent("airplaneMissionFailed");
+                gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
+                gameEvent.Unit = Plane;
+                server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
+                server.sendGamePlayEvent(Plane.Color, gameEvent);     
+            }
+            Console.WriteLine("execute(): transfer action complete");
+        }
+
+    }
+
+}

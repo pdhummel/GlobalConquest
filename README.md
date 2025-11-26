@@ -116,6 +116,7 @@ The game is being designed with known differences from the original.
 - [ ] Add oil and mineral resources.
 - [ ] Exploit
 - [ ] Spy sabotage
+- [ ] The ability to choose a specific target for attack.
 
 ### Milestone 8
 - [ ] Treaties
@@ -190,6 +191,7 @@ This is best supported by mouse and keyboard. However, some effort has been made
 - [x] Conquest of burb does not show new ownership -- manually need to refresh hex.
 - [x] Null object reference in DeleteMoveUnitAction. Observed during game play w/G.
 - [ ] The AI does not play well and is not competitive.
+- [ ] Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
 
 
 

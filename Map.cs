@@ -530,11 +530,11 @@ public class Map
             for (int liX = 0; liX < X; liX++)
             {
                 MapHex mapHex = Hexes[liY, liX];
-                checkBurbOwner(server, mapHex);
+                updateBurbOwners(server, mapHex);
             }
         }
     }
-    public void checkBurbOwner(Server server, MapHex mapHex)
+    public void updateBurbOwners(Server server, MapHex mapHex)
     {
         //MapHex mapHex = Hexes[y, x];
         if (mapHex.Burb != null)
@@ -549,52 +549,20 @@ public class Map
                     color = unit.Color;
                 }
                 Dictionary<string, MapHex> surroundingHexes = getSurroundingHexes(mapHex);
-                if (surroundingHexes.ContainsKey("northWest"))
+                List<string> directions = ["northWest", "southWest", "northEast", "southEast"];
+                foreach (string direction in directions)
                 {
-                    MapHex northWestHex = surroundingHexes["northWest"];
-                    unit = northWestHex.getUnit();
-                    if (unit != null)
+                    if (surroundingHexes.ContainsKey(direction))
                     {
-                        if (color == null)
-                            color = unit.Color;
-                        if (!color.Equals(unit.Color))
-                            return;
-                    }
-                }
-                if (surroundingHexes.ContainsKey("southWest"))
-                {
-                    MapHex southWestHex = surroundingHexes["southWest"];
-                    unit = southWestHex.getUnit();
-                    if (unit != null)
-                    {
-                        if (color == null)
-                            color = unit.Color;
-                        if (!color.Equals(unit.Color))
-                            return;
-                    }
-                }
-                if (surroundingHexes.ContainsKey("northEast"))
-                {
-                    MapHex northEastHex = surroundingHexes["northEast"];
-                    unit = northEastHex.getUnit();
-                    if (unit != null)
-                    {
-                        if (color == null)
-                            color = unit.Color;
-                        if (!color.Equals(unit.Color))
-                            return;
-                    }
-                }
-                if (surroundingHexes.ContainsKey("southEast"))
-                {
-                    MapHex southEastHex = surroundingHexes["southEast"];
-                    unit = southEastHex.getUnit();
-                    if (unit != null)
-                    {
-                        if (color == null)
-                            color = unit.Color;
-                        if (!color.Equals(unit.Color))
-                            return;
+                        MapHex neighborHex = surroundingHexes[direction];
+                        unit = neighborHex.getUnit();
+                        if (unit != null)
+                        {
+                            if (color == null)
+                                color = unit.Color;
+                            if (!color.Equals(unit.Color))
+                                return;
+                        }
                     }
                 }
                 if (mapHex.Burb != null && color != null)
@@ -611,6 +579,17 @@ public class Map
                         gameEvent.EventType = "burbLost";
                         gameEvent.EnemyColor = color;
                         server.sendGamePlayEvent(previousOwnerColor, gameEvent);
+                    }
+                }
+                foreach (string direction in directions)
+                {
+                    if (surroundingHexes.ContainsKey(direction))
+                    {
+                        MapHex neighborHex = surroundingHexes[direction];
+                        if (neighborHex.Burb != null)
+                        {
+                            neighborHex.Burb.OwnerColor = mapHex.Burb.OwnerColor;
+                        }
                     }
                 }
             }

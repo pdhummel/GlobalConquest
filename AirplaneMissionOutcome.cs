@@ -10,6 +10,7 @@ public class AirplaneMissionOutcome
 
     public bool IsShortRangeMission {get;set;}
     public bool IsMediumRangeMission {get;set;}
+    public bool IsLongRangeMission {get;set;}
 
     public Unit? EnemyPlane {get; set;}
 

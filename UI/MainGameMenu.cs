@@ -173,6 +173,8 @@ public class MainGameMenu
     public void airplanesMenuItemSelected()
     {
         mainGameScreen.gcGame.IsShowAirplanes = !mainGameScreen.gcGame.IsShowAirplanes;
+        mainGameScreen.ContextMenu.HideContextMenu();
+        mainGameScreen.ContextMenu.IsShowContextMenu = false;
     }
 
     public void saveMenuItemSelected()

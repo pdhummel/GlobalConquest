@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace GlobalConquest.Units;
 
 public class PlaneUnitType : UnitType
@@ -312,20 +314,55 @@ public class PlaneUnitType : UnitType
     public MapHex getPlaneMapHex(Map map, Unit plane)
     {
         MapHex planeHex = null;
-        if (plane.ParentUnitId != null)
+        Unit parentUnit = getParentUnit(map, plane);
+        if (parentUnit != null)
         {
-            if (map.UnitIdToUnit.ContainsKey(plane.ParentUnitId))
-            {
-                Unit parentUnit = map.UnitIdToUnit[plane.ParentUnitId];
-                if (parentUnit.Airplane != null)
-                    planeHex = map.Hexes[parentUnit.Y, parentUnit.X];
-            }
+            planeHex = map.Hexes[parentUnit.Y, parentUnit.X];
         }
         else
         {
             planeHex = map.Hexes[plane.Y, plane.X];
         }
         return planeHex;
+    }
+
+    public Unit getExistingPlane(Map map, Unit plane)
+    {
+        Unit existingPlane = null;
+        Unit parentUnit = getParentUnit(map, plane);
+        if (parentUnit != null)
+        {
+            existingPlane = parentUnit.Airplane;
+            if (existingPlane != null)
+            {
+                existingPlane.X = parentUnit.X;
+                existingPlane.Y = parentUnit.Y;
+            }
+        }
+        else if (parentUnit == null)
+        {
+            MapHex planeHex = this.getPlaneMapHex(map, plane);
+            if (planeHex != null)
+                existingPlane = planeHex.Airplane; 
+        }
+        return existingPlane;
+    }
+
+    public Unit getParentUnit(Map map, Unit plane)
+    {
+        Unit parentUnit = null;
+        if (plane.ParentUnitId != null)
+        {
+            if (map.UnitIdToUnit.ContainsKey(plane.ParentUnitId))
+            {
+                parentUnit = map.UnitIdToUnit[plane.ParentUnitId];
+            }
+            else
+            {
+                Console.WriteLine("getParentUnit(): parentUnitId not found " + plane.ParentUnitId);
+            }
+        }
+        return parentUnit;
     }
 
     public UnitType definePlane()

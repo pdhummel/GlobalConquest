@@ -350,6 +350,19 @@ public class ContextMenu
         actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, airstrikeMenuItem.Id);
         itemIndex += 1;
 
+        var transferMenuItem = new MenuItem();
+        transferMenuItem.Id = "ContextMenu.verticalMenu.transferMenuItem";
+        transferMenuItem.Text = "Transfer";
+        transferMenuItem.Selected += (s, a) =>
+        {
+            transferMenuItemSelected();
+        };
+        verticalMenu.Items.Add(transferMenuItem);
+        actionMapper.registerControlMethod(transferMenuItem.Id, this, "transferMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, transferMenuItem.Id);
+        itemIndex += 1;
+
+
         var refreshMapHexMenuItem = new MenuItem();
         refreshMapHexMenuItem.Id = "ContextMenu.verticalMenu.refreshMapHexMenuItem";
         refreshMapHexMenuItem.Text = "Refresh";
@@ -548,6 +561,11 @@ public class ContextMenu
     public void airstrikeMenuItemSelected()
     {
         gcGame.AirstrikeMode = true;
+        HideContextMenu();
+    }
+    public void transferMenuItemSelected()
+    {
+        gcGame.TransferMode = true;
         HideContextMenu();
     }
 
