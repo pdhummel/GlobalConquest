@@ -1,0 +1,196 @@
+using System.Text.Json;
+using GlobalConquest.Units;
+using LiteNetLib;
+namespace GlobalConquest.Actions;
+
+public class AirstrikeAction : PlayerAction
+{
+    public Unit Plane {get; set;}
+    public int StrikeX { get; set; }
+    public int StrikeY { get; set; }
+
+    public new void deserializeAndExecute(NetPeer peer, Object serverObj)
+    {
+        if (MessageAsJson != null)
+        {
+            AirstrikeAction? action =
+                    JsonSerializer.Deserialize<AirstrikeAction>(this.MessageAsJson);
+            action?.execute(peer, serverObj);
+        }
+    }
+
+    public new void execute(NetPeer peer, Object serverObj)
+    {
+        Console.WriteLine("StrikeAction.execute()");
+        if (Plane == null)
+        {
+            return;
+        }
+        Server server = (Server)serverObj;
+        GameState gameState = server.gameState;
+        Map map = gameState.Map;
+        if (StrikeX >= 0 && StrikeX < map.X && StrikeY >= 0 && StrikeY < map.Y)
+        {
+            MapHex planeHex = map.Hexes[Plane.Y, Plane.X];
+            MapHex mapHex = map.Hexes[StrikeY, StrikeX];
+            PlaneUnitType planeType = new PlaneUnitType();
+            Unit parentUnit = null;
+            Unit existingPlane = null;
+            if (Plane.ParentUnitId != null)
+            {
+                if (map.UnitIdToUnit.ContainsKey(Plane.ParentUnitId))
+                {
+                    parentUnit = map.UnitIdToUnit[Plane.ParentUnitId];
+                    existingPlane = parentUnit.Airplane;
+                    if (existingPlane != null)
+                    {
+                        existingPlane.X = parentUnit.X;
+                        existingPlane.Y = parentUnit.Y;
+                        existingPlane = parentUnit.Airplane;
+                        planeHex = map.Hexes[existingPlane.Y, existingPlane.X];
+                    }
+                }
+            }
+            if (Plane.ParentUnitId == null)
+            {
+                existingPlane = planeHex.Airplane; 
+            }
+            if (existingPlane == null  || existingPlane.StrengthPoints <= 0 || existingPlane.TurnsUnavailable > 0)
+            {
+                Console.WriteLine("StrikeAction.execute(): plane is unavailable");
+                return;
+            }
+
+            AirplaneMissionOutcome outcome = planeType.determineMissionOutcome(gameState, existingPlane, mapHex);
+            if (!outcome.IsShortRangeMission && !outcome.IsMediumRangeMission)
+            {
+                Console.WriteLine("StrikeAction.execute(): target hex is not in range.");
+                return;
+            }
+            if (parentUnit != null && parentUnit.Airplane != null)
+            {
+                parentUnit.Airplane = outcome.Plane;
+            }
+            else if (planeHex != null && planeHex.Airplane != null)
+            {
+                planeHex.Airplane = outcome.Plane;
+            }
+            Console.WriteLine("execute(): turnsUnavailable=" + existingPlane.TurnsUnavailable);
+            //Console.WriteLine("execute(): outcome.turnsUnavailable=" + outcome.Plane.turnsUnavailable);
+            if (outcome.IsMissionSuccessful)
+            {
+                GameLogic gameLogic = new GameLogic();
+                // TODO: airstrike logic
+                MapHex targetMapHex = map.Hexes[StrikeY, StrikeX];
+                Unit targetUnit = targetMapHex.getUnit();
+                int factor = 1;
+                if (outcome.IsShortRangeMission)
+                {
+                    Console.WriteLine("execute(): short range mission");
+                    factor = 1;
+                }
+                if (outcome.IsMediumRangeMission)
+                {
+                    Console.WriteLine("execute(): medium range mission");
+                    factor = 2;
+                }
+                if (targetUnit != null)
+                {
+                    // Short Range Air Strikes against enemy armor units and 
+                    // non-dug-in infantry units, removes half of the unit's remaining strength. 
+                    // For Comcens on land and infantry that is dug-in, 
+                    // the air strikes remove one-third of their remaining strength. 
+                    // Against battleships, carriers, and Comcens at sea, 
+                    // planes reduce the defender by a fixed 25% of original strength. 
+                    // Against subs, the strength-reduction rate is 34% of original strength, 
+                    // and against transports, the damage is a whopping 50%.
+                    // Medium Range Air Strikes cause damage at HALF of the short-range rate.
+                    string type = targetUnit.UnitType;
+                    int damage = 0;
+                    if ("tank".Equals(type) || "armor".Equals(type) || "infantry".Equals(type))
+                    {
+                        damage = ((targetUnit.StrengthPoints / 2) / factor);
+                    }
+                    else if ("dug-in-infantry".Equals(type) || ("comcen".Equals(type) && !"sea".Equals(targetMapHex.Terrain)) )
+                    {
+                        damage = ((targetUnit.StrengthPoints / 3) / factor);
+                    }
+                    else if ("battleship".Equals(type) || "carrier".Equals(type) || ("comcen".Equals(type) && "sea".Equals(targetMapHex.Terrain)))
+                    {
+                        damage = (25 / factor);
+                    }
+                    else if ("sub".Equals(type) || "submarine".Equals(type))
+                    {
+                        damage = (34 / factor);
+                    }
+                    else if ("transport-infantry".Equals(type) || "transport-tank".Equals(type))
+                    {
+                        damage = (50 / factor);
+                    }
+                    targetUnit.StrengthPoints -= damage;
+                    targetMapHex.setUnit(targetUnit);
+                    if (targetUnit.StrengthPoints < 0)
+                    {
+                        targetUnit.StrengthPoints = 0;
+                        targetMapHex.setUnit(null);
+                        GameEvent gameEvent = new GameEvent("enemyUnitDestroyed");
+                        gameEvent.MapHex = targetMapHex;
+                        gameEvent.Unit = targetUnit;
+                        gameEvent.EnemyColor = targetUnit.Color;
+                        server.sendGamePlayEvent(Plane.Color, gameEvent);
+                        gameEvent.EventType = "unitDestroyed";
+                        server.sendGamePlayEvent(targetUnit.Color, gameEvent);
+                        Console.WriteLine("execute(): airstrike destroyed enemy");
+                    }
+                    else
+                    {
+                        GameEvent gameEvent = new GameEvent("airplaneMissionSuceeded");
+                        gameEvent.MapHex = targetMapHex;
+                        gameEvent.Unit = existingPlane;
+                        gameEvent.EnemyColor = targetUnit.Color;
+                        server.sendGamePlayEvent(Plane.Color, gameEvent);             
+                    }
+                    server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
+                    server.sendGameStateAndMapHex(targetMapHex.X, targetMapHex.Y);
+                    Console.WriteLine("execute(): airstrike attack complete, damage=" + damage);
+                    Console.WriteLine("execute(): airstrike attack complete, existing=" + existingPlane.X + "," + existingPlane.Y);
+                    Console.WriteLine("execute(): airstrike attack complete, target=" + targetMapHex.X + "," + targetMapHex.Y);
+                }
+                Console.WriteLine("execute(): airstrike complete");
+            }
+            else if (outcome.IsEnemyPlaneShotDown)
+            {
+                GameEvent gameEvent = new GameEvent("enemyUnitDestroyed");
+                gameEvent.MapHex = map.Hexes[outcome.EnemyPlane.Y, outcome.EnemyPlane.X];
+                gameEvent.Unit = outcome.EnemyPlane;
+                gameEvent.EnemyColor = outcome.EnemyPlane.Color;
+                server.sendGamePlayEvent(Plane.Color, gameEvent);
+                gameEvent.EventType = "unitDestroyed";
+                server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
+                server.sendGameStateAndMapHex(outcome.EnemyPlane.X, outcome.EnemyPlane.Y);
+                server.sendGamePlayEvent(outcome.EnemyPlane.Color, gameEvent);
+            }
+            else if (outcome.IsPlaneShotDown)
+            {
+                GameEvent gameEvent = new GameEvent("unitDestroyed");
+                gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
+                gameEvent.Unit = Plane;
+                gameEvent.EnemyColor = outcome.EnemyPlane.Color;
+                server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
+                server.sendGameStateAndMapHex(outcome.EnemyPlane.X, outcome.EnemyPlane.Y);
+                server.sendGamePlayEvent(Plane.Color, gameEvent);
+            }
+            else
+            {
+                GameEvent gameEvent = new GameEvent("airplaneMissionFailed");
+                gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
+                gameEvent.Unit = Plane;
+                server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
+                server.sendGamePlayEvent(Plane.Color, gameEvent);     
+            }
+            Console.WriteLine("execute(): airstrike action complete");
+        }
+
+
+    }
+}

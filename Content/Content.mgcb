@@ -25,6 +25,18 @@
 /processorParam:TextureFormat=Color
 /build:1x1_#FFFFFFFF.png
 
+#begin airplaneMissionFailed.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:airplaneMissionFailed.wav
+
+#begin airplaneMissionSuceeded.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:airplaneMissionSuceeded.wav
+
 #begin amber-battleship-48x48.png
 /importer:TextureImporter
 /processor:TextureProcessor

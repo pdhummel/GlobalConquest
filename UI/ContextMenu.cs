@@ -338,6 +338,18 @@ public class ContextMenu
         actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, reconMenuItem.Id);
         itemIndex += 1;
 
+        var airstrikeMenuItem = new MenuItem();
+        airstrikeMenuItem.Id = "ContextMenu.verticalMenu.airstrikeMenuItem";
+        airstrikeMenuItem.Text = "Airstrike";
+        airstrikeMenuItem.Selected += (s, a) =>
+        {
+            airstrikeMenuItemSelected();
+        };
+        verticalMenu.Items.Add(airstrikeMenuItem);
+        actionMapper.registerControlMethod(airstrikeMenuItem.Id, this, "airstrikeMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, airstrikeMenuItem.Id);
+        itemIndex += 1;
+
         var refreshMapHexMenuItem = new MenuItem();
         refreshMapHexMenuItem.Id = "ContextMenu.verticalMenu.refreshMapHexMenuItem";
         refreshMapHexMenuItem.Text = "Refresh";
@@ -533,8 +545,9 @@ public class ContextMenu
         gcGame.ReconMode = true;
         HideContextMenu();
     }
-    public void strikeMenuItemSelected()
+    public void airstrikeMenuItemSelected()
     {
+        gcGame.AirstrikeMode = true;
         HideContextMenu();
     }
 

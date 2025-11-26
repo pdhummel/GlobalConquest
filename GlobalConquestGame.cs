@@ -48,6 +48,7 @@ public class GlobalConquestGame : Game
     public Burb? lastSelectedBurb;
     public bool MoveMode { get; set; } = false;
     public bool ReconMode { get; set; } = false;
+    public bool AirstrikeMode { get; set; } = false;
     public bool PursueMode { get; set; } = false;
     public JoinGameValues MyJoinGameValues { get; set; }
 
@@ -158,6 +159,8 @@ public class GlobalConquestGame : Game
         loadSoundEffect("unitDestroyed1");
         loadSoundEffect("unitDestroyed2");
         loadSoundEffect("comcenAttacked");
+        loadSoundEffect("airplaneMissionSuceeded");
+        loadSoundEffect("airplaneMissionFailed");
     }
 
     private void loadSoundEffect(string soundEffectEventName)
@@ -319,7 +322,7 @@ public class GlobalConquestGame : Game
                 MainGameScreen.HideContextMenu();
                 DrawLine(hexPixelVector);
             }
-            else if (ReconMode && lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
+            else if ((ReconMode  || AirstrikeMode) && lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
             {
                 Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
                 MainGameScreen.HideContextMenu();
@@ -621,7 +624,7 @@ public class GlobalConquestGame : Game
                 handleClickMouseOnMap();
                 sendMoveAction(previousSelectedHex, previousSelectedUnit);
             }
-            if (!PursueMode && !MoveMode && !ReconMode && lastSelectedHex != null)
+            if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && lastSelectedHex != null)
             {
                 Unit unit = lastSelectedHex.getUnit();
                 lastSelectedUnit = unit;
@@ -667,7 +670,7 @@ public class GlobalConquestGame : Game
                     Console.WriteLine("handleLeftClick(): pursueAction sent");
                 }
                 PursueMode = false;
-                if (!PursueMode && !MoveMode && !ReconMode && lastSelectedHex != null)
+                if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
@@ -675,7 +678,6 @@ public class GlobalConquestGame : Game
             }
             else if (ReconMode && (previousSelectedHex != null || previousSelectedUnit != null) && lastSelectedHex != null) // TODO: add other conditions
             {
-                // TODO: Recon Action
                 ReconAction action = new ReconAction();
                 action.ClassType = "GlobalConquest.Actions.ReconAction";
                 action.ClientIdentifier = Client.ClientIdentifier;
@@ -690,6 +692,28 @@ public class GlobalConquestGame : Game
                 Console.WriteLine("handleLeftClick(): recon at " + action.ReconX + "," + action.ReconY);
                 ReconMode = false;
                 if (!PursueMode && !MoveMode && !ReconMode && lastSelectedHex != null)
+                {
+                    Unit unit = lastSelectedHex.getUnit();
+                    lastSelectedUnit = unit;
+                }
+            }
+            else if (AirstrikeMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+                     lastSelectedUnit != null && lastSelectedUnit.Id != null && lastSelectedHex != null)
+            {
+                AirstrikeAction action = new AirstrikeAction();
+                action.ClassType = "GlobalConquest.Actions.AirstrikeAction";
+                action.ClientIdentifier = Client.ClientIdentifier;
+                Unit plane = null;
+                if (previousSelectedUnit != null && previousSelectedUnit.Airplane != null)
+                    action.Plane = previousSelectedUnit.Airplane;
+                else if (previousSelectedHex  != null && previousSelectedHex.Airplane != null)
+                    action.Plane = previousSelectedHex.Airplane;
+                action.StrikeX = lastSelectedHex.X;
+                action.StrikeY = lastSelectedHex.Y;
+                Client.SendAction(Client.ClientIdentifier, action);
+                Console.WriteLine("handleLeftClick(): airstrike at " + action.StrikeX + "," + action.StrikeY);
+                AirstrikeMode = false;
+                if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
@@ -714,6 +738,7 @@ public class GlobalConquestGame : Game
             MoveMode = false;
             PursueMode = false;
             ReconMode = false;
+            AirstrikeMode = false;
             Vector2 selectedHexVector = handleClickMouseOnMap();
             Player player = identifySelf();
             if (selectedHexVector.X >= 0 && selectedHexVector.Y >= 0 &&
@@ -757,7 +782,7 @@ public class GlobalConquestGame : Game
             selectedHexVector.X < Client.GameState.GameSettings.Width && selectedHexVector.Y < Client.GameState.GameSettings.Height)
         {
             lastSelectedHex = Client?.GameState.Map.Hexes[(int)selectedHexVector.Y, (int)selectedHexVector.X];
-            if (!MoveMode && !PursueMode && !ReconMode)
+            if (!MoveMode && !PursueMode && !ReconMode && !AirstrikeMode)
                 lastSelectedUnit = lastSelectedHex.getUnit();
         }
         return selectedHexVector;

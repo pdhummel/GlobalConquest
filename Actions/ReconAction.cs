@@ -62,6 +62,11 @@ public class ReconAction : PlayerAction
             }
 
             AirplaneMissionOutcome outcome = planeType.determineMissionOutcome(gameState, existingPlane, mapHex);
+            if (!outcome.IsShortRangeMission && !outcome.IsMediumRangeMission)
+            {
+                Console.WriteLine("StrikeAction.execute(): target hex is not in range.");
+                return;
+            }
             if (parentUnit != null && parentUnit.Airplane != null)
             {
                 parentUnit.Airplane = outcome.Plane;
@@ -79,7 +84,7 @@ public class ReconAction : PlayerAction
                 // This logic essentially creates a dummy plane and dummy unitType for 
                 // the scan methods.
                 GameLogic gameLogic = new GameLogic();
-                Unit fakePlane = Plane.clone();;
+                Unit fakePlane = Plane.clone();
                 fakePlane.X = ReconX;
                 fakePlane.Y = ReconY;
                 planeType.ScanningRange = 12;
@@ -87,6 +92,10 @@ public class ReconAction : PlayerAction
                 gameLogic.scanUnits(server, fakePlane, planeType);
                 gameLogic.scanTerrain(server, fakePlane, planeType);
                 server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
+                GameEvent gameEvent = new GameEvent("airplaneMissionSuceeded");
+                gameEvent.MapHex = mapHex;
+                gameEvent.Unit = existingPlane;
+                server.sendGamePlayEvent(Plane.Color, gameEvent);             
                 Console.WriteLine("execute(): recon scans complete");
             }
             else if (outcome.IsEnemyPlaneShotDown)

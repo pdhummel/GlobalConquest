@@ -89,8 +89,8 @@ The game is being designed with known differences from the original.
   - [ ] A plane can occupy a comcen or a carrier.
   - [x] Airplanes view.
   - [ ] Airplane Actions
-    - [ ] Recon
-    - [ ] Strike
+    - [x] Recon
+    - [x] Strike
     - [ ] Transfer
     - [ ] Paradrop
     - [ ] Bomb

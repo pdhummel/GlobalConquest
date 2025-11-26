@@ -43,7 +43,22 @@ public class PlaneUnitType : UnitType
     public AirplaneMissionOutcome determineMissionOutcome(GameState gameState, Unit plane, MapHex targetMapHex)
     {
         Map map = gameState.Map;
+        MapHex planeHex = getPlaneMapHex(map, plane);
         AirplaneMissionOutcome outcome = new AirplaneMissionOutcome();
+        if (isShortRangeMission(gameState, planeHex, targetMapHex))
+        {
+            Console.WriteLine("determineMissionOutcome(): short range mission");
+            outcome.IsShortRangeMission = true;
+        }
+        else if (isMediumRangeMission(gameState, planeHex, targetMapHex))
+        {
+            Console.WriteLine("determineMissionOutcome(): medium range mission");
+            outcome.IsMediumRangeMission = true;
+        }
+        else
+        {
+            return outcome;
+        }
         bool isDogfight = false;
         bool isEnemyGrounded = true;
         Unit enemyPlane = getEnemyPlaneForDogfight(gameState, targetMapHex, plane.Color);
@@ -71,21 +86,17 @@ public class PlaneUnitType : UnitType
             enemyPlane.TurnsUnavailable += 0.5f;
         }
         int multiplier = 1;
-        if (isShortRangeMission(gameState, targetMapHex))
+        if (outcome.IsShortRangeMission)
         {
-            outcome.IsShortRangeMission = true;
             multiplier = 1;
             plane.TurnsUnavailable += 1;
-            //Console.WriteLine("determineMissionOutcome(): turnsUnavailable=" + plane.turnsUnavailable);
         }
-        else if (isMediumRangeMission(gameState, targetMapHex))
+        else if (outcome.IsMediumRangeMission)
         {
-            outcome.IsMediumRangeMission = true;
             multiplier = 2;
             plane.TurnsUnavailable += 2;
-            //Console.WriteLine("determineMissionOutcome(): turnsUnavailable=" + plane.turnsUnavailable);
         }
-        outcome = resolveMission(outcome, gameState, plane, isDogfight, isEnemyGrounded, enemyPlane, multiplier);
+        resolveMission(outcome, gameState, plane, isDogfight, isEnemyGrounded, enemyPlane, multiplier);
         outcome.Plane = plane;
         return outcome;
     }
@@ -211,13 +222,14 @@ public class PlaneUnitType : UnitType
         foreach (MapHex mapHex in dogFightHexes)
         {
             Unit hexUnit = mapHex.getUnit();
-            if (mapHex.Airplane != null && enemyPlane == null && !color.Equals(mapHex.Airplane.Color) && 
+            if (mapHex.Airplane != null && enemyPlane == null && mapHex.Airplane != null && !color.Equals(mapHex.Airplane.Color) && 
                 mapHex.Airplane.TurnsUnavailable <= 0)
             {
                 enemyPlane = mapHex.Airplane;
                 break;
             }
             else if (hexUnit != null && hexUnit.Airplane != null && enemyPlane == null && 
+                    mapHex.Airplane != null &&
                     !color.Equals(mapHex.Airplane.Color) && hexUnit.Airplane.TurnsUnavailable <= 0)
             {
                 enemyPlane = hexUnit.Airplane;
@@ -227,13 +239,19 @@ public class PlaneUnitType : UnitType
             {
                 enemyPlane = mapHex.Airplane;
             }
-            else if (hexUnit != null && hexUnit.Airplane != null && enemyPlane == null && !color.Equals(mapHex.Airplane.Color))
+            else if (hexUnit != null && hexUnit.Airplane != null && enemyPlane == null && mapHex.Airplane != null && 
+                    !color.Equals(mapHex.Airplane.Color))
             {
                 enemyPlane = hexUnit.Airplane;
             }
         }
         if (enemyPlane != null)
-            Console.WriteLine("getEnemyPlaneForDogfight(): enemyPlane=" + enemyPlane.X + "," + enemyPlane.Y);
+            {
+                MapHex enemyPlaneHex = getPlaneMapHex(map, enemyPlane);
+                enemyPlane.X = enemyPlaneHex.X;
+                enemyPlane.Y = enemyPlaneHex.Y;
+                Console.WriteLine("getEnemyPlaneForDogfight(): enemyPlane=" + enemyPlaneHex.X + "," + enemyPlaneHex.Y);
+            }
         return enemyPlane;
     }
 
@@ -257,33 +275,57 @@ public class PlaneUnitType : UnitType
             }
         }
         if (enemyPlane != null)
-            Console.WriteLine("getNearbyEnemyPlane(): enemyPlane=" + enemyPlane.X + "," + enemyPlane.Y);
+        {
+            MapHex enemyPlaneHex = getPlaneMapHex(map, enemyPlane);
+            enemyPlane.X = enemyPlaneHex.X;
+            enemyPlane.Y = enemyPlaneHex.Y;
+            Console.WriteLine("getNearbyEnemyPlane(): enemyPlane=" + enemyPlaneHex.X + "," + enemyPlaneHex.Y);
+        }
         return enemyPlane;
     }
 
-    bool isShortRangeMission(GameState gameState, MapHex targetMapHex)
+    bool isShortRangeMission(GameState gameState, MapHex sourceMapHex, MapHex targetMapHex)
     {
         Map map = gameState.Map;
         bool isShortRange = false;
         PlaneUnitType planeType = new PlaneUnitType();
 
-        HashSet<MapHex> shortRangeHexes = map.getMapHexesInRange(targetMapHex, planeType.shortRangeHexes);
+        HashSet<MapHex> shortRangeHexes = map.getMapHexesInRange(sourceMapHex, planeType.shortRangeHexes);
         if (shortRangeHexes.Contains(targetMapHex))
             isShortRange = true;
         return isShortRange;
     }
 
-    bool isMediumRangeMission(GameState gameState, MapHex targetMapHex)
+    bool isMediumRangeMission(GameState gameState, MapHex sourceMapHex, MapHex targetMapHex)
     {
         Map map = gameState.Map;
         bool isMediumRange = false;
         PlaneUnitType planeType = new PlaneUnitType();
 
-        HashSet<MapHex> mediumRangeHexes = map.getMapHexesInRange(targetMapHex, planeType.mediumRangeHexes);
+        HashSet<MapHex> mediumRangeHexes = map.getMapHexesInRange(sourceMapHex, planeType.mediumRangeHexes);
         if (mediumRangeHexes.Contains(targetMapHex))
             isMediumRange = true;
 
         return isMediumRange;
+    }
+
+    public MapHex getPlaneMapHex(Map map, Unit plane)
+    {
+        MapHex planeHex = null;
+        if (plane.ParentUnitId != null)
+        {
+            if (map.UnitIdToUnit.ContainsKey(plane.ParentUnitId))
+            {
+                Unit parentUnit = map.UnitIdToUnit[plane.ParentUnitId];
+                if (parentUnit.Airplane != null)
+                    planeHex = map.Hexes[parentUnit.Y, parentUnit.X];
+            }
+        }
+        else
+        {
+            planeHex = map.Hexes[plane.Y, plane.X];
+        }
+        return planeHex;
     }
 
     public UnitType definePlane()

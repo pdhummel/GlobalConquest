@@ -66,9 +66,22 @@ public class GameLogic
             for (int liX = 0; liX < gameState.Map.X; liX++)
             {
                 MapHex mapHex = gameState.Map.Hexes[liY, liX];
+                Unit plane = mapHex.Airplane;
+                if (plane != null)
+                {
+                    plane.TurnsUnavailable -= 1;
+                    if (plane.TurnsUnavailable < 0)
+                        plane.TurnsUnavailable = 0;
+                }
                 Unit unit = mapHex.getUnit();
                 if (unit != null)
                 {
+                    if (unit.Airplane != null)
+                    {
+                        unit.Airplane.TurnsUnavailable -= 1;
+                        if (unit.Airplane.TurnsUnavailable < 0)
+                            unit.Airplane.TurnsUnavailable = 0;                        
+                    }
                     if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
                     {
                         infantryUnitsXy.Add(makeXyString(unit.X, unit.Y));
