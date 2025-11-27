@@ -252,7 +252,7 @@ public class ContextMenu
         verticalMenu = new VerticalMenu();
         verticalMenu.Id = "ContextMenu.verticalMenu";
         this.mapHex = mapHex;
-        //Console.WriteLine("ShowContextMenu(): " + IsShowContextMenu);
+        //Globals.Log("ShowContextMenu(): " + IsShowContextMenu);
         HideContextMenu();
 
         // actionMapper allows our game controller to invoke menu items
@@ -524,7 +524,7 @@ public class ContextMenu
 
     public void buildMenuItemSelected()
     {
-        Console.WriteLine("build");
+        Globals.Log("build");
         BurbWindow burbWindow = new BurbWindow();
         Burb burb = mapHex.Burb;
         if (burb != null && burb.Name != null)

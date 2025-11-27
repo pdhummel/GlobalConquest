@@ -10,7 +10,7 @@ public class PlanningReadyAction : PlayerAction
 
     public new void deserializeAndExecute(NetPeer peer, Object serverObj)
     {
-        //Console.WriteLine("PlanningReadyAction.deserializeAndExecute()");
+        //Globals.Log("deserializeAndExecute()");
         if (MessageAsJson != null)
         {
             PlanningReadyAction? action =
@@ -21,7 +21,7 @@ public class PlanningReadyAction : PlayerAction
 
     public new void execute(NetPeer peer, Object serverObj)
     {
-        Console.WriteLine("PlanningReadyAction.execute()");
+        Globals.Log("execute()");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         if (ClientIdentifier != null)

@@ -25,7 +25,7 @@ public class MoveUnitAction : PlayerAction
 
     public new void execute(NetPeer peer, Object serverObj)
     {
-        Console.WriteLine("MoveUnitAction.execute()");
+        Globals.Log("execute()");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         UnitAction unitAction = new UnitAction();
@@ -107,17 +107,17 @@ public class MoveUnitAction : PlayerAction
                 {
                     existingUnit.Patrol.Add(action);
                 }
-                Console.WriteLine("execute(): patrol created");
+                Globals.Log("execute(): patrol created");
             }
             else
             {
                 existingUnit?.Patrol.Clear();
             }
 
-            //Console.WriteLine("execute(): ActionQueue=" + existingUnit.ActionQueue.Count);
+            //Globals.Log("execute(): ActionQueue=" + existingUnit.ActionQueue.Count);
             //foreach (UnitAction moveAction in existingUnit.ActionQueue)
             //{
-            //    Console.WriteLine("execute(): moveAction=" + moveAction.TargetX + "," + moveAction.TargetY);
+            //    Globals.Log("execute(): moveAction=" + moveAction.TargetX + "," + moveAction.TargetY);
             //}
             //gameState.Map.Hexes[Unit.Y, Unit.X].setUnit(existingUnit);
             server.sendGameStateAndMapHex(Unit.X, Unit.Y);

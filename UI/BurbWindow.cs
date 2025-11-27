@@ -130,7 +130,7 @@ public class BurbWindow
 
     public void showPurchaseUnit(MainGameScreen mainGameScreen, MapHex mapHex, Burb burb)
     {
-        Console.WriteLine("showPurchaseUnit(): enter");
+        Globals.Log("showPurchaseUnit(): enter");
         GameState gameState = mainGameScreen.gcGame.Client.GameState;
         Map map = gameState.Map;
         Player player = mainGameScreen.gcGame.identifySelf();
@@ -294,7 +294,7 @@ public class BurbWindow
                 window.Close();
                 purchaseUnit(mainGameScreen, unitTypeByRow[row], mapHex, direction);
             };
-            //Console.WriteLine("addPurchaseBuildButton(): " + "Build " + direction + ", row=" + row + ", column=" + "" + (2 + count));
+            //Globals.Log("addPurchaseBuildButton(): " + "Build " + direction + ", row=" + row + ", column=" + "" + (2 + count));
             count += 1;
         }
     }

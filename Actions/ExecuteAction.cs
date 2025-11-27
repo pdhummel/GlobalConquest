@@ -10,7 +10,7 @@ public class ExecuteAction : PlayerAction
 
     public new void deserializeAndExecute(NetPeer peer, Object serverObj)
     {
-        //Console.WriteLine("ExecuteAction.deserializeAndExecute()");
+        //Globals.Log("deserializeAndExecute()");
         if (MessageAsJson != null)
         {
             ExecuteAction? action =
@@ -21,7 +21,7 @@ public class ExecuteAction : PlayerAction
 
     public new void execute(NetPeer peer, Object serverObj)
     {
-        Console.WriteLine("ExecuteAction.execute()");
+        Globals.Log("execute()");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         if (ClientIdentifier != null)

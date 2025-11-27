@@ -60,14 +60,14 @@ class HexMapEngineAdapter
 
     public void LoadContent()
     {
-        Console.WriteLine("HexMapEngineAdapter.LoadContent(): enter");
+        Globals.Log("LoadContent(): enter");
         coSpriteBatch = Globals.spriteBatch;
         this.LoadContent(coSpriteBatch);
     }
 
     public void LoadContent(SpriteBatch coSpriteBatch)
     {
-        Console.WriteLine("HexMapEngineAdapter.LoadContent(): enter");
+        Globals.Log("LoadContent(): enter");
 
         Globals.pixel = new Texture2D(GraphicsDevice, 1, 1);
         Globals.pixel.SetData<Color>(new Microsoft.Xna.Framework.Color[] { Color.White });
@@ -210,9 +210,9 @@ class HexMapEngineAdapter
 
 
 
-        Console.WriteLine("HexMapEngineAdapter.LoadContent(): hexHeight=" + hexHeight + ", hexWidth=" + hexWidth);
+        Globals.Log("LoadContent(): hexHeight=" + hexHeight + ", hexWidth=" + hexWidth);
         updateMap();
-        Console.WriteLine("HexMapEngineAdapter.LoadContent(): hex count=" + Global.MAP_HEX_TILE_ARRAY.Length);
+        Globals.Log("LoadContent(): hex count=" + Global.MAP_HEX_TILE_ARRAY.Length);
 
         Myra.MyraEnvironment.Game = game;
     }
@@ -254,7 +254,7 @@ class HexMapEngineAdapter
 
     public void Process_DrawEvent(GameTime gameTime, int maxPixelsX, int maxPixelsY)
     {
-        //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): enter");
+        //Globals.Log("Process_DrawEvent(): enter");
         // set screen background color
         //GraphicsDevice.Clear(Color.Black);
         Global.X_MAX_PIXELS = maxPixelsX;
@@ -268,7 +268,7 @@ class HexMapEngineAdapter
                                                             coTexture2DTile,
                                                             coTextureYellowBorder2DTile);
         }
-        //Console.WriteLine("HexMapEngineAdapter.Process_DrawEvent(): " + Global.MAP_HEX_TILE_ARRAY[0, 0]);
+        //Globals.Log("Process_DrawEvent(): " + Global.MAP_HEX_TILE_ARRAY[0, 0]);
         //coHexTileMap.Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
         Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
         DrawCities();
@@ -314,7 +314,7 @@ class HexMapEngineAdapter
                             drawUnitAtHex(liY, liX, unitTypeId);
                         if (unit.Airplane != null && gcGame.IsShowAirplanes)
                         {
-                            //Console.WriteLine("DrawUnits(): plane found on unit");
+                            //Globals.Log("DrawUnits(): plane found on unit");
                             drawUnitAtHex(liY, liX, unit.Color + "-plane");
                         }
                     }
@@ -328,7 +328,7 @@ class HexMapEngineAdapter
                     {
                         if (plane != null && gcGame.IsShowAirplanes)
                         {
-                            //Console.WriteLine("DrawUnits(): plane found on hex");
+                            //Globals.Log("DrawUnits(): plane found on hex");
                             drawUnitAtHex(liY, liX, unitTypeId);
                         }
                     }
@@ -342,7 +342,7 @@ class HexMapEngineAdapter
         Vector2 currentPixelPosition = this.getCurrentPixelPosition();
         Vector2 rowColVector = new Vector2(column, row);
         Vector2 pixelVector = ConvertHexToPixels(rowColVector);
-        //Console.WriteLine("drawUnitAtHex(): row=" + row + ", col=" + column +
+        //Globals.Log("drawUnitAtHex(): row=" + row + ", col=" + column +
         //    ", currentPixelX=" + currentPixelPosition.X + ", currentPixelY=" + currentPixelPosition.Y +
         //    ", pixelX=" + pixelVector.X + ", PixelY=" + pixelVector.Y
         //);
@@ -422,7 +422,7 @@ class HexMapEngineAdapter
 
     public void Process_UpdateEvent(GameTime gameTime)
     {
-        //Console.WriteLine("HexMapEngineAdapter.Process_UpdateEvent(): enter");
+        //Globals.Log("Process_UpdateEvent(): enter");
         // user-defined update logic here
         //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
         //{
@@ -506,7 +506,7 @@ class HexMapEngineAdapter
                                 0,
                             getPixelCenter().Y * 2 + 72);
 
-        //Console.WriteLine("oldRow=" + oldRowPosition + ", oldCol=" + oldColPosition +
+        //Globals.Log("oldRow=" + oldRowPosition + ", oldCol=" + oldColPosition +
         //", newrow=" + row + ", newcol=" + column + ", yinc=" + yIncrement + ", xinc=" + xIncrement +
         //", hexCamY=" + coHexTileMap.cameraWrapper.coCameraVector2Location.Y + ", hexCamX=" + coHexTileMap.cameraWrapper.coCameraVector2Location.X);
     }
@@ -618,6 +618,8 @@ class HexMapEngineAdapter
     }
     public Vector2 ConvertHexCenterToVisiblePixel(Vector2 hexVector)
     {
+        if (coHexTileMap == null)
+            return new Vector2(-1 , -1);
         Vector2 pixelVector = coHexTileMap.hexToPixel(hexVector);
         Vector2 currentPixelPosition = getCurrentPixelPosition();
         return new Vector2(pixelVector.X + 36 - currentPixelPosition.X, pixelVector.Y + 36 - currentPixelPosition.Y);
@@ -680,7 +682,7 @@ class HexMapEngineAdapter
         }
         if (returnVector.X < 0 || returnVector.Y < 0)
         {
-            //Console.WriteLine("HexMapEngineAdapter.ConvertPixelsToHex(): pixelY=" + pixelY +
+            //Globals.Log("ConvertPixelsToHex(): pixelY=" + pixelY +
             //    ", currentY=" + currentPixelPosition.Y +
             //    ", hexX=" + hexX + ", hexY=" + hexY + ", hexY2=" + hexY2 +
             //    ", tmpPixelY=" + tmpPixelVector.Y +

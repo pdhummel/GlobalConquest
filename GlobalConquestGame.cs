@@ -94,7 +94,7 @@ public class GlobalConquestGame : Game
 
     public void minimizeScreen()
     {
-        Console.WriteLine("minimizeScreen(): enter");
+        Globals.Log("minimizeScreen(): enter");
         // TODO: make sure this is cross-platform compatible.
         SDL_MinimizeWindow(Window.Handle);
         Form form = (Form)Control.FromHandle(Window.Handle);
@@ -256,7 +256,7 @@ public class GlobalConquestGame : Game
 
     public void updateMap()
     {
-        //Console.WriteLine("updateMap()");
+        //Globals.Log("updateMap()");
         hexMapEngineAdapter?.updateMap();
         miniMapHexMapEngineAdapter?.updateMap();
     }
@@ -277,7 +277,7 @@ public class GlobalConquestGame : Game
                 (int)MainGameScreen.MapPanel.Width,
                 (int)MainGameScreen.MapPanel.Height
             );
-            //Console.WriteLine("currentX=" + currentPosition.X + ", currentY=" + currentPosition.Y + ", viewWidth=" + viewportRectangle.Width + ", viewHeight=" + viewportRectangle.Height);
+            //Globals.Log("currentX=" + currentPosition.X + ", currentY=" + currentPosition.Y + ", viewWidth=" + viewportRectangle.Width + ", viewHeight=" + viewportRectangle.Height);
 
             // Setup the miniMap
             if (MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
@@ -291,7 +291,7 @@ public class GlobalConquestGame : Game
                 float xZoom = (float)MainGameScreen.MiniMapPanel.Width / (v2.X * 2);
                 float yZoom = (float)MainGameScreen.MiniMapPanel.Height / (v2.Y * 2);
                 miniMapCamera.Zoom = xZoom;
-                //Console.WriteLine("zoom=" + miniMapCamera.Zoom + ", miniMap width=" + MainGameScreen.miniMapPanel.Width + ", width=" + Globals.WIDTH);
+                //Globals.Log("zoom=" + miniMapCamera.Zoom + ", miniMap width=" + MainGameScreen.miniMapPanel.Width + ", width=" + Globals.WIDTH);
                 miniMapCamera.Position = v2;
             }
 
@@ -332,8 +332,12 @@ public class GlobalConquestGame : Game
                 int shortRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.shortRangeHexes;
                 Globals.spriteBatch.DrawCircle(hexPixelVector, shortRadius, 32, Color.Red);
                 int mediumRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.mediumRangeHexes;
+                int longRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.longRangeHexes;
                 Globals.spriteBatch.DrawCircle(hexPixelVector, mediumRadius, 32, Color.Red);
-
+                if (TransferMode)
+                {
+                    Globals.spriteBatch.DrawCircle(hexPixelVector, longRadius, 32, Color.Red);
+                }
             }
 
             if (lastSelectedUnit != null)
@@ -366,7 +370,7 @@ public class GlobalConquestGame : Game
         if (lastSelectedUnit != null)
         {
             Player player = identifySelf();
-            //Console.WriteLine("Draw(): unit context: " + Client.ClientIdentifier + ", " + player.FactionColor + " ," + lastSelectedUnit.Color);
+            //Globals.Log("Draw(): unit context: " + Client.ClientIdentifier + ", " + player.FactionColor + " ," + lastSelectedUnit.Color);
             if (player != null && lastSelectedUnit.Color.Equals(player.FactionColor) && 
                 Client != null &&
                 MainGameScreen.IsShowContextMenu() && IsAllowedToPlan() && IsShowAirplanes &&
@@ -374,31 +378,31 @@ public class GlobalConquestGame : Game
                 {
                     if (lastSelectedUnit.Airplane != null)
                     {
-                        //Console.WriteLine("Draw(): ShowContextMenu 1");
+                        //Globals.Log("Draw(): ShowContextMenu 1");
                         MainGameScreen?.ShowContextMenu(lastSelectedUnit.Airplane);
                     }
                     else
                     {
-                        //Console.WriteLine("Draw(): ShowContextMenu 2");
+                        //Globals.Log("Draw(): ShowContextMenu 2");
                         MainGameScreen?.ShowContextMenu(lastSelectedUnit);
                     }
                 }
             else if (lastSelectedHex != null && lastSelectedHex.Airplane != null && IsShowAirplanes)
             {
-                //Console.WriteLine("Draw(): ShowContextMenu 3");
+                //Globals.Log("Draw(): ShowContextMenu 3");
                 MainGameScreen?.ShowContextMenu(lastSelectedHex.Airplane);
             }
             else if (player != null && lastSelectedUnit.Color.Equals(player.FactionColor) && 
                 Client != null &&
                 MainGameScreen.IsShowContextMenu() && IsAllowedToPlan() && !IsShowAirplanes)
                 {
-                    //Console.WriteLine("Draw(): ShowContextMenu 4");
+                    //Globals.Log("Draw(): ShowContextMenu 4");
                     MainGameScreen?.ShowContextMenu(lastSelectedUnit);
                 }
         }
         else if (lastSelectedHex != null && lastSelectedHex.Airplane != null && IsShowAirplanes)
         {
-            //Console.WriteLine("Draw(): ShowContextMenu 5");
+            //Globals.Log("Draw(): ShowContextMenu 5");
             MainGameScreen?.ShowContextMenu(lastSelectedHex.Airplane);
         }
         else if (lastSelectedHex != null && lastSelectedBurb != null && !IsShowAirplanes)
@@ -409,14 +413,14 @@ public class GlobalConquestGame : Game
             {
                 parentBurb = Client.GameState.Burbs.NameToBurb[lastSelectedBurb.ParentBurbName];
             }
-            //Console.WriteLine("Draw(): burb context: " + lastSelectedBurb.Type + " ," + lastSelectedBurb.OwnerColor);
+            //Globals.Log("Draw(): burb context: " + lastSelectedBurb.Type + " ," + lastSelectedBurb.OwnerColor);
             if (lastSelectedHex != null && lastSelectedBurb != null && lastSelectedBurb.OwnerColor != null &&
                 player != null &&
                 (lastSelectedBurb.OwnerColor.Equals(player.FactionColor) ||
                 (parentBurb != null && parentBurb.OwnerColor != null && parentBurb.OwnerColor.Equals(player.FactionColor))) &&
                 MainGameScreen.IsShowContextMenu() && IsAllowedToPlan())
                 {
-                    //Console.WriteLine("Draw(): ShowContextMenu 6");
+                    //Globals.Log("Draw(): ShowContextMenu 6");
                     MainGameScreen?.ShowContextMenu(lastSelectedHex);
                 }
         }
@@ -436,7 +440,7 @@ public class GlobalConquestGame : Game
             return;
         MapHex mapHex = Client.GameState.Map.Hexes[unit.Y, unit.X];
         unit = mapHex.getUnit();
-        //Console.WriteLine("DrawPathForUnit(): unit " + unit.UnitType + " at " + unit.X + "," + unit.Y);
+        //Globals.Log("DrawPathForUnit(): unit " + unit.UnitType + " at " + unit.X + "," + unit.Y);
         if (unit != null)
         {
             Vector2 startHex = new Vector2(unit.X, unit.Y);
@@ -477,8 +481,10 @@ public class GlobalConquestGame : Game
 
     private void DrawLine(Vector2 hexStart, Vector2 hexEnd, Color color)
     {
-        //Console.WriteLine("DrawLine(): from " + hexStart.X + "," + hexStart.Y + " to " + hexEnd.X + "," + hexEnd.Y);
+        //Globals.Log("DrawLine(): from " + hexStart.X + "," + hexStart.Y + " to " + hexEnd.X + "," + hexEnd.Y);
         Vector2 startPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(hexStart.X, hexStart.Y));
+        if (startPixelVector.X < 0 || startPixelVector.Y < 0)
+            return;
         Vector2 endPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(hexEnd.X, hexEnd.Y));
         Point startPoint = new Point((int)startPixelVector.X, (int)startPixelVector.Y);
         Point endPoint = new Point((int)endPixelVector.X, (int)endPixelVector.Y);
@@ -508,7 +514,7 @@ public class GlobalConquestGame : Game
     {
         string jsonString = JsonSerializer.Serialize(action);
         Client?.SendData(action.ClientIdentifier, jsonString);
-        Console.WriteLine("SendActionToServer(): PlayerAction=" + jsonString);
+        Globals.Log("SendActionToServer(): PlayerAction=" + jsonString);
     }
 
 
@@ -531,7 +537,7 @@ public class GlobalConquestGame : Game
         float scaleX = (float)worldWidth / miniMapRectangle.Width;
         float scaleY = (float)worldHeight / miniMapRectangle.Height;
 
-        //Console.WriteLine("worldHeight=" + worldHeight + ", worldWidth=" + worldWidth + ", scaleX=" + scaleX + ", scaleY=" + scaleY);
+        //Globals.Log("worldHeight=" + worldHeight + ", worldWidth=" + worldWidth + ", scaleX=" + scaleX + ", scaleY=" + scaleY);
 
         // Convert minimap pixel coordinates to world units
         float worldX = miniMapPosition.X * scaleX;
@@ -581,7 +587,7 @@ public class GlobalConquestGame : Game
                 // Convert the minimap position to world coordinates
                 Vector2 worldPosition = ConvertMiniMapToWorld(minimapMousePos);
 
-                //Console.WriteLine("rectX=" + miniMapRectangle.X + ", rectY=" + miniMapRectangle.Y +
+                //Globals.Log("rectX=" + miniMapRectangle.X + ", rectY=" + miniMapRectangle.Y +
                 //    ", mousePositionX=" + mousePosition.X + ", mousePositionY=" + mousePosition.Y +
                 //    ", relX=" + relativeMousePos.X + ", relY=" + relativeMousePos.Y +
                 //    ", minimapMousePosX=" + minimapMousePos.X + ", minimapMousePosY=" + minimapMousePos.Y +
@@ -616,7 +622,7 @@ public class GlobalConquestGame : Game
         )
         {
             // long-press logic here
-            Console.WriteLine("handleLongLeftClick(): long click");
+            Globals.Log("handleLongLeftClick(): long click");
             MainGameScreen.HideContextMenu();
             if (MoveMode)
             {
@@ -670,7 +676,7 @@ public class GlobalConquestGame : Game
                     pursueAction.UnitToPursueX = unitToPursue.X;
                     pursueAction.UnitToPursueY = unitToPursue.Y;
                     Client?.SendAction(Client.ClientIdentifier, pursueAction);
-                    Console.WriteLine("handleLeftClick(): pursueAction sent");
+                    Globals.Log("handleLeftClick(): pursueAction sent");
                 }
                 PursueMode = false;
                 if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode &&
@@ -693,7 +699,7 @@ public class GlobalConquestGame : Game
                 action.ReconX = lastSelectedHex.X;
                 action.ReconY = lastSelectedHex.Y;
                 Client.SendAction(Client.ClientIdentifier, action);
-                Console.WriteLine("handleLeftClick(): recon at " + action.ReconX + "," + action.ReconY);
+                Globals.Log("handleLeftClick(): recon at " + action.ReconX + "," + action.ReconY);
                 ReconMode = false;
                 if (!PursueMode && !MoveMode && !ReconMode && !TransferMode &&
                      lastSelectedHex != null)
@@ -716,7 +722,7 @@ public class GlobalConquestGame : Game
                 action.StrikeX = lastSelectedHex.X;
                 action.StrikeY = lastSelectedHex.Y;
                 Client.SendAction(Client.ClientIdentifier, action);
-                Console.WriteLine("handleLeftClick(): airstrike at " + action.StrikeX + "," + action.StrikeY);
+                Globals.Log("handleLeftClick(): airstrike at " + action.StrikeX + "," + action.StrikeY);
                 AirstrikeMode = false;
                 if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode &&
                     lastSelectedHex != null)
@@ -742,7 +748,7 @@ public class GlobalConquestGame : Game
                 if (plane != null)
                 {
                     Client.SendAction(Client.ClientIdentifier, action);
-                    Console.WriteLine("handleLeftClick(): transfer at " + action.DestinationX + "," + action.DestinationY);
+                    Globals.Log("handleLeftClick(): transfer at " + action.DestinationX + "," + action.DestinationY);
                 }
                 TransferMode = false;
                 if (!PursueMode && !MoveMode && !ReconMode && !TransferMode &&
@@ -793,7 +799,7 @@ public class GlobalConquestGame : Game
                 }
                 else if (burb != null)
                 {
-                    //Console.WriteLine("handleRightClickMouseOnMap(): lastSelectedBurb=" + burb.Type);
+                    //Globals.Log("handleRightClickMouseOnMap(): lastSelectedBurb=" + burb.Type);
                     Burb parentBurb = null;
                     if (burb.Name == null && burb.ParentBurbName != null)
                     {
@@ -875,7 +881,7 @@ public class GlobalConquestGame : Game
             action.ClassType = "GlobalConquest.Actions.MoveUnitAction";
             action.IsMultiHexMove = isMultiHexMove;
             Client?.SendAction(Client.ClientIdentifier, action);
-            Console.WriteLine("sendMoveAction(): action sent");
+            Globals.Log("sendMoveAction(): action sent");
         }
     }
 
@@ -909,12 +915,12 @@ public class GlobalConquestGame : Game
         }
         else
         {
-            Console.WriteLine("identifySelf(): could not find player");
+            Globals.Log("identifySelf(): could not find player");
             player = new Player();
             HashSet<string> colors = ["amber", "ocher", "magenta", "cyan"];
             foreach (string key in Client.GameState.Players.colorToPlayer.Keys)
             {
-                Console.WriteLine("identifySelf(): color " + key + " already assigned.");
+                Globals.Log("identifySelf(): color " + key + " already assigned.");
                 colors.Remove(key);
             }
             foreach (string color in colors)
@@ -922,7 +928,7 @@ public class GlobalConquestGame : Game
                 Faction faction = Client.GameState.Factions.ColorToFaction[color];
                 if ("disconnected".Equals(faction.Status))
                 {
-                    Console.WriteLine("identifySelf(): found disconnected color " + color);
+                    Globals.Log("identifySelf(): found disconnected color " + color);
                     player.FactionColor = color;
                     break;
                 }
@@ -930,12 +936,12 @@ public class GlobalConquestGame : Game
             if (player.FactionColor == null && colors.Count > 0)
             {
                 player.FactionColor = colors.ToList<string>()[0];
-                Console.WriteLine("identifySelf(): color assigned=" + player.FactionColor);
+                Globals.Log("identifySelf(): color assigned=" + player.FactionColor);
             }
             if (player.FactionColor == null)
             {
                 player.FactionColor = "grey";
-                Console.WriteLine("identifySelf(): color assigned=grey");
+                Globals.Log("identifySelf(): color assigned=grey");
             }
 
         }
@@ -944,11 +950,11 @@ public class GlobalConquestGame : Game
 
     public bool IsAllowedToPlan()
     {
-        //Console.WriteLine("IsAllowedToPlan(): enter");
+        //Globals.Log("IsAllowedToPlan(): enter");
         bool canPlan = false;
         if ("plan".Equals(Client.GameState.CurrentPhase))
         {
-            //Console.WriteLine("IsAllowedToPlan(): currentPhase=" + Client.GameState.CurrentPhase);
+            //Globals.Log("IsAllowedToPlan(): currentPhase=" + Client.GameState.CurrentPhase);
             canPlan = true;
         }
         if (canPlan)
@@ -960,11 +966,11 @@ public class GlobalConquestGame : Game
                 canPlan = false;
                 return canPlan;
             }
-            //Console.WriteLine("IsAllowedToPlan(): faction status=" + faction.Status);
+            //Globals.Log("IsAllowedToPlan(): faction status=" + faction.Status);
             if (!"planning".Equals(faction.Status))
             {
                 canPlan = false;
-                //Console.WriteLine("IsAllowedToPlan(): canPlan=" + canPlan);
+                //Globals.Log("IsAllowedToPlan(): canPlan=" + canPlan);
                 return canPlan;
             }
         }
@@ -972,13 +978,13 @@ public class GlobalConquestGame : Game
         {
             if (!Client.GameState.PlayerPlanningReady[key])
             {
-                //Console.WriteLine("IsAllowedToPlan(): PlayerPlanningReady=" + key + " " + Client.GameState.PlayerPlanningReady[key]);
+                //Globals.Log("IsAllowedToPlan(): PlayerPlanningReady=" + key + " " + Client.GameState.PlayerPlanningReady[key]);
                 canPlan = false;
-                //Console.WriteLine("IsAllowedToPlan(): canPlan=" + canPlan);
+                //Globals.Log("IsAllowedToPlan(): canPlan=" + canPlan);
                 return canPlan;
             }
         }
-        //Console.WriteLine("IsAllowedToPlan(): canPlan=" + canPlan);
+        //Globals.Log("IsAllowedToPlan(): canPlan=" + canPlan);
         return canPlan;
     }
 }

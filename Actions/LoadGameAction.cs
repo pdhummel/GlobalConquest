@@ -9,7 +9,7 @@ public class LoadGameAction : PlayerAction
 
     public new void deserializeAndExecute(NetPeer peer, Object serverObj)
     {
-        //Console.WriteLine("LoadGameAction.deserializeAndExecute()");
+        //Globals.Log("deserializeAndExecute()");
         if (MessageAsJson != null)
         {
             LoadGameAction? action =
@@ -20,7 +20,7 @@ public class LoadGameAction : PlayerAction
 
     public new void execute(NetPeer peer, Object serverObj)
     {
-        Console.WriteLine("LoadGameAction.execute()");
+        Globals.Log("execute()");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         server.GameLogic.loadGame(server, FullFilePath);

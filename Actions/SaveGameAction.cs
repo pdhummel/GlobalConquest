@@ -9,7 +9,7 @@ public class SaveGameAction : PlayerAction
 
     public new void deserializeAndExecute(NetPeer peer, Object serverObj)
     {
-        //Console.WriteLine("SaveGameAction.deserializeAndExecute()");
+        //Globals.Log("deserializeAndExecute()");
         if (MessageAsJson != null)
         {
             SaveGameAction? action =
@@ -20,7 +20,7 @@ public class SaveGameAction : PlayerAction
 
     public new void execute(NetPeer peer, Object serverObj)
     {
-        Console.WriteLine("SaveGameAction.execute()");
+        Globals.Log("execute()");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         server.GameLogic.saveGame(server, FullFilePath);

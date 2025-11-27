@@ -9,6 +9,7 @@ using Myra.Graphics2D.TextureAtlases;
 using Color = Microsoft.Xna.Framework.Color;
 using Myra.Graphics2D.UI.File;
 using FileDialog = Myra.Graphics2D.UI.File.FileDialog;
+using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
 namespace GlobalConquest.UI;
 
 public class MainGameMenu
@@ -35,6 +36,7 @@ public class MainGameMenu
         destinationsMenuItem.Color = Color.Yellow;
         airplanesMenuItem.Id = "MainGameMenu.horizontalMenu.airplanesMenuItem";
         airplanesMenuItem.Color = Color.Yellow;
+
 
         // File - Save, Load, Resign, Restart
         fileMenuItem.Items.Add(saveMenuItem);
@@ -168,6 +170,14 @@ public class MainGameMenu
     public void destinationsMenuItemSelected()
     {
         mainGameScreen.gcGame.IsShowDestinations = !mainGameScreen.gcGame.IsShowDestinations;
+        if (mainGameScreen.gcGame.IsShowDestinations)
+        {
+            destinationsMenuItem.Text = "&DESTINATIONS";
+        }
+        else
+        {
+            destinationsMenuItem.Text = "&Destinations";
+        }
     }
 
     public void airplanesMenuItemSelected()
@@ -175,6 +185,15 @@ public class MainGameMenu
         mainGameScreen.gcGame.IsShowAirplanes = !mainGameScreen.gcGame.IsShowAirplanes;
         mainGameScreen.ContextMenu.HideContextMenu();
         mainGameScreen.ContextMenu.IsShowContextMenu = false;
+        if (mainGameScreen.gcGame.IsShowAirplanes)
+        {
+            airplanesMenuItem.Text = "&AIRPLANES";
+        }
+        else
+        {
+            airplanesMenuItem.Text = "&Airplanes";
+        }
+
     }
 
     public void saveMenuItemSelected()
@@ -197,7 +216,7 @@ public class MainGameMenu
 
             // "Ok" or Enter
             string fileName = dialog.FilePath;
-            Console.WriteLine("dialog=" + fileName);
+            Globals.Log("dialog=" + fileName);
             Client client = mainGameScreen.gcGame.Client;
             SaveGameAction action = new SaveGameAction();
             action.FullFilePath = fileName;
@@ -235,7 +254,7 @@ public class MainGameMenu
 
             // "Ok" or Enter
             string fileName = dialog.FilePath;
-            Console.WriteLine("dialog=" + fileName);
+            Globals.Log("dialog=" + fileName);
             Client client = mainGameScreen.gcGame.Client;
             LoadGameAction action = new LoadGameAction();
             action.FullFilePath = fileName;

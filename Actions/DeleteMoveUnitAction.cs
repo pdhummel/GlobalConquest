@@ -20,7 +20,7 @@ public class DeleteMoveUnitAction : PlayerAction
 
     public new void execute(NetPeer peer, Object serverObj)
     {
-        Console.WriteLine("DeleteMoveUnitAction.execute()");
+        Globals.Log("execute()");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         if (Unit != null)

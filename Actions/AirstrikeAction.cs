@@ -21,7 +21,7 @@ public class AirstrikeAction : PlayerAction
 
     public new void execute(NetPeer peer, Object serverObj)
     {
-        Console.WriteLine("StrikeAction.execute()");
+        Globals.Log("execute()");
         if (Plane == null)
         {
             return;
@@ -57,14 +57,14 @@ public class AirstrikeAction : PlayerAction
             }
             if (existingPlane == null  || existingPlane.StrengthPoints <= 0 || existingPlane.TurnsUnavailable > 0)
             {
-                Console.WriteLine("StrikeAction.execute(): plane is unavailable");
+                Globals.Log("execute(): plane is unavailable");
                 return;
             }
 
             AirplaneMissionOutcome outcome = planeType.determineMissionOutcome(gameState, existingPlane, mapHex);
             if (!outcome.IsShortRangeMission && !outcome.IsMediumRangeMission)
             {
-                Console.WriteLine("StrikeAction.execute(): target hex is not in range.");
+                Globals.Log("execute(): target hex is not in range.");
                 return;
             }
             if (parentUnit != null && parentUnit.Airplane != null)
@@ -75,8 +75,8 @@ public class AirstrikeAction : PlayerAction
             {
                 planeHex.Airplane = outcome.Plane;
             }
-            Console.WriteLine("execute(): turnsUnavailable=" + existingPlane.TurnsUnavailable);
-            //Console.WriteLine("execute(): outcome.turnsUnavailable=" + outcome.Plane.turnsUnavailable);
+            Globals.Log("execute(): turnsUnavailable=" + existingPlane.TurnsUnavailable);
+            //Globals.Log("execute(): outcome.turnsUnavailable=" + outcome.Plane.turnsUnavailable);
             if (outcome.IsMissionSuccessful)
             {
                 GameLogic gameLogic = new GameLogic();
@@ -86,12 +86,12 @@ public class AirstrikeAction : PlayerAction
                 int factor = 1;
                 if (outcome.IsShortRangeMission)
                 {
-                    Console.WriteLine("execute(): short range mission");
+                    Globals.Log("execute(): short range mission");
                     factor = 1;
                 }
                 if (outcome.IsMediumRangeMission)
                 {
-                    Console.WriteLine("execute(): medium range mission");
+                    Globals.Log("execute(): medium range mission");
                     factor = 2;
                 }
                 if (targetUnit != null)
@@ -140,7 +140,7 @@ public class AirstrikeAction : PlayerAction
                         server.sendGamePlayEvent(Plane.Color, gameEvent);
                         gameEvent.EventType = "unitDestroyed";
                         server.sendGamePlayEvent(targetUnit.Color, gameEvent);
-                        Console.WriteLine("execute(): airstrike destroyed enemy");
+                        Globals.Log("execute(): airstrike destroyed enemy");
                     }
                     else
                     {
@@ -152,11 +152,11 @@ public class AirstrikeAction : PlayerAction
                     }
                     server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
                     server.sendGameStateAndMapHex(targetMapHex.X, targetMapHex.Y);
-                    Console.WriteLine("execute(): airstrike attack complete, damage=" + damage);
-                    Console.WriteLine("execute(): airstrike attack complete, existing=" + existingPlane.X + "," + existingPlane.Y);
-                    Console.WriteLine("execute(): airstrike attack complete, target=" + targetMapHex.X + "," + targetMapHex.Y);
+                    Globals.Log("execute(): airstrike attack complete, damage=" + damage);
+                    Globals.Log("execute(): airstrike attack complete, existing=" + existingPlane.X + "," + existingPlane.Y);
+                    Globals.Log("execute(): airstrike attack complete, target=" + targetMapHex.X + "," + targetMapHex.Y);
                 }
-                Console.WriteLine("execute(): airstrike complete");
+                Globals.Log("execute(): airstrike complete");
             }
             else if (outcome.IsEnemyPlaneShotDown)
             {
@@ -188,7 +188,7 @@ public class AirstrikeAction : PlayerAction
                 server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
                 server.sendGamePlayEvent(Plane.Color, gameEvent);     
             }
-            Console.WriteLine("execute(): airstrike action complete");
+            Globals.Log("execute(): airstrike action complete");
         }
 
 

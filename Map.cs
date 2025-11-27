@@ -42,7 +42,7 @@ public class Map
     public void addBurbs(Burbs burbs, int desiredBurbCount)
     {
         addFixedBurbs(burbs);
-        Console.WriteLine("addBurbs(): desiredBurbCount=" + desiredBurbCount);
+        Globals.Log("addBurbs(): desiredBurbCount=" + desiredBurbCount);
         Random random = new Random();
         int numberOfBurbs = 0;
         int tries = 0;
@@ -79,12 +79,12 @@ public class Map
                 else
                     type = "city";       // 20%
                 Burb burb = burbs.addBurb(random, type, this, mapHex);
-                Console.WriteLine("addBurbs(): added burb " + burb.Name + " at " + mapHex.X + "," + mapHex.Y);
+                Globals.Log("addBurbs(): added burb " + burb.Name + " at " + mapHex.X + "," + mapHex.Y);
                 numberOfBurbs += 1;
             }
             tries += 1;
         }
-        Console.WriteLine("addBurbs(): numberOfBurbs=" + numberOfBurbs);
+        Globals.Log("addBurbs(): numberOfBurbs=" + numberOfBurbs);
     }
 
     public void addFixedBurbs(Burbs burbs)
@@ -147,7 +147,7 @@ public class Map
                 string newBiome = determineBiome(elevationNoise, moistureNoise);
                 if (!newBiome.Equals(biome))
                 {
-                    //Console.WriteLine("changed biome from " + biome + " to " + newBiome);
+                    //Globals.Log("changed biome from " + biome + " to " + newBiome);
                 }
                 MapHex mapHex = new MapHex();
                 mapHex.X = liX;
@@ -317,7 +317,7 @@ public class Map
         {
             //newElevation = elevation - 0.75F;
             newElevation = .09F;
-            //Console.WriteLine("shapeForIsland(): diagonal=" + diagonal + ", biome=" + biome + ", elevation=" + elevation + ", x=" + x + ", y=" + y + ", xd=" + xDistance + ", yd=" + yDistance + ", distance=" + distance + ", newE=" + newElevation);
+            //Globals.Log("shapeForIsland(): diagonal=" + diagonal + ", biome=" + biome + ", elevation=" + elevation + ", x=" + x + ", y=" + y + ", xd=" + xDistance + ", yd=" + yDistance + ", distance=" + distance + ", newE=" + newElevation);
         }
         else if ((distance > (diagonal * .7F) ||
                 xDistance >= width / 2 - 1 || yDistance >= height / 2 - 1) &&
@@ -325,13 +325,13 @@ public class Map
         {
             newElevation = elevation - 0.75F;
             //newElevation = .09F;
-            //Console.WriteLine("shapeForIsland(): diagonal=" + diagonal + ", biome=" + biome + ", elevation=" + elevation + ", x=" + x + ", y=" + y + ", xd=" + xDistance + ", yd=" + yDistance + ", distance=" + distance + ", newE=" + newElevation);
+            //Globals.Log("shapeForIsland(): diagonal=" + diagonal + ", biome=" + biome + ", elevation=" + elevation + ", x=" + x + ", y=" + y + ", xd=" + xDistance + ", yd=" + yDistance + ", distance=" + distance + ", newE=" + newElevation);
         }
         else if ((xDistance >= width / 2 - 1 || yDistance >= height / 2 - 1) &&
                 (!(biome.Equals("sea") || biome.Equals("swamp"))))
         {
             newElevation = .11F;
-            Console.WriteLine("shapeForIsland(): diagonal=" + diagonal + ", biome=" + biome + ", elevation=" + elevation + ", x=" + x + ", y=" + y + ", xd=" + xDistance + ", yd=" + yDistance + ", distance=" + distance + ", newE=" + newElevation);
+            Globals.Log("shapeForIsland(): diagonal=" + diagonal + ", biome=" + biome + ", elevation=" + elevation + ", x=" + x + ", y=" + y + ", xd=" + xDistance + ", yd=" + yDistance + ", distance=" + distance + ", newE=" + newElevation);
 
         }
         if (newElevation < 0)
@@ -358,7 +358,7 @@ public class Map
                 return true;
             }
         }
-        //Console.WriteLine("Map.Equals(): false");
+        //Globals.Log("Map.Equals(): false");
         return false;
     }
 
@@ -495,7 +495,7 @@ public class Map
 
     public HashSet<MapHex> getMapHexesInRange(HashSet<MapHex> hexes, Dictionary<int, HashSet<MapHex>> checkedHexes, MapHex mapHex, int range)
     {
-        //Console.WriteLine("getMapHexesInRange(): mapHex=" + mapHex.X + "," + mapHex.Y + ", range=" + range + ", count=" + hexes.Count);
+        //Globals.Log("getMapHexesInRange(): mapHex=" + mapHex.X + "," + mapHex.Y + ", range=" + range + ", count=" + hexes.Count);
 
         if (range > 0)
         {
@@ -505,10 +505,10 @@ public class Map
                 checkedHexes[range] = setHexes;
             }
             List<MapHex> surroundingHexes = getSurroundingHexesList(mapHex);
-            //Console.WriteLine("getMapHexesInRange(): surroundingHexes=" + surroundingHexes.Count);
+            //Globals.Log("getMapHexesInRange(): surroundingHexes=" + surroundingHexes.Count);
             foreach (MapHex nextHex in surroundingHexes)
             {
-                //Console.WriteLine("getMapHexesInRange(): surroundingHex=" + nextHex.X + "," + nextHex.Y);
+                //Globals.Log("getMapHexesInRange(): surroundingHex=" + nextHex.X + "," + nextHex.Y);
                 if (!checkedHexes[range].Contains(nextHex))
                 {
                     HashSet<MapHex> newHexes = getMapHexesInRange(hexes, checkedHexes, nextHex, range - 1);
@@ -641,7 +641,7 @@ public class Map
 
     public List<UnitAction> determinePath(Dictionary<string, Node> graph, MapHex origin, MapHex destination)
     {
-        Console.WriteLine("determinePath(): from " + origin.X + "," + origin.Y + " to " + destination.X + "," + destination.Y);
+        Globals.Log("determinePath(): from " + origin.X + "," + origin.Y + " to " + destination.X + "," + destination.Y);
         List<UnitAction> path = new List<UnitAction>();
         Node originNode = new Node(origin);
         Node destinationNode = new Node(destination);
@@ -649,7 +649,7 @@ public class Map
         List<string> nodesInPath = DijkstraAlgorithm.ReconstructPath(previousNodes, originNode.Name, destinationNode.Name);
         foreach (string nodeName in nodesInPath)
         {
-            //Console.WriteLine("determinePath(): " + nodeName);
+            //Globals.Log("determinePath(): " + nodeName);
             UnitAction unitAction = new UnitAction();
             unitAction.Action = "move";
             string[] parts = nodeName.Split(",");
@@ -663,7 +663,7 @@ public class Map
                 path.Add(unitAction);
             }
         }
-        Console.WriteLine("determinePath(): path count=" + path.Count + " from " + origin.X + "," + origin.Y + " to " + destination.X + "," + destination.Y);
+        Globals.Log("determinePath(): path count=" + path.Count + " from " + origin.X + "," + origin.Y + " to " + destination.X + "," + destination.Y);
         return path;
     }
 
@@ -675,7 +675,7 @@ public class Map
     public void buildNodesForShortestPath(bool shouldAvoidUnits, Dictionary<string, Node> graph,
                                            Dictionary<string, Node> seaGraph, Dictionary<string, Node> landGraph)
     {
-        Console.WriteLine("buildNodesForShortestPath(): enter");
+        Globals.Log("buildNodesForShortestPath(): enter");
         int swampCount = 0;
         int burbCount = 0;
         for (int y = 0; y < Y; y++)
@@ -758,7 +758,7 @@ public class Map
         int landCount = 0;
         if (landGraph != null)
             landCount = landGraph.Count;
-        Console.WriteLine("buildNodesForShortestPath(): allNodes=" + graphCount + ", seaNodes=" + seaCount +
+        Globals.Log("buildNodesForShortestPath(): allNodes=" + graphCount + ", seaNodes=" + seaCount +
                           ", landNodes=" + landCount + ", burbCount=" + burbCount + ", swampCount=" + swampCount);
     }
 

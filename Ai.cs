@@ -55,7 +55,7 @@ public class Ai
 
     public void planTurn()
     {
-        Console.WriteLine("Ai.planTurn(): faction=" + Faction.Color);
+        Globals.Log("Ai.planTurn(): faction=" + Faction.Color);
         if (!Faction.HasComCen)
             return;
         addGoals();
@@ -67,17 +67,17 @@ public class Ai
     {
         if (gameState == null)
         {
-            Console.WriteLine("addGoals(): gameState is null");
+            Globals.Log("addGoals(): gameState is null");
             return;
         }
         if (gameState.Burbs == null)
         {
-            Console.WriteLine("addGoals(): gameState.Burbs is null");
+            Globals.Log("addGoals(): gameState.Burbs is null");
             return;
         }
         if (gameState == null)
         {
-            Console.WriteLine("addGoals(): gameState.Burbs.NameToBurb is null");
+            Globals.Log("addGoals(): gameState.Burbs.NameToBurb is null");
             return;
         }
 
@@ -120,7 +120,7 @@ public class Ai
         }
         if (closestConquestGoal != null)
         {
-            Console.WriteLine("Ai.processGoal(): closest goal for " + Faction.Color + " " + closestConquestGoal.Type + " at " + closestConquestGoal.TargetMapHex.X + "," + closestConquestGoal.TargetMapHex.Y);
+            Globals.Log("Ai.processGoal(): closest goal for " + Faction.Color + " " + closestConquestGoal.Type + " at " + closestConquestGoal.TargetMapHex.X + "," + closestConquestGoal.TargetMapHex.Y);
             processGoal(goalsToKeep, closestConquestGoal);
             conquestGoalsInProgress.Remove(closestConquestGoal.GoalName());
         }
@@ -143,7 +143,7 @@ public class Ai
                 index = random.Next(0, exploreGoals.Count);
                 randomGoal = exploreGoals[index];
             }
-            Console.WriteLine("Ai.processGoal(): random goal for " + Faction.Color + " " + randomGoal.Type + " at " + randomGoal.TargetMapHex.X + "," + randomGoal.TargetMapHex.Y);
+            Globals.Log("Ai.processGoal(): random goal for " + Faction.Color + " " + randomGoal.Type + " at " + randomGoal.TargetMapHex.X + "," + randomGoal.TargetMapHex.Y);
             processGoal(goalsToKeep, randomGoal);
         }
 
@@ -165,7 +165,7 @@ public class Ai
             int moveCount = moveUnits(aiGoal);
             goalsToKeep.Add(aiGoal);
             if (unit != null || moveCount > 0)
-                Console.WriteLine("Ai.processGoal(): " + Faction.Color + " " + aiGoal.Type + " for " + aiGoal.TargetMapHex.X + "," + aiGoal.TargetMapHex.Y);
+                Globals.Log("Ai.processGoal(): " + Faction.Color + " " + aiGoal.Type + " for " + aiGoal.TargetMapHex.X + "," + aiGoal.TargetMapHex.Y);
         }
     }
 
@@ -177,7 +177,7 @@ public class Ai
         // goal is complete
         if ("conquer".Equals(goal.Type) && goal.TargetMapHex.Burb != null && goal.TargetMapHex.Burb.OwnerColor.Equals(Faction.Color))
         {
-            Console.WriteLine("Ai.evaluateGoal(): goal complete: " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+            Globals.Log("Ai.evaluateGoal(): goal complete: " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
             if (targetXyToGoal.ContainsKey(goal.TargetMapHex.X + "," + goal.TargetMapHex.Y))
                 targetXyToGoal.Remove(goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
             createDefendBurbGoal(goal.TargetMapHex);
@@ -201,7 +201,7 @@ public class Ai
         // Build is complete for goal b/c there is nothing needed from above.
         if (aiUnit == null && "conquer".Equals(goal.Type))
         {
-            Console.WriteLine("Ai.evaluateGoal(): build ready for : " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+            Globals.Log("Ai.evaluateGoal(): build ready for : " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
             bool isInPosition = true;
             foreach (AiUnit builtAiUnit in goal.ActualUnits)
             {
@@ -218,7 +218,7 @@ public class Ai
                 {
                     builtAiUnit.ShouldMoveToTarget = true;
                 }
-                Console.WriteLine("Ai.evaluateGoal(): attack ready for " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                Globals.Log("Ai.evaluateGoal(): attack ready for " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
             }
         }
         else if (goal.ActualUnits.Count + 2 < goal.DesiredUnits.Count && goal.IsGoalStarted)
@@ -232,7 +232,7 @@ public class Ai
                 builtAiUnit.ShouldMoveToTarget = false;
             }
             if (IsMoveToTarget)
-                Console.WriteLine("Ai.evaluateGoal(): reset for new assault: " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                Globals.Log("Ai.evaluateGoal(): reset for new assault: " + goal.Type + " at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
         }
         return false;
     }
@@ -246,7 +246,7 @@ public class Ai
             shouldBuild = random.Next(0, 10);
         if (shouldBuild == 0)
         {
-            Console.WriteLine("buildUnits(): skipping to save money");
+            Globals.Log("buildUnits(): skipping to save money");
             return null;
         }
         AiUnit aiUnit = goal.getNextUnitToBuild();
@@ -263,7 +263,7 @@ public class Ai
             else
                 newUnit = purchaseUnitAtMetro(aiUnit.UnitType);
             if (newUnit != null)
-                Console.WriteLine("Ai.buildUnits(): " + newUnit.Id + " built to defend " + Faction.Color + " metro");
+                Globals.Log("Ai.buildUnits(): " + newUnit.Id + " built to defend " + Faction.Color + " metro");
         }
         else if ("defend".Equals(goal.Type) && aiUnit.InitialPosition != null && aiUnit.InitialPosition.X == goal.TargetMapHex.X && aiUnit.InitialPosition.Y == goal.TargetMapHex.Y)
         {
@@ -273,7 +273,7 @@ public class Ai
             else
                 newUnit = purchaseUnitAtBurb(aiUnit.InitialPosition, aiUnit.UnitType);
             if (newUnit != null)
-                Console.WriteLine("Ai.buildUnits(): Burb-InitialPosition " + newUnit.Id + " built to defend burb at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                Globals.Log("Ai.buildUnits(): Burb-InitialPosition " + newUnit.Id + " built to defend burb at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
         }
         else if ("defend".Equals(goal.Type) && aiUnit.InitialPosition != null)
         {
@@ -281,7 +281,7 @@ public class Ai
             newUnit = purchaseUnitAtBurbDock(aiUnit.InitialPosition, aiUnit.UnitType);
             if (newUnit != null)
             {
-                Console.WriteLine("Ai.buildUnits(): InitialPosition " + newUnit.Id + " built to defend burb at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                Globals.Log("Ai.buildUnits(): InitialPosition " + newUnit.Id + " built to defend burb at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
                 moveUnit(unitType, newUnit, aiUnit.InitialPosition);
             }
         }
@@ -291,7 +291,7 @@ public class Ai
             MapHex foundMapHex = findHexAroundBurb(goal, aiUnit);
             if (newUnit != null && foundMapHex != null)
             {
-                Console.WriteLine("Ai.buildUnits(): " + newUnit.Id + " built to defend around " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                Globals.Log("Ai.buildUnits(): " + newUnit.Id + " built to defend around " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
                 moveUnit(unitType, newUnit, foundMapHex);
             }
         }
@@ -301,7 +301,7 @@ public class Ai
             newUnit = purchaseUnitAtMetroDock(aiUnit.UnitType);
             if (newUnit != null)
             {
-                Console.WriteLine("Ai.buildUnits(): " + newUnit.Id + " built for conquest of burb at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                Globals.Log("Ai.buildUnits(): " + newUnit.Id + " built for conquest of burb at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
                 moveUnit(unitType, newUnit, aiUnit.InitialPosition);
             }
         }
@@ -316,7 +316,7 @@ public class Ai
             newUnit = purchaseUnitAtMetroDock(aiUnit.UnitType);
             if (newUnit != null)
             {
-                Console.WriteLine("Ai.buildUnits(): " + newUnit.Id + " built for exploration of burb at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                Globals.Log("Ai.buildUnits(): " + newUnit.Id + " built for exploration of burb at " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
                 MapHex targetMapHex = map.Hexes[goal.TargetMapHex.Y, goal.TargetMapHex.X];
                 moveUnit(unitType, newUnit, targetMapHex);
             }
@@ -349,7 +349,7 @@ public class Ai
                     aiUnit.BlockedRounds += 1;
                     if (aiUnit.BlockedRounds >= 4)
                     {
-                        Console.WriteLine("moveUnits(): Unblocking unit " + aiUnit.Unit.Id + " at " + aiUnit.Unit.X + "," + aiUnit.Unit.Y);
+                        Globals.Log("moveUnits(): Unblocking unit " + aiUnit.Unit.Id + " at " + aiUnit.Unit.X + "," + aiUnit.Unit.Y);
                         aiUnit.Unit.ActionQueue.Clear();
                         if (aiUnit.Unit.ActionQueue.Count <= 0)
                             randomMovement(aiUnit.Unit);
@@ -366,7 +366,7 @@ public class Ai
             //                                                     less than 30 strength -- 1 infantry
             if ("conquer".Equals(goal.Type) && (aiUnit.ShouldMoveToTarget || goal.Enemies == 0))
             {
-                Console.WriteLine("Ai.moveUnits(): ShouldMoveToTarget " + aiUnit.Unit.Id + " to " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                Globals.Log("Ai.moveUnits(): ShouldMoveToTarget " + aiUnit.Unit.Id + " to " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
                 if (!"sea".Equals(unitType.LandOrSea))
                 {
                     moveUnit(unitType, aiUnit.Unit, goal.TargetMapHex);
@@ -384,7 +384,7 @@ public class Ai
             }
             else if (aiUnit.InitialPosition != null)
             {
-                Console.WriteLine("Ai.moveUnits(): InitialPosition " + aiUnit.Unit.Id + " to " + aiUnit.InitialPosition.X + "," + aiUnit.InitialPosition.Y);
+                Globals.Log("Ai.moveUnits(): InitialPosition " + aiUnit.Unit.Id + " to " + aiUnit.InitialPosition.X + "," + aiUnit.InitialPosition.Y);
                 if (!"sea".Equals(unitType.LandOrSea))
                     moveUnit(unitType, aiUnit.Unit, aiUnit.InitialPosition);
                 else
@@ -406,7 +406,7 @@ public class Ai
                 MapHex foundMapHex = findHexAroundBurb(goal, aiUnit);
                 if (foundMapHex != null)
                 {
-                    Console.WriteLine("Ai.moveUnits(): DistanceFromTarget=" + aiUnit.DistanceFromTarget + ", " + aiUnit.Unit.Id + " to " + foundMapHex.X + "," + foundMapHex.Y);
+                    Globals.Log("Ai.moveUnits(): DistanceFromTarget=" + aiUnit.DistanceFromTarget + ", " + aiUnit.Unit.Id + " to " + foundMapHex.X + "," + foundMapHex.Y);
                     moveUnit(unitType, aiUnit.Unit, foundMapHex);
                     count += 1;
                 }
@@ -437,7 +437,7 @@ public class Ai
                 {
                     unit.addUnitAction(moveAction);
                 }
-                Console.WriteLine("moveUnit(): path=" + path.Count);
+                Globals.Log("moveUnit(): path=" + path.Count);
             }
         }
         else if (!"sea".Equals(unitType.LandOrSea) && !"sea".Equals(fromHex.Terrain))
@@ -452,7 +452,7 @@ public class Ai
                 {
                     unit.addUnitAction(moveAction);
                 }
-                Console.WriteLine("moveUnit(): path=" + path.Count);
+                Globals.Log("moveUnit(): path=" + path.Count);
             }
         }
         else
@@ -467,7 +467,7 @@ public class Ai
                 {
                     unit.addUnitAction(moveAction);
                 }
-                Console.WriteLine("moveUnit(): path=" + path.Count);
+                Globals.Log("moveUnit(): path=" + path.Count);
             }
         }
         if (unit.ActionQueue.Count <= 0)
@@ -477,7 +477,7 @@ public class Ai
             unitAction.TargetX = toHex.X;
             unitAction.TargetY = toHex.Y;
             unit.setUnitAction(unitAction);
-            Console.WriteLine("moveUnit(): single unitAction used.");
+            Globals.Log("moveUnit(): single unitAction used.");
         }
     }
 
@@ -540,7 +540,7 @@ public class Ai
 
         if (foundMapHex == null)
         {
-            Console.WriteLine("Ai.findHexAroundBurb(): could not find hex around " + burbHex.X + "," + burbHex.Y);
+            Globals.Log("Ai.findHexAroundBurb(): could not find hex around " + burbHex.X + "," + burbHex.Y);
         }
         return foundMapHex;
     }
@@ -576,7 +576,7 @@ public class Ai
             Faction.Money -= unitType.Cost;
         }
         if (unit != null)
-            Console.WriteLine("Ai.purchaseUnitAtBurb(): " + unit.Id);
+            Globals.Log("Ai.purchaseUnitAtBurb(): " + unit.Id);
         return unit;
     }
 
@@ -612,7 +612,7 @@ public class Ai
             }
         }
         if (unit != null)
-            Console.WriteLine("Ai.purchaseUnitAtBurbDock(): " + unit.Id);
+            Globals.Log("Ai.purchaseUnitAtBurbDock(): " + unit.Id);
         return unit;
     }
 
@@ -643,7 +643,7 @@ public class Ai
             }
         }
         if (unit != null)
-            Console.WriteLine("Ai.purchaseUnitAtSuburb(): " + unit.Id);
+            Globals.Log("Ai.purchaseUnitAtSuburb(): " + unit.Id);
         return unit;
     }
 
@@ -657,7 +657,7 @@ public class Ai
         if (unit != null && unit.StrengthPoints > 0)
         {
             UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
-            //Console.WriteLine("Ai.randomMovement(): " + unit.UnitType);
+            //Globals.Log("Ai.randomMovement(): " + unit.UnitType);
             // 0=capital, 1=left, 2=right, 3=diagonal
             MapHex targetHex = null;
             int randomNumber = random.Next(0, 4);
@@ -677,7 +677,7 @@ public class Ai
                 //unitAction.TargetX = targetHex.X;
                 //unitAction.TargetY = targetHex.Y;
                 //unit.setUnitAction(unitAction);
-                Console.WriteLine("Ai.randomMovement(): " + unit.Id + " to " + targetHex.X + "," + targetHex.Y);
+                Globals.Log("Ai.randomMovement(): " + unit.Id + " to " + targetHex.X + "," + targetHex.Y);
             }
         }
     }
@@ -722,7 +722,7 @@ public class Ai
                         //unitAction.TargetY = burbHex.Y;
                         //unit.setUnitAction(unitAction);
                         isBurbToFree = true;
-                        Console.WriteLine("Ai.freeBurb(): " + unit.Id + " to " + burbHex.X + "," + burbHex.Y);
+                        Globals.Log("Ai.freeBurb(): " + unit.Id + " to " + burbHex.X + "," + burbHex.Y);
                         break;
                     }
                 }
@@ -891,7 +891,7 @@ public class Ai
         attackGoal.IsOngoingGoal = false;
         updateDesiredUnitsForInteriorBurbGoal(attackGoal);
         goals.Add(attackGoal);
-        Console.WriteLine("Ai.conquerInteriorBurbGoal(): added conquer goal for " + burbHex.X + "," + burbHex.Y);
+        Globals.Log("Ai.conquerInteriorBurbGoal(): added conquer goal for " + burbHex.X + "," + burbHex.Y);
         targetXyToGoal[burbHex.X + "," + burbHex.Y] = attackGoal;
     }
 
@@ -939,7 +939,7 @@ public class Ai
         attackGoal.IsOngoingGoal = false;
         updateDesiredUnitsForCoastalBurbGoal(attackGoal);
         goals.Add(attackGoal);
-        Console.WriteLine("Ai.conquerCoastalBurbGoal(): added conquer goal for " + burbHex.X + "," + burbHex.Y);
+        Globals.Log("Ai.conquerCoastalBurbGoal(): added conquer goal for " + burbHex.X + "," + burbHex.Y);
         targetXyToGoal[burbHex.X + "," + burbHex.Y] = attackGoal;
 
     }

@@ -9,7 +9,7 @@ public class JoinGameAction : PlayerAction
 
     public new void deserializeAndExecute(NetPeer peer, Object serverObj)
     {
-        //Console.WriteLine("JoinGameAction.deserializeAndExecute()");
+        //Globals.Log("deserializeAndExecute()");
         if (MessageAsJson != null)
         {
             JoinGameAction? action =
@@ -20,7 +20,7 @@ public class JoinGameAction : PlayerAction
 
     public new void execute(NetPeer peer, Object serverObj)
     {
-        Console.WriteLine("JoinGameAction.execute()");
+        Globals.Log("execute()");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         Faction faction = gameState.Factions.NameToFaction[JoinGameValues.FactionName];

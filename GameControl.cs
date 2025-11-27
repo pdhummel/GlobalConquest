@@ -213,7 +213,7 @@ public class GameControl
         {
             if (child.IsMouseInside)
             {
-                Console.WriteLine(child.GetType() + " " + child.Id);
+                Globals.Log(child.GetType() + " " + child.Id);
                 checkAllWidgets(child);
             }
         }
@@ -228,7 +228,7 @@ public class GameControl
         {
             if (child.IsMouseInside)
             {
-                Console.WriteLine(child.GetType() + " " + child.Id);
+                Globals.Log(child.GetType() + " " + child.Id);
                 if ("Myra.Graphics2D.UI.VerticalMenu".Equals(child.GetType().ToString()))
                 {
                     GameControlActionMapper.invoke(child);
@@ -274,7 +274,7 @@ public class GameControl
         Input.U.ki.dwFlags = KEYEVENTF.SCANCODE;
         Inputs[0] = Input;
         SendInput(1, Inputs, INPUT.Size);
-        Console.WriteLine("SpaceKeyInput(): exit");
+        Globals.Log("SpaceKeyInput(): exit");
     }
 
     void EnterKeyInput()
@@ -303,7 +303,7 @@ public class GameControl
         Input.U.ki.wVk = 0;
         Inputs[0] = Input;
         SendInput(1, Inputs, INPUT.Size);
-        Console.WriteLine("EnterKeyInput(): exit");
+        Globals.Log("EnterKeyInput(): exit");
 
     }
 
@@ -327,7 +327,7 @@ public class GameControl
         //Inputs[1] = Input;
 
         SendInput(1, Inputs, INPUT.Size);
-        Console.WriteLine("LeftMouseClickInput(): exit");
+        Globals.Log("LeftMouseClickInput(): exit");
     }
 
 

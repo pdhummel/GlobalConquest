@@ -160,7 +160,7 @@ public class MainGameScreen
 
     public void drawFactionsPanel()
     {
-        //Console.WriteLine("MainGameScreen.drawFactionsPanel()");
+        //Globals.Log("MainGameScreen.drawFactionsPanel()");
         FactionsPanelView factionsPanelView = new FactionsPanelView(gcGame, FactionsPanel);
         factionsPanelView.drawFactionsPanel();
     }

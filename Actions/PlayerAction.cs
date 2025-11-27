@@ -46,7 +46,7 @@ public class PlayerAction
 
     public void execute(NetPeer peer, Object serverObj)
     {
-        Console.WriteLine("PlayerAction.execute();");
+        Globals.Log("execute();");
     }
 
 }

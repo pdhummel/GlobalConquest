@@ -36,7 +36,7 @@ public class FactionsPanelView
 
     public void drawFactionsPanel()
     {
-        //Console.WriteLine("drawFactionsPanel()");
+        //Globals.Log("drawFactionsPanel()");
         drawMessageForColor("amber");
         drawMessageForColor("ocher");
         drawMessageForColor("magenta");
@@ -45,7 +45,7 @@ public class FactionsPanelView
 
     private void drawMessageForColor(string color)
     {
-        //Console.WriteLine("drawMessageForColor()");
+        //Globals.Log("drawMessageForColor()");
         GameState gameState = gcGame.Client.GameState;
         // Amber Array:  Paul  planning|ready
         Faction faction = gameState.Factions.ColorToFaction[color];
@@ -71,7 +71,7 @@ public class FactionsPanelView
 
     private void drawMessage(string message)
     {
-        //Console.WriteLine("drawMessage(): " + xPos + ", " + Y);
+        //Globals.Log("drawMessage(): " + xPos + ", " + Y);
         SpriteFont font = gcGame.font;
         Globals.spriteBatch?.DrawString(font, message, new Vector2(xPos, Y), Color.White);
         Y += 14;

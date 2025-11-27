@@ -14,7 +14,7 @@ public class ChangeUnitContextAction : PlayerAction
 
     public new void deserializeAndExecute(NetPeer peer, Object serverObj)
     {
-        //Console.WriteLine("ChangeUnitContextAction.deserializeAndExecute()");
+        //Globals.Log("deserializeAndExecute()");
         if (MessageAsJson != null)
         {
             ChangeUnitContextAction? action =
@@ -25,7 +25,7 @@ public class ChangeUnitContextAction : PlayerAction
 
     public new void execute(NetPeer peer, Object serverObj)
     {
-        Console.WriteLine("ChangeUnitContextAction.execute()");
+        Globals.Log("execute()");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         if (Unit != null)

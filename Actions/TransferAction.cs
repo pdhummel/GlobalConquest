@@ -19,9 +19,13 @@ public class TransferAction : PlayerAction
         }
     }
 
+
+    // TODO:  When doing this type of mission, 
+    // you may also click on an adjacent infantry to transport along with your plane, 
+    // and both units will be moved to the chosen transfer burb.
     public new void execute(NetPeer peer, Object serverObj)
     {
-        Console.WriteLine("TransferAction.execute()");
+        Globals.Log("execute()");
         if (Plane == null)
         {
             return;
@@ -37,10 +41,10 @@ public class TransferAction : PlayerAction
             Unit existingPlane = planeType.getExistingPlane(map, Plane);
             if (existingPlane == null  || existingPlane.StrengthPoints <= 0 || existingPlane.TurnsUnavailable > 0)
             {
-                Console.WriteLine("TransferAction.execute(): plane is unavailable");
+                Globals.Log("execute(): plane is unavailable");
                 if (existingPlane != null)
                 {
-                    Console.WriteLine("TransferAction.execute(): existingPlane: " + existingPlane.StrengthPoints + ", " + 
+                    Globals.Log("execute(): existingPlane: " + existingPlane.StrengthPoints + ", " + 
                                        existingPlane.TurnsUnavailable);
                 }
                 return;
@@ -66,18 +70,18 @@ public class TransferAction : PlayerAction
             }
             if (!useTargetUnit && !useTargetHex)
             {
-                Console.WriteLine("TransferAction.execute(): destination is not valid for transfer.");
+                Globals.Log("execute(): destination is not valid for transfer.");
                 if (targetUnit != null)
-                    Console.WriteLine("TransferAction.execute(): targetUnit=" + targetUnit.Airplane);
+                    Globals.Log("execute(): targetUnit=" + targetUnit.Airplane);
                 if (targetMapHex != null)
-                    Console.WriteLine("TransferAction.execute(): targetHex=" + targetMapHex.Airplane);
+                    Globals.Log("execute(): targetHex=" + targetMapHex.Airplane);
                 return;
             }
 
             AirplaneMissionOutcome outcome = planeType.determineMissionOutcome(gameState, existingPlane, destinationHex);
             if (!outcome.IsShortRangeMission && !outcome.IsMediumRangeMission && !outcome.IsLongRangeMission)
             {
-                Console.WriteLine("TransferAction.execute(): target hex is not in range.");
+                Globals.Log("execute(): target hex is not in range.");
                 return;
             }
             if (outcome.IsMissionSuccessful)
@@ -99,7 +103,7 @@ public class TransferAction : PlayerAction
                 {
                     targetUnit.Airplane = existingPlane;
                     existingPlane.ParentUnitId = targetUnit.Id;
-                    Console.WriteLine("TransferAction.execute(): targetUnitId=" + targetUnit.Id);
+                    Globals.Log("execute(): targetUnitId=" + targetUnit.Id);
                 }
                 else if (useTargetHex)
                 {
@@ -114,7 +118,7 @@ public class TransferAction : PlayerAction
                 server.sendGamePlayEvent(Plane.Color, gameEvent);             
                 server.sendGameStateAndMapHex(planeHex.X, planeHex.Y);
                 server.sendGameStateAndMapHex(targetMapHex.X, targetMapHex.Y);
-                Console.WriteLine("execute(): transfer complete");
+                Globals.Log("execute(): transfer complete");
             }
             else
             {
@@ -124,7 +128,7 @@ public class TransferAction : PlayerAction
                 server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
                 server.sendGamePlayEvent(Plane.Color, gameEvent);     
             }
-            Console.WriteLine("execute(): transfer action complete");
+            Globals.Log("execute(): transfer action complete");
         }
 
     }

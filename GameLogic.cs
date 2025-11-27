@@ -24,7 +24,7 @@ public class GameLogic
 
     public void doExecutionPhase()
     {
-        Console.WriteLine("doExecutionPhase(): enter");
+        Globals.Log("doExecutionPhase(): enter");
         Server? server = this.server;
         GameState gameState = server.gameState;
         gameState.CurrentPhase = "execution";
@@ -72,7 +72,7 @@ public class GameLogic
                     plane.TurnsUnavailable -= 1;
                     if (plane.TurnsUnavailable < 0)
                         plane.TurnsUnavailable = 0;
-                    //Console.WriteLine("doExecutionPhase(): hex plane: " + mapHex.X + "," + mapHex.Y + " " + plane.TurnsUnavailable);
+                    //Globals.Log("doExecutionPhase(): hex plane: " + mapHex.X + "," + mapHex.Y + " " + plane.TurnsUnavailable);
                     server.sendGameStateAndMapHex(mapHex.Y, mapHex.X);
                 }
                 Unit unit = mapHex.getUnit();
@@ -84,7 +84,7 @@ public class GameLogic
                         plane.TurnsUnavailable -= 1;
                         if (plane.TurnsUnavailable < 0)
                             plane.TurnsUnavailable = 0; 
-                        //Console.WriteLine("doExecutionPhase(): unit plane: " + mapHex.X + "," + mapHex.Y + " " + plane.TurnsUnavailable);
+                        //Globals.Log("doExecutionPhase(): unit plane: " + mapHex.X + "," + mapHex.Y + " " + plane.TurnsUnavailable);
                         server.sendGameStateAndMapHex(mapHex.Y, mapHex.X);
                     }
                 }
@@ -152,10 +152,10 @@ public class GameLogic
 
     public void endTurn(Server server)
     {
-        Console.WriteLine("endTurn(): enter");
+        Globals.Log("endTurn(): enter");
         GameState gameState = server.gameState;
 
-        Console.WriteLine("endTurn(): Put players into pending status before planning for next turn.");
+        Globals.Log("endTurn(): Put players into pending status before planning for next turn.");
         foreach (string key in gameState.PlayerExecutionReady.Keys)
         {
             gameState.PlayerExecutionReady[key] = false;
@@ -176,29 +176,32 @@ public class GameLogic
         {
             Burb burb = gameState.Burbs.NameToBurb[key];
             int income = gameState.Burbs.IncomeMap[burb.Type];
-            //Console.WriteLine("endTurn(): burb=" + burb.Name);
+            //Globals.Log("endTurn(): burb=" + burb.Name);
             if (burb.OwnerColor != null && !"grey".Equals(burb.OwnerColor))
             {
                 Faction faction = gameState.Factions.ColorToFaction[burb.OwnerColor];
                 faction.Money += income;
-                Console.WriteLine("endTurn(): added " + income + " income to " + burb.OwnerColor);
+                Globals.Log("endTurn(): added " + income + " income to " + burb.OwnerColor);
             }
         }
 
         gameState.CurrentRound = 0;
         server.gameState.CurrentPhase = "plan";
-        Console.WriteLine("endTurn(): Saving state for restore point.");
+        Globals.Log("endTurn(): Saving state for restore point.");
         saveGameState(server);
-        Console.WriteLine("endTurn(): Bump game turn.");
+        Globals.Log("endTurn(): Bump game turn.");
         server.gameState.CurrentTurn += 1;
+        Globals.Log("endTurn(): Syncing game state and map for clients.");
         server.sendGameState();
-        Console.WriteLine("doExecutionPhase(): exit");
+        // This is useful to make sure that clients are updated about things like TurnsUnavailable.
+        server.syncAllMapHexes();
+        Globals.Log("doExecutionPhase(): exit");
     }
 
 
     public void startGame(Server server)
     {
-        Console.WriteLine("startGame(): enter");
+        Globals.Log("startGame(): enter");
         GameState gameState = server.gameState;
         for (int liY = 0; liY < gameState.Map.Y; liY++)
         {
@@ -235,7 +238,7 @@ public class GameLogic
 
     public void processRound(int round, Server server, List<Unit> units)
     {
-        //Console.WriteLine("processRound(): round=" + round);
+        //Globals.Log("processRound(): round=" + round);
         GameState gameState = server.gameState;
 
         foreach (Unit unit in units)
@@ -340,7 +343,7 @@ public class GameLogic
                 // Units in this mode are half-concealed on the game board.
                 if (hexUnit.IsSneaking && !hexesToScanForSneakyUnits.Contains(hex))
                 {
-                    Console.WriteLine("scanUnits(): " + unit.Id + " cannot see sneaking unit " + hexUnit.Id);
+                    Globals.Log("scanUnits(): " + unit.Id + " cannot see sneaking unit " + hexUnit.Id);
                     continue;
                 }
 
@@ -349,7 +352,7 @@ public class GameLogic
                     !isHexUnitMoving &&
                     !hexesToScanBySubForNonMovingUnits.Contains(hex))
                 {
-                    Console.WriteLine("scanUnits(): " + unit.Id + " could not see not moving unit " + hexUnit.Id + " from this range.");
+                    Globals.Log("scanUnits(): " + unit.Id + " could not see not moving unit " + hexUnit.Id + " from this range.");
                     continue;
                 }
 
@@ -359,7 +362,7 @@ public class GameLogic
                     (isUnitMoving || !isHexUnitMoving) &&
                     !hexesToScanForStationarySubs.Contains(hex))
                 {
-                    Console.WriteLine("scanUnits(): " + unit.Id + " could not see not see sub " + hexUnit.Id + " from this range.");
+                    Globals.Log("scanUnits(): " + unit.Id + " could not see not see sub " + hexUnit.Id + " from this range.");
                     continue;
                 }
 
@@ -403,7 +406,7 @@ public class GameLogic
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
         HashSet<MapHex> hexesToScan = map.getMapHexesInRange(mapHex, unitType.DiscoveryRange);
-        //Console.WriteLine("hexes to scan=" + hexesToScan.Count);
+        //Globals.Log("hexes to scan=" + hexesToScan.Count);
         foreach (MapHex hex in hexesToScan)
         {
             bool previousVisibility = false;
@@ -463,7 +466,7 @@ public class GameLogic
                 unit.StrengthPoints += repairPoints;
                 if (unit.StrengthPoints > 100)
                     unit.StrengthPoints = 100;
-                Console.WriteLine("repair(): " + unit.Id + " at " + unit.X + "," + unit.Y + " repaired " + repairPoints + " to " + unit.StrengthPoints);
+                Globals.Log("repair(): " + unit.Id + " at " + unit.X + "," + unit.Y + " repaired " + repairPoints + " to " + unit.StrengthPoints);
             }
         }
     }
@@ -475,7 +478,7 @@ public class GameLogic
         // A sneaking unit can't fire at other units at all.
         if (unit.IsSneaking)
             return;
-        //Console.WriteLine("checkForCombat(): " + unit.Id);
+        //Globals.Log("checkForCombat(): " + unit.Id);
         Unit unitToAttack = null;
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
@@ -499,7 +502,7 @@ public class GameLogic
                     if (lastTargetUnit.StrengthPoints > 0 && lastTargetUnit.Visibility[unit.Color] && scanRange <= firingRangeFromAttacker && scanRange <= firingRangeToDefender && hexesToScan.Contains(targetMapHex))
                     {
                         unitToAttack = lastTargetUnit;
-                        Console.WriteLine("checkForCombat(): " + unit.Id + " wants to continue to attack " + unitToAttack.Id);
+                        Globals.Log("checkForCombat(): " + unit.Id + " wants to continue to attack " + unitToAttack.Id);
                     }
                 }
 
@@ -519,7 +522,7 @@ public class GameLogic
                                 attackerUnitType.BattleDamageToDefender[hexUnit.UnitType] > 0 && hexUnit.Color != unit.Color)
                             {
                                 unitToAttack = hexUnit;
-                                Console.WriteLine("checkForCombat(): " + unit.Id + " wants to attack " + unitToAttack.Id);
+                                Globals.Log("checkForCombat(): " + unit.Id + " wants to attack " + unitToAttack.Id);
                                 break;
                             }
                         }
@@ -538,7 +541,7 @@ public class GameLogic
         }
         if (unitToAttack != null && unitToAttack.Visibility[unit.Color] && unit.StrengthPoints > 0 && unitToAttack.StrengthPoints > 0)
         {
-            Console.WriteLine("checkForCombat(): " + unit.Id + " at " + unit.X + "," + unit.Y + " attacking " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
+            Globals.Log("checkForCombat(): " + unit.Id + " at " + unit.X + "," + unit.Y + " attacking " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
             attackingUnitsXy.Add(makeXyString(unit.X, unit.Y));
             int previousStrength = unitToAttack.StrengthPoints;
             int damage = attackerUnitType.BattleDamageToDefender[unitToAttack.UnitType];
@@ -552,7 +555,7 @@ public class GameLogic
                 server.sendGamePlayEvent(unit.Color, gameEvent);
                 gameEvent.EventType = "unitAttacked";
                 server.sendGamePlayEvent(unitToAttack.Color, gameEvent);
-                Console.WriteLine("checkForCombat(): " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y + " suffered " + damage + " damage: " + unitToAttack.StrengthPoints);
+                Globals.Log("checkForCombat(): " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y + " suffered " + damage + " damage: " + unitToAttack.StrengthPoints);
             }
             else
                 return;
@@ -570,12 +573,12 @@ public class GameLogic
                 {
                     unitToAttack.StrengthPoints = previousStrength;
                 }
-                Console.WriteLine("checkForCombat(): " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y + " was bombarded, strength=" + unitToAttack.StrengthPoints);
+                Globals.Log("checkForCombat(): " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y + " was bombarded, strength=" + unitToAttack.StrengthPoints);
             }
 
             if (unitToAttack.StrengthPoints <= 0)
             {
-                Console.WriteLine("checkForCombat(): destroyed unit " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
+                Globals.Log("checkForCombat(): destroyed unit " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
                 unitToAttack.StrengthPoints = 0;
 
                 GameEvent gameEvent = new GameEvent("enemyUnitDestroyed");
@@ -701,12 +704,12 @@ public class GameLogic
             }
             else
             {
-                Console.WriteLine("moveUnit(): " + unit.UnitIdToPursue + " is not visible to " + unit.Id);
+                Globals.Log("moveUnit(): " + unit.UnitIdToPursue + " is not visible to " + unit.Id);
                 unit.UnitIdToPursue = null;
             }
         }
 
-        // Console.WriteLine("processRound(): unit at " + unit.X + "," + unit.Y);
+        // Globals.Log("processRound(): unit at " + unit.X + "," + unit.Y);
         GameState gameState = server.gameState;
         UnitAction unitAction = unit.getNextAction();
         if (unitAction != null && "move".Equals(unitAction.Action))
@@ -726,8 +729,8 @@ public class GameLogic
                 MapHex mapHex = gameState.Map.Hexes[unit.Y, unit.X];
                 MapHex nextMapHex = determineNextHexTowardsDestination(server, unit, unitAction);
 
-                Console.WriteLine("processRound(): " + unit.Id + " at " + unit.X + "," + unit.Y + " to nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
-                //Console.WriteLine("processRound(): nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
+                Globals.Log("processRound(): " + unit.Id + " at " + unit.X + "," + unit.Y + " to nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
+                //Globals.Log("processRound(): nextMapHex=" + nextMapHex.X + "," + nextMapHex.Y);
                 if (unit.X != nextMapHex.X || unit.Y != nextMapHex.Y)
                 {
                     UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
@@ -739,7 +742,7 @@ public class GameLogic
                     }
                     else
                     {
-                        Console.WriteLine("moveUnit(): accumulating movement steps: " + unit.Id + " at " + unit.X + "," + unit.Y + " stepsAvailable=" + stepsAvailable + ", stepsRequired=" + stepsRequired);
+                        Globals.Log("moveUnit(): accumulating movement steps: " + unit.Id + " at " + unit.X + "," + unit.Y + " stepsAvailable=" + stepsAvailable + ", stepsRequired=" + stepsRequired);
                         isMovingDone = true;
                         return;
                     }
@@ -752,14 +755,14 @@ public class GameLogic
                         // this loading/unloading takes only one round.
                         if (unit.RoundsToPause > 0)
                         {
-                            Console.WriteLine("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " is unloading.");
+                            Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " is unloading.");
                             unit.IsUnloading = true;
                             unit.RoundsToPause -= 1;
                             if (unit.RoundsToPause > 0)
                             {
                                 return;
                             }
-                            Console.WriteLine("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " has unloaded.");
+                            Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " has unloaded.");
                             unit.IsUnloading = false;
                             if ("transport-tank".Equals(unit.UnitType) || "transport-armor".Equals(unit.UnitType))
                             {
@@ -772,7 +775,7 @@ public class GameLogic
                         }
                         else
                         {
-                            Console.WriteLine("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " needs to unload.");
+                            Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " needs to unload.");
                             unit.IsUnloading = true;
                             unit.RoundsToPause = 8;
                             return;
@@ -785,14 +788,14 @@ public class GameLogic
                     {
                         if (unit.RoundsToPause > 0)
                         {
-                            Console.WriteLine("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " is loading into a transport.");
+                            Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " is loading into a transport.");
                             unit.IsLoading = true;
                             unit.RoundsToPause -= 1;
                             if (unit.RoundsToPause > 0)
                             {
                                 return;
                             }
-                            Console.WriteLine("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " has loaded into a transport.");
+                            Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " has loaded into a transport.");
                             unit.IsLoading = false;
                             if ("tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
                             {
@@ -805,7 +808,7 @@ public class GameLogic
                         }
                         else
                         {
-                            Console.WriteLine("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " needs to load into a transport.");
+                            Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " needs to load into a transport.");
                             unit.IsLoading = true;
                             unit.RoundsToPause = 4;
                             return;
@@ -814,7 +817,7 @@ public class GameLogic
                     else if ("sea".Equals(unitType.LandOrSea) &&
                        ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
                     {
-                        Console.WriteLine("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " cannot move on land.");
+                        Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " cannot move on land.");
                         return;
                     }
 
@@ -832,7 +835,7 @@ public class GameLogic
                             {
                                 unit.ActionQueue.Add(moveAction);
                             }
-                            Console.WriteLine("moveUnit(): patrol resuming for " + unit.Id + " at " + unit.X + "," + unit.Y);
+                            Globals.Log("moveUnit(): patrol resuming for " + unit.Id + " at " + unit.X + "," + unit.Y);
                         }
                     }
 
@@ -925,7 +928,7 @@ public class GameLogic
         }
         else if (!destinationReached)
         {
-            Console.WriteLine("determineNextHexTowardsDestination(): hex " + tmpMapHex.X + "," + tmpMapHex.Y + " blocked by another unit");
+            Globals.Log("determineNextHexTowardsDestination(): hex " + tmpMapHex.X + "," + tmpMapHex.Y + " blocked by another unit");
         }
         return mapHex;
     }
@@ -959,7 +962,7 @@ public class GameLogic
 
     private string checkForEndOfGame(Server server)
     {
-        //Console.WriteLine("checkForVictory(): enter");
+        //Globals.Log("checkForVictory(): enter");
         GameState gameState = server.gameState;
         int commandCenters = 0;
         bool gameOver = false;
@@ -1001,7 +1004,7 @@ public class GameLogic
         {
             victoriousColor = candidate;
             gameOver = true;
-            Console.WriteLine("checkForVictory(): commandCenters=" + commandCenters);
+            Globals.Log("checkForVictory(): commandCenters=" + commandCenters);
         }
 
 
@@ -1024,7 +1027,7 @@ public class GameLogic
             {
                 if (color.Equals(gameState.Map.getCapitalHex().Burb.OwnerColor))
                 {
-                    Console.WriteLine("checkForVictory(): + metro owner=" + color);
+                    Globals.Log("checkForVictory(): + metro owner=" + color);
                     victoriousColor = color;
                     gameOver = true;
                 }
@@ -1148,14 +1151,14 @@ public class GameLogic
 
     public void checkPlayersReadyForTimedPlanning()
     {
-        Console.WriteLine("checkPlayersReadyForTimedPlanning(): enter");
+        Globals.Log("checkPlayersReadyForTimedPlanning(): enter");
 
         lock (syncLock)
         {
             GameState gameState = server.gameState;
             if ("Timed*".Equals(gameState.GameSettings.ExecutionMode))
             {
-                Console.WriteLine("execute(): Checking whether to start timer");
+                Globals.Log("execute(): Checking whether to start timer");
                 int readyCount = 0;
                 bool startTimer = false;
                 foreach (string key in gameState.PlayerPlanningReady.Keys)
@@ -1175,12 +1178,12 @@ public class GameLogic
                 }
             }
         }
-        Console.WriteLine("checkPlayersReadyForTimedPlanning(): exit");
+        Globals.Log("checkPlayersReadyForTimedPlanning(): exit");
     }
 
     public void startExecutionTimer()
     {
-        Console.WriteLine("startExecutionTimer(): enter");
+        Globals.Log("startExecutionTimer(): enter");
         if (!timerRunning)
         {
             timerRunning = true;
@@ -1190,12 +1193,12 @@ public class GameLogic
             };
             waitForExecutionThread.Start();
         }
-        Console.WriteLine("startExecutionTimer(): exit");
+        Globals.Log("startExecutionTimer(): exit");
     }
 
     private void waitForExecution()
     {
-        Console.WriteLine("waitForExecution(): enter");
+        Globals.Log("waitForExecution(): enter");
         int count = 0;
         GameState gameState = server.gameState;
         bool startExecution = false;
@@ -1237,11 +1240,11 @@ public class GameLogic
         }
 
         server.sendGameState();
-        Console.WriteLine("waitForExecution(): done waiting");
+        Globals.Log("waitForExecution(): done waiting");
 
         doExecutionPhase();
         timerRunning = false;
-        Console.WriteLine("waitForExecution(): exit");
+        Globals.Log("waitForExecution(): exit");
     }
 
     private void saveGameState(Server server)
@@ -1351,7 +1354,7 @@ public class GameLogic
         if (!File.Exists(zipFilePath))
             ZipFile.CreateFromDirectory(dataDirectory, zipFilePath, CompressionLevel.Optimal, true);
         Directory.Delete(dataDirectory, true);
-        Console.WriteLine("saveGame(): complete");
+        Globals.Log("saveGame(): complete");
 
     }
 

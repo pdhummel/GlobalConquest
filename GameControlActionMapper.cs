@@ -29,14 +29,14 @@ public class GameControlActionMapper
 
     public void invoke(Widget widget)
     {
-        Console.WriteLine("invoke(): enter: " + widget.GetType() + " " + widget.Id);
+        Globals.Log("invoke(): enter: " + widget.GetType() + " " + widget.Id);
         String controlId = null;
         if ("Myra.Graphics2D.UI.VerticalMenu".Equals(widget.GetType().ToString()))
         {
             VerticalMenu verticalMenu = (VerticalMenu)widget;
             if (widget.Id != null && MenuIdToSelectedIndexMap.ContainsKey(widget.Id))
             {
-                Console.WriteLine("invoke(): " + widget.Id + " in MenuIdToSelectedIndexMap");
+                Globals.Log("invoke(): " + widget.Id + " in MenuIdToSelectedIndexMap");
                 Dictionary<int, string> map = MenuIdToSelectedIndexMap[widget.Id];
                 int selectedIndex = -1;
                 if (verticalMenu.SelectedIndex != null)
@@ -47,7 +47,7 @@ public class GameControlActionMapper
                 {
                     string menuItemId = map[selectedIndex];
                     controlId = menuItemId;
-                    Console.WriteLine("invoke(): controlId=" + menuItemId);
+                    Globals.Log("invoke(): controlId=" + menuItemId);
                 }
             }
         }
@@ -56,7 +56,7 @@ public class GameControlActionMapper
             HorizontalMenu horizontalMenu = (HorizontalMenu)widget;
             if (widget.Id != null && MenuIdToSelectedIndexMap.ContainsKey(widget.Id))
             {
-                Console.WriteLine("invoke(): " + widget.Id + " in MenuIdToSelectedIndexMap");
+                Globals.Log("invoke(): " + widget.Id + " in MenuIdToSelectedIndexMap");
                 Dictionary<int, string> map = MenuIdToSelectedIndexMap[widget.Id];
                 int selectedIndex = -1;
                 if (horizontalMenu.SelectedIndex != null)
@@ -67,7 +67,7 @@ public class GameControlActionMapper
                 {
                     string menuItemId = map[selectedIndex];
                     controlId = menuItemId;
-                    Console.WriteLine("invoke(): controlId=" + menuItemId);
+                    Globals.Log("invoke(): controlId=" + menuItemId);
                 }
             }
         }
@@ -75,10 +75,10 @@ public class GameControlActionMapper
 
         if (controlId != null && IdToMethodName.ContainsKey(controlId) && IdToObject.ContainsKey(controlId))
         {
-            Console.WriteLine("invoke(): " + controlId + " properly registered");
+            Globals.Log("invoke(): " + controlId + " properly registered");
             string methodName = IdToMethodName[controlId];
             object o = IdToObject[controlId];
-            Console.WriteLine("invoke(): method=" + o.GetType() + " " + methodName);
+            Globals.Log("invoke(): method=" + o.GetType() + " " + methodName);
             MethodInfo method = o.GetType().GetMethod(methodName);
             object[] parameters = new object[] { };
             if (method != null)

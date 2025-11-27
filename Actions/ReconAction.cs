@@ -21,7 +21,7 @@ public class ReconAction : PlayerAction
 
     public new void execute(NetPeer peer, Object serverObj)
     {
-        Console.WriteLine("ReconAction.execute()");
+        Globals.Log("execute()");
         if (Plane == null)
         {
             return;
@@ -57,14 +57,14 @@ public class ReconAction : PlayerAction
             }
             if (existingPlane == null  || existingPlane.StrengthPoints <= 0 || existingPlane.TurnsUnavailable > 0)
             {
-                Console.WriteLine("ReconAction.execute(): plane is unavailable");
+                Globals.Log("execute(): plane is unavailable");
                 return;
             }
 
             AirplaneMissionOutcome outcome = planeType.determineMissionOutcome(gameState, existingPlane, mapHex);
             if (!outcome.IsShortRangeMission && !outcome.IsMediumRangeMission)
             {
-                Console.WriteLine("StrikeAction.execute(): target hex is not in range.");
+                Globals.Log("execute(): target hex is not in range.");
                 return;
             }
             if (parentUnit != null && parentUnit.Airplane != null)
@@ -75,8 +75,8 @@ public class ReconAction : PlayerAction
             {
                 planeHex.Airplane = outcome.Plane;
             }
-            Console.WriteLine("execute(): turnsUnavailable=" + existingPlane.TurnsUnavailable);
-            //Console.WriteLine("execute(): outcome.turnsUnavailable=" + outcome.Plane.turnsUnavailable);
+            Globals.Log("execute(): turnsUnavailable=" + existingPlane.TurnsUnavailable);
+            //Globals.Log("execute(): outcome.turnsUnavailable=" + outcome.Plane.turnsUnavailable);
             if (outcome.IsMissionSuccessful)
             {
                 // Recon missions uncover any terrain within a radius of 8 spaces from the chosen spot and 
@@ -96,7 +96,7 @@ public class ReconAction : PlayerAction
                 gameEvent.MapHex = mapHex;
                 gameEvent.Unit = existingPlane;
                 server.sendGamePlayEvent(Plane.Color, gameEvent);             
-                Console.WriteLine("execute(): recon scans complete");
+                Globals.Log("execute(): recon scans complete");
             }
             else if (outcome.IsEnemyPlaneShotDown)
             {
@@ -128,7 +128,7 @@ public class ReconAction : PlayerAction
                 server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
                 server.sendGamePlayEvent(Plane.Color, gameEvent);     
             }
-            Console.WriteLine("execute(): recon action complete");
+            Globals.Log("execute(): recon action complete");
         }
 
 

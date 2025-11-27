@@ -99,7 +99,7 @@ public class GameEvent
         MethodInfo eventMethodHandler = this.GetType().GetMethod(EventType + "Handler");
         object[] parameters = new object[] { };
         eventMethodHandler?.Invoke(this, parameters);
-        Console.WriteLine("handleGamePlayEvent(): " + EventString);
+        Globals.Log("handleGamePlayEvent(): " + EventString);
 
     }
 

@@ -85,7 +85,7 @@ public class MapHex
                 Visibility["magenta"] == other.Visibility["magenta"] &&
                 Visibility["ocher"] == other.Visibility["ocher"];
         }
-        //Console.WriteLine("MapHex.Equals(): false");
+        //Globals.Log("MapHex.Equals(): false");
         return false;
     }
 

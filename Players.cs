@@ -14,7 +14,7 @@ public class Players
 
     public Player AddPlayer(GameState gameState, String name, string color, bool isHuman)
     {
-        Console.WriteLine("AddPlayer(): " + name + ", " + color);
+        Globals.Log("AddPlayer(): " + name + ", " + color);
         Player player = new();
         player.Name = name;
         player.FactionColor = color;

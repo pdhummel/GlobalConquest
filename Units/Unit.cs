@@ -249,7 +249,7 @@ public class Unit
                 Visibility["magenta"] == other.Visibility["magenta"] &&
                 Visibility["ocher"] == other.Visibility["ocher"];
         }
-        //Console.WriteLine("Unit.Equals(): false");
+        //Globals.Log("Unit.Equals(): false");
         return false;
     }
 

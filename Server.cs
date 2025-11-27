@@ -27,7 +27,7 @@ public class Server
 
     public void StartAsHost(GameSettings gameSettings, string key)
     {
-        Console.WriteLine("StartAsHost(): enter");
+        Globals.Log("StartAsHost(): enter");
         this.maxPeers = gameSettings.NumberOfHumans;
         this.key = key;
         gameState.GameSettings = gameSettings;
@@ -63,7 +63,7 @@ public class Server
 
     public void RestoreHost(GameSettings gameSettings, string key)
     {
-        Console.WriteLine("RestoreHost(): enter");
+        Globals.Log("RestoreHost(): enter");
         this.maxPeers = gameSettings.NumberOfHumans;
         this.key = key;
         listener = new EventBasedNetListener();
@@ -99,7 +99,7 @@ public class Server
         GameLogic.startGame(this);
 
         int sleepTime = 1000;
-        Console.WriteLine("ServerLoop(): Server polling");
+        Globals.Log("ServerLoop(): Server polling");
         // This is the server's polling loop, which runs continuously on its own thread.
         while (isRunning)
         {
@@ -107,7 +107,7 @@ public class Server
             server?.PollEvents();
             if (!initialSync && gameState.PlayerJoined.Count >= gameState.GameSettings.NumberOfHumans)
             {
-                Console.WriteLine("ServerLoop(): all clients joined");
+                Globals.Log("ServerLoop(): all clients joined");
                 syncAllMapHexes();
                 initialSync = true;
             }
@@ -117,7 +117,7 @@ public class Server
 
     public void syncAllMapHexes()
     {
-        Console.WriteLine("syncAllMapHexes(): enter");
+        Globals.Log("syncAllMapHexes(): enter");
         for (int liY = 0; liY < gameState.Map.Y; liY++)
         {
             for (int liX = 0; liX < gameState.Map.X; liX++)
@@ -148,7 +148,7 @@ public class Server
                 }
                 else
                 {
-                    Console.WriteLine("sendGameStateAndMapHex(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
+                    Globals.Log("sendGameStateAndMapHex(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
                 }
 
             }
@@ -171,7 +171,7 @@ public class Server
                 }
                 else
                 {
-                    Console.WriteLine("sendGameStateAndMapHex(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
+                    Globals.Log("sendGameStateAndMapHex(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
                 }
             }
         }
@@ -207,7 +207,7 @@ public class Server
             }
             else
             {
-                //Console.WriteLine("sendGameStateAndMapHex(): NetPeer not found for " + color);
+                //Globals.Log("sendGameStateAndMapHex(): NetPeer not found for " + color);
             }
         }
     }
@@ -231,7 +231,7 @@ public class Server
 
     public void sendMap(NetPeer? peer)
     {
-        Console.WriteLine("sendMap(): peer=" + peer);
+        Globals.Log("sendMap(): peer=" + peer);
         List<MapHex> mapHexBuffer = new List<MapHex>();
         Map map = gameState.Map;
         int bufferSize = 50;
@@ -272,7 +272,7 @@ public class Server
 
     public void sendMapBuffer(List<MapHex> mapHexBuffer, bool isLast)
     {
-        Console.WriteLine("sendMapBuffer(): mapHexBuffer=" + mapHexBuffer.Count);
+        Globals.Log("sendMapBuffer(): mapHexBuffer=" + mapHexBuffer.Count);
         int count = server.ConnectedPeerList.Count;
         for (int i = 0; i < count; i++)
         {
@@ -283,14 +283,14 @@ public class Server
             }
             else
             {
-                Console.WriteLine("sendMapBuffer(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
+                Globals.Log("sendMapBuffer(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
             }
         }
     }
 
     public void sendMapBuffer(NetPeer peer, List<MapHex> mapHexBuffer, bool isLast)
     {
-        Console.WriteLine("sendMapBuffer(): peer=" + peer + ", mapHexBuffer=" + mapHexBuffer.Count);
+        Globals.Log("sendMapBuffer(): peer=" + peer + ", mapHexBuffer=" + mapHexBuffer.Count);
         NetDataWriter writer = new NetDataWriter();
         if (server != null)
         {
@@ -320,7 +320,7 @@ public class Server
                 }
                 else
                 {
-                    Console.WriteLine("sendGamePlayEvent(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
+                    Globals.Log("sendGamePlayEvent(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
                 }
             }
         }
@@ -341,7 +341,7 @@ public class Server
             }
             else
             {
-                //Console.WriteLine("sendGamePlayEvent(): NetPeer not found for " + color);
+                //Globals.Log("sendGamePlayEvent(): NetPeer not found for " + color);
             }
         }        
     }
@@ -382,29 +382,29 @@ public class Server
     // --- LiteNetLib Event Handlers ---
     private void OnConnectionRequest(ConnectionRequest request)
     {
-        Console.WriteLine($"OnConnectionRequest(): Incoming connection request to Server from: {request.RemoteEndPoint}, data=" + request.Data);
+        Globals.Log($"OnConnectionRequest(): Incoming connection request to Server from: {request.RemoteEndPoint}, data=" + request.Data);
         // In a real application, you would add validation here.
         if (server?.ConnectedPeersCount < maxPeers)
         {
             request.AcceptIfKey(this.key);
-            Console.WriteLine("OnConnectionRequest(): connection accepted by Server");
+            Globals.Log("OnConnectionRequest(): connection accepted by Server");
         }
         else
         {
             request.Reject();
-            Console.WriteLine("OnConnectionRequest(): connection rejected by Server b/c limit to connected peers. (player count)");
+            Globals.Log("OnConnectionRequest(): connection rejected by Server b/c limit to connected peers. (player count)");
         }
     }
 
     private void OnPeerConnected(NetPeer peer)
     {
-        Console.WriteLine($"OnPeerConnected(): Peer connected to Server: {peer.Address}");
+        Globals.Log($"OnPeerConnected(): Peer connected to Server: {peer.Address}");
     }
 
     private void OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod)
     {
         var jsonString = reader.GetString();
-        Console.WriteLine("Server.OnNetworkReceive(): " + jsonString);
+        Globals.Log("Server.OnNetworkReceive(): " + jsonString);
         reader.Recycle(); // Free up the data reader
         PlayerAction? action =
                 JsonSerializer.Deserialize<PlayerAction>(jsonString);
@@ -415,18 +415,18 @@ public class Server
         if ("plan".Equals(gameState.CurrentPhase))
         {
             executeMethod?.Invoke(subClassAction, parameters);
-            Console.WriteLine("OnNetworkReceive(): invoked method for " + subClassAction.GetType());
+            Globals.Log("OnNetworkReceive(): invoked method for " + subClassAction.GetType());
         }
         else
         {
-            Console.WriteLine("OnNetworkReceive(): Skipping action, currentPhase=" + gameState.CurrentPhase);
+            Globals.Log("OnNetworkReceive(): Skipping action, currentPhase=" + gameState.CurrentPhase);
         }
 
     }
 
     private void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
     {
-        Console.WriteLine($"OnPeerDisconnected(): Peer disconnected: {peer.Address} from Server. Reason: {disconnectInfo.Reason}");
+        Globals.Log($"OnPeerDisconnected(): Peer disconnected: {peer.Address} from Server. Reason: {disconnectInfo.Reason}");
         if (PeerToPlayerName.ContainsKey(peer))
         {
             string playerName = PeerToPlayerName[peer];
@@ -435,7 +435,7 @@ public class Server
             Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
             faction.Status = "disconnected";
 
-            Console.WriteLine("Player " + playerName + " disconnected");
+            Globals.Log("Player " + playerName + " disconnected");
             PeerToPlayerName.Remove(peer);
             PlayerNameToPeer.Remove(playerName);
             gameState.Players.RemovePlayer(gameState, playerName);

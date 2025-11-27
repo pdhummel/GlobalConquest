@@ -12,7 +12,7 @@ public class RefreshGameStateAction : PlayerAction
 
     public new void deserializeAndExecute(NetPeer peer, Object serverObj)
     {
-        //Console.WriteLine("RefreshGameStateAction.deserializeAndExecute()");
+        //Globals.Log("deserializeAndExecute()");
         if (MessageAsJson != null)
         {
             RefreshGameStateAction? action =
@@ -23,7 +23,7 @@ public class RefreshGameStateAction : PlayerAction
     
     public new void execute(NetPeer peer, Object serverObj)
     {
-        Console.WriteLine("RefreshGameStateAction.execute()");
+        Globals.Log("execute()");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         gameState.updateTicks();

@@ -49,13 +49,18 @@ public class PlaneUnitType : UnitType
         AirplaneMissionOutcome outcome = new AirplaneMissionOutcome();
         if (isShortRangeMission(gameState, planeHex, targetMapHex))
         {
-            Console.WriteLine("determineMissionOutcome(): short range mission");
+            Globals.Log("determineMissionOutcome(): short range mission");
             outcome.IsShortRangeMission = true;
         }
         else if (isMediumRangeMission(gameState, planeHex, targetMapHex))
         {
-            Console.WriteLine("determineMissionOutcome(): medium range mission");
+            Globals.Log("determineMissionOutcome(): medium range mission");
             outcome.IsMediumRangeMission = true;
+        }
+        else if (isLongRangeMission(gameState, planeHex, targetMapHex))
+        {
+            Globals.Log("determineMissionOutcome(): long range mission");
+            outcome.IsLongRangeMission = true;
         }
         else
         {
@@ -96,6 +101,11 @@ public class PlaneUnitType : UnitType
         else if (outcome.IsMediumRangeMission)
         {
             multiplier = 2;
+            plane.TurnsUnavailable += 2;
+        }
+        else if (outcome.IsLongRangeMission)
+        {
+            // Only applies for Transfer missions.
             plane.TurnsUnavailable += 2;
         }
         resolveMission(outcome, gameState, plane, isDogfight, isEnemyGrounded, enemyPlane, multiplier);
@@ -252,7 +262,7 @@ public class PlaneUnitType : UnitType
                 MapHex enemyPlaneHex = getPlaneMapHex(map, enemyPlane);
                 enemyPlane.X = enemyPlaneHex.X;
                 enemyPlane.Y = enemyPlaneHex.Y;
-                Console.WriteLine("getEnemyPlaneForDogfight(): enemyPlane=" + enemyPlaneHex.X + "," + enemyPlaneHex.Y);
+                Globals.Log("getEnemyPlaneForDogfight(): enemyPlane=" + enemyPlaneHex.X + "," + enemyPlaneHex.Y);
             }
         return enemyPlane;
     }
@@ -281,7 +291,7 @@ public class PlaneUnitType : UnitType
             MapHex enemyPlaneHex = getPlaneMapHex(map, enemyPlane);
             enemyPlane.X = enemyPlaneHex.X;
             enemyPlane.Y = enemyPlaneHex.Y;
-            Console.WriteLine("getNearbyEnemyPlane(): enemyPlane=" + enemyPlaneHex.X + "," + enemyPlaneHex.Y);
+            Globals.Log("getNearbyEnemyPlane(): enemyPlane=" + enemyPlaneHex.X + "," + enemyPlaneHex.Y);
         }
         return enemyPlane;
     }
@@ -309,6 +319,22 @@ public class PlaneUnitType : UnitType
             isMediumRange = true;
 
         return isMediumRange;
+    }
+
+    bool isLongRangeMission(GameState gameState, MapHex sourceMapHex, MapHex targetMapHex)
+    {
+        Map map = gameState.Map;
+        bool isLongRange = false;
+
+        PlaneUnitType planeType = new PlaneUnitType();
+        //HashSet<MapHex> longRangeHexes = map.getMapHexesInRange(sourceMapHex, planeType.longRangeHexes);
+        //if (longRangeHexes.Contains(targetMapHex))
+        //    isLongRange = true;
+        float distance = map.calculateDistance(sourceMapHex, targetMapHex);
+        if (distance < planeType.longRangeHexes)
+            isLongRange = true;
+
+        return isLongRange;
     }
 
     public MapHex getPlaneMapHex(Map map, Unit plane)
@@ -359,7 +385,7 @@ public class PlaneUnitType : UnitType
             }
             else
             {
-                Console.WriteLine("getParentUnit(): parentUnitId not found " + plane.ParentUnitId);
+                Globals.Log("getParentUnit(): parentUnitId not found " + plane.ParentUnitId);
             }
         }
         return parentUnit;

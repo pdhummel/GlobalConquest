@@ -45,7 +45,7 @@ public class Client
         string host = joinGameValues.HostIp;
         int port = joinGameValues.Port;
         serverPeer = netmanagerclient.Connect(host, port, key); // Use the same key as the server
-        Console.WriteLine($"Connect(): Client attempting to connect to {host}:{port}");
+        Globals.Log($"Connect(): Client attempting to connect to {host}:{port}");
         // Create and start the new thread for the client's polling loop
         clientThread = new Thread(new ThreadStart(ClientLoop))
         {
@@ -63,7 +63,7 @@ public class Client
 
     private void ClientLoop()
     {
-        Console.WriteLine("ClientLoop(): Client polling");
+        Globals.Log("ClientLoop(): Client polling");
         // This is the client's polling loop, which runs continuously on its own thread.
         while (true)
         {
@@ -75,7 +75,7 @@ public class Client
     public void Stop()
     {
         netmanagerclient?.Stop();
-        Console.WriteLine("Stop(): Client stopped.");
+        Globals.Log("Stop(): Client stopped.");
     }
 
     public void SendData(string peerIdentifier, string data)
@@ -83,7 +83,7 @@ public class Client
         NetDataWriter writer = new();
         writer.Put(data); // Add your data
         serverPeer?.Send(writer, DeliveryMethod.ReliableOrdered);
-        Console.WriteLine("Client.SendData(): " + peerIdentifier + " Client sent data " + data);
+        Globals.Log("Client.SendData(): " + peerIdentifier + " Client sent data " + data);
     }
 
     public void SendAction(string peerIdentifier, PlayerAction action)
@@ -107,7 +107,7 @@ public class Client
     // --- LiteNetLib Event Handlers ---
     private void OnPeerConnected(NetPeer peer)
     {
-        Console.WriteLine($"OnPeerConnected(): Client peer connected: {peer.Address}");
+        Globals.Log($"OnPeerConnected(): Client peer connected: {peer.Address}");
         JoinGameAction joinGameAction = new JoinGameAction();
         joinGameAction.JoinGameValues = JoinGameValues;
         joinGameAction.ClassType = "GlobalConquest.Actions.JoinGameAction";
@@ -146,7 +146,6 @@ public class Client
             else if (gameEvent.GameState != null && gameEvent.GameState.MapHex != null)
                 GameState.Map.Hexes[gameEvent.GameState.MapHex.Y, gameEvent.GameState.MapHex.X] = gameEvent.GameState.MapHex;
             GameState = newGameState;
-
         }
 
         if ("plan".Equals(GameState.CurrentPhase) && GameState.PlayerPlanningReady.ContainsKey(ClientIdentifier) && GameState.PlayerPlanningReady[ClientIdentifier] == false)
@@ -165,7 +164,7 @@ public class Client
     {
         if (gameEvent == null || ! gameEvent.IsGamePlayEvent())
             return;
-        Console.WriteLine("handleGamePlayEvent(): gameEvent=" + gameEvent.EventType);
+        Globals.Log("handleGamePlayEvent(): gameEvent=" + gameEvent.EventType);
         gameEvent.Ticks = DateTime.Now.Ticks;
         gameEvent.Turn = GameState.CurrentTurn;
         gameEvent.Round = GameState.CurrentRound;
@@ -174,12 +173,12 @@ public class Client
 
     private void updateMap(GameEvent gameEvent)
     {
-        Console.WriteLine("updateMap(): gameEvent mapHexBuffer=" + gameEvent.MapHexBuffer.Count);
+        Globals.Log("updateMap(): gameEvent mapHexBuffer=" + gameEvent.MapHexBuffer.Count);
         if (GameState != null)
         {
             if (GameState.Map == null)
             {
-                Console.WriteLine("updateMap(): new Map");
+                Globals.Log("updateMap(): new Map");
                 GameState.Map = new Map();
                 Map map = GameState.Map;
                 GameSettings gameSettings = GameState.GameSettings;
@@ -198,7 +197,7 @@ public class Client
                 {
                     if (GameState.Map.Hexes[liY, liX] == null)
                     {
-                        //Console.WriteLine("OnNetworkReceive(): new MapHex");
+                        //Globals.Log("OnNetworkReceive(): new MapHex");
                         MapHex mapHex = new MapHex();
                         mapHex.Y = liY;
                         mapHex.X = liX;
@@ -211,12 +210,12 @@ public class Client
 
             if (gameEvent.MapHex != null)
             {
-                Console.WriteLine("updateMap(): sync mapHex");
+                Globals.Log("updateMap(): sync mapHex");
                 GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X] = gameEvent.MapHex;
             }
             if (gameEvent.MapHexBuffer != null)
             {
-                Console.WriteLine("updateMap(): sync mapHexBuffer, IsLastMapHexBufferUpdate=" + gameEvent.IsLastMapHexBufferUpdate);
+                Globals.Log("updateMap(): sync mapHexBuffer, IsLastMapHexBufferUpdate=" + gameEvent.IsLastMapHexBufferUpdate);
                 foreach (MapHex mapHex in gameEvent.MapHexBuffer)
                 {
                     GameState.Map.Hexes[mapHex.Y, mapHex.X] = mapHex;
@@ -225,7 +224,7 @@ public class Client
                 if (!isLoadContentComplete && gameEvent.IsLastMapHexBufferUpdate)
                 {
                     GameState.Map.IsMapReady = true;
-                    Console.WriteLine("updateMap(): Loading map content into client hexMapEngineAdapter");
+                    Globals.Log("updateMap(): Loading map content into client hexMapEngineAdapter");
                     GlobalConquestGame?.HexMapLoadContent();
                     isLoadContentComplete = true;
                 }
@@ -237,7 +236,7 @@ public class Client
 
     private void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
     {
-        Console.WriteLine($"OnPeerDisconnected(): Client peer disconnected: {peer.Address}. Reason: {disconnectInfo.Reason}");
+        Globals.Log($"OnPeerDisconnected(): Client peer disconnected: {peer.Address}. Reason: {disconnectInfo.Reason}");
         GameState.CurrentPhase = "disconnected";
         Thread localThread = new Thread(new ThreadStart(ReConnect))
         {
@@ -255,7 +254,7 @@ public class Client
         {
             if ("disconnected".Equals(GameState.CurrentPhase))
             {
-                Console.WriteLine("ReConnect(): retry");
+                Globals.Log("ReConnect(): retry");
                 Connect(JoinGameValues, "GlobalConquest");
                 Thread.Sleep(300);
             }
@@ -264,7 +263,7 @@ public class Client
                 break;
             }
         }
-        Console.WriteLine("ReConnect(): exit");
+        Globals.Log("ReConnect(): exit");
     }
 
 }

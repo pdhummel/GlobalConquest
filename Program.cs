@@ -1,6 +1,13 @@
 ﻿using GlobalConquest;
 
 var game = new GlobalConquestGame();
-Console.WriteLine("Program starting");
+Globals.Log("Game starting");
 game.Run();
-Console.WriteLine("Program exited");
+//try
+//{
+    //game.Run();
+//}
+//catch(Exception eIgnore)
+//{
+//}
+Globals.Log("Game exited");
