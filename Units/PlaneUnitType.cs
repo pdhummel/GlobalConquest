@@ -205,18 +205,15 @@ public class PlaneUnitType : UnitType
         return outcome;
     }
 
-    void handlePlaneShotDown(GameState gameState, Unit plane)
+    public void handlePlaneShotDown(GameState gameState, Unit plane)
     {
         Map map = gameState.Map;
         MapHex planeHex = map.Hexes[plane.Y, plane.X];
         plane.StrengthPoints = 0;
-        if (plane.ParentUnitId != null)
+        Unit parentUnit = getParentUnit(map, plane);
+        if (parentUnit != null)
         {
-            if (map.UnitIdToUnit.ContainsKey(plane.ParentUnitId))
-            {
-                Unit parentUnit = map.UnitIdToUnit[plane.ParentUnitId];
-                parentUnit.Airplane = null;
-            }
+            parentUnit.Airplane = null;
             plane.ParentUnitId = null;
         }
         else if (planeHex.Airplane != null)

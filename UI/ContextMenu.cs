@@ -374,6 +374,18 @@ public class ContextMenu
         actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, bombMenuItem.Id);
         itemIndex += 1;
 
+        var kamikazeMenuItem = new MenuItem();
+        kamikazeMenuItem.Id = "ContextMenu.verticalMenu.kamikazeMenuItem";
+        kamikazeMenuItem.Text = "Kamikaze";
+        kamikazeMenuItem.Selected += (s, a) =>
+        {
+            kamikazeMenuItemSelected();
+        };
+        verticalMenu.Items.Add(kamikazeMenuItem);
+        actionMapper.registerControlMethod(kamikazeMenuItem.Id, this, "kamikazeMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, kamikazeMenuItem.Id);
+        itemIndex += 1;
+
         var refreshMapHexMenuItem = new MenuItem();
         refreshMapHexMenuItem.Id = "ContextMenu.verticalMenu.refreshMapHexMenuItem";
         refreshMapHexMenuItem.Text = "Refresh";
@@ -582,6 +594,11 @@ public class ContextMenu
     public void bombMenuItemSelected()
     {
         gcGame.BombMode = true;
+        HideContextMenu();
+    }
+    public void kamikazeMenuItemSelected()
+    {
+        gcGame.KamikazeMode = true;
         HideContextMenu();
     }
 

@@ -50,6 +50,7 @@ public class GlobalConquestGame : Game
     public bool MoveMode { get; set; } = false;
     public bool ReconMode { get; set; } = false;
     public bool AirstrikeMode { get; set; } = false;
+    public bool KamikazeMode { get; set; } = false;
     public bool TransferMode { get; set; } = false;
     public bool BombMode { get; set; } = false;
     public bool PursueMode { get; set; } = false;
@@ -325,7 +326,9 @@ public class GlobalConquestGame : Game
                 MainGameScreen.HideContextMenu();
                 DrawLine(hexPixelVector);
             }
-            else if ((ReconMode  || AirstrikeMode || TransferMode || BombMode ) && lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
+            else if ((ReconMode  || AirstrikeMode || TransferMode || BombMode || 
+                      KamikazeMode) && 
+                      lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
             {
                 Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
                 MainGameScreen.HideContextMenu();
@@ -634,7 +637,7 @@ public class GlobalConquestGame : Game
                 sendMoveAction(previousSelectedHex, previousSelectedUnit);
             }
             if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode &&
-                 !BombMode && lastSelectedHex != null)
+                 !BombMode && !KamikazeMode && lastSelectedHex != null)
             {
                 Unit unit = lastSelectedHex.getUnit();
                 lastSelectedUnit = unit;
@@ -681,7 +684,7 @@ public class GlobalConquestGame : Game
                 }
                 PursueMode = false;
                 if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode &&
-                    !BombMode && lastSelectedHex != null)
+                    !BombMode && !KamikazeMode && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
@@ -726,7 +729,30 @@ public class GlobalConquestGame : Game
                 Globals.Log("handleLeftClick(): airstrike at " + action.StrikeX + "," + action.StrikeY);
                 AirstrikeMode = false;
                 if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode &&
-                    lastSelectedHex != null)
+                    !BombMode && !KamikazeMode && lastSelectedHex != null)
+                {
+                    Unit unit = lastSelectedHex.getUnit();
+                    lastSelectedUnit = unit;
+                }
+            }
+            else if (KamikazeMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+                     lastSelectedUnit != null && lastSelectedUnit.Id != null && lastSelectedHex != null)
+            {
+                KamikazeAction action = new KamikazeAction();
+                action.ClassType = "GlobalConquest.Actions.KamikazeAction";
+                action.ClientIdentifier = Client.ClientIdentifier;
+                Unit plane = null;
+                if (previousSelectedUnit != null && previousSelectedUnit.Airplane != null)
+                    action.Plane = previousSelectedUnit.Airplane;
+                else if (previousSelectedHex  != null && previousSelectedHex.Airplane != null)
+                    action.Plane = previousSelectedHex.Airplane;
+                action.StrikeX = lastSelectedHex.X;
+                action.StrikeY = lastSelectedHex.Y;
+                Client.SendAction(Client.ClientIdentifier, action);
+                Globals.Log("handleLeftClick(): kamikaze strike at " + action.StrikeX + "," + action.StrikeY);
+                AirstrikeMode = false;
+                if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode &&
+                    !BombMode && !KamikazeMode && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
@@ -808,6 +834,7 @@ public class GlobalConquestGame : Game
             ReconMode = false;
             AirstrikeMode = false;
             TransferMode = false;
+            KamikazeMode = false;
             BombMode = false;
             Vector2 selectedHexVector = handleClickMouseOnMap();
             Player player = identifySelf();
@@ -852,7 +879,8 @@ public class GlobalConquestGame : Game
             selectedHexVector.X < Client.GameState.GameSettings.Width && selectedHexVector.Y < Client.GameState.GameSettings.Height)
         {
             lastSelectedHex = Client?.GameState.Map.Hexes[(int)selectedHexVector.Y, (int)selectedHexVector.X];
-            if (!MoveMode && !PursueMode && !ReconMode && !AirstrikeMode && !TransferMode && !BombMode)
+            if (!MoveMode && !PursueMode && !ReconMode && !AirstrikeMode && !TransferMode && 
+                !BombMode && !KamikazeMode)
                 lastSelectedUnit = lastSelectedHex.getUnit();
         }
         return selectedHexVector;

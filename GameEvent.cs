@@ -68,6 +68,7 @@ public class GameEvent
             "enemyUnitDestroyed",   // EnemyColor UnitType destroyed at MapHex
             "airplaneMissionSuceeded",
             "airplaneStrikeSuceeded",
+            "airplaneBombingSuceeded",
             "airplaneMissionFailed",
             "playerLostGame",       // Game Lost           
             "enemyPlayerLostGame",  // EnemyColor Lost Game
@@ -348,5 +349,11 @@ public class GameEvent
         //Game.addGamePlayEvent(this);
     }
 
+    public void airplaneBombingSuceededHandler()
+    {
+        EventString = "Bombing suceeded for " + GetUnitType() + " at " + GetLocation() + ".";
+        Game.playSoundEffect("enemyUnitDestroyed");
+        //Game.addGamePlayEvent(this);
+    }
 
 }

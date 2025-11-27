@@ -3,7 +3,7 @@ using GlobalConquest.Units;
 using LiteNetLib;
 namespace GlobalConquest.Actions;
 
-public class AirstrikeAction : PlayerAction
+public class KamikazeAction : PlayerAction
 {
     public Unit Plane {get; set;}
     public int StrikeX { get; set; }
@@ -13,8 +13,8 @@ public class AirstrikeAction : PlayerAction
     {
         if (MessageAsJson != null)
         {
-            AirstrikeAction? action =
-                    JsonSerializer.Deserialize<AirstrikeAction>(this.MessageAsJson);
+            KamikazeAction? action =
+                    JsonSerializer.Deserialize<KamikazeAction>(this.MessageAsJson);
             action?.execute(peer, serverObj);
         }
     }
@@ -60,7 +60,13 @@ public class AirstrikeAction : PlayerAction
                 Globals.Log("execute(): plane is unavailable");
                 return;
             }
-
+            MapHex targetMapHex = map.Hexes[StrikeY, StrikeX];
+            Unit targetUnit = targetMapHex.getUnit();
+            if (targetUnit == null)
+            {
+                Globals.Log("execute(): A valid target was not selected");
+                return;                
+            }
             AirplaneMissionOutcome outcome = planeType.determineMissionOutcome(gameState, existingPlane, mapHex);
             if (!outcome.IsShortRangeMission && !outcome.IsMediumRangeMission)
             {
@@ -75,13 +81,12 @@ public class AirstrikeAction : PlayerAction
             {
                 planeHex.Airplane = outcome.Plane;
             }
-            Globals.Log("execute(): turnsUnavailable=" + existingPlane.TurnsUnavailable);
+
+            //Globals.Log("execute(): turnsUnavailable=" + existingPlane.TurnsUnavailable);
             //Globals.Log("execute(): outcome.turnsUnavailable=" + outcome.Plane.turnsUnavailable);
             if (outcome.IsMissionSuccessful)
             {
                 GameLogic gameLogic = new GameLogic();
-                MapHex targetMapHex = map.Hexes[StrikeY, StrikeX];
-                Unit targetUnit = targetMapHex.getUnit();
                 int factor = 1;
                 if (outcome.IsShortRangeMission)
                 {
@@ -127,6 +132,7 @@ public class AirstrikeAction : PlayerAction
                     {
                         damage = (50 / factor);
                     }
+                    damage = damage * 2;
                     targetUnit.StrengthPoints -= damage;
                     targetMapHex.setUnit(targetUnit);
                     if (targetUnit.StrengthPoints < 0)
@@ -152,11 +158,11 @@ public class AirstrikeAction : PlayerAction
                     }
                     server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
                     server.sendGameStateAndMapHex(targetMapHex.X, targetMapHex.Y);
-                    Globals.Log("execute(): airstrike attack complete, damage=" + damage);
-                    Globals.Log("execute(): airstrike attack complete, existing=" + existingPlane.X + "," + existingPlane.Y);
-                    Globals.Log("execute(): airstrike attack complete, target=" + targetMapHex.X + "," + targetMapHex.Y);
+                    Globals.Log("execute(): kamikaze attack complete, damage=" + damage);
+                    Globals.Log("execute(): kamikaze attack complete, existing=" + existingPlane.X + "," + existingPlane.Y);
+                    Globals.Log("execute(): kamikaze attack complete, target=" + targetMapHex.X + "," + targetMapHex.Y);
                 }
-                Globals.Log("execute(): airstrike complete");
+                Globals.Log("execute(): kamikaze complete");
             }
             else if (outcome.IsEnemyPlaneShotDown)
             {
@@ -188,7 +194,23 @@ public class AirstrikeAction : PlayerAction
                 server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
                 server.sendGamePlayEvent(Plane.Color, gameEvent);     
             }
-            Globals.Log("execute(): airstrike action complete");
+
+            // kamikaze always causes plane to die
+            if (!outcome.IsPlaneShotDown)
+            {
+                GameEvent gameEvent = new GameEvent("unitDestroyed");
+                gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
+                gameEvent.Unit = Plane;
+                gameEvent.EnemyColor = targetUnit.Color;
+                planeType.handlePlaneShotDown(gameState, existingPlane);
+                server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
+                server.sendGameStateAndMapHex(targetUnit.X, targetUnit.Y);
+                if (parentUnit != null)
+                    server.sendGameStateAndMapHex(parentUnit.X, parentUnit.Y);
+                server.sendGamePlayEvent(Plane.Color, gameEvent);
+            }
+
+            Globals.Log("execute(): kamikaze action complete");
         }
 
 

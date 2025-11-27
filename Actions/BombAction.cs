@@ -62,7 +62,7 @@ public class BombAction : PlayerAction
             if (outcome.IsMissionSuccessful)
             {
 
-                GameEvent gameEvent = new GameEvent("airplaneMissionSuceeded");
+                GameEvent gameEvent = new GameEvent("airplaneBombingSuceeded");
                 gameEvent.MapHex = targetMapHex;
                 gameEvent.Unit = existingPlane;
                 Faction faction = gameState.Factions.ColorToFaction[targetMapHex.Burb.Color];

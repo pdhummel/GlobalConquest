@@ -95,7 +95,7 @@ The game is being designed with known differences from the original.
     - [ ] Paradrop
     - [x] Bomb
     - [ ] Dogfight
-    - [ ] Kamikaze
+    - [x] Kamikaze
 - [ ] AI support for planes.
 
 ### Milestone 6
