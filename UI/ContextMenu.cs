@@ -362,6 +362,17 @@ public class ContextMenu
         actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, transferMenuItem.Id);
         itemIndex += 1;
 
+        var bombMenuItem = new MenuItem();
+        bombMenuItem.Id = "ContextMenu.verticalMenu.bombMenuItem";
+        bombMenuItem.Text = "Bomb";
+        bombMenuItem.Selected += (s, a) =>
+        {
+            bombMenuItemSelected();
+        };
+        verticalMenu.Items.Add(bombMenuItem);
+        actionMapper.registerControlMethod(bombMenuItem.Id, this, "bombMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, bombMenuItem.Id);
+        itemIndex += 1;
 
         var refreshMapHexMenuItem = new MenuItem();
         refreshMapHexMenuItem.Id = "ContextMenu.verticalMenu.refreshMapHexMenuItem";
@@ -566,6 +577,11 @@ public class ContextMenu
     public void transferMenuItemSelected()
     {
         gcGame.TransferMode = true;
+        HideContextMenu();
+    }
+    public void bombMenuItemSelected()
+    {
+        gcGame.BombMode = true;
         HideContextMenu();
     }
 

@@ -755,7 +755,7 @@ class HexMapEngineAdapter
                                 int piMapTileHexWidthInPixels,
                                 int piMapTileHexHeightInPixels)
     {
-        Microsoft.Xna.Framework.Graphics.Texture2D loTexture2DTile;
+        Texture2D loTexture2DTile;
         Map map = gcGame.Client.GameState.Map;
 
         if (poHexTile.texture2D != null)
@@ -772,6 +772,8 @@ class HexMapEngineAdapter
         Rectangle source = new Rectangle(0, 0, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels);
         Player player = identifySelf();
         bool visibility = map.Hexes[poHexTile.ROW_ID, poHexTile.COLUMN_ID].Visibility[player.FactionColor];
+        if (coSpriteBatch == null)
+            return;
         if (!visibility)
         {
             coSpriteBatch.Draw(
@@ -802,7 +804,8 @@ class HexMapEngineAdapter
 
 
         // update hex tile in array pixel positions on map board
-        coHexTileMap.Update_HexTileArrayPixelPositions(poHexTile, piCalculatedMapTileX, piCalculatedMapTileY);
+        if (coHexTileMap != null)
+            coHexTileMap.Update_HexTileArrayPixelPositions(poHexTile, piCalculatedMapTileX, piCalculatedMapTileY);
     }
 
 

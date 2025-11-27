@@ -91,13 +91,11 @@ The game is being designed with known differences from the original.
   - [ ] Airplane Actions
     - [x] Recon
     - [x] Strike
-    - [ ] Transfer
+    - [x] Transfer
     - [ ] Paradrop
-    - [ ] Bomb
+    - [x] Bomb
     - [ ] Dogfight
     - [ ] Kamikaze
-    - [ ] Home?
-    - [ ] Orbit?
 - [ ] AI support for planes.
 
 ### Milestone 6
