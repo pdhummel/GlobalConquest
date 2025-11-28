@@ -374,6 +374,18 @@ public class ContextMenu
         actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, bombMenuItem.Id);
         itemIndex += 1;
 
+        var dogfightMenuItem = new MenuItem();
+        dogfightMenuItem.Id = "ContextMenu.verticalMenu.dogfightMenuItem";
+        dogfightMenuItem.Text = "Dogfight";
+        dogfightMenuItem.Selected += (s, a) =>
+        {
+            dogfightMenuItemSelected();
+        };
+        verticalMenu.Items.Add(dogfightMenuItem);
+        actionMapper.registerControlMethod(dogfightMenuItem.Id, this, "dogfightMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, dogfightMenuItem.Id);
+        itemIndex += 1;
+
         var kamikazeMenuItem = new MenuItem();
         kamikazeMenuItem.Id = "ContextMenu.verticalMenu.kamikazeMenuItem";
         kamikazeMenuItem.Text = "Kamikaze";
@@ -599,6 +611,11 @@ public class ContextMenu
     public void kamikazeMenuItemSelected()
     {
         gcGame.KamikazeMode = true;
+        HideContextMenu();
+    }
+    public void dogfightMenuItemSelected()
+    {
+        gcGame.DogfightMode = true;
         HideContextMenu();
     }
 

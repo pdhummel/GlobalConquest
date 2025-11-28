@@ -211,19 +211,18 @@ public class PlaneUnitType : UnitType
         MapHex planeHex = map.Hexes[plane.Y, plane.X];
         plane.StrengthPoints = 0;
         Unit parentUnit = getParentUnit(map, plane);
+        plane.ParentUnitId = null;
         if (parentUnit != null)
         {
             parentUnit.Airplane = null;
-            plane.ParentUnitId = null;
         }
         else if (planeHex.Airplane != null)
         {
             planeHex.Airplane = null;
         }
-        
     }
 
-    Unit getEnemyPlaneForDogfight(GameState gameState, MapHex targetMapHex, string color)
+    public Unit getEnemyPlaneForDogfight(GameState gameState, MapHex targetMapHex, string color)
     {
         Map map = gameState.Map;
         HashSet<MapHex> dogFightHexes = map.getMapHexesInRange(targetMapHex, 1);
@@ -293,7 +292,7 @@ public class PlaneUnitType : UnitType
         return enemyPlane;
     }
 
-    bool isShortRangeMission(GameState gameState, MapHex sourceMapHex, MapHex targetMapHex)
+    public bool isShortRangeMission(GameState gameState, MapHex sourceMapHex, MapHex targetMapHex)
     {
         Map map = gameState.Map;
         bool isShortRange = false;
@@ -305,7 +304,7 @@ public class PlaneUnitType : UnitType
         return isShortRange;
     }
 
-    bool isMediumRangeMission(GameState gameState, MapHex sourceMapHex, MapHex targetMapHex)
+    public bool isMediumRangeMission(GameState gameState, MapHex sourceMapHex, MapHex targetMapHex)
     {
         Map map = gameState.Map;
         bool isMediumRange = false;

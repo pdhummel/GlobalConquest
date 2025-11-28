@@ -571,6 +571,7 @@ public class Map
                     mapHex.Burb.OwnerColor = color;
                     if (previousOwnerColor != null && !previousOwnerColor.Equals(color))
                     {
+                        mapHex.Airplane = null;
                         server.sendGameStateAndMapHex(mapHex.X, mapHex.Y);
                         GameEvent gameEvent = new GameEvent("burbCaptured");
                         gameEvent.EnemyColor = previousOwnerColor;
