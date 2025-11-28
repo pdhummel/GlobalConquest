@@ -32,7 +32,6 @@ public class DogfightAction : PlayerAction
         Map map = gameState.Map;
         if (StrikeX >= 0 && StrikeX < map.X && StrikeY >= 0 && StrikeY < map.Y)
         {
-            MapHex planeHex = map.Hexes[Plane.Y, Plane.X];
             MapHex mapHex = map.Hexes[StrikeY, StrikeX];
             PlaneUnitType planeType = new PlaneUnitType();
             Unit existingPlane = planeType.getExistingPlane(map, Plane);
@@ -41,6 +40,7 @@ public class DogfightAction : PlayerAction
                 Globals.Log("execute(): plane is unavailable");
                 return;
             }
+            MapHex planeHex = map.Hexes[existingPlane.Y, existingPlane.X];
             MapHex targetMapHex = map.Hexes[StrikeY, StrikeX];
             Unit targetUnit = targetMapHex.getUnit();
             Unit enemyPlane = null;
@@ -49,10 +49,18 @@ public class DogfightAction : PlayerAction
                 if ("plane".Equals(targetUnit.UnitType))
                     enemyPlane = targetUnit;
                 else if (targetUnit.Airplane != null)
-                    enemyPlane = targetUnit.Airplane;
+                    {
+                        enemyPlane = targetUnit.Airplane;
+                        enemyPlane.X = targetUnit.X;
+                        enemyPlane.Y = targetUnit.Y;
+                    }
             }
             else if (targetMapHex.Airplane != null)
+            {
                 enemyPlane = targetMapHex.Airplane;
+                enemyPlane.X = targetMapHex.X;
+                enemyPlane.Y = targetMapHex.Y;
+            }
             if (enemyPlane == null)
             {
                 enemyPlane = planeType.getEnemyPlaneForDogfight(gameState, targetMapHex, Plane.Color);
@@ -68,6 +76,8 @@ public class DogfightAction : PlayerAction
                 outcome.IsMediumRangeMission = true;
             if (!outcome.IsShortRangeMission && !outcome.IsMediumRangeMission)
             {
+                Globals.Log("execute(): planeHex=" + planeHex.X + "," + planeHex.Y);
+                Globals.Log("execute(): targetMapHex=" + targetMapHex.X + "," + targetMapHex.Y);
                 Globals.Log("execute(): target hex is not in range.");
                 return;
             }
@@ -148,7 +158,7 @@ public class DogfightAction : PlayerAction
                 server.sendGameStateAndMapHex(outcome.EnemyPlane.X, outcome.EnemyPlane.Y);
                 server.sendGamePlayEvent(Plane.Color, gameEvent);
             }
-            if (outcome.IsEnemyPlaneShotDown)
+            else if (outcome.IsEnemyPlaneShotDown)
             {
                 planeType.handlePlaneShotDown(gameState, enemyPlane);
                 GameEvent gameEvent = new GameEvent("enemyUnitDestroyed");
@@ -162,7 +172,14 @@ public class DogfightAction : PlayerAction
                 server.sendGamePlayEvent(outcome.EnemyPlane.Color, gameEvent);
 
             }
-            server.sendGameStateAndMapHex(outcome.EnemyPlane.X, outcome.EnemyPlane.Y);
+            else
+            {
+                GameEvent gameEvent = new GameEvent("airplaneMissionFailed");
+                gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
+                gameEvent.Unit = Plane;
+                server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
+                server.sendGamePlayEvent(Plane.Color, gameEvent);
+            }
             Globals.Log("execute(): dogfight action complete");
         }
 
