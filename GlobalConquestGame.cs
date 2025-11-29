@@ -202,9 +202,6 @@ public class GlobalConquestGame : Game
             hexMapEngineAdapter.LoadContent();
             miniMapHexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
             miniMapHexMapEngineAdapter.LoadContent();
-            hexMapEngineAdapter.updateMap();
-
-
             if (MainGameScreen != null && MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
             {
                 miniMapRenderTarget2D = new RenderTarget2D(
@@ -215,8 +212,10 @@ public class GlobalConquestGame : Game
                     SurfaceFormat.Color,
                     DepthFormat.None);
             }
+            updateMap();
         }
     }
+
 
     protected override void Update(GameTime gameTime)
     {
@@ -363,7 +362,8 @@ public class GlobalConquestGame : Game
 
             SpriteBatch miniMapSpriteBatch = new SpriteBatch(GraphicsDevice);
             miniMapSpriteBatch.Begin();
-            miniMapSpriteBatch.Draw(miniMapRenderTarget2D, miniMapRectangle, Color.White);
+            if (miniMapRenderTarget2D != null)
+                miniMapSpriteBatch.Draw(miniMapRenderTarget2D, miniMapRectangle, Color.White);
             miniMapSpriteBatch.End();
             GraphicsDevice.SetRenderTarget(null);
 

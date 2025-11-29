@@ -1228,16 +1228,6 @@ public class GameLogic
                 faction.Status = "ready";
             }
         }
-        foreach (string key in gameState.PlayerPlanningReady.Keys)
-        {
-            gameState.PlayerExecutionReady[key] = true;
-            if (gameState.Players.playerNameToPlayer.ContainsKey(key))
-            {
-                Player player = gameState.Players.playerNameToPlayer[key];
-                Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
-                faction.Status = "ready";
-            }
-        }
 
         server.sendGameState();
         Globals.Log("waitForExecution(): done waiting");

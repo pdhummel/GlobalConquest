@@ -219,6 +219,7 @@ class HexMapEngineAdapter
 
     public void updateMap()
     {
+        Globals.Log("updateMap(): enter");
         HexTileMapLoad loHexTileMapLoad = new HexMapEngine.Classes.HexTileMapLoad(hexHeight, hexWidth);
         Global.MYRAUI_DEFAULT_SPRITE_FONT = loHexTileMapLoad.Load_MyraUIDefaultSpriteFont(game);
         Texture2D[,] textures = new Texture2D[hexHeight, hexWidth];
@@ -232,6 +233,7 @@ class HexMapEngineAdapter
         }
         HexTile[,] hexTiles = loHexTileMapLoad.Load_MapHexTileArray(textures);
         Global.MAP_HEX_TILE_ARRAY = hexTiles;
+        Globals.Log("updateMap(): exit");
 
     }
 
@@ -385,17 +387,20 @@ class HexMapEngineAdapter
         float layerDepth = 0.5f;
         if (unitTypeId.Contains("plane"))
             layerDepth = 0.35f;
-        coSpriteBatch.Draw(
-                            units[unitTypeId],
-                            pixelVector,
-                            null,
-                            Color.White,
-                            0.0f,
-                            Vector2.Zero,
-                            new Vector2(1.0f, 1.0f),
-                            SpriteEffects.None,
-                            layerDepth  // higher number at bottom
-                            );
+        if (units.ContainsKey(unitTypeId))
+        {
+            coSpriteBatch.Draw(
+                                units[unitTypeId],
+                                pixelVector,
+                                null,
+                                Color.White,
+                                0.0f,
+                                Vector2.Zero,
+                                new Vector2(1.0f, 1.0f),
+                                SpriteEffects.None,
+                                layerDepth  // higher number at bottom
+                                );
+        }
         if (gcGame.IsShowDestinations)
         {
             Player player = identifySelf();
@@ -593,6 +598,8 @@ class HexMapEngineAdapter
                                 );
             return;
         }
+        if (!burbs.ContainsKey(burbId))
+            return;
         coSpriteBatch.Draw(
                             burbs[burbId],
                             pixelVector,
@@ -772,7 +779,7 @@ class HexMapEngineAdapter
         Rectangle source = new Rectangle(0, 0, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels);
         Player player = identifySelf();
         bool visibility = map.Hexes[poHexTile.ROW_ID, poHexTile.COLUMN_ID].Visibility[player.FactionColor];
-        if (coSpriteBatch == null)
+        if (coSpriteBatch == null || !terrain.ContainsKey("unknown"))
             return;
         if (!visibility)
         {

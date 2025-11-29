@@ -228,8 +228,8 @@ public class Client
                     GlobalConquestGame?.HexMapLoadContent();
                     isLoadContentComplete = true;
                 }
-                else if (gameEvent.IsLastMapHexBufferUpdate)
-                    GlobalConquestGame?.HexMapLoadContent();
+                else if (isLoadContentComplete && gameEvent.IsLastMapHexBufferUpdate)
+                    GlobalConquestGame?.updateMap();
             }
         }
     }

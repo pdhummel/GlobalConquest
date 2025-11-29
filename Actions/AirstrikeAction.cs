@@ -19,14 +19,13 @@ public class AirstrikeAction : PlayerAction
         }
     }
 
-    public new void execute(NetPeer peer, Object serverObj)
+    public void execute(Server server)
     {
         Globals.Log("execute()");
         if (Plane == null)
         {
             return;
         }
-        Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         Map map = gameState.Map;
         if (StrikeX >= 0 && StrikeX < map.X && StrikeY >= 0 && StrikeY < map.Y)
@@ -190,7 +189,11 @@ public class AirstrikeAction : PlayerAction
             }
             Globals.Log("execute(): airstrike action complete");
         }
+    }
 
-
+    public new void execute(NetPeer peer, Object serverObj)
+    {
+        Server server = (Server)serverObj;
+        execute(server);
     }
 }

@@ -26,7 +26,6 @@ public class GameState
     public UnitTypes UnitTypes { get; set; }
     public Burbs Burbs { get; set; }
 
-    public Airplanes Airplanes { get; set; }
     public string VictoriousColor { get; set; } = "grey";
     public long Ticks { get; set; } = 0;
 
@@ -42,7 +41,6 @@ public class GameState
         UnitTypes = new UnitTypes();
         Players = new Players();
         Burbs = new Burbs();
-        Airplanes = new Airplanes();
     }
 
     public void updateTicks()

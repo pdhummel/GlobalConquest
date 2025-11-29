@@ -336,6 +336,11 @@ public class Ai
         int count = 0;
         foreach (AiUnit aiUnit in goal.ActualUnits)
         {
+            if ("plane".Equals(aiUnit.UnitType) && aiUnit.Unit != null)
+            {
+                flyMission(goal, aiUnit.Unit);
+                continue;
+            }
             UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
             if (aiUnit.Unit != null && aiUnit.LastMapHex != null && aiUnit.Unit.ActionQueue.Count > 0)
             {
@@ -419,6 +424,10 @@ public class Ai
 
     private void moveUnit(UnitType unitType, Unit unit, MapHex toHex)
     {
+        if ("plane".Equals(unitType.Name))
+        {
+            return;
+        }
         Dictionary<string, Node> graph = new Dictionary<string, Node>();
         Dictionary<string, Node> seaGraph = new Dictionary<string, Node>();
         Dictionary<string, Node> landGraph = new Dictionary<string, Node>();
@@ -478,6 +487,86 @@ public class Ai
             unitAction.TargetY = toHex.Y;
             unit.setUnitAction(unitAction);
             Globals.Log("moveUnit(): single unitAction used.");
+        }
+    }
+
+    private void flyMission(AiGoal goal, Unit plane)
+    {
+        // Look for desirable short range targets in order:
+        // Comcens
+        // armor units
+        // non-dug-in infantry units
+        // carriers
+        // transports
+        // subs
+        // battleships
+        // dug-in infantry
+        PlaneUnitType planeType = new PlaneUnitType();
+        MapHex planeHex = planeType.getPlaneMapHex(map, plane);
+        Unit priorityTargetUnit = null;
+        HashSet<MapHex> rangeHexes = map.getMapHexesInRange(planeHex, 4);
+        foreach(MapHex mapHex in rangeHexes)
+        {
+            Unit targetUnit = mapHex.getUnit();
+            if (targetUnit == null || targetUnit.Color.Equals(plane.Color))
+                continue;
+
+            if (priorityTargetUnit == null)
+            {
+                priorityTargetUnit = targetUnit;
+            }
+            if ("comcen".Equals(targetUnit.UnitType))
+            {
+                priorityTargetUnit = targetUnit;
+                break;
+            }
+            else if ("tank".Equals(targetUnit.UnitType) && 
+                     new HashSet<string>() {"infantry", "transport-infantry", "transport-tank", "sub", "battleship", "dug-in-infantry" }
+                     .Contains(targetUnit.UnitType) )
+            {
+                priorityTargetUnit = targetUnit;
+            }
+            else if ("infantry".Equals(targetUnit.UnitType) && 
+                     new HashSet<string>() {"transport-tank", "transport-infantry", "sub", "battleship", "dug-in-infantry" }
+                     .Contains(targetUnit.UnitType) )
+            {
+                priorityTargetUnit = targetUnit;
+            }
+            else if ("transport-tank".Equals(targetUnit.UnitType) && 
+                     new HashSet<string>() {"transport-infantry", "sub", "battleship", "dug-in-infantry" }
+                     .Contains(targetUnit.UnitType) )
+            {
+                priorityTargetUnit = targetUnit;
+            }
+            else if ("transport-infantry".Equals(targetUnit.UnitType) && 
+                     new HashSet<string>() {"sub", "battleship", "dug-in-infantry" }
+                     .Contains(targetUnit.UnitType) )
+            {
+                priorityTargetUnit = targetUnit;
+            }
+            else if ("sub".Equals(targetUnit.UnitType) && 
+                     new HashSet<string>() {"battleship", "dug-in-infantry" }
+                     .Contains(targetUnit.UnitType) )
+            {
+                priorityTargetUnit = targetUnit;
+            }
+            else if ("battleship".Equals(targetUnit.UnitType) && 
+                     new HashSet<string>() {"dug-in-infantry" }
+                     .Contains(targetUnit.UnitType) )
+            {
+                priorityTargetUnit = targetUnit;
+            }
+        }
+        if (priorityTargetUnit != null)
+        {
+            Globals.Log("flyMission(): priorityTargetUnit=" + priorityTargetUnit.UnitType + " at " + priorityTargetUnit.X + "," + priorityTargetUnit.Y);
+            AirstrikeAction action = new AirstrikeAction();
+            action.ClientIdentifier = Faction.Color;
+            action.ClassType = "GlobalConquest.Actions.AirstrikeAction";
+            action.Plane = plane;
+            action.StrikeX = priorityTargetUnit.X;
+            action.StrikeY = priorityTargetUnit.Y;
+            action.execute(Server);
         }
     }
 
@@ -561,7 +650,21 @@ public class Ai
     {
         UnitType unitType = gameState.UnitTypes.UnitTypeMap[unitTypeString];
         Unit unit = null;
-        if (burbHex.getUnit() == null && Faction.Money >= unitType.Cost)
+        if ("plane".Equals(unitTypeString) && burbHex.Airplane == null)
+        {
+            unit = new Unit();
+            unit.UnitType = unitTypeString;
+            unit.Color = Faction.Color;
+            unit.X = burbHex.X;
+            unit.Y = burbHex.Y;
+            if ("Omniscient".Equals(gameSettings.Visibility))
+                unit.setOmniVisibility();
+            else
+                unit.setBaseVisibility();
+            map.placeNewPlane(unit, burbHex);
+            Faction.Money -= unitType.Cost;            
+        }
+        else if (burbHex.getUnit() == null && Faction.Money >= unitType.Cost)
         {
             unit = new Unit();
             unit.UnitType = unitTypeString;
@@ -624,8 +727,22 @@ public class Ai
         {
             foreach (MapHex suburbHex in map.getSurroundingHexesList(burbHex))
             {
-                //if (mapHex.Burb != null && ("suburb".Equals(mapHex.Burb.Type) || "dock".Equals(mapHex.Burb.Type)) && mapHex.getUnit() == null)
-                if (suburbHex.Burb != null && ("suburb".Equals(suburbHex.Burb.Type)) && suburbHex.getUnit() == null)
+                if ("plane".Equals(unitTypeString) && suburbHex.Burb != null && ("suburb".Equals(suburbHex.Burb.Type)) && suburbHex.Airplane == null)
+                {
+                    unit = new Unit();
+                    unit.UnitType = unitTypeString;
+                    unit.Color = Faction.Color;
+                    unit.X = suburbHex.X;
+                    unit.Y = suburbHex.Y;
+                    if ("Omniscient".Equals(gameSettings.Visibility))
+                        unit.setOmniVisibility();
+                    else
+                        unit.setBaseVisibility();
+                    map.placeNewPlane(unit, suburbHex);
+                    Faction.Money -= unitType.Cost;
+                    
+                }
+                else if (suburbHex.Burb != null && ("suburb".Equals(suburbHex.Burb.Type)) && suburbHex.getUnit() == null)
                 {
                     unit = new Unit();
                     unit.UnitType = unitTypeString;
@@ -638,7 +755,6 @@ public class Ai
                         unit.setBaseVisibility();
                     map.placeNewUnit(unit, suburbHex);
                     Faction.Money -= unitType.Cost;
-
                 }
             }
         }
@@ -770,6 +886,10 @@ public class Ai
         infantry.InitialPosition = myMetroHex;
         infantry.UnitType = "infantry";
         defendMetro.DesiredUnits.Add(infantry);
+        AiUnit plane = new AiUnit();
+        plane.InitialPosition = myMetroHex;
+        plane.UnitType = "plane";
+        defendMetro.DesiredUnits.Add(plane);
         AiUnit battleship = new AiUnit();
         battleship.DistanceFromTarget = 4;
         battleship.UnitType = "battleship";
@@ -833,6 +953,10 @@ public class Ai
             infantry.InitialPosition = burbHex;
             infantry.UnitType = "infantry";
             defendGoal.DesiredUnits.Add(infantry);
+            AiUnit plane = new AiUnit();
+            plane.InitialPosition = burbHex;
+            plane.UnitType = "plane";
+            defendGoal.DesiredUnits.Add(plane);
             List<MapHex> neighbors = map.getSurroundingHexesList(burbHex);
             foreach (MapHex mapHex in neighbors)
             {

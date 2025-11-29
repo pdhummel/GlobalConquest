@@ -16,10 +16,10 @@ The planning and execution phase system make it similar to tactical combat games
 
 ## Screenshots
 ### Original 1992 DOS Game
-![Original Global ConquestScreenshot](Original-GC-1992-Screenshot.png "Original Global Conquest")
+![Original Global ConquestScreenshot](./docs/Original-GC-1992-Screenshot.png "Original Global Conquest")
 
 ### WIP for Globabl Conquest 2025
-![Global Conquest 2025 Screenshot](GC2025-Screenshot.png "Global Conquest 2025")
+![Global Conquest 2025 Screenshot](./docs/GC2025-Screenshot.png "Global Conquest 2025")
 
 ## Project Goals and Designed Deviations
 To recreate the hybrid, modified real-time experience of Global Conquest, so that is playable on modern computers over the internet.
@@ -94,7 +94,7 @@ The game is being designed with known differences from the original.
     - [x] Transfer
     - [ ] Paradrop
     - [x] Bomb
-    - [ ] Dogfight
+    - [x] Dogfight
     - [x] Kamikaze
 - [ ] AI support for planes.
 

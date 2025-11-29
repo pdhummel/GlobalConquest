@@ -21,7 +21,7 @@ public class ExecuteAction : PlayerAction
 
     public new void execute(NetPeer peer, Object serverObj)
     {
-        Globals.Log("execute()");
+        Globals.Log("execute(): enter");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         if (ClientIdentifier != null)
@@ -70,6 +70,7 @@ public class ExecuteAction : PlayerAction
 
         if (startExecution)
         {
+            Globals.Log("execute(): new thread for doExecutionPhase");
             GameLogic gameLogic = server.GameLogic;
             Thread executionPhaseThread = new Thread(new ThreadStart(gameLogic.doExecutionPhase))
             {
