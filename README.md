@@ -96,7 +96,7 @@ The game is being designed with known differences from the original.
     - [x] Bomb
     - [x] Dogfight
     - [x] Kamikaze
-- [ ] AI support for planes.
+- [x] AI support for planes.
 
 ### Milestone 6
 - [ ] Add validations for Host Game and Join Game screens.
