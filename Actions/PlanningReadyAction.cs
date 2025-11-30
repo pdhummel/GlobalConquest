@@ -33,6 +33,7 @@ public class PlanningReadyAction : PlayerAction
             server.sendGameState();
         }
         GameLogic gameLogic = server.GameLogic;
+        //gameLogic.checkPlayersReadyForTimedPlanning(gameState.PlayerPlanningReady);
         gameLogic.checkPlayersReadyForTimedPlanning();
     }
 

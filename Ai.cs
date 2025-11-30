@@ -149,7 +149,8 @@ public class Ai
 
         // Finally loop through goals and see what can be done.
         goalsToKeep.Clear();
-        foreach (AiGoal goal in goals)
+        List<AiGoal> goalsToProcess = new List<AiGoal>(goals);
+        foreach (AiGoal goal in goalsToProcess)
         {
             processGoal(goalsToKeep, goal);
         }
@@ -492,6 +493,12 @@ public class Ai
 
     private void flyMission(AiGoal goal, Unit plane)
     {
+        PlaneUnitType planeType = new PlaneUnitType();
+        Unit parentUnit = planeType.getParentUnit(map, plane);
+        if (parentUnit != null)
+            Globals.Log("flyMission(): goal=" + goal.Type + ", plane=" + parentUnit.X + "," + parentUnit.Y);
+        else
+            Globals.Log("flyMission(): goal=" + goal.Type + ", plane=" + plane.X + "," + plane.Y);
         // Look for desirable short range targets in order:
         // Comcens
         // armor units
@@ -501,7 +508,6 @@ public class Ai
         // subs
         // battleships
         // dug-in infantry
-        PlaneUnitType planeType = new PlaneUnitType();
         MapHex planeHex = planeType.getPlaneMapHex(map, plane);
         Unit priorityTargetUnit = null;
         HashSet<MapHex> rangeHexes = map.getMapHexesInRange(planeHex, 4);
@@ -945,6 +951,10 @@ public class Ai
             infantry.InitialPosition = burbHex;
             infantry.UnitType = "infantry";
             defendGoal.DesiredUnits.Add(infantry);
+            AiUnit plane = new AiUnit();
+            plane.InitialPosition = burbHex;
+            plane.UnitType = "plane";
+            defendGoal.DesiredUnits.Add(plane);
         }
         else if ("city".Equals(burbHex.Burb.Type) || "metro".Equals(burbHex.Burb.Type) || "capital".Equals(burbHex.Burb.Type))
         {
@@ -976,6 +986,7 @@ public class Ai
                 }
             }
         }
+        goals.Add(defendGoal);
     }
 
     private void createConquerBurbGoal(MapHex burbHex)

@@ -29,6 +29,7 @@ public class GameLogic
         GameState gameState = server.gameState;
         gameState.CurrentPhase = "execution";
 
+        Globals.Log("doExecutionPhase(): set factions executing");
         List<string> colors = ["amber", "ocher", "magenta", "cyan"];
         foreach (string color in colors)
         {
@@ -37,6 +38,7 @@ public class GameLogic
         }
         server.sendGameState();
 
+        Globals.Log("doExecutionPhase(): Ai plan turn");
         foreach (string color in colors)
         {
             bool isFactionAi = true;
@@ -60,6 +62,7 @@ public class GameLogic
 
         // Find all units with stuff to do.
         // Some units will be in combat without explicit orders.
+        Globals.Log("doExecutionPhase(): Search for planes and units. Update TurnsUnavailable and MoveSteps.");
         List<Unit> units = new List<Unit>();
         for (int liY = 0; liY < gameState.Map.Y; liY++)
         {
@@ -122,7 +125,7 @@ public class GameLogic
                 }
             }
         }
-
+        Globals.Log("doExecutionPhase(): process rounds");
         int rounds = server.gameState.GameSettings.NumberOfRoundsPerTurn;
         for (int i = 0; i < rounds; i++)
         {
@@ -133,10 +136,14 @@ public class GameLogic
                 return;
             Thread.Sleep(1000);
         }
+        Globals.Log("doExecutionPhase(): update burb ownership");
         gameState.Map.checkBurbsForOwner(server);
+        Globals.Log("doExecutionPhase(): calculate scores");
         calculateScore(server, units);
+        Globals.Log("doExecutionPhase(): check for game end");
         checkForEndOfGame(server);
 
+        Globals.Log("doExecutionPhase(): scan and then endTurn");
         if (!"gameOver".Equals(server.gameState.CurrentPhase))
         {
             foreach (Unit unit in units)
@@ -148,6 +155,7 @@ public class GameLogic
             endTurn(server);
         }
         server.sendGameState();
+        Globals.Log("doExecutionPhase(): exit");
     }
 
     public void endTurn(Server server)
@@ -155,20 +163,10 @@ public class GameLogic
         Globals.Log("endTurn(): enter");
         GameState gameState = server.gameState;
 
-        Globals.Log("endTurn(): Put players into pending status before planning for next turn.");
+        Globals.Log("endTurn(): Unset player execution ready flag.");
         foreach (string key in gameState.PlayerExecutionReady.Keys)
         {
             gameState.PlayerExecutionReady[key] = false;
-        }
-        foreach (string key in gameState.PlayerPlanningReady.Keys)
-        {
-            gameState.PlayerPlanningReady[key] = false;
-        }
-        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
-        foreach (string color in colors)
-        {
-            Faction faction = gameState.Factions.ColorToFaction[color];
-            faction.Status = "pending";
         }
 
         // Collect income
@@ -191,11 +189,26 @@ public class GameLogic
         saveGameState(server);
         Globals.Log("endTurn(): Bump game turn.");
         server.gameState.CurrentTurn += 1;
-        Globals.Log("endTurn(): Syncing game state and map for clients.");
-        server.sendGameState();
         // This is useful to make sure that clients are updated about things like TurnsUnavailable.
+        Globals.Log("endTurn(): Syncing map for clients.");
         server.syncAllMapHexes();
-        Globals.Log("doExecutionPhase(): exit");
+
+        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        foreach (string color in colors)
+        {
+            Faction faction = gameState.Factions.ColorToFaction[color];
+            faction.Status = "pending";
+        }
+        Globals.Log("endTurn(): Put players into pending status before planning for next turn.");
+        foreach (string key in gameState.PlayerPlanningReady.Keys)
+        {
+            gameState.PlayerPlanningReady[key] = false;
+        }
+
+        Globals.Log("endTurn(): Syncing game state for clients.");
+        server.sendGameState();
+
+        Globals.Log("endTurn(): exit");
     }
 
 
@@ -234,11 +247,12 @@ public class GameLogic
             faction.Money = gameState.GameSettings.StartingMoney;
             faction.Ai.initialize(server);
         }
+        Globals.Log("startGame(): exit");
     }
 
     public void processRound(int round, Server server, List<Unit> units)
     {
-        //Globals.Log("processRound(): round=" + round);
+        Globals.Log("processRound(): round=" + round);
         GameState gameState = server.gameState;
 
         foreach (Unit unit in units)
@@ -257,6 +271,7 @@ public class GameLogic
             digInInfantry(server, unit);
             server.sendGameStateAndMapHex(unit.X, unit.Y);
         }
+        Globals.Log("processRound(): done round=" + round);
     }
 
     private void decrementVisibility(Unit unit)
@@ -1149,6 +1164,7 @@ public class GameLogic
         return score;
     }
 
+    //public void checkPlayersReadyForTimedPlanning(Dictionary<string, bool> playerPlanningReady)
     public void checkPlayersReadyForTimedPlanning()
     {
         Globals.Log("checkPlayersReadyForTimedPlanning(): enter");
@@ -1158,9 +1174,10 @@ public class GameLogic
             GameState gameState = server.gameState;
             if ("Timed*".Equals(gameState.GameSettings.ExecutionMode))
             {
-                Globals.Log("execute(): Checking whether to start timer");
+                Globals.Log("checkPlayersReadyForTimedPlanning(): Checking whether to start timer");
                 int readyCount = 0;
                 bool startTimer = false;
+                Globals.Log("checkPlayersReadyForTimedPlanning(): PlayerPlanningReady=" + gameState.PlayerPlanningReady.Count);
                 foreach (string key in gameState.PlayerPlanningReady.Keys)
                 {
                     if (gameState.PlayerPlanningReady[key])
@@ -1168,10 +1185,12 @@ public class GameLogic
                         readyCount += 1;
                     }
                 }
+                Globals.Log("checkPlayersReadyForTimedPlanning(): readyCount=" + readyCount + ", NumberOfHumans=" + gameState.GameSettings.NumberOfHumans);
                 if (readyCount >= gameState.GameSettings.NumberOfHumans)
                 {
                     startTimer = true;
                 }
+                Globals.Log("checkPlayersReadyForTimedPlanning(): startTimer=" + startTimer + ", timerRunning=" + timerRunning);
                 if (startTimer && timerRunning == false)
                 {
                     startExecutionTimer();
