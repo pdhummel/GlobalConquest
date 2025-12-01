@@ -1,6 +1,5 @@
 using LiteNetLib;
 using LiteNetLib.Utils;
-using System.DirectoryServices.ActiveDirectory;
 using System.Reflection;
 using System.Text.Json;
 using GlobalConquest.Units;
@@ -126,7 +125,6 @@ public class Server
                 {
                     gameState.Map.Hexes[liY, liX].makeVisibleToAll();
                 }
-                //sendGameStateAndMapHex(liX, liY);
             }
         }
         sendGameState();

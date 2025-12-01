@@ -228,6 +228,8 @@ public class GameLogic
                     scanTerrain(server, unit);
                     if (unit.Airplane != null && unit.Airplane.TurnsUnavailable <= 0)
                     {
+                        unit.Airplane.X = unit.X;
+                        unit.Airplane.Y = unit.Y;
                         scanUnits(server, unit.Airplane);
                         scanTerrain(server, unit.Airplane);
                     }

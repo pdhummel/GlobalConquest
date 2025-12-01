@@ -190,6 +190,8 @@ This is best supported by mouse and keyboard. However, some effort has been made
 - [ ] Game controller cannot navigate nested menus -- i.e., File, View.
 - [ ] Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
 - [ ] Could not build planes from View Burb Menu option directly. (only via context menu)
+- [ ] Don't allow defeated players to Execute.
+- [x] With Fog-Of-War, players that join can see the host player setup.
 - [ ] Feature: Add north and south for cities.
 - [ ] Feature: Make towns have some random suburbs/docks.
 - [ ] Request: less noise on attack + add visual indicator on mini-map.
