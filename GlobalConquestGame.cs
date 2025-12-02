@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Color = Microsoft.Xna.Framework.Color;
 using System.Text.Json;
 using MonoGame.Extended;
@@ -12,14 +11,9 @@ using Vector2 = Microsoft.Xna.Framework.Vector2;
 using GlobalConquest.Units;
 using System.Runtime.InteropServices;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
-using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Point = Microsoft.Xna.Framework.Point;
-using System.Numerics;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Media;
-using System.IO;
 using GlobalConquest.HexMapEngine.Structures;
-using SharpDX.Direct2D1.Effects;
 
 
 namespace GlobalConquest;
@@ -55,6 +49,7 @@ public class GlobalConquestGame : Game
     public bool BombMode { get; set; } = false;
     public bool PursueMode { get; set; } = false;
     public bool DogfightMode {get; set;} = false;
+    public bool TargetUnitMode {get; set;} = false;
     public JoinGameValues MyJoinGameValues { get; set; }
 
     [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -326,6 +321,54 @@ public class GlobalConquestGame : Game
                 MainGameScreen.HideContextMenu();
                 DrawLine(hexPixelVector);
             }
+            else if (TargetUnitMode && lastSelectedUnit != null)
+            {
+                Color color = Color.Red;
+                Map map = Client.GameState.Map;
+                UnitType lastSelectedUnitType = Client.GameState.UnitTypes.UnitTypeMap[lastSelectedUnit.UnitType];
+                // TODO: figure out why Client.GameState.UnitTypes is not correctly populated.
+                if (lastSelectedUnitType.FiringRangeToDefender.Count == 0)
+                {
+                    Client.GameState.UnitTypes = new UnitTypes();
+                    lastSelectedUnitType = Client.GameState.UnitTypes.UnitTypeMap[lastSelectedUnit.UnitType];
+                }
+                if (mouseOverVector.X >= 0 && mouseOverVector.X < map.X && 
+                    mouseOverVector.Y >= 0 && mouseOverVector.Y < map.Y)
+                {
+                    MapHex unitHex = map.Hexes[lastSelectedUnit.Y, lastSelectedUnit.X];
+                    MapHex candidateTargetHex = map.Hexes[(int)mouseOverVector.Y, (int)mouseOverVector.X];
+                    float distance = map.calculateDistance(unitHex, candidateTargetHex);
+                    Unit candidateTarget = candidateTargetHex.getUnit();
+                    if (candidateTarget != null && !candidateTarget.Color.Equals(lastSelectedUnit.Color) && 
+                        lastSelectedUnitType.FiringRangeToDefender.ContainsKey(candidateTarget.UnitType))
+                    {
+                        if (candidateTarget != null && !lastSelectedUnit.Color.Equals(candidateTarget.Color) &&
+                            Math.Round(distance) <= lastSelectedUnitType.FiringRangeToDefender[candidateTarget.UnitType])
+                        {
+                            //Globals.Log("Draw(): candidateTarget=" + candidateTarget.UnitType + 
+                            //  ", lastSelectedUnit=" + lastSelectedUnit.UnitType + 
+                            //  ", distance=" + distance);
+                            color = Color.Yellow;
+                        }
+                    }
+                    else
+                    {
+                        if (candidateTarget != null)
+                        {
+                            //Globals.Log("Draw(): candidateTarget=" + candidateTarget.UnitType + 
+                            //  ", lastSelectedUnit=" + lastSelectedUnit.UnitType + 
+                            //  ", distance=" + distance);
+                            //if (!lastSelectedUnitType.FiringRangeToDefender.ContainsKey(candidateTarget.UnitType))
+                            //    Globals.Log("Draw(): missing FiringRangeToDefender=" + candidateTarget.UnitType + " " + 
+                            //    lastSelectedUnitType.FiringRangeToDefender.Count);
+                        }
+                    }
+                }
+                // TODO: change color of line of target is in range
+                Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
+                MainGameScreen.HideContextMenu();
+                DrawLine(hexPixelVector, color);
+            }
             else if ((ReconMode  || AirstrikeMode || TransferMode || BombMode || 
                       KamikazeMode || DogfightMode) && 
                       lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
@@ -476,6 +519,10 @@ public class GlobalConquestGame : Game
 
     private void DrawLine(Vector2 hexPixelOrigin)
     {
+        DrawLine(hexPixelOrigin, Color.Red);
+    }
+    private void DrawLine(Vector2 hexPixelOrigin, Color color)
+    {
         Point startPoint = new Point((int)hexPixelOrigin.X, (int)hexPixelOrigin.Y);
         Point resultingPoint = GameControl.currentMouseState.Position - startPoint;
         Vector2 direction = new Vector2(resultingPoint.X, resultingPoint.Y);
@@ -485,7 +532,7 @@ public class GlobalConquestGame : Game
             drawPixel,
             new Vector2(startPoint.X, startPoint.Y),
             null,
-            Color.Red, // Color of the line
+            color, // Color of the line
             angle,
             Vector2.Zero, // Origin for rotation (top-left of the 1x1 pixel)
             new Vector2(distance, 1), // Scale: x-axis for length, y-axis for thickness
@@ -655,7 +702,7 @@ public class GlobalConquestGame : Game
                 sendMoveAction(previousSelectedHex, previousSelectedUnit);
             }
             if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode &&
-                 !BombMode && !KamikazeMode && !DogfightMode && lastSelectedHex != null)
+                 !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
             {
                 Unit unit = lastSelectedHex.getUnit();
                 lastSelectedUnit = unit;
@@ -707,7 +754,7 @@ public class GlobalConquestGame : Game
                 }
                 PursueMode = false;
                 if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode &&
-                    !BombMode && !KamikazeMode && !DogfightMode && lastSelectedHex != null)
+                    !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
@@ -728,8 +775,8 @@ public class GlobalConquestGame : Game
                 Client.SendAction(Client.ClientIdentifier, action);
                 Globals.Log("handleLeftClick(): recon at " + action.ReconX + "," + action.ReconY);
                 ReconMode = false;
-                if (!PursueMode && !MoveMode && !ReconMode && !TransferMode &&
-                     !BombMode && lastSelectedHex != null)
+                if (!PursueMode && !MoveMode && !ReconMode && !TransferMode && !AirstrikeMode &&
+                     !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
@@ -752,7 +799,27 @@ public class GlobalConquestGame : Game
                 Globals.Log("handleLeftClick(): airstrike at " + action.StrikeX + "," + action.StrikeY);
                 AirstrikeMode = false;
                 if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode &&
-                    !BombMode && !KamikazeMode && !DogfightMode && lastSelectedHex != null)
+                    !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
+                {
+                    Unit unit = lastSelectedHex.getUnit();
+                    lastSelectedUnit = unit;
+                }
+            }
+            else if (TargetUnitMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+                     lastSelectedUnit != null && lastSelectedUnit.Id != null && lastSelectedHex != null)
+            {
+                TargetUnitAction action = new TargetUnitAction();
+                action.ClassType = "GlobalConquest.Actions.TargetUnitAction";
+                action.ClientIdentifier = Client.ClientIdentifier;
+                if (previousSelectedUnit != null)
+                    action.Unit = previousSelectedUnit;
+                action.TargetX = lastSelectedHex.X;
+                action.TargetY = lastSelectedHex.Y;
+                Client.SendAction(Client.ClientIdentifier, action);
+                Globals.Log("handleLeftClick(): target unit at " + action.TargetX + "," + action.TargetY);
+                TargetUnitMode = false;
+                if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode &&
+                    !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
@@ -775,7 +842,7 @@ public class GlobalConquestGame : Game
                 Globals.Log("handleLeftClick(): kamikaze strike at " + action.StrikeX + "," + action.StrikeY);
                 KamikazeMode = false;
                 if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode &&
-                    !BombMode && !KamikazeMode && !DogfightMode && lastSelectedHex != null)
+                    !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
@@ -798,7 +865,7 @@ public class GlobalConquestGame : Game
                 Globals.Log("handleLeftClick(): dogfight near " + action.StrikeX + "," + action.StrikeY);
                 DogfightMode = false;
                 if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode &&
-                    !BombMode && !KamikazeMode && !DogfightMode && lastSelectedHex != null)
+                    !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
@@ -824,8 +891,8 @@ public class GlobalConquestGame : Game
                     Globals.Log("handleLeftClick(): transfer at " + action.DestinationX + "," + action.DestinationY);
                 }
                 TransferMode = false;
-                if (!PursueMode && !MoveMode && !ReconMode && !TransferMode &&
-                     !BombMode && !DogfightMode && lastSelectedHex != null)
+                if (!PursueMode && !MoveMode && !ReconMode && !TransferMode && !AirstrikeMode &&
+                     !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
@@ -851,8 +918,8 @@ public class GlobalConquestGame : Game
                     Globals.Log("handleLeftClick(): bombing at " + action.BombX + "," + action.BombY);
                 }
                 BombMode = false;
-                if (!PursueMode && !MoveMode && !ReconMode && !TransferMode &&
-                     !BombMode && !DogfightMode && lastSelectedHex != null)
+                if (!PursueMode && !MoveMode && !ReconMode && !TransferMode && !AirstrikeMode &&
+                     !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
@@ -882,6 +949,7 @@ public class GlobalConquestGame : Game
             KamikazeMode = false;
             DogfightMode = false;
             BombMode = false;
+            TargetUnitMode = false;
             Vector2 selectedHexVector = handleClickMouseOnMap();
             Player player = identifySelf();
             if (selectedHexVector.X >= 0 && selectedHexVector.Y >= 0 &&
@@ -927,7 +995,7 @@ public class GlobalConquestGame : Game
         {
             lastSelectedHex = Client?.GameState.Map.Hexes[(int)selectedHexVector.Y, (int)selectedHexVector.X];
             if (!MoveMode && !PursueMode && !ReconMode && !AirstrikeMode && !TransferMode && 
-                !BombMode && !KamikazeMode && !DogfightMode)
+                !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode)
                 lastSelectedUnit = lastSelectedHex.getUnit();
         }
         return selectedHexVector;

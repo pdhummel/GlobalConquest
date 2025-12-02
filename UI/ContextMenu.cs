@@ -105,6 +105,18 @@ public class ContextMenu
         itemIndex += 1;
         verticalMenu.Items.Add(deleteMoveMenuItem);
 
+        var targetUnitMenuItem = new MenuItem();
+        targetUnitMenuItem.Id = "ContextMenu.verticalMenu.targetUnitMenuItem";
+        targetUnitMenuItem.Text = "Target";
+        targetUnitMenuItem.Selected += (s, a) =>
+        {
+            targetUnitMenuItemSelected();
+        };
+        actionMapper.registerControlMethod(targetUnitMenuItem.Id, this, "targetUnitMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, targetUnitMenuItem.Id);
+        itemIndex += 1;
+        verticalMenu.Items.Add(targetUnitMenuItem);
+
         if (unit.IsBlitzing)
         {
             var stopBlitzingMenuItem = new MenuItem();
@@ -640,6 +652,12 @@ public class ContextMenu
     public void dogfightMenuItemSelected()
     {
         gcGame.DogfightMode = true;
+        HideContextMenu();
+    }
+
+    public void targetUnitMenuItemSelected()
+    {
+        gcGame.TargetUnitMode = true;
         HideContextMenu();
     }
 

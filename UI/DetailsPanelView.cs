@@ -46,7 +46,8 @@ public class DetailsPanelView
         drawMessage("Turn: " + (gameState.CurrentTurn + 1));
         drawMessage("Phase: " + currentPhase + ", round: " + (gameState.CurrentRound + 1));
         drawMessage("");
-        drawMessage("Mouse: " + currentMouseState.X.ToString().Trim() + "," + currentMouseState.Y.ToString().Trim() + "; " + gcGame.mouseOverVector.X + "," + gcGame.mouseOverVector.Y);
+        drawMessage("Mouse: " + currentMouseState.X.ToString().Trim() + "," + currentMouseState.Y.ToString().Trim() + 
+                    "; " + gcGame.mouseOverVector.X + "," + gcGame.mouseOverVector.Y);
         string lastHex = lastSelectedHex == null ?
                "Last Hex: " : 
                "Last Hex: " + lastSelectedHex?.X + "," + lastSelectedHex?.Y + "; " + lastSelectedHex?.Terrain;
