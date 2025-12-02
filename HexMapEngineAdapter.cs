@@ -100,7 +100,9 @@ class HexMapEngineAdapter
         Texture2D villageTile = game.Content.Load<Texture2D>("village-hex-72x72");
         burbs["village"] = villageTile;
 
-
+        // TODO: use a different map for flame
+        Texture2D flameTexture = game.Content.Load<Texture2D>("flame-30px");
+        units["flame"] = flameTexture;
 
         Texture2D magentaTank = game.Content.Load<Texture2D>("magenta-tank-48x48");
         units["magenta-tank"] = magentaTank;
@@ -320,6 +322,8 @@ class HexMapEngineAdapter
                             drawUnitAtHex(liY, liX, unit.Color + "-plane");
                         }
                     }
+                    //if (unit.IsAttacked)
+                    //    drawFlame(liY, liX);
                 }
                 Unit plane = mapHex.Airplane;
                 if (plane != null && plane.StrengthPoints > 0)
@@ -411,6 +415,56 @@ class HexMapEngineAdapter
                 gcGame.DrawPathForUnit(unit);
             }
         }
+    }
+
+    private void drawFlame(int row, int column)
+    {
+        Vector2 currentPixelPosition = this.getCurrentPixelPosition();
+        Vector2 rowColVector = new Vector2(column, row);
+        Vector2 pixelVector = ConvertHexToPixels(rowColVector);
+        if (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS < currentPixelPosition.X ||
+            pixelVector.X > currentPixelPosition.X + gcGame.MainGameScreen.MapPanel.Width ||
+            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS < currentPixelPosition.Y ||
+            pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.MapPanel.Height
+           )
+        {
+            if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+                return;
+        }
+
+        if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+        {
+                pixelVector.X += 20 - currentPixelPosition.X;
+                pixelVector.Y += 19 - currentPixelPosition.Y;
+                //pixelVector.X += 10 - currentPixelPosition.X;
+                //pixelVector.Y += 9 - currentPixelPosition.Y;
+
+        }
+        else
+        {
+            pixelVector.X += 10;
+            pixelVector.Y += 9;
+        }
+        if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
+            (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
+            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height) ||
+            pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS / 2
+            )
+        {
+            return;
+        }
+        float layerDepth = 0.25f;
+        coSpriteBatch.Draw(
+                            units["flame"],
+                            pixelVector,
+                            null,
+                            Color.White,
+                            0.0f,
+                            Vector2.Zero,
+                            new Vector2(1.0f, 1.0f),
+                            SpriteEffects.None,
+                            layerDepth  // higher number at bottom
+                            );
     }
 
     private Player identifySelf()

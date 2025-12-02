@@ -326,7 +326,7 @@ public class GlobalConquestGame : Game
             }
             else if (TargetUnitMode && lastSelectedUnit != null)
             {
-                Color color = Color.Red;
+                Color color = Color.Black;
                 Map map = Client.GameState.Map;
                 UnitType lastSelectedUnitType = Client.GameState.UnitTypes.UnitTypeMap[lastSelectedUnit.UnitType];
                 // TODO: figure out why Client.GameState.UnitTypes is not correctly populated.
@@ -1002,6 +1002,15 @@ public class GlobalConquestGame : Game
                 lastSelectedUnit = lastSelectedHex.getUnit();
         }
         return selectedHexVector;
+    }
+
+    public void scrollToPosition(int row, int column)
+    {
+        if (hexMapEngineAdapter != null && MainGameScreen != null && MainGameScreen.MapPanel != null)
+        {
+            MainGameScreen.HideContextMenu();
+            hexMapEngineAdapter.scrollToPosition(row, column);
+        }
     }
 
     public void scrollRight()

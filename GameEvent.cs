@@ -222,6 +222,7 @@ public class GameEvent
             Game.playSoundEffect("comcenAttacked");
         }
         Game.addGamePlayEvent(this);
+        //Game.scrollToPosition(MapHex.Y, MapHex.X);
     }
 
     public void unitDestroyedHandler()
@@ -231,6 +232,7 @@ public class GameEvent
         Game.playSoundEffect(EventType + "1");
         Game.playSoundEffect(EventType + "2");
         Game.addGamePlayEvent(this);
+        //Game.scrollToPosition(MapHex.Y, MapHex.X);
     }
 
     public void unitMovementBlockedHandler() 
@@ -291,6 +293,7 @@ public class GameEvent
         EventString =  GetBurbType() + " " + GetBurbName() + " lost to " + GetEnemyColor() + " at " + GetLocation();
         Game.playSoundEffect(EventType);
         Game.addGamePlayEvent(this);
+        //Game.scrollToPosition(MapHex.Y, MapHex.X);
     }
 
     public void playerLostGameHandler() {      

@@ -261,6 +261,7 @@ public class GameLogic
         {
             if (unit.StrengthPoints <= 0)
                 continue;
+            unit.IsAttacked = false;
             if (!("Omniscient".Equals(gameState.GameSettings.Visibility)))
                 decrementVisibility(unit);
             scanUnits(server, unit);
@@ -565,6 +566,7 @@ public class GameLogic
             if (unit.StrengthPoints > 0)
             {
                 unitToAttack.StrengthPoints -= damage;
+                unitToAttack.IsAttacked = true;
                 GameEvent gameEvent = new GameEvent("enemyUnitAttacked");
                 gameEvent.MapHex = map.Hexes[unitToAttack.Y, unitToAttack.X];
                 gameEvent.Unit = unitToAttack;
