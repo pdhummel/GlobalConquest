@@ -81,7 +81,8 @@ public class GameEvent
             "unitMovementBlocked",  // UnitType at MapHex movement blocked
             "unitSufferedAttrition",// UnitType at Maphex suffered attrition
             "enemyUnitDiscovered",  // EnemyColor UnitType discovered at MapHex
-            "burbDiscovered"        // EnemyColor BurbType BurbName discovered at MapHex
+            "burbDiscovered",       // EnemyColor BurbType BurbName discovered at MapHex
+            "gracePeriodStarted"
          };
          GamePlayEvents.UnionWith(gamePlayEvents);        
     }
@@ -356,4 +357,9 @@ public class GameEvent
         //Game.addGamePlayEvent(this);
     }
 
+    public void gracePeriodStartedHandler()
+    {
+        EventString = "Grace period started before execution.";
+        Game.playSoundEffect(EventType);
+    }
 }

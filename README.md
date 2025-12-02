@@ -183,21 +183,21 @@ This is best supported by mouse and keyboard. However, some effort has been made
 
 ## Known Issues
 * Functional gaps from incomplete milestones.
-- [x] Conquest of burb does not show new ownership -- manually need to refresh hex.
-- [x] Null object reference in DeleteMoveUnitAction. Observed during game play w/G.
-- [x] Could not build planes on burb with infantry on it.
-- [x] With Fog-Of-War, players that join can see the host player setup.
-- [x] Don't allow defeated players to Execute.
-- [ ] Shouldn't be able to see pathing of enemy units.
-- [ ] Game controller cannot change comboboxes.
-- [ ] Game controller cannot navigate nested menus -- i.e., File, View.
-- [ ] Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
+- [x] Bug: Conquest of burb does not show new ownership -- manually need to refresh hex.
+- [x] Bug: Null object reference in DeleteMoveUnitAction. Observed during game play w/G.
+- [x] Bug: Could not build planes on burb with infantry on it.
+- [x] Bug: With Fog-Of-War, players that join can see the host player setup.
+- [x] Bug: Don't allow defeated players to Execute.
+- [x] Add firing range indicator for units --> shown with Target menu option.
+- [x] Add audio indicator when grace period begins.
+- [ ] Bug: Shouldn't be able to see pathing of enemy units.
+- [ ] Bug: Game controller cannot change comboboxes.
+- [ ] Bug: Game controller cannot navigate nested menus -- i.e., File, View.
+- [ ] Bug: Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
 - [ ] Feature: Add north and south for cities.
 - [ ] Feature: Make towns have some random suburbs/docks.
 - [ ] Request: less noise on attack + add visual indicator on mini-map.
-- [ ] Request: Add audio indicator when grace period begins
 - [ ] Request: Option to make airplane missions planned and not immediate.
-- [ ] Request: Firing range indicator for units.
 - [ ] Request: Suggested city density and burb level based on map size.
 
 

@@ -161,6 +161,7 @@ public class GlobalConquestGame : Game
         loadSoundEffect("comcenAttacked");
         loadSoundEffect("airplaneMissionSuceeded");
         loadSoundEffect("airplaneMissionFailed");
+        loadSoundEffect("gracePeriodStarted");
     }
 
     private void loadSoundEffect(string soundEffectEventName)
@@ -174,7 +175,9 @@ public class GlobalConquestGame : Game
         if (soundEffects.ContainsKey(soundEffectEventName))
         {
             SoundEffect soundEffect = soundEffects[soundEffectEventName];
-            soundEffect.Play();
+            // Volume during playback is scaled by SoundEffect.MasterVolume.
+            //soundEffect.Play();
+            soundEffect.Play(0.5f, 0.0f, 0.0f);
         }
     }
 

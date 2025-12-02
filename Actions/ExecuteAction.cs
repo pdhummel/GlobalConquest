@@ -67,6 +67,9 @@ public class ExecuteAction : PlayerAction
         }
         else if ("Grace*".Equals(gameState.GameSettings.ExecutionMode))
         {
+            GameEvent gameEvent = new GameEvent();
+            gameEvent.EventType = "gracePeriodStarted";
+            server.sendGamePlayEvent(gameEvent);
             server.GameLogic.startExecutionTimer();
         }
 

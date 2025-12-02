@@ -512,6 +512,12 @@
 /processorParam:TextureFormat=Compressed
 /build:gcDetailsPanel.spritefont
 
+#begin gracePeriodStarted.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:gracePeriodStarted.wav
+
 #begin grass-flat-hex-72x72.png
 /importer:TextureImporter
 /processor:TextureProcessor
