@@ -322,8 +322,8 @@ public class GameLogic
 
     private void scanUnits(Server server, Unit unit)
     {
-        Map map = server.gameState.Map;
-        MapHex mapHex = map.Hexes[unit.Y, unit.X];
+        //Map map = server.gameState.Map;
+        //MapHex mapHex = map.Hexes[unit.Y, unit.X];
         UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
         scanUnits(server, unit, unitType);
     }
@@ -402,7 +402,7 @@ public class GameLogic
                 }
                 if (!previousVisibility)
                 {
-                    server.sendGameStateAndMapHex(hexUnit.Color, hex.X, hex.Y);
+                    //server.sendGameStateAndMapHex(hexUnit.Color, hex.X, hex.Y);
                     server.sendGameStateAndMapHex(unit.Color, hex.X, hex.Y);
                 }
             }
@@ -412,8 +412,8 @@ public class GameLogic
 
     private void scanTerrain(Server server, Unit unit)
     {
-        Map map = server.gameState.Map;
-        MapHex mapHex = map.Hexes[unit.Y, unit.X];
+        //Map map = server.gameState.Map;
+        //MapHex mapHex = map.Hexes[unit.Y, unit.X];
         UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
         scanTerrain(server, unit, unitType);
     }

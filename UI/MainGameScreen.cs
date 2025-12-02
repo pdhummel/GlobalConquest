@@ -187,6 +187,11 @@ public class MainGameScreen
     {
         ContextMenu.ShowContextMenu(mapHex);
     }
+    public void ShowContextMenu(MapHex mapHex, bool isBurb)
+    {
+        ContextMenu.ShowContextMenu(mapHex, isBurb);
+    }
+
     public bool IsShowContextMenu()
     {
         return ContextMenu.IsShowContextMenu;

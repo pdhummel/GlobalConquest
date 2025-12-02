@@ -26,6 +26,10 @@ public class ExecuteAction : PlayerAction
         GameState gameState = server.gameState;
         if (ClientIdentifier != null)
         {
+            Player player = gameState.Players.playerNameToPlayer[ClientIdentifier];
+            Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
+            if (!faction.HasComCen)
+                return;
             bool first = true;
             foreach (string key in gameState.PlayerExecutionReady.Keys)
             {
@@ -33,8 +37,6 @@ public class ExecuteAction : PlayerAction
                     first = false;
             }
             gameState.PlayerExecutionReady[ClientIdentifier] = true;
-            Player player = gameState.Players.playerNameToPlayer[ClientIdentifier];
-            Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
             faction.Status = "ready";
             // first player to execute gets a $5 reward.
             if (first)

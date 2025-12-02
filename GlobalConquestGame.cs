@@ -366,7 +366,6 @@ public class GlobalConquestGame : Game
                 miniMapSpriteBatch.Draw(miniMapRenderTarget2D, miniMapRectangle, Color.White);
             miniMapSpriteBatch.End();
             GraphicsDevice.SetRenderTarget(null);
-
         }
 
         // Draw menus and screens.
@@ -380,18 +379,18 @@ public class GlobalConquestGame : Game
                 Client != null &&
                 MainGameScreen.IsShowContextMenu() && IsAllowedToPlan() && IsShowAirplanes &&
                 (lastSelectedUnit.Airplane != null || "plane".Equals(lastSelectedUnit.UnitType)))
+            {
+                if (lastSelectedUnit.Airplane != null)
                 {
-                    if (lastSelectedUnit.Airplane != null)
-                    {
-                        //Globals.Log("Draw(): ShowContextMenu 1");
-                        MainGameScreen?.ShowContextMenu(lastSelectedUnit.Airplane);
-                    }
-                    else
-                    {
-                        //Globals.Log("Draw(): ShowContextMenu 2");
-                        MainGameScreen?.ShowContextMenu(lastSelectedUnit);
-                    }
+                    //Globals.Log("Draw(): ShowContextMenu 1");
+                    MainGameScreen?.ShowContextMenu(lastSelectedUnit.Airplane);
                 }
+                else
+                {
+                    //Globals.Log("Draw(): ShowContextMenu 2");
+                    MainGameScreen?.ShowContextMenu(lastSelectedUnit);
+                }
+            }
             else if (lastSelectedHex != null && lastSelectedHex.Airplane != null && IsShowAirplanes)
             {
                 //Globals.Log("Draw(): ShowContextMenu 3");
@@ -400,10 +399,15 @@ public class GlobalConquestGame : Game
             else if (player != null && lastSelectedUnit.Color.Equals(player.FactionColor) && 
                 Client != null &&
                 MainGameScreen.IsShowContextMenu() && IsAllowedToPlan() && !IsShowAirplanes)
-                {
-                    //Globals.Log("Draw(): ShowContextMenu 4");
-                    MainGameScreen?.ShowContextMenu(lastSelectedUnit);
-                }
+            {
+                //Globals.Log("Draw(): ShowContextMenu 4");
+                MainGameScreen?.ShowContextMenu(lastSelectedUnit);
+            }
+            else
+            {
+                // Allow Refresh on enemy
+                MainGameScreen?.ShowContextMenu(lastSelectedHex, false);
+            }
         }
         else if (lastSelectedHex != null && lastSelectedHex.Airplane != null && IsShowAirplanes)
         {
@@ -424,11 +428,23 @@ public class GlobalConquestGame : Game
                 (lastSelectedBurb.OwnerColor.Equals(player.FactionColor) ||
                 (parentBurb != null && parentBurb.OwnerColor != null && parentBurb.OwnerColor.Equals(player.FactionColor))) &&
                 MainGameScreen.IsShowContextMenu() && IsAllowedToPlan())
-                {
-                    //Globals.Log("Draw(): ShowContextMenu 6");
-                    MainGameScreen?.ShowContextMenu(lastSelectedHex);
-                }
+            {
+                //Globals.Log("Draw(): ShowContextMenu 6");
+                MainGameScreen?.ShowContextMenu(lastSelectedHex);
+            }
+            else
+            {
+                // Allow refresh on any hex
+                MainGameScreen?.ShowContextMenu(lastSelectedHex, false);
+            }
         }
+        else if (lastSelectedHex != null && !IsShowAirplanes)
+        {
+            // Allow refresh on any hex
+            //Globals.Log("Draw(): ShowContextMenu 7");
+            MainGameScreen?.ShowContextMenu(lastSelectedHex, false);
+        }
+
         Desktop.Render();
 
         base.Draw(gameTime);
@@ -619,6 +635,7 @@ public class GlobalConquestGame : Game
     {
         if (MainGameScreen == null)
             return;
+
         if (
             GameControl.currentMouseState.X >= 0 && GameControl.currentMouseState.X >= MainGameScreen.MapPanel.Left &&
             GameControl.currentMouseState.X <= MainGameScreen.MapPanel.Left + MainGameScreen.MapPanel.Width &&
@@ -648,6 +665,7 @@ public class GlobalConquestGame : Game
 
     public void handleLeftClick()
     {
+        //Globals.Log("handleLeftClick(): enter");
         if (MainGameScreen == null || hexMapEngineAdapter == null)
             return;
         if (
@@ -659,6 +677,10 @@ public class GlobalConquestGame : Game
         {
             if (MainGameScreen.IsContextMenuVisible())
             {
+                if (!MainGameScreen.ContextMenu.IsMouseInside(GameControl.currentMouseState))
+                {
+                    MainGameScreen.HideContextMenu();
+                }
                 return;
             }
             MapHex previousSelectedHex = lastSelectedHex;
@@ -835,8 +857,7 @@ public class GlobalConquestGame : Game
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
                 }
-            }
-
+            }        
 
         }
     }
@@ -892,8 +913,9 @@ public class GlobalConquestGame : Game
                         MainGameScreen.ContextMenu.IsShowContextMenu = true;
                     }
                 }
-
             }
+            // Always show context menu with Refresh option
+            MainGameScreen.ContextMenu.IsShowContextMenu = true;
         }
     }
 

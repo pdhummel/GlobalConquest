@@ -8,6 +8,7 @@ using GlobalConquest.Units;
 using Panel = Myra.Graphics2D.UI.Panel;
 using Label = Myra.Graphics2D.UI.Label;
 using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
+using Microsoft.Xna.Framework.Input;
 namespace GlobalConquest.UI;
 
 public class ContextMenu
@@ -20,11 +21,18 @@ public class ContextMenu
     Unit unit;
     MapHex mapHex;
 
+    VerticalStackPanel menuContainer;
+
     public ContextMenu(MainGameScreen mainGameScreen)
     {
         MainGameScreen = mainGameScreen;
         MapPanel = MainGameScreen.MapPanel;
         gcGame = MainGameScreen.gcGame;
+    }
+
+    public bool IsMouseInside(MouseState mouseState)
+    {
+        return menuContainer.IsMouseInside;
     }
 
     public void HideContextMenu()
@@ -56,7 +64,7 @@ public class ContextMenu
         GameControlActionMapper actionMapper = gcGame.GameControl.GameControlActionMapper;
         int itemIndex = 0;
 
-        var container = new VerticalStackPanel
+        menuContainer = new VerticalStackPanel
         {
             Spacing = 4
         };
@@ -83,6 +91,7 @@ public class ContextMenu
         actionMapper.registerControlMethod(moveMenuItem.Id, this, "moveMenuItemSelected");
         actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, moveMenuItem.Id);
         itemIndex += 1;
+        verticalMenu.Items.Add(moveMenuItem);
 
         var deleteMoveMenuItem = new MenuItem();
         deleteMoveMenuItem.Id = "ContextMenu.verticalMenu.deleteMoveMenuItem";
@@ -94,21 +103,7 @@ public class ContextMenu
         actionMapper.registerControlMethod(deleteMoveMenuItem.Id, this, "deleteMoveMenuItemSelected");
         actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, deleteMoveMenuItem.Id);
         itemIndex += 1;
-
-        var refreshMenuItem = new MenuItem();
-        refreshMenuItem.Text = "Refresh";
-        refreshMenuItem.Id = "ContextMenu.verticalMenu.refreshMenuItem";
-        refreshMenuItem.Selected += (s, a) =>
-        {
-            refreshMenuItemSelected();
-        };
-        actionMapper.registerControlMethod(refreshMenuItem.Id, this, "refreshMenuItemSelected");
-        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, refreshMenuItem.Id);
-        itemIndex += 1;
-
-        verticalMenu.Items.Add(moveMenuItem);
         verticalMenu.Items.Add(deleteMoveMenuItem);
-        verticalMenu.Items.Add(refreshMenuItem);
 
         if (unit.IsBlitzing)
         {
@@ -232,18 +227,49 @@ public class ContextMenu
         actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, pursueMenuItem.Id);
         itemIndex += 1;
 
+        MapHex unitHex = map.Hexes[unit.Y, unit.X];
+        if (unitHex.Burb != null)
+        {
+            var buildMenuItem = new MenuItem();
+            buildMenuItem.Id = "ContextMenu.verticalMenu.buildMenuItem";
+            buildMenuItem.Text = "Build";
+            buildMenuItem.Selected += (s, a) =>
+            {
+                buildMenuItemSelected();
+            };
+            verticalMenu.Items.Add(buildMenuItem);
+            actionMapper.registerControlMethod(buildMenuItem.Id, this, "buildMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, buildMenuItem.Id);
+            itemIndex += 1;
+        }
 
-        container.Widgets.Add(verticalMenu);
+        var refreshMenuItem = new MenuItem();
+        refreshMenuItem.Text = "Refresh";
+        refreshMenuItem.Id = "ContextMenu.verticalMenu.refreshMenuItem";
+        refreshMenuItem.Selected += (s, a) =>
+        {
+            refreshMenuItemSelected();
+        };
+        actionMapper.registerControlMethod(refreshMenuItem.Id, this, "refreshMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, refreshMenuItem.Id);
+        itemIndex += 1;
+        verticalMenu.Items.Add(refreshMenuItem);
 
-        MapPanel.Widgets.Add(container);
-        container.Left = gcGame.GameControl.currentMouseState.X;
-        container.Top = gcGame.GameControl.currentMouseState.Y;
-        container.Visible = true;
+        menuContainer.Widgets.Add(verticalMenu);
+
+        MapPanel.Widgets.Add(menuContainer);
+        menuContainer.Left = gcGame.GameControl.currentMouseState.X;
+        menuContainer.Top = gcGame.GameControl.currentMouseState.Y;
+        menuContainer.Visible = true;
         IsShowContextMenu = false;
 
     }
 
     public void ShowContextMenu(MapHex mapHex)
+    {
+        ShowContextMenu(mapHex, true);
+    }
+    public void ShowContextMenu(MapHex mapHex, bool isBurb)
     {
         if (!IsShowContextMenu)
         {
@@ -259,23 +285,25 @@ public class ContextMenu
         GameControlActionMapper actionMapper = gcGame.GameControl.GameControlActionMapper;
         int itemIndex = 0;
 
-        var container = new VerticalStackPanel
+        menuContainer = new VerticalStackPanel
         {
             Spacing = 4
         };
 
-        var buildMenuItem = new MenuItem();
-        buildMenuItem.Id = "ContextMenu.verticalMenu.buildMenuItem";
-        buildMenuItem.Text = "Build";
-        buildMenuItem.Selected += (s, a) =>
+        if (isBurb)
         {
-            buildMenuItemSelected();
-        };
-        verticalMenu.Items.Add(buildMenuItem);
-        actionMapper.registerControlMethod(buildMenuItem.Id, this, "buildMenuItemSelected");
-        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, buildMenuItem.Id);
-        itemIndex += 1;
-
+            var buildMenuItem = new MenuItem();
+            buildMenuItem.Id = "ContextMenu.verticalMenu.buildMenuItem";
+            buildMenuItem.Text = "Build";
+            buildMenuItem.Selected += (s, a) =>
+            {
+                buildMenuItemSelected();
+            };
+            verticalMenu.Items.Add(buildMenuItem);
+            actionMapper.registerControlMethod(buildMenuItem.Id, this, "buildMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, buildMenuItem.Id);
+            itemIndex += 1;
+        }
 
         var refreshMapHexMenuItem = new MenuItem();
         refreshMapHexMenuItem.Id = "ContextMenu.verticalMenu.refreshMapHexMenuItem";
@@ -290,15 +318,13 @@ public class ContextMenu
         itemIndex += 1;
 
 
-        container.Widgets.Add(verticalMenu);
+        menuContainer.Widgets.Add(verticalMenu);
 
-        MapPanel.Widgets.Add(container);
-        container.Left = gcGame.GameControl.currentMouseState.X;
-        container.Top = gcGame.GameControl.currentMouseState.Y;
-        container.Visible = true;
+        MapPanel.Widgets.Add(menuContainer);
+        menuContainer.Left = gcGame.GameControl.currentMouseState.X;
+        menuContainer.Top = gcGame.GameControl.currentMouseState.Y;
+        menuContainer.Visible = true;
         IsShowContextMenu = false;
-        //container.AcceptsKeyboardFocus = true;
-        //container.SetKeyboardFocus();
     }
 
     public void ShowContextMenuForPlane(Unit plane)
@@ -321,7 +347,7 @@ public class ContextMenu
         GameControlActionMapper actionMapper = gcGame.GameControl.GameControlActionMapper;
         int itemIndex = 0;
 
-        var container = new VerticalStackPanel
+        menuContainer = new VerticalStackPanel
         {
             Spacing = 4
         };
@@ -411,15 +437,13 @@ public class ContextMenu
         itemIndex += 1;
 
 
-        container.Widgets.Add(verticalMenu);
+        menuContainer.Widgets.Add(verticalMenu);
 
-        MapPanel.Widgets.Add(container);
-        container.Left = gcGame.GameControl.currentMouseState.X;
-        container.Top = gcGame.GameControl.currentMouseState.Y;
-        container.Visible = true;
+        MapPanel.Widgets.Add(menuContainer);
+        menuContainer.Left = gcGame.GameControl.currentMouseState.X;
+        menuContainer.Top = gcGame.GameControl.currentMouseState.Y;
+        menuContainer.Visible = true;
         IsShowContextMenu = false;
-        //container.AcceptsKeyboardFocus = true;
-        //container.SetKeyboardFocus();
     }
 
 

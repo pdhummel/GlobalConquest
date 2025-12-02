@@ -10,6 +10,7 @@ using Color = Microsoft.Xna.Framework.Color;
 using Myra.Graphics2D.UI.File;
 using FileDialog = Myra.Graphics2D.UI.File.FileDialog;
 using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
+using Label = Myra.Graphics2D.UI.Label;
 namespace GlobalConquest.UI;
 
 public class MainGameMenu
@@ -88,8 +89,8 @@ public class MainGameMenu
             clientLogMenuItemSelected();
         };
 
-        //viewMenuItem.Items.Add(new MenuItem("Airplanes", "Airplanes"));
-        //viewMenuItem.Items.Add(new MenuItem("Treaties", "Treaties"));
+        String version = mainGameScreen.gcGame.Client.GameState.Version;
+        viewMenuItem.Items.Add(new MenuItem("MainGameMenu.horizontalMenu.viewMenuItem.version", "Version " + version));
 
 
         executeMenuItem.Selected += (s, a) =>

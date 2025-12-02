@@ -185,13 +185,13 @@ This is best supported by mouse and keyboard. However, some effort has been made
 * Functional gaps from incomplete milestones.
 - [x] Conquest of burb does not show new ownership -- manually need to refresh hex.
 - [x] Null object reference in DeleteMoveUnitAction. Observed during game play w/G.
+- [x] Could not build planes on burb with infantry on it.
+- [x] With Fog-Of-War, players that join can see the host player setup.
+- [x] Don't allow defeated players to Execute.
 - [ ] Shouldn't be able to see pathing of enemy units.
 - [ ] Game controller cannot change comboboxes.
 - [ ] Game controller cannot navigate nested menus -- i.e., File, View.
 - [ ] Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
-- [ ] Could not build planes from View Burb Menu option directly. (only via context menu)
-- [ ] Don't allow defeated players to Execute.
-- [x] With Fog-Of-War, players that join can see the host player setup.
 - [ ] Feature: Add north and south for cities.
 - [ ] Feature: Make towns have some random suburbs/docks.
 - [ ] Request: less noise on attack + add visual indicator on mini-map.
