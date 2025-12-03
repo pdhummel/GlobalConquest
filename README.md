@@ -194,6 +194,7 @@ This is best supported by mouse and keyboard. However, some effort has been made
 - [ ] Bug: Game controller cannot change comboboxes.
 - [ ] Bug: Game controller cannot navigate nested menus -- i.e., File, View.
 - [ ] Bug: Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
+- [ ] Bug: Long range plane transfers are not working.
 - [ ] Feature: Add north and south for cities.
 - [ ] Feature: Make towns have some random suburbs/docks.
 - [ ] Request: less noise on attack + add visual indicator on mini-map.

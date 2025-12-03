@@ -3,6 +3,7 @@
     <!--<OutputType>WinExe</OutputType>-->
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
+     <ApplicationId>humblebee.GlobalConquest</ApplicationId>
     <RollForward>Major</RollForward>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
@@ -14,6 +15,9 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <DefineConstants>TRACE;WINDOWS_BUILD</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,13 +45,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!--
-    <Reference Include="HexagonMappingEngine">
-      <HintPath>.\lib\HexagonMappingEngine\HexagonMappingEngine.dll</HintPath>
-      <Private>true</Private>
-      <CopyLocal>true</CopyLocal>
-    </Reference>
-    -->
     <Reference Include="Myra">
       <HintPath>.\lib\HexagonMappingEngine\Myra.dll</HintPath>
       <Private>True</Private>

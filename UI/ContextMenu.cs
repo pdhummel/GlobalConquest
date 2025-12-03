@@ -436,6 +436,18 @@ public class ContextMenu
         actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, kamikazeMenuItem.Id);
         itemIndex += 1;
 
+        var paradropMenuItem = new MenuItem();
+        paradropMenuItem.Id = "ContextMenu.verticalMenu.paradropMenuItem";
+        paradropMenuItem.Text = "ParaDrop";
+        paradropMenuItem.Selected += (s, a) =>
+        {
+            paradropMenuItemSelected();
+        };
+        verticalMenu.Items.Add(paradropMenuItem);
+        actionMapper.registerControlMethod(paradropMenuItem.Id, this, "paradropMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, paradropMenuItem.Id);
+        itemIndex += 1;
+
         var refreshMapHexMenuItem = new MenuItem();
         refreshMapHexMenuItem.Id = "ContextMenu.verticalMenu.refreshMapHexMenuItem";
         refreshMapHexMenuItem.Text = "Refresh";
@@ -660,5 +672,10 @@ public class ContextMenu
         gcGame.TargetUnitMode = true;
         HideContextMenu();
     }
-
+    public void paradropMenuItemSelected()
+    {
+        gcGame.ParaDropMode = true;
+        gcGame.ParaTrooper = null;
+        HideContextMenu();
+    }
 }
