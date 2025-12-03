@@ -210,6 +210,8 @@ public class Map
                 if (Hexes[unit.Y, unit.X].Units.Count > 0)
                     Hexes[unit.Y, unit.X].Units.RemoveAt(0);
             }
+            unit.X = destinationX;
+            unit.Y = destinationY;
         }
     }
 

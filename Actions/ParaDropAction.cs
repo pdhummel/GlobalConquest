@@ -59,7 +59,7 @@ public class ParaDropAction : PlayerAction
             Unit existingInfantry = paraTrooperHex.getUnit();
             if (existingInfantry == null  || existingInfantry.StrengthPoints <= 0)
             {
-                Globals.Log("execute(): para trooper infantry is unavailable");
+                Globals.Log("execute(): paratrooper infantry is unavailable");
                 return;
             }
 
@@ -68,6 +68,7 @@ public class ParaDropAction : PlayerAction
             if (targetMapHex.getUnit() != null || "sea".Equals(targetMapHex.Terrain))
             {
                 Globals.Log("execute(): destination must be an unoccupied land hex.");
+                return;
             }
 
             AirplaneMissionOutcome outcome = planeType.determineMissionOutcome(gameState, existingPlane, destinationHex);
@@ -79,10 +80,11 @@ public class ParaDropAction : PlayerAction
             if (outcome.IsMissionSuccessful)
             {
                 // Move paratrooper unit to new location
-                paraTrooperHex.setUnit(null);
-                destinationHex.setUnit(existingInfantry);
+                map.moveUnit(existingInfantry, DestinationX, DestinationY);
                 // Decrease strength by 20%
                 existingInfantry.StrengthPoints -= (existingInfantry.StrengthPoints / 5);
+                if (existingInfantry.StrengthPoints < 0)
+                    existingInfantry.StrengthPoints = 1;
                 // no longer dug-in
                 existingInfantry.UnitType = "infantry";
 
@@ -91,6 +93,7 @@ public class ParaDropAction : PlayerAction
                 gameEvent.Unit = existingPlane;
                 server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
                 server.sendGameStateAndMapHex(existingInfantry.X, existingInfantry.Y);
+                server.sendGameStateAndMapHex(paraTrooperHex.X, paraTrooperHex.Y);
                 server.sendGameStateAndMapHex(DestinationX, DestinationY);
                 server.sendGamePlayEvent(Plane.Color, gameEvent);             
                 Globals.Log("execute(): paraDrop complete");
@@ -102,6 +105,7 @@ public class ParaDropAction : PlayerAction
                 gameEvent.Unit = Plane;
                 server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
                 server.sendGameStateAndMapHex(existingInfantry.X, existingInfantry.Y);
+                server.sendGameStateAndMapHex(paraTrooperHex.X, paraTrooperHex.Y);
                 server.sendGameStateAndMapHex(DestinationX, DestinationY);
                 server.sendGamePlayEvent(Plane.Color, gameEvent);     
             }

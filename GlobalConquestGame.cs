@@ -371,7 +371,6 @@ public class GlobalConquestGame : Game
                         }
                     }
                 }
-                // TODO: change color of line of target is in range
                 Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
                 MainGameScreen.HideContextMenu();
                 DrawLine(hexPixelVector, color);
@@ -384,7 +383,7 @@ public class GlobalConquestGame : Game
                 Globals.spriteBatch.DrawCircle(hexPixelVector, paraTrooperRadius, 32, Color.Red);
             }
             else if ((ReconMode  || AirstrikeMode || TransferMode || BombMode || 
-                      KamikazeMode || DogfightMode || (ParaDropMode && ParaTrooper != null)) && 
+                      KamikazeMode || DogfightMode || (ParaDropMode && ParaTrooper != null)) && lastSelectedHex != null &&
                       lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
             {
                 Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
@@ -842,10 +841,12 @@ public class GlobalConquestGame : Game
             else if (ParaDropMode && ParaTrooper == null && lastSelectedHex != null)
             {
                 Unit unit = lastSelectedHex.getUnit();
-                if (unit != null && "infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
+                if (unit != null && ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType)))
                 {
-                    Globals.Log("handleLeftClick(): paraTrooper set");
+                    //unit.X = lastSelectedHex.X;
+                    //unit.Y = lastSelectedHex.Y;
                     ParaTrooper = unit;
+                    Globals.Log("handleLeftClick(): paraTrooper set");
                 }
             }
             else if (ParaDropMode && ParaTrooper != null && (previousSelectedHex != null || previousSelectedUnit != null) && 
@@ -1094,7 +1095,7 @@ public class GlobalConquestGame : Game
 
     private void sendMoveAction(MapHex previousSelectedHex, Unit previousSelectedUnit)
     {
-        if (lastSelectedHex.X >= 0 && lastSelectedHex.Y >= 0 && !previousSelectedHex.Equals(lastSelectedHex))
+        if (lastSelectedHex != null && lastSelectedHex.X >= 0 && lastSelectedHex.Y >= 0 && !previousSelectedHex.Equals(lastSelectedHex))
         {
             if (!isMultiHexMove)
             {

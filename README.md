@@ -84,15 +84,15 @@ The game is being designed with known differences from the original.
 - [x] Add support for all execution triggers. (timers, etc.)
 
 ### Milestone 5
-- [ ] Airplanes
+- [x] Airplanes
   - [x] A plane can occupy any land burb hex. (separate layer from regular units)
   - [x] A plane can occupy a comcen (or carrier).
   - [x] Airplanes view.
-  - [ ] Airplane Actions
+  - [x] Airplane Actions
     - [x] Recon
     - [x] Strike
     - [x] Transfer
-    - [ ] Paradrop
+    - [x] Paradrop
     - [x] Bomb
     - [x] Dogfight
     - [x] Kamikaze
