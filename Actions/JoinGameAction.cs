@@ -26,6 +26,7 @@ public class JoinGameAction : PlayerAction
         Faction faction = gameState.Factions.NameToFaction[JoinGameValues.FactionName];
         if (gameState.Players.playerNameToPlayer.ContainsKey(JoinGameValues.Name))
         {
+            Globals.Log("execute(): Player with that name is already used:" + JoinGameValues.Name);
             return;
         }
         List<string> playerNames = gameState.Players.playerNameToPlayer.Keys.ToList<string>();
@@ -34,6 +35,7 @@ public class JoinGameAction : PlayerAction
             Player player = gameState.Players.playerNameToPlayer[playerNames[i]];
             if (player.FactionColor.Equals(faction.Color))
             {
+                Globals.Log("execute(): Faction has already been chosen: " + faction.Color);
                 return;
             }
         }

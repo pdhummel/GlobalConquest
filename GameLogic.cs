@@ -1100,7 +1100,7 @@ public class GameLogic
             else if ("Combined".Equals(gameSettings.ScoringOption))
             {
                 faction.CombinedScore = calculateHeadCountScore(faction);
-                faction.CombinedScore += calculateIncomeScore(server, faction, units);
+                faction.CombinedScore += calculateIncomeScore(server, faction, units, 4);
                 faction.CombinedScore += calculateCapitalScore(server, faction);
             }
         }
@@ -1124,11 +1124,11 @@ public class GameLogic
     // TODO: plus the sum of the balance of all your burbs,
     // plus the sum of income per turn of all your burbs and resources,
     // plus the "scrap value" of all your units (one tenth their cost).
-    private int calculateIncomeScore(Server server, Faction faction, List<Unit> units)
+    private int calculateIncomeScore(Server server, Faction faction, List<Unit> units, int moneyFactor=2)
     {
         GameState gameState = server.gameState;
         int score = 0;
-        score += faction.Money / 2;
+        score += faction.Money / moneyFactor;
 
         foreach (string key in gameState.Burbs.HexXyToBurb.Keys)
         {
@@ -1146,7 +1146,7 @@ public class GameLogic
                 score += unitType.Cost / 10;
             }
         }
-
+        faction.IncomeScore = score;
         return score;
     }
 
@@ -1164,7 +1164,7 @@ public class GameLogic
                 score += gameState.Burbs.PointMap[burb.Type];
             }
         }
-
+        faction.CapitalScore = score;
         return score;
     }
 

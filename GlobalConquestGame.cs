@@ -96,7 +96,7 @@ public class GlobalConquestGame : Game
     {
         Globals.Log("minimizeScreen(): enter");
         // TODO: make sure this is cross-platform compatible.
-        #if WINDOWS_BUILD
+        #if _WINDOWS
           SDL_MinimizeWindow(Window.Handle);
           Form form = (Form)Control.FromHandle(Window.Handle);
           form.Hide();

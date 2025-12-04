@@ -98,7 +98,7 @@ public class HostGameScreen
     public void LoadContent()
     {
         hostSettingsLabel.Id = "hostSettingsLabel";
-        hostSettingsLabel.Text = "Host Settings";
+        hostSettingsLabel.Text = "Host and Game Settings";
 
         standaloneServerLabel.Text = "Standalone Server";
         standaloneServerCheckButton.IsChecked = false;

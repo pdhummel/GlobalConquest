@@ -53,22 +53,22 @@ public class MainGameScreen
         MainGameMenuPanel.Border = new SolidBrush("#808000FF");
         MainGameMenuPanel.BorderThickness = new Thickness(2);
 
-        MapPanel.Width = game.Window.ClientBounds.Width - 200;
+        MapPanel.Width = game.Window.ClientBounds.Width - 250;
         MapPanel.Height = game.Window.ClientBounds.Height;
         MapPanel.Border = new SolidBrush("#808000FF");
         MapPanel.BorderThickness = new Thickness(2);
 
-        FactionsPanel.Width = 200;
-        FactionsPanel.Height = game.Window.ClientBounds.Height / 3;
+        FactionsPanel.Width = 250;
+        FactionsPanel.Height = 200; //game.Window.ClientBounds.Height / 3;
         FactionsPanel.Border = new SolidBrush("#808000FF");
         FactionsPanel.BorderThickness = new Thickness(2);
 
-        MiniMapPanel.Width = 200;
-        FactionsPanel.Height = game.Window.ClientBounds.Height / 3;
+        MiniMapPanel.Width = 250;
+        MiniMapPanel.Height = game.Window.ClientBounds.Height / 3;
         MiniMapPanel.Border = new SolidBrush("#808000FF");
         MiniMapPanel.BorderThickness = new Thickness(2);
 
-        DetailsPanel.Width = 200;
+        DetailsPanel.Width = 250;
         DetailsPanel.Height = game.Window.ClientBounds.Height - FactionsPanel.Height - MiniMapPanel.Height;
         DetailsPanel.Border = new SolidBrush("#808000FF");
         DetailsPanel.BorderThickness = new Thickness(2);
@@ -131,13 +131,13 @@ public class MainGameScreen
     {
         if (game.Window.ClientBounds.Width > 1000)
         {
-            MapPanel.Width = game.Window.ClientBounds.Width - 200;
+            MapPanel.Width = game.Window.ClientBounds.Width - 250;
             MapPanel.Height = game.Window.ClientBounds.Height;
             FactionsPanel.Left = (int)MapPanel.Width;
             MiniMapPanel.Left = (int)MapPanel.Width;
             DetailsPanel.Left = (int)MapPanel.Width;
 
-            FactionsPanel.Height = game.Window.ClientBounds.Height / 3;
+            FactionsPanel.Height = 200; //game.Window.ClientBounds.Height / 3;
             MiniMapPanel.Height = game.Window.ClientBounds.Height / 3;
             DetailsPanel.Height = game.Window.ClientBounds.Height - FactionsPanel.Height - MiniMapPanel.Height;
 

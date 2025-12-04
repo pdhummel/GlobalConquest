@@ -14,6 +14,9 @@ public class Faction
     public int Money { get; set; } = 0;
     public int HeadCountScore { get; set; } = 0;
     public int CombinedScore { get; set; } = 0;
+    public int IncomeScore {get; set;} = 0;
+    public int CapitalScore {get; set;} = 0;
+
     public string Status { get; set; } = "planning";
 
     [JsonIgnore]

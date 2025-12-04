@@ -11,7 +11,9 @@
      <EnableWindowsTargeting>false</EnableWindowsTargeting>
     <Nullable>enable</Nullable>
     <UseWPF>false</UseWPF>    
-    <ImplicitUsings>enable</ImplicitUsings>     
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
+    <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -19,6 +21,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
       <DefineConstants>TRACE;WINDOWS_BUILD</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsWindows)'=='true'">
+    <DefineConstants>_WINDOWS</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(IsLinux)'=='true'">
+    <DefineConstants>_LINUX</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

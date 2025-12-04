@@ -5,7 +5,6 @@ using Myra.Graphics2D;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using static Myra.Graphics2D.UI.Grid;
-using static Myra.Graphics2D.UI.Label;
 using Image = Myra.Graphics2D.UI.Image;
 using Label = Myra.Graphics2D.UI.Label;
 
@@ -45,7 +44,7 @@ public class ConquestMenu
         conquestVerticalMenu.Id = "conquestVerticalMenu";
         MenuItem playGameMenuItem = new MenuItem();
         playGameMenuItem.Id = "playGameMenuItem";
-        playGameMenuItem.Text = "&Play Game";
+        playGameMenuItem.Text = "&Play Game (Host)";
         playGameMenuItem.Selected += playGameMenuItemSelected;
         playGameMenuItem.Menu = conquestVerticalMenu;
         conquestVerticalMenu.Items.Add(playGameMenuItem);
