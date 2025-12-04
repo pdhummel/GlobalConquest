@@ -18,6 +18,8 @@ public class Client
 
     public bool isLoadContentComplete { get; set; } = false;
 
+    public bool IsObserverOnly {get; set;} = false;
+
     public GameState GameState { get; set; } = new GameState();
     public JoinGameValues JoinGameValues { get; set; }
 
@@ -133,6 +135,7 @@ public class Client
             if (GameState.Map != null && GameState.Map.IsMapReady)
                 newGameState.Map = GameState.Map;
             GameState = newGameState;
+            handleGameOverForClient();
         }
         else if (gameEvent != null && "gameStateAndMapUpdate".Equals(gameEvent.EventType))
         {
@@ -146,6 +149,7 @@ public class Client
             else if (gameEvent.GameState != null && gameEvent.GameState.MapHex != null)
                 GameState.Map.Hexes[gameEvent.GameState.MapHex.Y, gameEvent.GameState.MapHex.X] = gameEvent.GameState.MapHex;
             GameState = newGameState;
+            handleGameOverForClient();
         }
 
         if ("plan".Equals(GameState.CurrentPhase) && GameState.PlayerPlanningReady.ContainsKey(ClientIdentifier) && GameState.PlayerPlanningReady[ClientIdentifier] == false)
@@ -159,6 +163,30 @@ public class Client
 
         reader.Recycle(); // Free up the data reader
     }
+
+    private void handleGameOverForClient()
+    {
+        if (GameState.VictoriousColor != null && !GameState.VictoriousColor.Equals("grey"))
+        {
+            IsObserverOnly = true;
+            return;
+        }
+        Player player = GlobalConquestGame.identifySelf();
+        if (player == null || player.FactionColor.Equals("grey"))
+        {
+            IsObserverOnly = true;
+            return;
+        }
+        if (player != null)
+        {
+            Faction faction = GameState.Factions.ColorToFaction[player.FactionColor];
+            if (!faction.HasComCen)
+            {
+                IsObserverOnly = true;
+                return;
+            }
+        }
+    } 
 
     private void handleGamePlayEvent(GameEvent gameEvent)
     {

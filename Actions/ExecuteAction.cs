@@ -24,12 +24,13 @@ public class ExecuteAction : PlayerAction
         Globals.Log("execute(): enter");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
+        bool IsFactionActive = true;
         if (ClientIdentifier != null)
         {
             Player player = gameState.Players.playerNameToPlayer[ClientIdentifier];
             Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
             if (!faction.HasComCen)
-                return;
+                IsFactionActive = false;
             bool first = true;
             foreach (string key in gameState.PlayerExecutionReady.Keys)
             {
@@ -45,14 +46,14 @@ public class ExecuteAction : PlayerAction
             }
             server.sendGameState();
         }
+        else
+        {
+            IsFactionActive = false;
+        }
 
 
         bool startExecution = false;
-        if ("Immediate".Equals(gameState.GameSettings.ExecutionMode))
-        {
-            startExecution = true;
-        }
-        else if ("Quorum".Equals(gameState.GameSettings.ExecutionMode))
+        if ("Quorum".Equals(gameState.GameSettings.ExecutionMode))
         {
             int readyCount = 0;
             foreach (string key in gameState.PlayerExecutionReady.Keys)
@@ -62,10 +63,16 @@ public class ExecuteAction : PlayerAction
                     readyCount += 1;
                 }
             }
+            // TODO: Consider players that have been defeated.
             if (readyCount >= gameState.GameSettings.NumberOfHumans)
                 startExecution = true;
         }
-        else if ("Grace*".Equals(gameState.GameSettings.ExecutionMode))
+
+        if (IsFactionActive && "Immediate".Equals(gameState.GameSettings.ExecutionMode))
+        {
+            startExecution = true;
+        }
+        else if (IsFactionActive && "Grace*".Equals(gameState.GameSettings.ExecutionMode))
         {
             GameEvent gameEvent = new GameEvent();
             gameEvent.EventType = "gracePeriodStarted";

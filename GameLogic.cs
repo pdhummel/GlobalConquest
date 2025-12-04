@@ -1100,7 +1100,7 @@ public class GameLogic
             else if ("Combined".Equals(gameSettings.ScoringOption))
             {
                 faction.CombinedScore = calculateHeadCountScore(faction);
-                faction.CombinedScore += calculateIncomeScore(server, faction, units, 4);
+                faction.CombinedScore += calculateIncomeScore(server, faction, units, 8);
                 faction.CombinedScore += calculateCapitalScore(server, faction);
             }
         }

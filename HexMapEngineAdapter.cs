@@ -46,6 +46,7 @@ class HexMapEngineAdapter
     private Dictionary<string, Texture2D> units = new Dictionary<string, Texture2D>();
 
     private Dictionary<string, Texture2D> burbs = new Dictionary<string, Texture2D>();
+    private Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
 
 
     public HexMapEngineAdapter(Game game, GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics, int hexHeight, int hexWidth)
@@ -100,9 +101,23 @@ class HexMapEngineAdapter
         Texture2D villageTile = game.Content.Load<Texture2D>("village-hex-72x72");
         burbs["village"] = villageTile;
 
-        // TODO: use a different map for flame
         Texture2D flameTexture = game.Content.Load<Texture2D>("flame-30px");
-        units["flame"] = flameTexture;
+        textures["flame"] = flameTexture;
+        Texture2D neArrowTexture = game.Content.Load<Texture2D>("ne-arrow-white");
+        textures["ne-arrow"] = neArrowTexture;
+        Texture2D nwArrowTexture = game.Content.Load<Texture2D>("nw-arrow-white");
+        textures["nw-arrow"] = nwArrowTexture;
+        Texture2D northArrowTexture = game.Content.Load<Texture2D>("north-arrow-white-72");
+        textures["north-arrow"] = northArrowTexture;
+        Texture2D seArrowTexture = game.Content.Load<Texture2D>("se-arrow-white");
+        textures["se-arrow"] = seArrowTexture;
+        Texture2D swArrowTexture = game.Content.Load<Texture2D>("sw-arrow-white");
+        textures["sw-arrow"] = swArrowTexture;
+        Texture2D southArrowTexture = game.Content.Load<Texture2D>("south-arrow-white-72");
+        textures["south-arrow"] = southArrowTexture;
+        textures["north"] = northArrowTexture;
+        textures["south"] = southArrowTexture;
+
 
         Texture2D magentaTank = game.Content.Load<Texture2D>("magenta-tank-48x48");
         units["magenta-tank"] = magentaTank;
@@ -292,7 +307,11 @@ class HexMapEngineAdapter
                     string burbId = burb.Type;
                     if ("metro".Equals(burb.Type))
                         burbId = burb.Color + "-" + burb.Type;
-                    drawBurbAtHex(liY, liX, burbId);
+                    drawBurbAtHex(liY, liX, burbId, burb);
+                }
+                if (burb != null && burb.DirectionFromParent != null)
+                {
+                    drawBurbAtHex(liY, liX, "", burb);
                 }
             }
         }
@@ -302,6 +321,7 @@ class HexMapEngineAdapter
     public void DrawUnits()
     {
         MapHex[,] hexes = gcGame.Client.GameState.Map.Hexes;
+        bool isObserver = gcGame.Client.IsObserverOnly;
         for (int liY = 0; liY < hexHeight; liY++)
         {
             for (int liX = 0; liX < hexWidth; liX++)
@@ -312,7 +332,7 @@ class HexMapEngineAdapter
                 if (unit != null && unit.StrengthPoints > 0)
                 {
                     string unitTypeId = unit.Color + "-" + unit.UnitType;
-                    if (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor])
+                    if (isObserver || (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor]))
                     {
                         if (unit.ParentUnitId == null || gcGame.IsShowAirplanes)
                             drawUnitAtHex(liY, liX, unitTypeId);
@@ -330,7 +350,7 @@ class HexMapEngineAdapter
                 {
                     string unitTypeId = plane.Color + "-" + plane.UnitType;
                     // TODO: figure out plane visibility settings
-                    if (mapHex.Visibility.ContainsKey(player.FactionColor) && mapHex.Visibility[player.FactionColor])
+                    if (isObserver || (mapHex.Visibility.ContainsKey(player.FactionColor) && mapHex.Visibility[player.FactionColor]))
                     {
                         if (plane != null && gcGame.IsShowAirplanes)
                         {
@@ -601,8 +621,9 @@ class HexMapEngineAdapter
         return worldBounds;
     }
 
-    private void drawBurbAtHex(int row, int column, string burbId)
+    private void drawBurbAtHex(int row, int column, string burbId, Burb burb)
     {
+        bool isObserver = gcGame.Client.IsObserverOnly;
         Vector2 currentPixelPosition = this.getCurrentPixelPosition();
         Vector2 rowColVector = new Vector2(column, row);
         Vector2 pixelVector = ConvertHexToPixels(rowColVector);
@@ -637,7 +658,7 @@ class HexMapEngineAdapter
 
         Map map = gcGame.Client.GameState.Map;
         Player player = identifySelf();
-        if (!map.Hexes[row, column].Visibility[player.FactionColor])
+        if (!isObserver && !map.Hexes[row, column].Visibility[player.FactionColor])
         {
             coSpriteBatch.Draw(
                                 terrain["unknown"].TEXTURE2D_IMAGE_TILE,
@@ -650,6 +671,21 @@ class HexMapEngineAdapter
                                 SpriteEffects.None,
                                 0.75f  // higher number at bottom
                                 );
+            return;
+        }
+        if (burb != null && burb.DirectionFromParent != null && textures.ContainsKey(burb.DirectionFromParent))
+        {
+            coSpriteBatch.Draw(
+                            textures[burb.DirectionFromParent],
+                            pixelVector,
+                            null,
+                            Color.White,
+                            0.0f,
+                            Vector2.Zero,
+                            new Vector2(1.0f, 1.0f),
+                            SpriteEffects.None,
+                            0.75f  // higher number at bottom
+                            );
             return;
         }
         if (!burbs.ContainsKey(burbId))
@@ -665,7 +701,6 @@ class HexMapEngineAdapter
                             SpriteEffects.None,
                             0.75f  // higher number at bottom
                             );
-
 
     }
 
@@ -816,6 +851,7 @@ class HexMapEngineAdapter
                                 int piMapTileHexWidthInPixels,
                                 int piMapTileHexHeightInPixels)
     {
+        bool isObserver = gcGame.Client.IsObserverOnly;
         Texture2D loTexture2DTile;
         Map map = gcGame.Client.GameState.Map;
 
@@ -835,7 +871,7 @@ class HexMapEngineAdapter
         bool visibility = map.Hexes[poHexTile.ROW_ID, poHexTile.COLUMN_ID].Visibility[player.FactionColor];
         if (coSpriteBatch == null || !terrain.ContainsKey("unknown"))
             return;
-        if (!visibility)
+        if (!isObserver && !visibility)
         {
             coSpriteBatch.Draw(
                                 terrain["unknown"].TEXTURE2D_IMAGE_TILE,

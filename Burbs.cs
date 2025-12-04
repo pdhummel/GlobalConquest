@@ -84,10 +84,18 @@ public class Burbs
             map.MetroLocations[color] = mapHex;
             mapHex.makeVisibleToAll();
         }
+
+        List<string> directions = [];
+        Dictionary<string, MapHex> surroundingHexes = map.getSurroundingHexes(mapHex);
         if ("metro".Equals(type) || "capital".Equals(type) || "city".Equals(type))
+            //directions = ["north", "south", "northWest", "northEast", "southWest", "southEast"];
+            directions = ["northWest", "northEast", "southWest", "southEast"];
+        else if ("town".Equals(type))
+            //directions = ["north", "south"];
+            directions = [];
+
+        if ("metro".Equals(type) || "capital".Equals(type) || "city".Equals(type) || "town".Equals(type))
         {
-            Dictionary<string, MapHex> surroundingHexes = map.getSurroundingHexes(mapHex);
-            List<string> directions = ["northWest", "northEast", "southWest", "southEast"];
             foreach (string direction in directions)
             {
                 if (surroundingHexes.ContainsKey(direction))
@@ -97,22 +105,21 @@ public class Burbs
                     if ("sea".Equals(suburbHex.Terrain) || "ocean".Equals(suburbHex.Terrain) || "swamp".Equals(suburbHex.Terrain) || "marsh".Equals(suburbHex.Terrain))
                     {
                         suburb.Type = "dock";
-                        suburb.ParentBurbName = mapHex.Burb.Name;
-                        suburb.X = suburbHex.X;
-                        suburb.Y = suburbHex.Y;
                     }
                     else
                     {
                         suburb.Type = "suburb";
-                        suburb.ParentBurbName = mapHex.Burb.Name;
-                        suburb.X = suburbHex.X;
-                        suburb.Y = suburbHex.Y;
-                    }   
+                    }
+                    suburb.ParentBurbName = mapHex.Burb.Name;
+                    suburb.X = suburbHex.X;
+                    suburb.Y = suburbHex.Y;
+                    suburb.DirectionFromParent = direction;
                     suburb.OwnerColor = burb.OwnerColor;
                     suburbHex.Burb = suburb;
                 }                
             }            
         }
+
         return burb;
     }
 }

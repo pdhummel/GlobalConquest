@@ -27,7 +27,7 @@ public class Server
     public void StartAsHost(GameSettings gameSettings, string key)
     {
         Globals.Log("StartAsHost(): enter");
-        this.maxPeers = gameSettings.NumberOfHumans;
+        this.maxPeers = 8; // gameSettings.NumberOfHumans;
         this.key = key;
         gameState.GameSettings = gameSettings;
         Map map = new Map(gameSettings.Height, gameSettings.Width);
