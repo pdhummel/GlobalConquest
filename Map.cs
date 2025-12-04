@@ -540,8 +540,15 @@ public class Map
         //MapHex mapHex = Hexes[y, x];
         if (mapHex.Burb != null)
         {
+            List<string> directions = [];
             if ("Capital".Equals(mapHex.Burb.Type) || "Metro".Equals(mapHex.Burb.Type) || "City".Equals(mapHex.Burb.Type) ||
                 "capital".Equals(mapHex.Burb.Type) || "metro".Equals(mapHex.Burb.Type) || "city".Equals(mapHex.Burb.Type))
+                directions = ["north", "south", "northWest", "southWest", "northEast", "southEast"];
+            else if ("town".Equals(mapHex.Burb.Type))
+                directions = ["north", "south"];
+            if ("Capital".Equals(mapHex.Burb.Type) || "Metro".Equals(mapHex.Burb.Type) || "City".Equals(mapHex.Burb.Type) ||
+                "capital".Equals(mapHex.Burb.Type) || "metro".Equals(mapHex.Burb.Type) || "city".Equals(mapHex.Burb.Type) ||
+                "town".Equals(mapHex.Burb.Type))
             {
                 string color = null;
                 Unit unit = mapHex.getUnit();
@@ -550,7 +557,6 @@ public class Map
                     color = unit.Color;
                 }
                 Dictionary<string, MapHex> surroundingHexes = getSurroundingHexes(mapHex);
-                List<string> directions = ["north", "south", "northWest", "southWest", "northEast", "southEast"];
                 foreach (string direction in directions)
                 {
                     if (surroundingHexes.ContainsKey(direction))
@@ -613,7 +619,6 @@ public class Map
                         gameEvent.EventType = "burbLost";
                         gameEvent.EnemyColor = unit.Color;
                         server.sendGamePlayEvent(previousOwnerColor, gameEvent);
-
                     }
                 }
             }
