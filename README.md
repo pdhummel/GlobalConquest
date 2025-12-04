@@ -190,13 +190,13 @@ This is best supported by mouse and keyboard. However, some effort has been made
 - [x] Bug: Don't allow defeated players to Execute.
 - [x] Add firing range indicator for units --> shown with Target menu option.
 - [x] Add audio indicator when grace period begins.
+- [x] Add north and south for cities.
+- [x] Make towns have some suburbs/docks.
 - [ ] Bug: Shouldn't be able to see pathing of enemy units.
 - [ ] Bug: Game controller cannot change comboboxes.
 - [ ] Bug: Game controller cannot navigate nested menus -- i.e., File, View.
 - [ ] Bug: Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
 - [ ] Bug: Long range plane transfers are not working.
-- [ ] Feature: Add north and south for cities.
-- [ ] Feature: Make towns have some random suburbs/docks.
 - [ ] Request: less noise on attack + add visual indicator on mini-map.
 - [ ] Request: Option to make airplane missions planned and not immediate.
 - [ ] Request: Suggested city density and burb level based on map size.

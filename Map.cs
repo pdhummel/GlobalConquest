@@ -550,7 +550,7 @@ public class Map
                     color = unit.Color;
                 }
                 Dictionary<string, MapHex> surroundingHexes = getSurroundingHexes(mapHex);
-                List<string> directions = ["northWest", "southWest", "northEast", "southEast"];
+                List<string> directions = ["north", "south", "northWest", "southWest", "northEast", "southEast"];
                 foreach (string direction in directions)
                 {
                     if (surroundingHexes.ContainsKey(direction))

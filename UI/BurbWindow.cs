@@ -150,10 +150,14 @@ public class BurbWindow
             airDirections.Add("center");
         }
 
+        List<string> directions = [];
         if ("city".Equals(burb.Type) || "capital".Equals(burb.Type) || "metro".Equals(burb.Type))
+            directions = ["north", "northEast", "southEast", "south", "southWest", "northWest"];
+        else if ("town".Equals(burb.Type))
+            directions = ["north", "south"];
+        if ("town".Equals(burb.Type) || "city".Equals(burb.Type) || "capital".Equals(burb.Type) || "metro".Equals(burb.Type))
         {
             Dictionary<string, MapHex> neighbors = map.getSurroundingHexes(mapHex);
-            List<string> directions = ["northEast", "southEast", "northWest", "southWest"];
             foreach (string direction in directions)
             {
                 if (neighbors.ContainsKey(direction))

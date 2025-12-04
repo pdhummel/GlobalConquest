@@ -103,20 +103,39 @@ class HexMapEngineAdapter
 
         Texture2D flameTexture = game.Content.Load<Texture2D>("flame-30px");
         textures["flame"] = flameTexture;
-        Texture2D neArrowTexture = game.Content.Load<Texture2D>("ne-arrow-white");
-        textures["ne-arrow"] = neArrowTexture;
-        Texture2D nwArrowTexture = game.Content.Load<Texture2D>("nw-arrow-white");
-        textures["nw-arrow"] = nwArrowTexture;
         Texture2D northArrowTexture = game.Content.Load<Texture2D>("north-arrow-white-72");
         textures["north-arrow"] = northArrowTexture;
-        Texture2D seArrowTexture = game.Content.Load<Texture2D>("se-arrow-white");
-        textures["se-arrow"] = seArrowTexture;
-        Texture2D swArrowTexture = game.Content.Load<Texture2D>("sw-arrow-white");
-        textures["sw-arrow"] = swArrowTexture;
         Texture2D southArrowTexture = game.Content.Load<Texture2D>("south-arrow-white-72");
         textures["south-arrow"] = southArrowTexture;
-        textures["north"] = northArrowTexture;
-        textures["south"] = southArrowTexture;
+
+        Texture2D southTabTexture = game.Content.Load<Texture2D>("south-tab-white");
+        textures["south-tab-white"] = southTabTexture;
+        Texture2D southTabMagentaTexture = game.Content.Load<Texture2D>("south-tab-magenta");
+        textures["south-tab-magenta"] = southTabMagentaTexture;
+        Texture2D southTabCyanTexture = game.Content.Load<Texture2D>("south-tab-cyan");
+        textures["south-tab-cyan"] = southTabCyanTexture;
+        Texture2D southTabAmberTexture = game.Content.Load<Texture2D>("south-tab-amber");
+        textures["south-tab-amber"] = southTabAmberTexture;
+        Texture2D southTabOcherTexture = game.Content.Load<Texture2D>("south-tab-ocher");
+        textures["south-tab-ocher"] = southTabOcherTexture;
+        Texture2D southTabCapitalTexture = game.Content.Load<Texture2D>("south-tab-capital");
+        textures["south-tab-capital"] = southTabCapitalTexture;
+
+        Texture2D northTabTexture = game.Content.Load<Texture2D>("north-tab-white");
+        textures["north-tab-white"] = northTabTexture;
+        Texture2D northTabMagentaTexture = game.Content.Load<Texture2D>("north-tab-magenta");
+        textures["north-tab-magenta"] = northTabMagentaTexture;
+        Texture2D northTabCyanTexture = game.Content.Load<Texture2D>("north-tab-cyan");
+        textures["north-tab-cyan"] = northTabCyanTexture;
+        Texture2D northTabAmberTexture = game.Content.Load<Texture2D>("north-tab-amber");
+        textures["north-tab-amber"] = northTabAmberTexture;
+        Texture2D northTabOcherTexture = game.Content.Load<Texture2D>("north-tab-ocher");
+        textures["north-tab-ocher"] = northTabOcherTexture;
+        Texture2D northTabCapitalTexture = game.Content.Load<Texture2D>("north-tab-capital");
+        textures["north-tab-capital"] = northTabCapitalTexture;
+
+        textures["north"] = northTabTexture;
+        textures["south"] = southTabTexture;
 
 
         Texture2D magentaTank = game.Content.Load<Texture2D>("magenta-tank-48x48");
@@ -675,8 +694,14 @@ class HexMapEngineAdapter
         }
         if (burb != null && burb.DirectionFromParent != null && textures.ContainsKey(burb.DirectionFromParent))
         {
+            Burb parentBurb = gcGame.Client.GameState.Burbs.NameToBurb[burb.ParentBurbName];
+            string texture = burb.DirectionFromParent;
+            if ("metro".Equals(parentBurb.Type))
+                texture = burb.DirectionFromParent + "-tab-" + parentBurb.Color;
+            if ("capital".Equals(parentBurb.Type))
+                texture = burb.DirectionFromParent + "-tab-capital";
             coSpriteBatch.Draw(
-                            textures[burb.DirectionFromParent],
+                            textures[texture],
                             pixelVector,
                             null,
                             Color.White,

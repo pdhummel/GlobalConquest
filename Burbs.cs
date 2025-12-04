@@ -88,11 +88,11 @@ public class Burbs
         List<string> directions = [];
         Dictionary<string, MapHex> surroundingHexes = map.getSurroundingHexes(mapHex);
         if ("metro".Equals(type) || "capital".Equals(type) || "city".Equals(type))
-            //directions = ["north", "south", "northWest", "northEast", "southWest", "southEast"];
-            directions = ["northWest", "northEast", "southWest", "southEast"];
+            directions = ["north", "south", "northWest", "northEast", "southWest", "southEast"];
+            //directions = ["northWest", "northEast", "southWest", "southEast"];
         else if ("town".Equals(type))
-            //directions = ["north", "south"];
-            directions = [];
+            directions = ["north", "south"];
+            //directions = [];
 
         if ("metro".Equals(type) || "capital".Equals(type) || "city".Equals(type) || "town".Equals(type))
         {
