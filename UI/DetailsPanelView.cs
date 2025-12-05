@@ -76,7 +76,8 @@ public class DetailsPanelView
         if (player != null)
             color = player.FactionColor;
 
-        if (lastSelectedHex != null && lastSelectedHex.Visibility.ContainsKey(color) && lastSelectedHex.Visibility[color])
+        if (lastSelectedHex != null && 
+            (lastSelectedHex.Visibility.ContainsKey(color) && lastSelectedHex.Visibility[color]|| gcGame.Client.IsObserverOnly))
         {
             Image image = new Image();
             Texture2D texture = gcGame.GetTextures()[lastSelectedHex.Terrain];
@@ -88,7 +89,8 @@ public class DetailsPanelView
             hexLabel.Text = "" + lastSelectedHex?.X + "," + lastSelectedHex?.Y + "; " + lastSelectedHex?.Terrain;
             stackPanel.Widgets.Add(hexLabel);
         }
-        if (lastSelectedBurb != null && lastSelectedHex.Visibility.ContainsKey(color) && lastSelectedHex.Visibility[color])
+        if (lastSelectedBurb != null && 
+            (lastSelectedHex.Visibility.ContainsKey(color) && lastSelectedHex.Visibility[color] || gcGame.Client.IsObserverOnly))
         {
             string burbName = lastSelectedBurb.Name;
             if (burbName == null)
@@ -115,12 +117,12 @@ public class DetailsPanelView
             stackPanel.Widgets.Add(burbLabel);
         }
 
-        if (lastSelectedUnit != null && lastSelectedUnit.Visibility.ContainsKey(color) && lastSelectedUnit.Visibility[color])
+        if (lastSelectedUnit != null && lastSelectedUnit.StrengthPoints > 0 &&
+            (lastSelectedUnit.Visibility.ContainsKey(color) && lastSelectedUnit.Visibility[color] || gcGame.Client.IsObserverOnly))
         {
             string unitText = lastSelectedUnit == null ?
             "Unit: " :
             "Unit: " + lastSelectedUnit.UnitType + ", " + lastSelectedUnit.Color;
-
             string textureKey = lastSelectedUnit.Color + "-" + lastSelectedUnit.UnitType;
             Image image = new Image();
             Texture2D texture = gcGame.GetTextures()[textureKey];
