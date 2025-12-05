@@ -103,6 +103,11 @@ public class GlobalConquestGame : Game
         #endif
     }
 
+    public Dictionary<string, Texture2D> GetTextures()
+    {
+        return hexMapEngineAdapter.textures;
+    }
+
     private void GlobalConquestGame_VisibleChanged(object? sender, EventArgs e)
     {
     }

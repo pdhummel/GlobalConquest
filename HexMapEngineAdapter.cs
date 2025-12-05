@@ -46,7 +46,7 @@ class HexMapEngineAdapter
     private Dictionary<string, Texture2D> units = new Dictionary<string, Texture2D>();
 
     private Dictionary<string, Texture2D> burbs = new Dictionary<string, Texture2D>();
-    private Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
+    public Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
 
 
     public HexMapEngineAdapter(Game game, GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics, int hexHeight, int hexWidth)
@@ -86,20 +86,29 @@ class HexMapEngineAdapter
 
         Texture2D magentaMetro = game.Content.Load<Texture2D>("magenta-metro-72x72");
         burbs["magenta-metro"] = magentaMetro;
+        textures["magenta-metro"] = magentaMetro;
         Texture2D amberMetro = game.Content.Load<Texture2D>("amber-metro-72x72");
         burbs["amber-metro"] = amberMetro;
+        textures["amber-metro"] = amberMetro;
         Texture2D ocherMetro = game.Content.Load<Texture2D>("ocher-metro-72x72");
         burbs["ocher-metro"] = ocherMetro;
+        textures["ocher-metro"] = ocherMetro;
         Texture2D cyanMetro = game.Content.Load<Texture2D>("cyan-metro-72x72");
         burbs["cyan-metro"] = cyanMetro;
+        textures["cyan-metro"] = cyanMetro;
         Texture2D capitalTile = game.Content.Load<Texture2D>("capital-72x72");
         burbs["capital"] = capitalTile;
+        textures["capital"] = capitalTile;
         Texture2D cityTile = game.Content.Load<Texture2D>("city-hex-72x72");
         burbs["city"] = cityTile;
+        textures["city"] = cityTile;
         Texture2D townTile = game.Content.Load<Texture2D>("town-hex-72x72");
         burbs["town"] = townTile;
+        textures["town"] = townTile;
         Texture2D villageTile = game.Content.Load<Texture2D>("village-hex-72x72");
         burbs["village"] = villageTile;
+        textures["village"] = villageTile;
+
 
         Texture2D flameTexture = game.Content.Load<Texture2D>("flame-30px");
         textures["flame"] = flameTexture;
@@ -136,7 +145,6 @@ class HexMapEngineAdapter
 
         textures["north"] = northTabTexture;
         textures["south"] = southTabTexture;
-
 
         Texture2D magentaTank = game.Content.Load<Texture2D>("magenta-tank-48x48");
         units["magenta-tank"] = magentaTank;
@@ -244,6 +252,15 @@ class HexMapEngineAdapter
         Texture2D ocherPlane = game.Content.Load<Texture2D>("ocher-plane-black-30px");
         units["ocher-plane"] = ocherPlane;
 
+        foreach (string key in burbs.Keys)
+        {
+            textures[key] = burbs[key];
+        }
+
+        foreach (string key in units.Keys)
+        {
+            textures[key] = units[key];
+        }
 
 
         Globals.Log("LoadContent(): hexHeight=" + hexHeight + ", hexWidth=" + hexWidth);
@@ -278,6 +295,7 @@ class HexMapEngineAdapter
         HexTexture2D hexTexture2D = createHexTexture2D(id, terrainFileName);
         terrain[name] = hexTexture2D;
         idToTerrain[id] = hexTexture2D;
+        textures[name] = hexTexture2D.TEXTURE2D_IMAGE_TILE;
         return hexTexture2D;
     }
 
