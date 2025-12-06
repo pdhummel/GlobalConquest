@@ -100,8 +100,8 @@ The game is being designed with known differences from the original.
 
 ### Milestone 6
 - [x] Add validations for Host Game and Join Game screens.
-- [ ] Save and load game.
 - [x] Allow for Non-player observers.
+- [x] Save and load game.
 - [ ] Resign to AI.
 - [ ] Convert player to AI.
 - [x] The ability to choose a specific target for attack.

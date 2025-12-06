@@ -1262,15 +1262,21 @@ public class GameLogic
 
     private void saveGameState(Server server)
     {
+        // "Personal" usually maps to "Documents" or "Home"
+        //string homeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal); 
+        // Environment.UserName;
+        // Environment.SpecialFolder.ApplicationData
+        // Environment.SpecialFolder.LocalApplicationData
         GameState gameState = server.gameState;
         string jsonString = JsonSerializer.Serialize(server.gameState);
-        string currentUser = Environment.UserName;
-        string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\";
+        string baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string gcDirectory = Path.Combine(baseFolder, "GlobalConquest");
+
         if (!Directory.Exists(gcDirectory))
         {
             Directory.CreateDirectory(gcDirectory);
         }
-        string gcDataDirectory = gcDirectory + "\\Data\\";
+        string gcDataDirectory = Path.Combine(gcDirectory, "Data");
         if (!Directory.Exists(gcDataDirectory))
         {
             Directory.CreateDirectory(gcDataDirectory);
@@ -1279,7 +1285,7 @@ public class GameLogic
         if (gameState.CurrentTurn > 0)
         {
             // Save the contents of the gcDataDirectory to a zip file and then clear out the data directory.
-            string zipFilePath = gcDirectory + "GameState-" + (gameState.CurrentTurn) + ".zip";
+            string zipFilePath = Path.Combine(gcDirectory, "GameState-" + (gameState.CurrentTurn) + ".zip");
             if (File.Exists(zipFilePath))
                 File.Delete(zipFilePath);
             if (!File.Exists(zipFilePath))
@@ -1304,7 +1310,7 @@ public class GameLogic
 
         // Save the gameState and map hexes to the gcDataDirectory
         string file = "GameState-" + gameState.Version + "-" + gameState.CurrentTurn + ".json";
-        string filePath = gcDataDirectory + file;
+        string filePath = Path.Combine(gcDataDirectory, file);
         File.WriteAllText(filePath, jsonString);
         for (int y = 0; y < gameState.Map.Y; y++)
         {
@@ -1313,7 +1319,7 @@ public class GameLogic
                 MapHex mapHex = gameState.Map.Hexes[y, x];
                 jsonString = JsonSerializer.Serialize(mapHex);
                 file = "MapHex-" + gameState.Version + "-" + gameState.CurrentTurn + "-" + x + "." + y + ".json";
-                filePath = gcDataDirectory + file;
+                filePath = Path.Combine(gcDataDirectory, file);
                 File.WriteAllText(filePath, jsonString);
 
             }
@@ -1329,15 +1335,15 @@ public class GameLogic
         string? fileName = Path.GetFileName(fullFilePath);
         if (!Directory.Exists(saveDirectory))
         {
-            string currentUser = Environment.UserName;
-            string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest";
+            string baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string gcDirectory = Path.Combine(baseFolder, "GlobalConquest");
             if (!Directory.Exists(gcDirectory))
             {
                 Directory.CreateDirectory(gcDirectory);
             }
             saveDirectory = gcDirectory;
         }
-        string dataDirectory = saveDirectory + "\\Data\\";
+        string dataDirectory = Path.Combine(saveDirectory, "Data");
         if (!Directory.Exists(dataDirectory))
         {
             Directory.CreateDirectory(dataDirectory);
@@ -1345,7 +1351,7 @@ public class GameLogic
 
         // Save the gameState and map hexes to the dataDirectory
         string file = "GameState-" + gameState.Version + "-" + gameState.CurrentTurn + ".json";
-        string filePath = dataDirectory + file;
+        string filePath = Path.Combine(dataDirectory, file);
         File.WriteAllText(filePath, jsonString);
         for (int y = 0; y < gameState.Map.Y; y++)
         {
@@ -1354,14 +1360,14 @@ public class GameLogic
                 MapHex mapHex = gameState.Map.Hexes[y, x];
                 jsonString = JsonSerializer.Serialize(mapHex);
                 file = "MapHex-" + gameState.Version + "-" + gameState.CurrentTurn + "-" + x + "." + y + ".json";
-                filePath = dataDirectory + file;
+                filePath = Path.Combine(dataDirectory, file);
                 File.WriteAllText(filePath, jsonString);
 
             }
         }
 
         // Save the contents of the saveDirectory to a zip file and then clear out the data directory.
-        string zipFilePath = saveDirectory + "\\" + fileName;
+        string zipFilePath = Path.Combine(saveDirectory, fileName);
         if (File.Exists(zipFilePath))
             File.Delete(zipFilePath);
         if (!File.Exists(zipFilePath))
@@ -1382,15 +1388,15 @@ public class GameLogic
 
         if (!Directory.Exists(loadDirectory) || !File.Exists(fileName))
         {
-            string currentUser = Environment.UserName;
-            string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest";
+            string baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string gcDirectory = Path.Combine(baseFolder, "GlobalConquest");
             loadDirectory = gcDirectory;
         }
-        string tempDirectory = loadDirectory + "\\Temp";
-        fullFilePath = loadDirectory + "\\" + fileName;
+        string tempDirectory = Path.Combine(loadDirectory, "Temp");
+        fullFilePath = Path.Combine(loadDirectory, fileName);
         ZipFile.ExtractToDirectory(fullFilePath, tempDirectory);
 
-        string dataDirectory = tempDirectory + "\\Data\\";
+        string dataDirectory = Path.Combine(tempDirectory, "Data");
 
         // Recreate the game state from the GameState json file.
         string searchPattern = "GameState-*.json";
@@ -1444,9 +1450,9 @@ public class GameLogic
 
     public void restoreGame(Server server)
     {
-        string currentUser = Environment.UserName;
-        string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\";
-        string gcDataDirectory = gcDirectory + "\\Data\\";
+        string baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string gcDirectory = Path.Combine(baseFolder, "GlobalConquest");
+        string gcDataDirectory = Path.Combine(gcDirectory, "Data");
 
         // Recreate the game state from the GameState json file.
         string searchPattern = "GameState-*.json";
