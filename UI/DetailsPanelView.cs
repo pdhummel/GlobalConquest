@@ -48,6 +48,9 @@ public class DetailsPanelView
         MapHex lastSelectedHex = gcGame.lastSelectedHex;
         Unit lastSelectedUnit = lastSelectedHex == null ? null : lastSelectedHex.getUnit();
         Burb lastSelectedBurb = lastSelectedHex == null ? null : lastSelectedHex.Burb;
+        Unit lastSelectedPlane = lastSelectedHex == null ? null : 
+          lastSelectedHex.Airplane != null ? lastSelectedHex.Airplane : 
+          lastSelectedUnit == null ? null : lastSelectedUnit.Airplane; 
         string currentPhase = "disconnected".Equals(gameState.CurrentPhase) ? "plan" : gameState.CurrentPhase;
 
         VerticalStackPanel stackPanel = new VerticalStackPanel();
@@ -148,7 +151,26 @@ public class DetailsPanelView
                 stackPanel.Widgets.Add(unitMovesLabel);
             }
         }
-       
+
+        if (lastSelectedPlane != null && lastSelectedPlane.StrengthPoints > 0 &&
+            (lastSelectedUnit.Visibility.ContainsKey(color) && lastSelectedUnit.Visibility[color] || gcGame.Client.IsObserverOnly))
+        {
+            string planeText = lastSelectedPlane.TurnsUnavailable == 0 ? "Plane available" : "Plane grounded " + lastSelectedPlane.TurnsUnavailable + " turns";
+            string textureKey = lastSelectedPlane.Color + "-plane";
+            Image image = new Image();
+            Texture2D texture = gcGame.GetTextures()[textureKey];
+            var textureRegion = new TextureRegion(texture);
+            image.Renderable = textureRegion;
+            image.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
+            image.VerticalAlignment = Myra.Graphics2D.UI.VerticalAlignment.Center;
+            imagePanel.Widgets.Add(image);
+            
+            Label planeLabel = new Label();
+            planeLabel.Text = planeText;
+            stackPanel.Widgets.Add(planeLabel);
+        }
+
+
         DetailsPanel.Widgets.Clear();
         DetailsPanel.Widgets.Add(stackPanel);
 
