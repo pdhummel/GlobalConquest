@@ -24,6 +24,8 @@ public class JoinGameScreen
     Grid grid;
     ConquestMenu conquestMenu;
     Label joinGameLabel = new Label();
+    Label observerOnlyLabel = new Label();
+    CheckButton observerOnlyCheckButton = new CheckButton();
     Label hostIpLabel = new Label();
     TextBox hostIpTextBox = new TextBox();
     Label portLabel = new Label();
@@ -75,6 +77,9 @@ public class JoinGameScreen
         Texture2D gcTexture = game.Content.Load<Texture2D>("GC-cropped-intro_000");
         var textureRegion = new TextureRegion(gcTexture);
         gcImage.Renderable = textureRegion;
+
+        observerOnlyLabel.Id = "observerOnlyLabel";
+        observerOnlyLabel.Text = "Observer Only";
 
         joinGameLabel.Id = "joinGameLabel";
         joinGameLabel.Text = "Join Game";
@@ -151,6 +156,7 @@ public class JoinGameScreen
         joinGameLabel.Visible = true;
         joinGameLabel.HorizontalAlignment = HorizontalAlignment.Center;
 
+        addPanelRow(verticalStackPanel, observerOnlyLabel, observerOnlyCheckButton);
         addPanelRow(verticalStackPanel, hostIpLabel, hostIpTextBox);
         addPanelRow(verticalStackPanel, portLabel, portTextBox);
         addPanelRow(verticalStackPanel, nameLabel, nameTextBox);
@@ -172,6 +178,8 @@ public class JoinGameScreen
     {
         gcImage.Visible = false;
         joinGameLabel.Visible = false;
+        observerOnlyLabel.Visible = false;
+        observerOnlyCheckButton.Visible = false;
         hostIpLabel.Visible = false;
         hostIpTextBox.Visible = false;
         portLabel.Visible = false;
@@ -185,6 +193,8 @@ public class JoinGameScreen
 
         gcImage.RemoveFromParent();
         joinGameLabel.RemoveFromParent();
+        observerOnlyLabel.RemoveFromParent();
+        observerOnlyCheckButton.RemoveFromParent();
         hostIpLabel.RemoveFromParent();
         hostIpTextBox.RemoveFromParent();
         portLabel.RemoveFromParent();
@@ -227,6 +237,11 @@ public class JoinGameScreen
         gcGame.Client = new Client(gcGame);
         JoinGameValues joinGameValues = new JoinGameValues();
         bool isValid = true;
+        if (observerOnlyCheckButton.IsChecked)
+        {
+            joinGameValues.IsObserverOnly = true;
+            gcGame.Client.IsObserverOnly = true;
+        }
         try
         {
             joinGameValues.Port = validateTextBoxInteger(portLabel.Text, portTextBox, 1024, 49151);

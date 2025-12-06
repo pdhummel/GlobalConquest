@@ -35,6 +35,14 @@ public class JoinGameAction : PlayerAction
             return;
         }
         List<string> playerNames = gameState.Players.playerNameToPlayer.Keys.ToList<string>();
+        server.PlayerNameToPeer[JoinGameValues.Name] = peer;
+        server.PeerToPlayerName[peer] = JoinGameValues.Name;
+        if (JoinGameValues.IsObserverOnly)
+        {
+            server.sendGameState(peer);
+            server.sendMap(peer);
+            return;
+        }
         for (int i = 0; i < gameState.Players.playerNameToPlayer.Count; i++)
         {
             Player player = gameState.Players.playerNameToPlayer[playerNames[i]];
@@ -49,8 +57,6 @@ public class JoinGameAction : PlayerAction
                 return;
             }
         }
-        server.PlayerNameToPeer[JoinGameValues.Name] = peer;
-        server.PeerToPlayerName[peer] = JoinGameValues.Name;
         Player newPlayer = gameState.Players.AddPlayer(gameState, JoinGameValues.Name, faction.Color, true);
         if (gameState.PlayerExecutionReady.ContainsKey(newPlayer.Name))
         {

@@ -467,7 +467,7 @@ class HexMapEngineAdapter
             Player player = identifySelf();
             MapHex mapHex = gcGame.Client.GameState.Map.Hexes[row, column];
             Unit unit = mapHex.getUnit();
-            if (unit != null && unit.Color.Equals(player.FactionColor))
+            if (unit != null && player != null && unit.Color.Equals(player.FactionColor))
             {
                 gcGame.DrawPathForUnit(unit);
             }
@@ -695,7 +695,7 @@ class HexMapEngineAdapter
 
         Map map = gcGame.Client.GameState.Map;
         Player player = identifySelf();
-        if (!isObserver && !map.Hexes[row, column].Visibility[player.FactionColor])
+        if (!isObserver && player != null && !map.Hexes[row, column].Visibility[player.FactionColor])
         {
             coSpriteBatch.Draw(
                                 terrain["unknown"].TEXTURE2D_IMAGE_TILE,
@@ -910,8 +910,10 @@ class HexMapEngineAdapter
 
         Vector2 destination = new Vector2(piCalculatedMapTileX, piCalculatedMapTileY);
         Rectangle source = new Rectangle(0, 0, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels);
+        bool visibility = false;
         Player player = identifySelf();
-        bool visibility = map.Hexes[poHexTile.ROW_ID, poHexTile.COLUMN_ID].Visibility[player.FactionColor];
+        if (player != null)
+            visibility = map.Hexes[poHexTile.ROW_ID, poHexTile.COLUMN_ID].Visibility[player.FactionColor];
         if (coSpriteBatch == null || !terrain.ContainsKey("unknown"))
             return;
         if (!isObserver && !visibility)

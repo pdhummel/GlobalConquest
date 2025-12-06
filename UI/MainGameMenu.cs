@@ -129,21 +129,19 @@ public class MainGameMenu
 
     public void refreshStateMenuItemSelected()
     {
-        Player player = mainGameScreen.gcGame.identifySelf();
         RefreshGameStateAction action = new RefreshGameStateAction();
         action.ClassType = "GlobalConquest.Actions.RefreshGameStateAction";
-        action.ClientIdentifier = player.Name;
-        mainGameScreen.gcGame.Client.SendAction(player.Name, action);
+        action.ClientIdentifier = mainGameScreen.gcGame.Client.ClientIdentifier;
+        mainGameScreen.gcGame.Client.SendAction(action.ClientIdentifier, action);
     }
 
     public void refreshMapMenuItemSelected()
     {
-        Player player = mainGameScreen.gcGame.identifySelf();
         RefreshGameStateAction action = new RefreshGameStateAction();
         action.ClassType = "GlobalConquest.Actions.RefreshGameStateAction";
-        action.ClientIdentifier = player.Name;
+        action.ClientIdentifier = mainGameScreen.gcGame.Client.ClientIdentifier;
         action.RefreshMap = true;
-        mainGameScreen.gcGame.Client.SendAction(player.Name, action);
+        mainGameScreen.gcGame.Client.SendAction(action.ClientIdentifier, action);
     }
 
     public void burbMenuItemSelected()
@@ -161,6 +159,9 @@ public class MainGameMenu
 
     public void executeMenuItemSelected()
     {
+        Player player = mainGameScreen.gcGame.identifySelf();
+        if (player == null)
+            return;
         Client client = mainGameScreen.gcGame.Client;
         ExecuteAction executeAction = new ExecuteAction();
         executeAction.ClassType = "GlobalConquest.Actions.ExecuteAction";  //executeAction.GetType().FullName
@@ -199,6 +200,11 @@ public class MainGameMenu
 
     public void saveMenuItemSelected()
     {
+        if (mainGameScreen.gcGame.Server == null)
+        {
+            mainGameScreen.showMessage("Only the game host can save games.");
+            return;
+        }
         string currentUser = Environment.UserName;
         string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\";        
         FileDialog dialog = new FileDialog(FileDialogMode.SaveFile)
@@ -237,6 +243,11 @@ public class MainGameMenu
 
     public void loadMenuItemSelected()
     {
+        if (mainGameScreen.gcGame.Server == null)
+        {
+            mainGameScreen.showMessage("Only the game host can load games.");
+            return;
+        }
         string currentUser = Environment.UserName;
         string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\";        
         FileDialog dialog = new FileDialog(FileDialogMode.OpenFile)

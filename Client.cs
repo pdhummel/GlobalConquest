@@ -85,7 +85,7 @@ public class Client
         NetDataWriter writer = new();
         writer.Put(data); // Add your data
         serverPeer?.Send(writer, DeliveryMethod.ReliableOrdered);
-        Globals.Log("Client.SendData(): " + peerIdentifier + " Client sent data " + data);
+        Globals.Log("SendData(): " + peerIdentifier + " Client sent data " + data);
     }
 
     public void SendAction(string peerIdentifier, PlayerAction action)

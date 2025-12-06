@@ -699,7 +699,7 @@ public class GlobalConquestGame : Game
 
     public void handleLongLeftClick()
     {
-        if (MainGameScreen == null)
+        if (MainGameScreen == null || Client.IsObserverOnly)
             return;
 
         if (
@@ -985,7 +985,7 @@ public class GlobalConquestGame : Game
 
     public void handleRightClick()
     {
-        if (MainGameScreen == null || hexMapEngineAdapter == null)
+        if (Client.IsObserverOnly || MainGameScreen == null || hexMapEngineAdapter == null)
             return;
         if (
             GameControl.currentMouseState.X >= 0 && GameControl.currentMouseState.X >= MainGameScreen.MapPanel.Left &&
@@ -1016,7 +1016,7 @@ public class GlobalConquestGame : Game
                 lastSelectedBurb = burb;
                 // Since planes are always on other units or in burbs,
                 // no additional logic is needed.
-                if (unit != null)
+                if (unit != null && player != null)
                 {
                     if (unit.Color.Equals(player.FactionColor) && unit.StrengthPoints > 0 && unit.TurnsUnavailable <= 0)
                     {
@@ -1146,6 +1146,8 @@ public class GlobalConquestGame : Game
     public Player identifySelf()
     {
         Player player;
+        if (Client.IsObserverOnly)
+            return null;
         if (Client.GameState.Players.playerNameToPlayer.ContainsKey(Client.ClientIdentifier))
         {
             player = Client.GameState.Players.playerNameToPlayer[Client.ClientIdentifier];
@@ -1188,6 +1190,8 @@ public class GlobalConquestGame : Game
     public bool IsAllowedToPlan()
     {
         //Globals.Log("IsAllowedToPlan(): enter");
+        if (Client.IsObserverOnly)
+            return false;
         bool canPlan = false;
         if ("plan".Equals(Client.GameState.CurrentPhase))
         {

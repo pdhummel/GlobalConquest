@@ -9,6 +9,7 @@ public class JoinGameValues
     public string Name { get; set; }
 
     public string FactionName { get; set; }
+    public bool IsObserverOnly {get; set;}
 
     public JoinGameValues()
     {

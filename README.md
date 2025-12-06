@@ -101,10 +101,10 @@ The game is being designed with known differences from the original.
 ### Milestone 6
 - [x] Add validations for Host Game and Join Game screens.
 - [ ] Save and load game.
-- [ ] Resign.
-- [ ] Playback.
-- [ ] Allow for Non-player observers.
-    - [ ] Differentiate between visibility for units vs. humans.
+- [x] Allow for Non-player observers.
+- [ ] Resign to AI.
+- [ ] Convert player to AI.
+- [x] The ability to choose a specific target for attack.
 
 ### Milestone 7
 - [ ] Improved Economics
@@ -114,7 +114,6 @@ The game is being designed with known differences from the original.
 - [ ] Add oil and mineral resources.
 - [ ] Exploit
 - [ ] Spy sabotage
-- [x] The ability to choose a specific target for attack.
 
 ### Milestone 8
 - [ ] Treaties
@@ -123,12 +122,13 @@ The game is being designed with known differences from the original.
 - [ ] Event Cards
 
 ### Milestone 10
-- [ ] Make server headless.
+- [ ] Support headless server.
 - [ ] Game controller support.
 - [ ] UI improvements.
 - [ ] Network robustness.
 - [ ] Steam integration
 - [ ] Multi-platform support
+- [ ] Playback.
 
 
 ## Technical Notes

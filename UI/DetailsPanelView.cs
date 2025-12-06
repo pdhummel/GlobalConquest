@@ -153,7 +153,7 @@ public class DetailsPanelView
         }
 
         if (lastSelectedPlane != null && lastSelectedPlane.StrengthPoints > 0 &&
-            (lastSelectedUnit.Visibility.ContainsKey(color) && lastSelectedUnit.Visibility[color] || gcGame.Client.IsObserverOnly))
+            (lastSelectedPlane.Visibility.ContainsKey(color) && lastSelectedPlane.Visibility[color] || gcGame.Client.IsObserverOnly))
         {
             string planeText = lastSelectedPlane.TurnsUnavailable == 0 ? "Plane available" : "Plane grounded " + lastSelectedPlane.TurnsUnavailable + " turns";
             string textureKey = lastSelectedPlane.Color + "-plane";

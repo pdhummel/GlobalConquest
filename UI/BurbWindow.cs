@@ -62,7 +62,7 @@ public class BurbWindow
             int x = Int32.Parse(parts[0]);
             int y = Int32.Parse(parts[1]);
             MapHex mapHex = gameState.Map.Hexes[y, x];
-            if (mapHex.Visibility[player.FactionColor])
+            if (player != null && mapHex.Visibility[player.FactionColor])
             {
                 addBurbRow(mainGameScreen, window, grid, row, mapHex, burb);
                 row += 1;
