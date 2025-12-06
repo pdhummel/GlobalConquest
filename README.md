@@ -102,7 +102,7 @@ The game is being designed with known differences from the original.
 - [x] Add validations for Host Game and Join Game screens.
 - [x] Allow for Non-player observers.
 - [x] Save and load game.
-- [ ] Resign to AI.
+- [x] Resign to AI.
 - [ ] Convert player to AI.
 - [x] The ability to choose a specific target for attack.
 

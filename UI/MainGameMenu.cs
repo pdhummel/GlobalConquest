@@ -24,6 +24,7 @@ public class MainGameMenu
 
     MenuItem saveMenuItem = new MenuItem("Save", "&Save");
     MenuItem loadMenuItem = new MenuItem("Load", "Load");
+    MenuItem resignMenuItem = new MenuItem("Resign", "Resign To AI");
 
     MainGameScreen mainGameScreen;
 
@@ -51,7 +52,12 @@ public class MainGameMenu
             loadMenuItemSelected();
         };        
 
-        //fileMenuItem.Items.Add(new MenuItem("Resign", "Resign"));
+        fileMenuItem.Items.Add(resignMenuItem);
+        resignMenuItem.Selected += (s, a) =>
+        {
+            resignMenuItemSelected();
+        };        
+
         //fileMenuItem.Items.Add(new MenuItem("Restart", "Restart"));
 
         GameControlActionMapper actionMapper = mainGameScreen.gcGame.GameControl.GameControlActionMapper;
@@ -284,4 +290,13 @@ public class MainGameMenu
         dialog.ShowModal(mainGameScreen.grid.Desktop);
     }
 
+    public void resignMenuItemSelected()
+    {
+        Client client = mainGameScreen.gcGame.Client;
+        ResignAction action = new ResignAction();
+        action.ClassType = "GlobalConquest.Actions.ResignAction";
+        action.ClientIdentifier = mainGameScreen.gcGame.Client.ClientIdentifier;
+        mainGameScreen.gcGame.Client.SendAction(action.ClientIdentifier, action);
+        client.IsObserverOnly = true;
+    }
 }
