@@ -150,10 +150,10 @@ public class HostGameScreen
         mapWidthTextBox.BorderThickness = new Thickness(2);
 
         numberOfBurbsLabel.Id = "numberOfBurbsLabel";
-        numberOfBurbsLabel.Text = "# burbs:";
+        numberOfBurbsLabel.Text = "desired # burbs:";
         numberOfBurbsLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
         numberOfBurbsTextBox.Id = "numberOfBurbsTextBox";
-        numberOfBurbsTextBox.Text = "12";
+        numberOfBurbsTextBox.Text = "99";
         numberOfBurbsTextBox.Width = 50;
         numberOfBurbsTextBox.Border = new SolidBrush("#808000FF");
         numberOfBurbsTextBox.BorderThickness = new Thickness(2);
@@ -391,37 +391,81 @@ public class HostGameScreen
     private void okButtonClicked(object? sender, EventArgs e)
     {
         GlobalConquestGame gcGame = (GlobalConquestGame)game;
-
-        this.hide();
         GameSettings gameSettings = new GameSettings();
-        gameSettings.Port = (Int32.Parse(portTextBox.Text));
-        gameSettings.Height = (Int32.Parse(mapHeightTextBox.Text));
-        gameSettings.Width = (Int32.Parse(mapWidthTextBox.Text));
-        gameSettings.NumberOfBurbs = (Int32.Parse(numberOfBurbsTextBox.Text));
-        gameSettings.StartingMoney = (Int32.Parse(startingMoneyTextBox.Text));
-        gameSettings.NumberOfTurnsForGame = (Int32.Parse(numberOfTurnsTextBox.Text));
-        gameSettings.NumberOfHumans = (Int32.Parse(humanPlayersTextBox.Text));
+        bool isValid = true;
+        try
+        {
+            gameSettings.Port = validateTextBoxInteger(portLabel.Text, portTextBox, 1024, 49151);
+            gameSettings.NumberOfHumans = validateTextBoxInteger(humanPlayersLabel.Text, humanPlayersTextBox, 1, 4);;
+            gameSettings.Height = validateTextBoxInteger(mapHeightLabel.Text, mapHeightTextBox, 25, 100);
+            gameSettings.Width = validateTextBoxInteger(mapWidthLabel.Text, mapWidthTextBox, 25, 100);
+            gameSettings.NumberOfBurbs = validateTextBoxInteger(numberOfBurbsLabel.Text, numberOfBurbsTextBox, 0, 99);
+            gameSettings.StartingMoney = validateTextBoxInteger(startingMoneyLabel.Text, startingMoneyTextBox, 0, 999);
+            gameSettings.NumberOfTurnsForGame = validateTextBoxInteger(numberOfTurnsLabel.Text, numberOfTurnsTextBox, -1, 999);
+            gameSettings.TimedSeconds = validateTextBoxInteger(timedSecondsLabel.Text, timedSecondsTextBox, 1, 300);
+            gameSettings.TimedSeconds = (Int32.Parse(timedSecondsTextBox.Text));
+        }
+        catch(Exception ex)
+        {
+            isValid = false;
+        }
         gameSettings.Visibility = ((Label)visibilityComboView.SelectedItem).Text;
         gameSettings.ExecutionMode = ((Label)executionComboView.SelectedItem).Text;
         gameSettings.ScoringOption = ((Label)scoringOptionComboView.SelectedItem).Text;
-        gameSettings.TimedSeconds = (Int32.Parse(timedSecondsTextBox.Text));
         if (nativesCheckButton.IsChecked)
             gameSettings.HasNatives = true;
         else
             gameSettings.HasNatives = false;
 
-        gcGame.Server = new Server();
-        gcGame.Server.StartAsHost(gameSettings, "GlobalConquest");
-
-        if (standaloneServerCheckButton.IsChecked)
+        if (isValid)
         {
-            gcGame.minimizeScreen();
-        }
-        else
-        {
-            joinGameScreen.show();
-        }
+            this.hide();
+            gcGame.Server = new Server();
+            gcGame.Server.StartAsHost(gameSettings, "GlobalConquest");
 
+            if (standaloneServerCheckButton.IsChecked)
+            {
+                gcGame.minimizeScreen();
+            }
+            else
+            {
+                joinGameScreen.show();
+            }
+        }    
+    }
+
+    private int validateTextBoxInteger(string fieldName, TextBox textBox, int min, int max)
+    {
+        int number = 0;
+        bool isValid = true;
+        try 
+        {
+            number = (Int32.Parse(textBox.Text));
+            if (number < min || number > max)
+            {
+                isValid = false;
+                showMessage(fieldName + " must have a value between " + min + " and " + max + ".");
+            }
+        }
+        catch(Exception e) 
+        {
+            isValid = false;
+            showMessage("Could not parse " + fieldName + ".");
+        }
+        if (!isValid)
+        {
+            throw new Exception(fieldName + " was not valid.");
+        }
+        return number;
+    }
+
+    private void showMessage(string message)
+    {
+        Window window = new Window
+        {
+            Title = message
+        };
+        window.ShowModal(grid.Desktop);
     }
 
 

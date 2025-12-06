@@ -45,13 +45,14 @@ public class Map
         Random random = new Random();
         int numberOfBurbs = 0;
         int tries = 0;
-        while (numberOfBurbs < desiredBurbCount && tries < 1000)
+        while (numberOfBurbs < desiredBurbCount && tries < (desiredBurbCount * 10))
         {
             int x = random.Next(0, X);
             int y = random.Next(0, Y);
             MapHex mapHex = Hexes[y, x];
             bool burbConflictFound = false;
-            if (mapHex.Burb == null && mapHex.Terrain.Equals("grass"))
+            if (mapHex.Burb == null && (mapHex.Terrain.Equals("grass") || mapHex.Terrain.Equals("mountain") || 
+                                        mapHex.Terrain.Equals("forest")) )
             {
                 HashSet<MapHex> neighborHexes = getMapHexesInRange(mapHex, 5);
                 foreach (MapHex hex in neighborHexes)

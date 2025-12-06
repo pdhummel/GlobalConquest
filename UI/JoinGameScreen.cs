@@ -80,7 +80,7 @@ public class JoinGameScreen
         hostIpLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
 
         hostIpTextBox.Id = "hostIPTextBox";
-        hostIpTextBox.Width = 200;
+        hostIpTextBox.Width = 150;
         hostIpTextBox.Text = "127.0.0.1";
         hostIpTextBox.Border = new SolidBrush("#808000FF");
         hostIpTextBox.BorderThickness = new Thickness(2);
@@ -100,7 +100,7 @@ public class JoinGameScreen
         nameLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
 
         nameTextBox.Id = "nameTextBox";
-        nameTextBox.Width = 250;
+        nameTextBox.Width = 200;
         string currentUser = Environment.UserName;
         nameTextBox.Text = currentUser;
         nameTextBox.Border = new SolidBrush("#808000FF");
@@ -139,36 +139,18 @@ public class JoinGameScreen
         verticalStackPanel.Widgets.Add(gcImage);
         gcImage.Visible = true;
 
-        verticalStackPanel.Widgets.Add(joinGameLabel);
+        var joinSettingsPanel = new Panel();
+        joinSettingsPanel.Width = 300;
+        joinSettingsPanel.MaxWidth = 300;
+        verticalStackPanel.Widgets.Add(joinSettingsPanel);
+        joinSettingsPanel.Widgets.Add(joinGameLabel);
         joinGameLabel.Visible = true;
+        joinGameLabel.HorizontalAlignment = HorizontalAlignment.Center;
 
-        var hostIpPanel = new HorizontalStackPanel { Spacing = 8 };
-        verticalStackPanel.Widgets.Add(hostIpPanel);
-        hostIpPanel.Widgets.Add(hostIpLabel);
-        hostIpLabel.Visible = true;
-        hostIpPanel.Widgets.Add(hostIpTextBox);
-        hostIpTextBox.Visible = true;
-
-        var hostPortPanel = new HorizontalStackPanel { Spacing = 8 };
-        verticalStackPanel.Widgets.Add(hostPortPanel);
-        hostPortPanel.Widgets.Add(portLabel);
-        portLabel.Visible = true;
-        hostPortPanel.Widgets.Add(portTextBox);
-        portTextBox.Visible = true;
-
-        var namePanel = new HorizontalStackPanel { Spacing = 8 };
-        verticalStackPanel.Widgets.Add(namePanel);
-        namePanel.Widgets.Add(nameLabel);
-        nameLabel.Visible = true;
-        namePanel.Widgets.Add(nameTextBox);
-        nameTextBox.Visible = true;
-
-        var fightingForcePanel = new HorizontalStackPanel { Spacing = 8 };
-        verticalStackPanel.Widgets.Add(fightingForcePanel);
-        fightingForcePanel.Widgets.Add(fightingForceLabel);
-        fightingForceLabel.Visible = true;
-        fightingForcePanel.Widgets.Add(fightingForceComboView);
-        fightingForceComboView.Visible = true;
+        addPanelRow(verticalStackPanel, hostIpLabel, hostIpTextBox);
+        addPanelRow(verticalStackPanel, portLabel, portTextBox);
+        addPanelRow(verticalStackPanel, nameLabel, nameTextBox);
+        addPanelRow(verticalStackPanel, fightingForceLabel, fightingForceComboView);
 
         var buttonsPanel = new HorizontalStackPanel { Spacing = 8 };
         verticalStackPanel.Widgets.Add(buttonsPanel);
@@ -211,6 +193,21 @@ public class JoinGameScreen
         cancelButton.RemoveFromParent();
     }
 
+    private void addPanelRow(VerticalStackPanel verticalStackPanel, Label label, Widget widget)
+    {
+        var panel = new Panel();
+        panel.Width = 350;
+        panel.MaxWidth = 350;
+        verticalStackPanel.Widgets.Add(panel);
+        panel.Widgets.Add(label);
+        label.Visible = true;
+        label.HorizontalAlignment = HorizontalAlignment.Left;
+        widget.HorizontalAlignment = HorizontalAlignment.Right;
+        panel.Widgets.Add(widget);
+        widget.Visible = true;
+    }
+
+
     private void cancelButtonClicked(object? sender, EventArgs e)
     {
         this.hide();
@@ -221,20 +218,66 @@ public class JoinGameScreen
     {
         mainGameScreen = new MainGameScreen(game, grid);
         mainGameScreen.LoadContent();
-        this.hide();
         GameSettings gameSettings = new GameSettings();
         GlobalConquestGame gcGame = (GlobalConquestGame)game;
         gcGame.Client = new Client(gcGame);
         JoinGameValues joinGameValues = new JoinGameValues();
+        bool isValid = true;
+        try
+        {
+            joinGameValues.Port = validateTextBoxInteger(portLabel.Text, portTextBox, 1024, 49151);
+        }
+        catch(Exception ex)
+        {
+            isValid = false;
+        }
         joinGameValues.HostIp = hostIpTextBox.Text;
-        joinGameValues.Port = Int32.Parse(portTextBox.Text);
         joinGameValues.Name = nameTextBox.Text;
         joinGameValues.FactionName = ((Label)fightingForceComboView.SelectedItem).Text;
         gcGame.Client.JoinGameValues = joinGameValues;
-        gcGame.Client.Connect(joinGameValues, "GlobalConquest");
-        gcGame.MyJoinGameValues = joinGameValues;
-        mainGameScreen.show();
-
+        if (isValid)
+        {
+            this.hide();
+            gcGame.Client.Connect(joinGameValues, "GlobalConquest");
+            gcGame.MyJoinGameValues = joinGameValues;
+            mainGameScreen.show();
+        }
     }
+
+
+    private int validateTextBoxInteger(string fieldName, TextBox textBox, int min, int max)
+    {
+        int number = 0;
+        bool isValid = true;
+        try 
+        {
+            number = (Int32.Parse(textBox.Text));
+            if (number < min || number > max)
+            {
+                isValid = false;
+                showMessage(fieldName + " must have a value between " + min + " and " + max + ".");
+            }
+        }
+        catch(Exception e) 
+        {
+            isValid = false;
+            showMessage("Could not parse " + fieldName + ".");
+        }
+        if (!isValid)
+        {
+            throw new Exception(fieldName + " was not valid.");
+        }
+        return number;
+    }
+
+    private void showMessage(string message)
+    {
+        Window window = new Window
+        {
+            Title = message
+        };
+        window.ShowModal(grid.Desktop);
+    }
+
 
 }
