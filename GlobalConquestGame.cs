@@ -15,7 +15,6 @@ using Point = Microsoft.Xna.Framework.Point;
 using Microsoft.Xna.Framework.Audio;
 using GlobalConquest.HexMapEngine.Structures;
 
-
 namespace GlobalConquest;
 
 public class GlobalConquestGame : Game
@@ -55,9 +54,6 @@ public class GlobalConquestGame : Game
     public Unit ParaTrooper {get; set;} = null;
     public JoinGameValues MyJoinGameValues { get; set; }
 
-    [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void SDL_MinimizeWindow(IntPtr window);
-
     bool isMultiHexMove = false;
     public bool IsShowDestinations { get; set; }
 
@@ -66,6 +62,17 @@ public class GlobalConquestGame : Game
     public GameControl GameControl { get; set; } = new GameControl();
     public Dictionary<string, SoundEffect> soundEffects = new Dictionary<string, SoundEffect>();
     public List<GameEvent> GamePlayEvents { get; set; } = new List<GameEvent>();
+
+    [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void SDL_MinimizeWindow(IntPtr window);
+    //[DllImport("user32.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    private static extern bool ShowWindow(System.IntPtr hWnd, int nCmdShow);
+    private const int SW_HIDE = 0;
+    private const int SW_SHOWMINIMIZED = 2;
+    private const int SW_MINIMIZE = 6;
+    private const int SW_SHOWMINNOACTIVE = 7;
+
 
     public GlobalConquestGame()
     {
@@ -96,12 +103,22 @@ public class GlobalConquestGame : Game
     public void minimizeScreen()
     {
         Globals.Log("minimizeScreen(): enter");
-        // TODO: make sure this is cross-platform compatible.
+        // For some reason ShowWindow does not work.
         #if _WINDOWS
+          Globals.Log("minimizeScreen(): windows");
+          ShowWindow(Window.Handle, SW_SHOWMINIMIZED);
+        #endif
+        #if _USE_WINDOWS_FORMS
+          Globals.Log("minimizeScreen(): windows forms");
           SDL_MinimizeWindow(Window.Handle);
           Form form = (Form)Control.FromHandle(Window.Handle);
           form.Hide();
         #endif
+        _graphics.IsFullScreen = false;
+        _graphics.PreferredBackBufferWidth = 300;
+        _graphics.PreferredBackBufferHeight = 100;
+        _graphics.ApplyChanges();
+        JoinGameScreen.showMessage("You may minimize this window");
     }
 
     public Dictionary<string, Texture2D> GetTextures()

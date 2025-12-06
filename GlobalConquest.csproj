@@ -1,13 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <!--<OutputType>WinExe</OutputType>-->
+    <ApplicationId>humblebee.GlobalConquest</ApplicationId>
     <OutputType>Exe</OutputType>
+    <!--
     <TargetFramework>net8.0-windows</TargetFramework>
-     <ApplicationId>humblebee.GlobalConquest</ApplicationId>
+    <UseWindowsForms>true</UseWindowsForms>
+    -->
+    <TargetFramework>net8.0</TargetFramework>
+    <UseWindowsForms>false</UseWindowsForms>
     <RollForward>Major</RollForward>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
-     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <UseWPF>false</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -24,6 +27,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(IsLinux)'=='true'">
     <DefineConstants>_LINUX</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(UseWindowsForms)'=='true'">
+    <DefineConstants>_USE_WINDOWS_FORMS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
