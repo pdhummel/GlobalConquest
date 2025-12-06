@@ -19,6 +19,7 @@ public class ContextMenu
     public GlobalConquestGame gcGame { get; set; }
     VerticalMenu verticalMenu;
     Unit unit;
+    Unit plane;
     MapHex mapHex;
 
     VerticalStackPanel menuContainer;
@@ -182,7 +183,6 @@ public class ContextMenu
             actionMapper.registerControlMethod(sneakMenuItem.Id, this, "stopSneakingMenuItemSelected");
             actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, sneakMenuItem.Id);
             itemIndex += 1;
-
         }
 
         if (unit.RoundsToWait > 0)
@@ -346,10 +346,11 @@ public class ContextMenu
             return;
         }
         HideContextMenu();
-        if (plane == null || plane.StrengthPoints <= 0 || plane.TurnsUnavailable > 0)
+        if (plane == null || plane.StrengthPoints <= 0)
         {
             return;
         }
+        this.plane = plane;
         verticalMenu = new VerticalMenu();
         verticalMenu.Id = "ContextMenu.verticalMenu";
         Map map = MainGameScreen.gcGame.Client.GameState.Map;
@@ -364,89 +365,110 @@ public class ContextMenu
             Spacing = 4
         };
 
-        var reconMenuItem = new MenuItem();
-        reconMenuItem.Id = "ContextMenu.verticalMenu.reconMenuItem";
-        reconMenuItem.Text = "Recon";
-        reconMenuItem.Selected += (s, a) =>
+        if (plane.TurnsUnavailable <= 0)
         {
-            reconMenuItemSelected();
-        };
-        verticalMenu.Items.Add(reconMenuItem);
-        actionMapper.registerControlMethod(reconMenuItem.Id, this, "reconMenuItemSelected");
-        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, reconMenuItem.Id);
-        itemIndex += 1;
+            var reconMenuItem = new MenuItem();
+            reconMenuItem.Id = "ContextMenu.verticalMenu.reconMenuItem";
+            reconMenuItem.Text = "Recon";
+            reconMenuItem.Selected += (s, a) =>
+            {
+                reconMenuItemSelected();
+            };
+            verticalMenu.Items.Add(reconMenuItem);
+            actionMapper.registerControlMethod(reconMenuItem.Id, this, "reconMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, reconMenuItem.Id);
+            itemIndex += 1;
+        }
 
-        var airstrikeMenuItem = new MenuItem();
-        airstrikeMenuItem.Id = "ContextMenu.verticalMenu.airstrikeMenuItem";
-        airstrikeMenuItem.Text = "Airstrike";
-        airstrikeMenuItem.Selected += (s, a) =>
+        if (plane.TurnsUnavailable <= 0)
         {
-            airstrikeMenuItemSelected();
-        };
-        verticalMenu.Items.Add(airstrikeMenuItem);
-        actionMapper.registerControlMethod(airstrikeMenuItem.Id, this, "airstrikeMenuItemSelected");
-        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, airstrikeMenuItem.Id);
-        itemIndex += 1;
+            var airstrikeMenuItem = new MenuItem();
+            airstrikeMenuItem.Id = "ContextMenu.verticalMenu.airstrikeMenuItem";
+            airstrikeMenuItem.Text = "Airstrike";
+            airstrikeMenuItem.Selected += (s, a) =>
+            {
+                airstrikeMenuItemSelected();
+            };
+            verticalMenu.Items.Add(airstrikeMenuItem);
+            actionMapper.registerControlMethod(airstrikeMenuItem.Id, this, "airstrikeMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, airstrikeMenuItem.Id);
+            itemIndex += 1;
+        }
 
-        var transferMenuItem = new MenuItem();
-        transferMenuItem.Id = "ContextMenu.verticalMenu.transferMenuItem";
-        transferMenuItem.Text = "Transfer";
-        transferMenuItem.Selected += (s, a) =>
+        if (plane.TurnsUnavailable <= 0)
         {
-            transferMenuItemSelected();
-        };
-        verticalMenu.Items.Add(transferMenuItem);
-        actionMapper.registerControlMethod(transferMenuItem.Id, this, "transferMenuItemSelected");
-        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, transferMenuItem.Id);
-        itemIndex += 1;
+            var transferMenuItem = new MenuItem();
+            transferMenuItem.Id = "ContextMenu.verticalMenu.transferMenuItem";
+            transferMenuItem.Text = "Transfer";
+            transferMenuItem.Selected += (s, a) =>
+            {
+                transferMenuItemSelected();
+            };
+            verticalMenu.Items.Add(transferMenuItem);
+            actionMapper.registerControlMethod(transferMenuItem.Id, this, "transferMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, transferMenuItem.Id);
+            itemIndex += 1;
+        }
 
-        var bombMenuItem = new MenuItem();
-        bombMenuItem.Id = "ContextMenu.verticalMenu.bombMenuItem";
-        bombMenuItem.Text = "Bomb";
-        bombMenuItem.Selected += (s, a) =>
+        if (plane.TurnsUnavailable <= 0)
         {
-            bombMenuItemSelected();
-        };
-        verticalMenu.Items.Add(bombMenuItem);
-        actionMapper.registerControlMethod(bombMenuItem.Id, this, "bombMenuItemSelected");
-        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, bombMenuItem.Id);
-        itemIndex += 1;
+            var bombMenuItem = new MenuItem();
+            bombMenuItem.Id = "ContextMenu.verticalMenu.bombMenuItem";
+            bombMenuItem.Text = "Bomb";
+            bombMenuItem.Selected += (s, a) =>
+            {
+                bombMenuItemSelected();
+            };
+            verticalMenu.Items.Add(bombMenuItem);
+            actionMapper.registerControlMethod(bombMenuItem.Id, this, "bombMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, bombMenuItem.Id);
+            itemIndex += 1;
+        }
 
-        var dogfightMenuItem = new MenuItem();
-        dogfightMenuItem.Id = "ContextMenu.verticalMenu.dogfightMenuItem";
-        dogfightMenuItem.Text = "Dogfight";
-        dogfightMenuItem.Selected += (s, a) =>
+        if (plane.TurnsUnavailable <= 0)
         {
-            dogfightMenuItemSelected();
-        };
-        verticalMenu.Items.Add(dogfightMenuItem);
-        actionMapper.registerControlMethod(dogfightMenuItem.Id, this, "dogfightMenuItemSelected");
-        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, dogfightMenuItem.Id);
-        itemIndex += 1;
+            var dogfightMenuItem = new MenuItem();
+            dogfightMenuItem.Id = "ContextMenu.verticalMenu.dogfightMenuItem";
+            dogfightMenuItem.Text = "Dogfight";
+            dogfightMenuItem.Selected += (s, a) =>
+            {
+                dogfightMenuItemSelected();
+            };
+            verticalMenu.Items.Add(dogfightMenuItem);
+            actionMapper.registerControlMethod(dogfightMenuItem.Id, this, "dogfightMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, dogfightMenuItem.Id);
+            itemIndex += 1;
+        }
 
-        var kamikazeMenuItem = new MenuItem();
-        kamikazeMenuItem.Id = "ContextMenu.verticalMenu.kamikazeMenuItem";
-        kamikazeMenuItem.Text = "Kamikaze";
-        kamikazeMenuItem.Selected += (s, a) =>
+        if (plane.TurnsUnavailable <= 0)
         {
-            kamikazeMenuItemSelected();
-        };
-        verticalMenu.Items.Add(kamikazeMenuItem);
-        actionMapper.registerControlMethod(kamikazeMenuItem.Id, this, "kamikazeMenuItemSelected");
-        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, kamikazeMenuItem.Id);
-        itemIndex += 1;
+            var kamikazeMenuItem = new MenuItem();
+            kamikazeMenuItem.Id = "ContextMenu.verticalMenu.kamikazeMenuItem";
+            kamikazeMenuItem.Text = "Kamikaze";
+            kamikazeMenuItem.Selected += (s, a) =>
+            {
+                kamikazeMenuItemSelected();
+            };
+            verticalMenu.Items.Add(kamikazeMenuItem);
+            actionMapper.registerControlMethod(kamikazeMenuItem.Id, this, "kamikazeMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, kamikazeMenuItem.Id);
+            itemIndex += 1;
+        }
 
-        var paradropMenuItem = new MenuItem();
-        paradropMenuItem.Id = "ContextMenu.verticalMenu.paradropMenuItem";
-        paradropMenuItem.Text = "ParaDrop";
-        paradropMenuItem.Selected += (s, a) =>
+        if (plane.TurnsUnavailable <= 0)
         {
-            paradropMenuItemSelected();
-        };
-        verticalMenu.Items.Add(paradropMenuItem);
-        actionMapper.registerControlMethod(paradropMenuItem.Id, this, "paradropMenuItemSelected");
-        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, paradropMenuItem.Id);
-        itemIndex += 1;
+            var paradropMenuItem = new MenuItem();
+            paradropMenuItem.Id = "ContextMenu.verticalMenu.paradropMenuItem";
+            paradropMenuItem.Text = "ParaDrop";
+            paradropMenuItem.Selected += (s, a) =>
+            {
+                paradropMenuItemSelected();
+            };
+            verticalMenu.Items.Add(paradropMenuItem);
+            actionMapper.registerControlMethod(paradropMenuItem.Id, this, "paradropMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, paradropMenuItem.Id);
+            itemIndex += 1;
+        }
 
         var refreshMapHexMenuItem = new MenuItem();
         refreshMapHexMenuItem.Id = "ContextMenu.verticalMenu.refreshMapHexMenuItem";
@@ -459,6 +481,35 @@ public class ContextMenu
         actionMapper.registerControlMethod(refreshMapHexMenuItem.Id, this, "refreshMapHexMenuItemSelected");
         actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, refreshMapHexMenuItem.Id);
         itemIndex += 1;
+
+        if (plane.IsDefending)
+        {
+            var stopDefendingMenuItem = new MenuItem();
+            stopDefendingMenuItem.Id = "ContextMenu.verticalMenu.stopDefendingMenuItem";
+            stopDefendingMenuItem.Text = "Stop Defending";
+            stopDefendingMenuItem.Selected += (s, a) =>
+            {
+                stopDefendingMenuItemSelected();
+            };
+            verticalMenu.Items.Add(stopDefendingMenuItem);
+            actionMapper.registerControlMethod(stopDefendingMenuItem.Id, this, "stopDefendingMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, stopDefendingMenuItem.Id);
+            itemIndex += 1;
+        }
+        else if (!plane.IsDefending)
+        {
+            var defendMenuItem = new MenuItem();
+            defendMenuItem.Id = "ContextMenu.verticalMenu.defendMenuItem";
+            defendMenuItem.Text = "Defend";
+            defendMenuItem.Selected += (s, a) =>
+            {
+                defendMenuItemSelected();
+            };
+            verticalMenu.Items.Add(defendMenuItem);
+            actionMapper.registerControlMethod(defendMenuItem.Id, this, "defendMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, defendMenuItem.Id);
+            itemIndex += 1;
+        }
 
 
         menuContainer.Widgets.Add(verticalMenu);
@@ -557,6 +608,37 @@ public class ContextMenu
         action.IsBlitzing = false;
         action.IsSneaking = true;
         action.RoundsToWait = unit.RoundsToWait;
+        gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+        HideContextMenu();
+    }
+
+    public void stopDefendingMenuItemSelected()
+    {
+        if (gcGame.lastSelectedUnit != null)
+        {
+            ChangeUnitContextAction action = new ChangeUnitContextAction();
+            action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
+            action.ClientIdentifier = gcGame.Client.ClientIdentifier;
+            action.Unit = plane;
+            action.IsBlitzing = plane.IsBlitzing;
+            action.IsSneaking = plane.IsSneaking;
+            action.RoundsToWait = plane.RoundsToWait;
+            action.IsDefending = false;
+            gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+        }
+        HideContextMenu();
+    }
+
+    public void defendMenuItemSelected()
+    {
+        ChangeUnitContextAction action = new ChangeUnitContextAction();
+        action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
+        action.ClientIdentifier = gcGame.Client.ClientIdentifier;
+        action.Unit = plane;
+        action.IsBlitzing = plane.IsBlitzing;
+        action.IsSneaking = plane.IsSneaking;
+        action.RoundsToWait = plane.RoundsToWait;
+        action.IsDefending = true;
         gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
         HideContextMenu();
     }

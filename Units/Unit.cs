@@ -79,6 +79,8 @@ public class Unit
 
     public bool IsAttacked {get;set;} = false;
 
+    public bool IsDefending {get; set;} = true;
+
     public Unit()
     {
     }

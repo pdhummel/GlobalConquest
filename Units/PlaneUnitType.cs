@@ -271,12 +271,12 @@ public class PlaneUnitType : UnitType
         foreach (MapHex mapHex in enemyPlaneHexes)
         {
             Unit hexUnit = mapHex.getUnit();
-            if (mapHex.Airplane != null && !color.Equals(mapHex.Airplane.Color))
+            if (mapHex.Airplane != null && !color.Equals(mapHex.Airplane.Color) && mapHex.Airplane.IsDefending)
             {
                 enemyPlane = mapHex.Airplane;
                 break;
             }
-            else if (hexUnit != null && hexUnit.Airplane != null && !color.Equals(hexUnit.Airplane.Color))
+            else if (hexUnit != null && hexUnit.Airplane != null && !color.Equals(hexUnit.Airplane.Color)  && hexUnit.Airplane.IsDefending)
             {
                 enemyPlane = hexUnit.Airplane;
                 break;

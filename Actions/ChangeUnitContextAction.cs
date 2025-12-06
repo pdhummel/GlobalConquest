@@ -10,7 +10,7 @@ public class ChangeUnitContextAction : PlayerAction
     public bool IsBlitzing { get; set; }
     public bool IsSneaking { get; set; }
     public int RoundsToWait { get; set; }
-
+    public bool IsDefending { get; set; }
 
     public new void deserializeAndExecute(NetPeer peer, Object serverObj)
     {
@@ -34,9 +34,20 @@ public class ChangeUnitContextAction : PlayerAction
             Unit existingUnit = mapHex.getUnit();
             if (existingUnit != null)
             {
+                if ("plane".Equals(Unit.UnitType) && !"plane".Equals(existingUnit))
+                {
+                    existingUnit = existingUnit.Airplane;
+                }
+                if (existingUnit == null && "plane".Equals(Unit.UnitType))
+                {
+                    existingUnit = mapHex.Airplane;
+                }
+                if (existingUnit == null)
+                    return;
                 existingUnit.IsBlitzing = IsBlitzing;
                 existingUnit.IsSneaking = IsSneaking;
                 existingUnit.RoundsToWait = RoundsToWait;
+                existingUnit.IsDefending = IsDefending;
                 server.sendGameStateAndMapHex(Unit.X, Unit.Y);
             }
         }
