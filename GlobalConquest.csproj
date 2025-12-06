@@ -9,7 +9,7 @@
     <TieredCompilation>false</TieredCompilation>
      <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>    
+    <UseWPF>false</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
     <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>

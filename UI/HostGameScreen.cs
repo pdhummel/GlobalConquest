@@ -9,7 +9,6 @@ using static Myra.Graphics2D.UI.Grid;
 using Thickness = Myra.Graphics2D.Thickness;
 using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
 using VerticalAlignment = Myra.Graphics2D.UI.VerticalAlignment;
-using System.Windows;
 using Label = Myra.Graphics2D.UI.Label;
 using TextBox = Myra.Graphics2D.UI.TextBox;
 using Image = Myra.Graphics2D.UI.Image;

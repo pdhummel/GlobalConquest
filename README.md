@@ -114,7 +114,7 @@ The game is being designed with known differences from the original.
 - [ ] Add oil and mineral resources.
 - [ ] Exploit
 - [ ] Spy sabotage
-- [ ] The ability to choose a specific target for attack.
+- [x] The ability to choose a specific target for attack.
 
 ### Milestone 8
 - [ ] Treaties

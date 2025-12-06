@@ -13,6 +13,8 @@ using Label = Myra.Graphics2D.UI.Label;
 using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
 using TextBox = Myra.Graphics2D.UI.TextBox;
 using Thickness = Myra.Graphics2D.Thickness;
+using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
+using Panel = Myra.Graphics2D.UI.Panel;
 
 namespace GlobalConquest.UI;
 
