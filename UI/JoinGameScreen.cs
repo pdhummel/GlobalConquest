@@ -70,6 +70,8 @@ public class JoinGameScreen
 
     public void LoadContent()
     {
+        ((GlobalConquestGame)game).JoinGameScreen = this;
+
         Texture2D gcTexture = game.Content.Load<Texture2D>("GC-cropped-intro_000");
         var textureRegion = new TextureRegion(gcTexture);
         gcImage.Renderable = textureRegion;
@@ -272,7 +274,7 @@ public class JoinGameScreen
         return number;
     }
 
-    private void showMessage(string message)
+    public void showMessage(string message)
     {
         Window window = new Window
         {

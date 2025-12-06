@@ -23,6 +23,7 @@ public class GlobalConquestGame : Game
     public Server? Server { get; set; }
     public Client? Client { get; set; }
     public MainGameScreen MainGameScreen { get; set; }
+    public JoinGameScreen JoinGameScreen {get; set;}
 
     private GraphicsDeviceManager _graphics;
     private readonly IntPtr drawSurface;

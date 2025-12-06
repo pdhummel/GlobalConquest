@@ -31,6 +31,7 @@ public class GameEvent
     public long Ticks { get; set; }
     public int Turn { get; set; }
     public int Round { get; set; }
+    //public string? Message {get; set;}
 
     public List<MapHex>? MapHexBuffer { get; set; } = new List<MapHex>();
     public bool IsLastMapHexBufferUpdate {get; set;} = false;
@@ -42,6 +43,7 @@ public class GameEvent
     public Unit? Unit { get; set; }
     public string? EnemyColor { get; set; }
     public string? EventString { get; set; }
+    public string? TargetScreenId {get; set;}
 
 
 
@@ -82,7 +84,8 @@ public class GameEvent
             "unitSufferedAttrition",// UnitType at Maphex suffered attrition
             "enemyUnitDiscovered",  // EnemyColor UnitType discovered at MapHex
             "burbDiscovered",       // EnemyColor BurbType BurbName discovered at MapHex
-            "gracePeriodStarted"
+            "gracePeriodStarted",
+            "serverMessage"
          };
          GamePlayEvents.UnionWith(gamePlayEvents);        
     }
@@ -364,5 +367,19 @@ public class GameEvent
     {
         EventString = "Grace period started before execution.";
         Game.playSoundEffect(EventType);
+    }
+
+    public void serverMessageHandler()
+    {
+        Globals.Log("serverMessageHandler(): enter");
+        if (TargetScreenId == null)
+            Game.MainGameScreen.showMessage(EventString);
+        else if (TargetScreenId.Equals("JoinGameScreen"))
+        {
+            Game.MainGameScreen.hide();
+            Game.JoinGameScreen.show();
+            Game.JoinGameScreen.showMessage(EventString);
+        }
+            
     }
 }

@@ -99,7 +99,7 @@ The game is being designed with known differences from the original.
 - [x] AI support for planes.
 
 ### Milestone 6
-- [ ] Add validations for Host Game and Join Game screens.
+- [x] Add validations for Host Game and Join Game screens.
 - [ ] Save and load game.
 - [ ] Resign.
 - [ ] Playback.

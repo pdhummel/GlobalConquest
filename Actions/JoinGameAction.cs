@@ -1,6 +1,6 @@
 using System.Text.Json;
 using LiteNetLib;
-
+using GlobalConquest;
 namespace GlobalConquest.Actions;
 
 public class JoinGameAction : PlayerAction
@@ -27,6 +27,11 @@ public class JoinGameAction : PlayerAction
         if (gameState.Players.playerNameToPlayer.ContainsKey(JoinGameValues.Name))
         {
             Globals.Log("execute(): Player with that name is already used:" + JoinGameValues.Name);
+            GameEvent gameEvent = new GameEvent();
+            gameEvent.EventType = "serverMessage";
+            gameEvent.TargetScreenId = "JoinGameScreen";
+            gameEvent.EventString = "Player with that name is already used: " + JoinGameValues.Name;
+            server.sendGamePlayEvent(peer, gameEvent);
             return;
         }
         List<string> playerNames = gameState.Players.playerNameToPlayer.Keys.ToList<string>();
@@ -36,6 +41,11 @@ public class JoinGameAction : PlayerAction
             if (player.FactionColor.Equals(faction.Color))
             {
                 Globals.Log("execute(): Faction has already been chosen: " + faction.Color);
+                GameEvent gameEvent = new GameEvent();
+                gameEvent.EventType = "serverMessage";
+                gameEvent.TargetScreenId = "JoinGameScreen";
+                gameEvent.EventString = "Faction has already been chosen: " + faction.Color;
+                server.sendGamePlayEvent(peer, gameEvent);
                 return;
             }
         }

@@ -197,4 +197,14 @@ public class MainGameScreen
         return ContextMenu.IsShowContextMenu;
     }
 
+    public void showMessage(string message)
+    {
+        Window window = new Window
+        {
+            Title = message
+        };
+        window.ShowModal(grid.Desktop);
+    }
+
+
 }
