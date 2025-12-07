@@ -85,7 +85,9 @@ public class GameEvent
             "enemyUnitDiscovered",  // EnemyColor UnitType discovered at MapHex
             "burbDiscovered",       // EnemyColor BurbType BurbName discovered at MapHex
             "gracePeriodStarted",
-            "serverMessage"
+            "serverMessage",
+            "planeDefending",
+            "planeInDogfight"
          };
          GamePlayEvents.UnionWith(gamePlayEvents);        
     }
@@ -162,6 +164,19 @@ public class GameEvent
         return location;
     }
 
+    public string GetUnitLocation(bool returnEmpty)
+    {
+        string location = "[location]";
+        if (returnEmpty)
+            location = "";
+        if (MapHex != null)
+            location = Unit.X + "," + Unit.Y;
+        return location;
+    }
+    public string GetUnitLocation()
+    {
+        return GetUnitLocation(false);
+    }
 
 
     public string GetBurbType()
@@ -339,7 +354,7 @@ public class GameEvent
    public void airplaneMissionSuceededHandler()
     {
         EventString = "Air mission suceeded for " + GetUnitType() + " at " + GetLocation() + ".";
-        Game.playSoundEffect(EventType);
+        Game.playSoundEffect("airplaneNotification");
         //Game.addGamePlayEvent(this);
     } 
    public void airplaneStrikeSuceededHandler()
@@ -382,4 +397,21 @@ public class GameEvent
         }
             
     }
+
+   public void planeDefendingHandler()
+    {
+        Globals.Log("planeDefendingHandler(): enter");
+        Game.playSoundEffect("jetFlyby");
+        EventString = "Plane at " + GetUnitLocation() + " grounded from defense action at " + GetLocation() + ".";
+        Game.addGamePlayEvent(this);
+    }
+
+   public void planeInDogfightHandler()
+    {
+        Globals.Log("planeInDogfightHandler(): enter");
+        Game.playSoundEffect("jetFlyby");
+        EventString = "Plane at " + GetUnitLocation() + " grounded from dogfight.";
+        Game.addGamePlayEvent(this);
+    }
+
 }

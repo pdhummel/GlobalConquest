@@ -109,6 +109,22 @@ public class ParaDropAction : PlayerAction
                 server.sendGameStateAndMapHex(DestinationX, DestinationY);
                 server.sendGamePlayEvent(Plane.Color, gameEvent);     
             }
+
+            if (outcome.EnemyPlane != null && !outcome.IsEnemyPlaneShotDown)
+            {
+                if (outcome.EnemyPlane.ParentUnitId != null && map.UnitIdToUnit.ContainsKey(outcome.EnemyPlane.ParentUnitId))
+                {
+                    Unit enemyParentUnit = map.UnitIdToUnit[outcome.EnemyPlane.ParentUnitId];
+                    server.sendGameStateAndMapHex(enemyParentUnit.X, enemyParentUnit.Y);
+                }    
+                server.sendGameStateAndMapHex(outcome.EnemyPlane.X, outcome.EnemyPlane.Y);
+                GameEvent gameEvent = new GameEvent();
+                gameEvent.Unit = outcome.EnemyPlane;
+                gameEvent.MapHex = map.Hexes[DestinationY, DestinationX];
+                gameEvent.EventType = "planeDefending";
+                server.sendGamePlayEvent(outcome.EnemyPlane.Color, gameEvent);
+            }
+
             Globals.Log("execute(): paraDrop action complete");
         }
 

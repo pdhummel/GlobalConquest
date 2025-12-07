@@ -58,6 +58,8 @@ public class GlobalConquestGame : Game
     public bool IsShowDestinations { get; set; }
 
     public bool IsShowAirplanes { get; set; }
+    public bool IsAirTargetSelectionNeeded
+     {get; set;}
 
     public GameControl GameControl { get; set; } = new GameControl();
     public Dictionary<string, SoundEffect> soundEffects = new Dictionary<string, SoundEffect>();
@@ -189,6 +191,8 @@ public class GlobalConquestGame : Game
         loadSoundEffect("airplaneMissionSuceeded");
         loadSoundEffect("airplaneMissionFailed");
         loadSoundEffect("gracePeriodStarted");
+        loadSoundEffect("airplaneNotification");
+        loadSoundEffect("jetFlyby");
     }
 
     private void loadSoundEffect(string soundEffectEventName)
@@ -421,6 +425,7 @@ public class GlobalConquestGame : Game
                 {
                     Globals.spriteBatch.DrawCircle(hexPixelVector, longRadius, 32, Color.Red);
                 }
+                IsAirTargetSelectionNeeded = true;
             }
 
             if (lastSelectedUnit != null)
@@ -796,7 +801,7 @@ public class GlobalConquestGame : Game
                     lastSelectedUnit = unit;
                 }
             }
-            else if (ReconMode && (previousSelectedHex != null || previousSelectedUnit != null) && lastSelectedHex != null)
+            else if (IsAirTargetSelectionNeeded && ReconMode && (previousSelectedHex != null || previousSelectedUnit != null) && lastSelectedHex != null)
             {
                 ReconAction action = new ReconAction();
                 action.ClassType = "GlobalConquest.Actions.ReconAction";
@@ -818,7 +823,7 @@ public class GlobalConquestGame : Game
                     lastSelectedUnit = unit;
                 }
             }
-            else if (AirstrikeMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+            else if (IsAirTargetSelectionNeeded && AirstrikeMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
                      lastSelectedUnit != null && lastSelectedUnit.Id != null && lastSelectedHex != null)
             {
                 AirstrikeAction action = new AirstrikeAction();
@@ -896,7 +901,7 @@ public class GlobalConquestGame : Game
                     lastSelectedUnit = unit;
                 }
             }
-            else if (KamikazeMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+            else if (IsAirTargetSelectionNeeded && KamikazeMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
                      lastSelectedUnit != null && lastSelectedUnit.Id != null && lastSelectedHex != null)
             {
                 KamikazeAction action = new KamikazeAction();
@@ -919,7 +924,7 @@ public class GlobalConquestGame : Game
                     lastSelectedUnit = unit;
                 }
             }
-            else if (DogfightMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+            else if (IsAirTargetSelectionNeeded && DogfightMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
                      lastSelectedHex != null)
             {
                 DogfightAction action = new DogfightAction();
@@ -942,7 +947,7 @@ public class GlobalConquestGame : Game
                     lastSelectedUnit = unit;
                 }
             }
-            else if (TransferMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+            else if (IsAirTargetSelectionNeeded && TransferMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
                      lastSelectedHex != null)
             {
                 TransferAction action = new TransferAction();
@@ -969,7 +974,7 @@ public class GlobalConquestGame : Game
                     lastSelectedUnit = unit;
                 }
             }
-            else if (BombMode && (previousSelectedHex != null) && 
+            else if (IsAirTargetSelectionNeeded && BombMode && (previousSelectedHex != null) && 
                      lastSelectedHex != null)
             {
                 BombAction action = new BombAction();

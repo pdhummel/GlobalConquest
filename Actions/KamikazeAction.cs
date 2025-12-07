@@ -147,6 +147,17 @@ public class KamikazeAction : PlayerAction
                         gameEvent.EventType = "unitDestroyed";
                         server.sendGamePlayEvent(targetUnit.Color, gameEvent);
                         Globals.Log("execute(): airstrike destroyed enemy");
+                        if ("comcen".Equals(targetUnit.UnitType))
+                        {
+                            gameEvent = new GameEvent("enemyPlayerLostGame");
+                            gameEvent.EnemyColor = targetUnit.Color;
+                            server.sendGamePlayEvent(Plane.Color, gameEvent);
+                            gameEvent.EventType = "playerLostGame";
+                            server.sendGamePlayEvent(targetUnit.Color, gameEvent);
+
+                            Faction faction = server.gameState.Factions.ColorToFaction[targetUnit.Color];
+                            faction.HasComCen = false;
+                        }
                     }
                     else
                     {
@@ -154,7 +165,12 @@ public class KamikazeAction : PlayerAction
                         gameEvent.MapHex = targetMapHex;
                         gameEvent.Unit = existingPlane;
                         gameEvent.EnemyColor = targetUnit.Color;
-                        server.sendGamePlayEvent(Plane.Color, gameEvent);             
+                        server.sendGamePlayEvent(Plane.Color, gameEvent);
+                        gameEvent = new GameEvent("unitAttacked");
+                        gameEvent.MapHex = targetMapHex;
+                        gameEvent.Unit = targetUnit;
+                        gameEvent.EnemyColor = existingPlane.Color;
+                        server.sendGamePlayEvent(targetUnit.Color, gameEvent);
                     }
                     server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
                     server.sendGameStateAndMapHex(targetMapHex.X, targetMapHex.Y);
@@ -208,6 +224,21 @@ public class KamikazeAction : PlayerAction
                 if (parentUnit != null)
                     server.sendGameStateAndMapHex(parentUnit.X, parentUnit.Y);
                 server.sendGamePlayEvent(Plane.Color, gameEvent);
+            }
+
+            if (outcome.EnemyPlane != null && !outcome.IsEnemyPlaneShotDown)
+            {
+                if (outcome.EnemyPlane.ParentUnitId != null && map.UnitIdToUnit.ContainsKey(outcome.EnemyPlane.ParentUnitId))
+                {
+                    Unit enemyParentUnit = map.UnitIdToUnit[outcome.EnemyPlane.ParentUnitId];
+                    server.sendGameStateAndMapHex(enemyParentUnit.X, enemyParentUnit.Y);
+                }    
+                server.sendGameStateAndMapHex(outcome.EnemyPlane.X, outcome.EnemyPlane.Y);
+                GameEvent gameEvent = new GameEvent();
+                gameEvent.Unit = outcome.EnemyPlane;
+                gameEvent.MapHex = map.Hexes[StrikeY, StrikeX];
+                gameEvent.EventType = "planeDefending";
+                server.sendGamePlayEvent(outcome.EnemyPlane.Color, gameEvent);
             }
 
             Globals.Log("execute(): kamikaze action complete");

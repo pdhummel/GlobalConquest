@@ -37,6 +37,12 @@
 /processorParam:Quality=Best
 /build:airplaneMissionSuceeded.wav
 
+#begin airplaneNotification.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:airplaneNotification.wav
+
 #begin amber-battleship-48x48.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -565,6 +571,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:grey-transport-infantry-48x48.png
+
+#begin jetFlyby.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:jetFlyby.wav
 
 #begin magenta-battleship-48x48.png
 /importer:TextureImporter

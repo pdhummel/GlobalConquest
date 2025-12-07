@@ -721,31 +721,37 @@ public class ContextMenu
     public void reconMenuItemSelected()
     {
         gcGame.ReconMode = true;
+        gcGame.IsAirTargetSelectionNeeded = false;
         HideContextMenu();
     }
     public void airstrikeMenuItemSelected()
     {
         gcGame.AirstrikeMode = true;
+        gcGame.IsAirTargetSelectionNeeded = false;
         HideContextMenu();
     }
     public void transferMenuItemSelected()
     {
         gcGame.TransferMode = true;
+        gcGame.IsAirTargetSelectionNeeded = false;
         HideContextMenu();
     }
     public void bombMenuItemSelected()
     {
         gcGame.BombMode = true;
+        gcGame.IsAirTargetSelectionNeeded = false;
         HideContextMenu();
     }
     public void kamikazeMenuItemSelected()
     {
         gcGame.KamikazeMode = true;
+        gcGame.IsAirTargetSelectionNeeded = false;
         HideContextMenu();
     }
     public void dogfightMenuItemSelected()
     {
         gcGame.DogfightMode = true;
+        gcGame.IsAirTargetSelectionNeeded = false;
         HideContextMenu();
     }
 

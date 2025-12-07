@@ -17,6 +17,7 @@ public class Ai
     List<AiGoal> goals = new List<AiGoal>();
     List<AiGoal> exploreGoals = new List<AiGoal>();
     Dictionary<string, AiGoal> targetXyToGoal = new Dictionary<string, AiGoal>();
+    Unit comcen;
 
     Unit spy;
     MapHex myMetroHex;
@@ -50,7 +51,30 @@ public class Ai
         if (unit != null && "spy".Equals(unit.UnitType))
             spy = unit;
 
+        List<MapHex> metroNeighbors = map.getSurroundingHexesList(myMetroHex);
+        foreach (MapHex neighbor in metroNeighbors)
+        {
+            Unit neighborUnit = neighbor.getUnit();
+            if (neighborUnit != null && "comcen".Equals(neighborUnit.UnitType))
+            {
+                comcen = neighborUnit;
+                break;
+            }
+        }
+
         createInitialGoals();
+        // Let the AI know about their comcen.
+        if (targetXyToGoal.ContainsKey(myMetroHex.X +"," + myMetroHex.Y))
+        {
+            AiGoal metroGoal = targetXyToGoal[myMetroHex.X +"," + myMetroHex.Y];
+            AiUnit aiUnit = new AiUnit();
+            MapHex comcenHex = map.Hexes[comcen.Y, comcen.X];
+            aiUnit.InitialPosition = comcenHex;
+            aiUnit.UnitType = "comcen";
+            aiUnit.Unit = comcen;
+            aiUnit.ShouldMoveToTarget = false;
+            metroGoal.ActualUnits.Add(aiUnit);
+        }
     }
 
     public void planTurn()
@@ -341,6 +365,10 @@ public class Ai
             {
                 flyMission(goal, aiUnit.Unit);
                 continue;
+            }
+            if (aiUnit.Unit != null && aiUnit.Unit.Airplane != null)
+            {
+                flyMission(goal, aiUnit.Unit.Airplane);
             }
             UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
             if (aiUnit.Unit != null && aiUnit.LastMapHex != null && aiUnit.Unit.ActionQueue.Count > 0)
