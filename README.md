@@ -105,6 +105,7 @@ The game is being designed with known differences from the original.
 - [x] Resign to AI.
 - [ ] Convert player to AI.
 - [ ] Convert AI to player.
+- [ ] Ability to change game settings.
 - [x] The ability to choose a specific target for attack.
 
 ### Milestone 7
