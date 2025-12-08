@@ -398,7 +398,7 @@ public class GlobalConquestGame : Game
                         }
                     }
                 }
-                Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
+                Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedUnit.X, lastSelectedUnit.Y));
                 MainGameScreen.HideContextMenu();
                 DrawLine(hexPixelVector, color);
                 IsTargetSelectionNeeded = true;

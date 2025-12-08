@@ -330,12 +330,16 @@ public class MainGameMenu
         mainGameScreen.gcGame.MyJoinGameValues.increaseGameExecutionSpeed();
         string next = mainGameScreen.gcGame.MyJoinGameValues.getNextFasterGameSpeed();
         increaseGameSpeedMenuItem.Text =  "Game Speed+ (" + next + ")";
+        next = mainGameScreen.gcGame.MyJoinGameValues.getNextSlowerGameSpeed();
+        decreaseGameSpeedMenuItem.Text =  "Game Speed- (" + next + ")";
     }
 
     public void decreaseGameSpeedMenuItemSelected()
     {
         mainGameScreen.gcGame.MyJoinGameValues.decreaseGameExecutionSpeed();
-        string next = mainGameScreen.gcGame.MyJoinGameValues.getNextSlowerGameSpeed();
-        decreaseGameSpeedMenuItem.Text =  "Game Speed+ (" + next + ")";
+        string next = mainGameScreen.gcGame.MyJoinGameValues.getNextFasterGameSpeed();
+        increaseGameSpeedMenuItem.Text =  "Game Speed+ (" + next + ")";
+        next = mainGameScreen.gcGame.MyJoinGameValues.getNextSlowerGameSpeed();
+        decreaseGameSpeedMenuItem.Text =  "Game Speed- (" + next + ")";
     }
 }

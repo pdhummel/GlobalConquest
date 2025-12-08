@@ -67,20 +67,20 @@ public class JoinGameValues
     }
     public string getNextFasterGameSpeed()
     {
-        Globals.Log("getNextFasterGameSpeed(): enter");
+        //Globals.Log("getNextFasterGameSpeed(): enter");
         int index = currentAnimalIndex;
         if (index < 4)
             index += 1;
-        Globals.Log("getNextFasterGameSpeed(): " + animals[index]);
+        //Globals.Log("getNextFasterGameSpeed(): " + animals[index]);
         return animals[index];
     }
     public string getNextSlowerGameSpeed()
     {
-        Globals.Log("getNextSlowerGameSpeed(): enter");
+        //Globals.Log("getNextSlowerGameSpeed(): enter");
         int index = currentAnimalIndex;
         if (index > 0)
             index -= 1;
-        Globals.Log("getNextSlowerGameSpeed(): " + animals[index]);
+        //Globals.Log("getNextSlowerGameSpeed(): " + animals[index]);
         return animals[index];
     }
 
