@@ -109,6 +109,25 @@ public class GameState
             //Map.placeNewUnit(plane1, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
+
+            // Test with some large quantity of units
+            if (1 == 0)
+            {
+                for (int i=0; i< 100; i++)
+                {
+                    int x = rand.Next(0, 25);
+                    int y = rand.Next(0, 25);
+                    MapHex mapHex = Map.Hexes[y, x];
+                    if (mapHex.getUnit() == null)
+                    {
+                        infantry = new Unit();
+                        infantry.UnitType = "infantry";
+                        infantry.Color = color;
+                        infantry.setOmniVisibility();
+                        placeUnit(mapHex, infantry);
+                    }    
+                }
+            }
         }
         else if (color.Equals("ocher"))
         {

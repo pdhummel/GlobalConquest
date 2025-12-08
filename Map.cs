@@ -16,6 +16,7 @@ public class Map
     public Dictionary<string, MapHex> LeftMetro { get; set; } = new Dictionary<string, MapHex>();
     public Dictionary<string, MapHex> RightMetro { get; set; } = new Dictionary<string, MapHex>();
     public Dictionary<string, MapHex> DiagonalMetro { get; set; } = new Dictionary<string, MapHex>();
+
     public Dictionary<string, Unit> UnitIdToUnit { get; set; } = new Dictionary<string, Unit>();
     public Dictionary<string, HashSet<string>> ColorToUnitIds { get; set; } = new Dictionary<string, HashSet<string>>();
     public bool IsMapReady { get; set; } = false;

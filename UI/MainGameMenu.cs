@@ -133,6 +133,11 @@ public class MainGameMenu
 
     }
 
+    public bool IsMouseInside()
+    {
+        return mainGameScreen.MainGameMenuPanel.IsMouseInside; // horizontalMenu.IsMouseInside;
+    }
+
     public void refreshStateMenuItemSelected()
     {
         RefreshGameStateAction action = new RefreshGameStateAction();

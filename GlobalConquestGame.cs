@@ -771,6 +771,10 @@ public class GlobalConquestGame : Game
                 }
                 return;
             }
+            if (MainGameScreen.MainGameMenu != null && MainGameScreen.MainGameMenu.IsMouseInside())
+            {
+                return;
+            }
             MapHex previousSelectedHex = lastSelectedHex;
             Unit previousSelectedUnit = lastSelectedUnit;
             handleClickMouseOnMap();

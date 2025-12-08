@@ -327,13 +327,14 @@ class HexMapEngineAdapter
         //Globals.Log("Process_DrawEvent(): " + Global.MAP_HEX_TILE_ARRAY[0, 0]);
         //coHexTileMap.Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
         Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
-        DrawCities();
-        DrawUnits();
+        //DrawCities();
+        //DrawUnits();
     }
 
     public void DrawCities()
     {
         MapHex[,] hexes = gcGame.Client.GameState.Map.Hexes;
+        Player player = identifySelf();
         for (int liY = 0; liY < hexHeight; liY++)
         {
             for (int liX = 0; liX < hexWidth; liX++)
@@ -344,11 +345,11 @@ class HexMapEngineAdapter
                     string burbId = burb.Type;
                     if ("metro".Equals(burb.Type))
                         burbId = burb.Color + "-" + burb.Type;
-                    drawBurbAtHex(liY, liX, burbId, burb);
+                    drawBurbAtHex(liY, liX, burbId, burb, null, player);
                 }
                 if (burb != null && burb.DirectionFromParent != null)
                 {
-                    drawBurbAtHex(liY, liX, "", burb);
+                    drawBurbAtHex(liY, liX, "", burb, null, player);
                 }
             }
         }
@@ -372,11 +373,11 @@ class HexMapEngineAdapter
                     if (isObserver || (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor]))
                     {
                         if (unit.ParentUnitId == null || gcGame.IsShowAirplanes)
-                            drawUnitAtHex(liY, liX, unitTypeId);
+                            drawUnitAtHex(liY, liX, unitTypeId, null);
                         if (unit.Airplane != null && gcGame.IsShowAirplanes)
                         {
                             //Globals.Log("DrawUnits(): plane found on unit");
-                            drawUnitAtHex(liY, liX, unit.Color + "-plane");
+                            drawUnitAtHex(liY, liX, unit.Color + "-plane", null);
                         }
                     }
                     //if (unit.IsAttacked)
@@ -392,7 +393,7 @@ class HexMapEngineAdapter
                         if (plane != null && gcGame.IsShowAirplanes)
                         {
                             //Globals.Log("DrawUnits(): plane found on hex");
-                            drawUnitAtHex(liY, liX, unitTypeId);
+                            drawUnitAtHex(liY, liX, unitTypeId, null);
                         }
                     }
                 }
@@ -400,7 +401,7 @@ class HexMapEngineAdapter
         }
     }
 
-    private void drawUnitAtHex(int row, int column, string unitTypeId)
+    private void drawUnitAtHex(int row, int column, string unitTypeId, Rectangle? sourceRectangle)
     {
         Vector2 currentPixelPosition = this.getCurrentPixelPosition();
         Vector2 rowColVector = new Vector2(column, row);
@@ -453,7 +454,7 @@ class HexMapEngineAdapter
             coSpriteBatch.Draw(
                                 units[unitTypeId],
                                 pixelVector,
-                                null,
+                                sourceRectangle,
                                 Color.White,
                                 0.0f,
                                 Vector2.Zero,
@@ -658,94 +659,6 @@ class HexMapEngineAdapter
         return worldBounds;
     }
 
-    private void drawBurbAtHex(int row, int column, string burbId, Burb burb)
-    {
-        bool isObserver = gcGame.Client.IsObserverOnly;
-        Vector2 currentPixelPosition = this.getCurrentPixelPosition();
-        Vector2 rowColVector = new Vector2(column, row);
-        Vector2 pixelVector = ConvertHexToPixels(rowColVector);
-        if (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS < currentPixelPosition.X ||
-            pixelVector.X > currentPixelPosition.X + gcGame.MainGameScreen.MapPanel.Width ||
-            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS < currentPixelPosition.Y ||
-            pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.MapPanel.Height
-           )
-        {
-            if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
-                return;
-        }
-
-        if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
-        {
-            pixelVector.X += 0 - currentPixelPosition.X;
-            pixelVector.Y += 0 - currentPixelPosition.Y;
-        }
-        else
-        {
-            pixelVector.X += 0;
-            pixelVector.Y += 0;
-        }
-        if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
-            (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
-            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height) ||
-            pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS / 2
-            )
-        {
-            return;
-        }
-
-        Map map = gcGame.Client.GameState.Map;
-        Player player = identifySelf();
-        if (!isObserver && player != null && !map.Hexes[row, column].Visibility[player.FactionColor])
-        {
-            coSpriteBatch.Draw(
-                                terrain["unknown"].TEXTURE2D_IMAGE_TILE,
-                                pixelVector,
-                                null,
-                                Color.White,
-                                0.0f,
-                                Vector2.Zero,
-                                new Vector2(1.0f, 1.0f),
-                                SpriteEffects.None,
-                                0.75f  // higher number at bottom
-                                );
-            return;
-        }
-        if (burb != null && burb.DirectionFromParent != null && textures.ContainsKey(burb.DirectionFromParent))
-        {
-            Burb parentBurb = gcGame.Client.GameState.Burbs.NameToBurb[burb.ParentBurbName];
-            string texture = burb.DirectionFromParent;
-            if ("metro".Equals(parentBurb.Type))
-                texture = burb.DirectionFromParent + "-tab-" + parentBurb.Color;
-            if ("capital".Equals(parentBurb.Type))
-                texture = burb.DirectionFromParent + "-tab-capital";
-            coSpriteBatch.Draw(
-                            textures[texture],
-                            pixelVector,
-                            null,
-                            Color.White,
-                            0.0f,
-                            Vector2.Zero,
-                            new Vector2(1.0f, 1.0f),
-                            SpriteEffects.None,
-                            0.75f  // higher number at bottom
-                            );
-            return;
-        }
-        if (!burbs.ContainsKey(burbId))
-            return;
-        coSpriteBatch.Draw(
-                            burbs[burbId],
-                            pixelVector,
-                            null,
-                            Color.White,
-                            0.0f,
-                            Vector2.Zero,
-                            new Vector2(1.0f, 1.0f),
-                            SpriteEffects.None,
-                            0.75f  // higher number at bottom
-                            );
-
-    }
 
     // A row is like a snake, it goes up or down per column
     public Vector2 ConvertHexToPixels(Vector2 hexVector)
@@ -854,6 +767,14 @@ class HexMapEngineAdapter
         int liTileOffsetX = (int)coHexTileMap.cameraWrapper.CAMERA_VECTOR2_LOCATION.X;
         int liTileOffsetY = (int)coHexTileMap.cameraWrapper.CAMERA_VECTOR2_LOCATION.Y;
 
+
+        MapHex[,] hexes = gcGame.Client.GameState.Map.Hexes;
+        bool isObserver = gcGame.Client.IsObserverOnly;
+        Rectangle sourceRectangle = new Rectangle(0, 0, HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS, HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS);
+        Rectangle unitRectangle = new Rectangle(0, 0, 48, 48);
+        Rectangle planeRectangle = new Rectangle(0, 0, 30, 30);
+        Player player = identifySelf();
+
         for (int liY = 0; liY < (HexMapEngine.Structures.Global.ACTUAL_MAP_HEIGHT_IN_TILES); liY++)
         {
             for (int liX = 0; liX < (HexMapEngine.Structures.Global.ACTUAL_MAP_WIDTH_IN_TILES); liX++)
@@ -877,12 +798,62 @@ class HexMapEngineAdapter
                         Draw_HexTile(loHexTile,
                                         liCalculatedMapTileX,
                                         liCalculatedMapTileY,
-                                        HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS,
-                                        HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS);
+                                        sourceRectangle, player);
 
                     }
 
                 }
+
+                // DrawCities()
+                Burb? burb = hexes[liY, liX].Burb;
+                if (burb != null && !"suburb".Equals(burb.Type) && !"dock".Equals(burb.Type))
+                {
+                    string burbId = burb.Type;
+                    if ("metro".Equals(burb.Type))
+                        burbId = burb.Color + "-" + burb.Type;
+                    drawBurbAtHex(liY, liX, burbId, burb, sourceRectangle, player);
+                }
+                if (burb != null && burb.DirectionFromParent != null)
+                {
+                    drawBurbAtHex(liY, liX, "", burb, sourceRectangle, player);
+                }
+
+
+                // DrawUnits
+                MapHex mapHex = hexes[liY, liX];
+                Unit unit = mapHex.getUnit();
+                if (unit != null && unit.StrengthPoints > 0)
+                {
+                    string unitTypeId = unit.Color + "-" + unit.UnitType;
+                    if (isObserver || (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor]))
+                    {
+                        if (unit.ParentUnitId == null || gcGame.IsShowAirplanes)
+                            drawUnitAtHex(liY, liX, unitTypeId, unitRectangle);
+                        if (unit.Airplane != null && gcGame.IsShowAirplanes)
+                        {
+                            //Globals.Log("DrawUnits(): plane found on unit");
+                            drawUnitAtHex(liY, liX, unit.Color + "-plane", planeRectangle);
+                        }
+                    }
+                    //if (unit.IsAttacked)
+                    //    drawFlame(liY, liX);
+                }
+                Unit plane = mapHex.Airplane;
+                if (plane != null && plane.StrengthPoints > 0)
+                {
+                    string unitTypeId = plane.Color + "-" + plane.UnitType;
+                    // TODO: figure out plane visibility settings
+                    if (isObserver || (mapHex.Visibility.ContainsKey(player.FactionColor) && mapHex.Visibility[player.FactionColor]))
+                    {
+                        if (plane != null && gcGame.IsShowAirplanes)
+                        {
+                            //Globals.Log("DrawUnits(): plane found on hex");
+                            drawUnitAtHex(liY, liX, unitTypeId, planeRectangle);
+                        }
+                    }
+                }
+
+
             }
         }
 
@@ -891,8 +862,7 @@ class HexMapEngineAdapter
     private void Draw_HexTile(HexMapEngine.Structures.HexTile poHexTile,
                                 int piCalculatedMapTileX,
                                 int piCalculatedMapTileY,
-                                int piMapTileHexWidthInPixels,
-                                int piMapTileHexHeightInPixels)
+                                Rectangle sourceRectangle, Player player)
     {
         bool isObserver = gcGame.Client.IsObserverOnly;
         Texture2D loTexture2DTile;
@@ -909,9 +879,7 @@ class HexMapEngineAdapter
         }
 
         Vector2 destination = new Vector2(piCalculatedMapTileX, piCalculatedMapTileY);
-        Rectangle source = new Rectangle(0, 0, piMapTileHexWidthInPixels, piMapTileHexHeightInPixels);
         bool visibility = false;
-        Player player = identifySelf();
         if (player != null)
             visibility = map.Hexes[poHexTile.ROW_ID, poHexTile.COLUMN_ID].Visibility[player.FactionColor];
         if (coSpriteBatch == null || !terrain.ContainsKey("unknown"))
@@ -921,7 +889,7 @@ class HexMapEngineAdapter
             coSpriteBatch.Draw(
                                 terrain["unknown"].TEXTURE2D_IMAGE_TILE,
                                 destination,
-                                source,
+                                sourceRectangle,
                                 Color.White,
                                 0.0f,
                                 Vector2.Zero,
@@ -934,7 +902,7 @@ class HexMapEngineAdapter
         coSpriteBatch.Draw(
                             loTexture2DTile,
                             destination,
-                            source,
+                            sourceRectangle,
                             Color.White,
                             0.0f,
                             Vector2.Zero,
@@ -950,5 +918,92 @@ class HexMapEngineAdapter
             coHexTileMap.Update_HexTileArrayPixelPositions(poHexTile, piCalculatedMapTileX, piCalculatedMapTileY);
     }
 
+    private void drawBurbAtHex(int row, int column, string burbId, Burb burb, Rectangle? sourceRectangle, Player player)
+    {
+        bool isObserver = gcGame.Client.IsObserverOnly;
+        Vector2 currentPixelPosition = this.getCurrentPixelPosition();
+        Vector2 rowColVector = new Vector2(column, row);
+        Vector2 pixelVector = ConvertHexToPixels(rowColVector);
+        if (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS < currentPixelPosition.X ||
+            pixelVector.X > currentPixelPosition.X + gcGame.MainGameScreen.MapPanel.Width ||
+            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS < currentPixelPosition.Y ||
+            pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.MapPanel.Height
+           )
+        {
+            if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+                return;
+        }
+
+        if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+        {
+            pixelVector.X += 0 - currentPixelPosition.X;
+            pixelVector.Y += 0 - currentPixelPosition.Y;
+        }
+        else
+        {
+            pixelVector.X += 0;
+            pixelVector.Y += 0;
+        }
+        if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
+            (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
+            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height) ||
+            pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS / 2
+            )
+        {
+            return;
+        }
+
+        Map map = gcGame.Client.GameState.Map;
+        if (!isObserver && player != null && !map.Hexes[row, column].Visibility[player.FactionColor])
+        {
+            coSpriteBatch.Draw(
+                                terrain["unknown"].TEXTURE2D_IMAGE_TILE,
+                                pixelVector,
+                                null,
+                                Color.White,
+                                0.0f,
+                                Vector2.Zero,
+                                new Vector2(1.0f, 1.0f),
+                                SpriteEffects.None,
+                                0.75f  // higher number at bottom
+                                );
+            return;
+        }
+        if (burb != null && burb.DirectionFromParent != null && textures.ContainsKey(burb.DirectionFromParent))
+        {
+            Burb parentBurb = gcGame.Client.GameState.Burbs.NameToBurb[burb.ParentBurbName];
+            string texture = burb.DirectionFromParent;
+            if ("metro".Equals(parentBurb.Type))
+                texture = burb.DirectionFromParent + "-tab-" + parentBurb.Color;
+            if ("capital".Equals(parentBurb.Type))
+                texture = burb.DirectionFromParent + "-tab-capital";
+            coSpriteBatch.Draw(
+                            textures[texture],
+                            pixelVector,
+                            sourceRectangle,
+                            Color.White,
+                            0.0f,
+                            Vector2.Zero,
+                            new Vector2(1.0f, 1.0f),
+                            SpriteEffects.None,
+                            0.75f  // higher number at bottom
+                            );
+            return;
+        }
+        if (!burbs.ContainsKey(burbId))
+            return;
+        coSpriteBatch.Draw(
+                            burbs[burbId],
+                            pixelVector,
+                            sourceRectangle,
+                            Color.White,
+                            0.0f,
+                            Vector2.Zero,
+                            new Vector2(1.0f, 1.0f),
+                            SpriteEffects.None,
+                            0.75f  // higher number at bottom
+                            );
+
+    }
 
 }

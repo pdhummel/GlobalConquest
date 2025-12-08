@@ -28,6 +28,8 @@ public class MainGameScreen
     public Panel FactionsPanel { get; } = new Panel();
     public Panel MiniMapPanel { get; } = new Panel();
     public Panel DetailsPanel { get; } = new Panel();
+    FactionsPanelView factionsPanelView = null;
+    DetailsPanelView detailsPanelView = null;
 
     public Panel MainGameMenuPanel { get; } = new Panel();
     public MainGameMenu MainGameMenu { get; set; }
@@ -161,14 +163,16 @@ public class MainGameScreen
     public void drawFactionsPanel()
     {
         //Globals.Log("MainGameScreen.drawFactionsPanel()");
-        FactionsPanelView factionsPanelView = new FactionsPanelView(gcGame, FactionsPanel);
+        if (factionsPanelView == null)
+            factionsPanelView = new FactionsPanelView(gcGame, FactionsPanel);
         factionsPanelView.drawFactionsPanel();
     }
 
 
     public void drawDetailsPanel(GlobalConquestGame gcGame, MapHex lastSelectedHex, SpriteFont font, MouseState currentMouseState)
     {
-        DetailsPanelView detailsPanelView = new DetailsPanelView(gcGame, DetailsPanel);
+        if (detailsPanelView == null)
+            detailsPanelView = new DetailsPanelView(gcGame, DetailsPanel);
         detailsPanelView.drawDetailsPanel();
     }
 

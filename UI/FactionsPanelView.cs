@@ -23,7 +23,6 @@ public class FactionsPanelView
     GlobalConquestGame gcGame;
     int xPos;
     int yPos;
-    int Y;
 
     private Grid grid = new Grid();
     private VerticalStackPanel amberPanel = new VerticalStackPanel();
@@ -37,22 +36,24 @@ public class FactionsPanelView
         FactionsPanel = factionsPanel;
         xPos = FactionsPanel.Left + 1;
         yPos = FactionsPanel.Top + 1;
-        Y = yPos;
-    }
 
-    public void drawFactionsPanel()
-    {
-        
         drawFactionPanel(amberPanel, Color.Yellow, 0, 0);
         drawFactionPanel(ocherPanel, Color.Orange, 0, 1);
         drawFactionPanel(magentaPanel, Color.Magenta, 1, 0);
         drawFactionPanel(cyanPanel, Color.Cyan, 1, 1);
+        FactionsPanel.Widgets.Add(grid);
+    }
 
+    public void drawFactionsPanel()
+    {
+        amberPanel.Widgets.Clear();
+        ocherPanel.Widgets.Clear();
+        magentaPanel.Widgets.Clear();
+        cyanPanel.Widgets.Clear();
         drawMessagesForColor(amberPanel, "amber");
         drawMessagesForColor(ocherPanel, "ocher");
         drawMessagesForColor(magentaPanel, "magenta");
         drawMessagesForColor(cyanPanel, "cyan");
-        FactionsPanel.Widgets.Add(grid);
 
     }
 
