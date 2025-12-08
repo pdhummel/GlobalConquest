@@ -48,6 +48,7 @@ public class MainGameScreen
         ContextMenu = new ContextMenu(this);
     }
 
+
     public void LoadContent()
     {
         MainGameMenuPanel.Width = game.Window.ClientBounds.Width;

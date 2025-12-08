@@ -20,11 +20,14 @@ public class MainGameMenu
     MenuItem destinationsMenuItem = new MenuItem("Destinations", "&Destinations");
     MenuItem airplanesMenuItem = new MenuItem("Airplanes", "&Airplanes");
     MenuItem fileMenuItem = new MenuItem("File", "&File");
+    MenuItem settingsMenuItem = new MenuItem("Settings", "&Settings");
     MenuItem viewMenuItem = new MenuItem("View", "&View");
 
     MenuItem saveMenuItem = new MenuItem("Save", "&Save");
     MenuItem loadMenuItem = new MenuItem("Load", "Load");
     MenuItem resignMenuItem = new MenuItem("Resign", "Resign To AI");
+    MenuItem increaseGameSpeedMenuItem;
+    MenuItem decreaseGameSpeedMenuItem;
 
     MainGameScreen mainGameScreen;
 
@@ -98,6 +101,22 @@ public class MainGameMenu
         String version = mainGameScreen.gcGame.Client.GameState.Version;
         viewMenuItem.Items.Add(new MenuItem("MainGameMenu.horizontalMenu.viewMenuItem.version", "Version " + version));
 
+        increaseGameSpeedMenuItem = new MenuItem("Increase Game Speed", "Game Speed+ (" + mainGameScreen.gcGame.MyJoinGameValues.getNextFasterGameSpeed() + ")");
+        increaseGameSpeedMenuItem.Id = "MainGameMenu.horizontalMenu.settingsMenuItem.increaseGameSpeedMenuItem";
+        settingsMenuItem.Items.Add(increaseGameSpeedMenuItem);
+        increaseGameSpeedMenuItem.Selected += (s, a) =>
+        {
+            increaseGameSpeedMenuItemSelected();
+        };
+
+        decreaseGameSpeedMenuItem = new MenuItem("Decrease Game Speed", "Game Speed- (" + mainGameScreen.gcGame.MyJoinGameValues.getNextSlowerGameSpeed() + ")");
+        decreaseGameSpeedMenuItem.Id = "MainGameMenu.horizontalMenu.settingsMenuItem.decreaseGameSpeedMenuItem";
+        settingsMenuItem.Items.Add(decreaseGameSpeedMenuItem);
+        decreaseGameSpeedMenuItem.Selected += (s, a) =>
+        {
+            decreaseGameSpeedMenuItemSelected();
+        };
+
 
         executeMenuItem.Selected += (s, a) =>
         {
@@ -118,6 +137,7 @@ public class MainGameMenu
         horizontalMenu.Items.Add(destinationsMenuItem);
         horizontalMenu.Items.Add(airplanesMenuItem);
         horizontalMenu.Items.Add(fileMenuItem);
+        horizontalMenu.Items.Add(settingsMenuItem);
         horizontalMenu.Items.Add(viewMenuItem);
         mainGameScreen.MainGameMenuPanel.Widgets.Add(horizontalMenu);
 
@@ -216,8 +236,8 @@ public class MainGameMenu
             mainGameScreen.showMessage("Only the game host can save games.");
             return;
         }
-        string currentUser = Environment.UserName;
-        string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\";        
+        string baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string gcDirectory = Path.Combine(baseFolder, "GlobalConquest");
         FileDialog dialog = new FileDialog(FileDialogMode.SaveFile)
         {
             Filter = "*.zip",
@@ -259,8 +279,8 @@ public class MainGameMenu
             mainGameScreen.showMessage("Only the game host can load games.");
             return;
         }
-        string currentUser = Environment.UserName;
-        string gcDirectory = "C:\\Users\\" + currentUser + "\\AppData\\Local\\GlobalConquest\\";        
+        string baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string gcDirectory = Path.Combine(baseFolder, "GlobalConquest");
         FileDialog dialog = new FileDialog(FileDialogMode.OpenFile)
         {
             Filter = "*.zip",
@@ -303,5 +323,19 @@ public class MainGameMenu
         action.ClientIdentifier = mainGameScreen.gcGame.Client.ClientIdentifier;
         mainGameScreen.gcGame.Client.SendAction(action.ClientIdentifier, action);
         client.IsObserverOnly = true;
+    }
+
+    public void increaseGameSpeedMenuItemSelected()
+    {
+        mainGameScreen.gcGame.MyJoinGameValues.increaseGameExecutionSpeed();
+        string next = mainGameScreen.gcGame.MyJoinGameValues.getNextFasterGameSpeed();
+        increaseGameSpeedMenuItem.Text =  "Game Speed+ (" + next + ")";
+    }
+
+    public void decreaseGameSpeedMenuItemSelected()
+    {
+        mainGameScreen.gcGame.MyJoinGameValues.decreaseGameExecutionSpeed();
+        string next = mainGameScreen.gcGame.MyJoinGameValues.getNextSlowerGameSpeed();
+        decreaseGameSpeedMenuItem.Text =  "Game Speed+ (" + next + ")";
     }
 }

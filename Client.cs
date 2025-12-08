@@ -1,6 +1,7 @@
 using LiteNetLib;
 using LiteNetLib.Utils;
 using System.Text.Json;
+using System.Collections.Concurrent;
 using GlobalConquest.Units;
 using GlobalConquest.Actions;
 
@@ -11,6 +12,7 @@ public class Client
     private NetManager? netmanagerclient;
     private EventBasedNetListener? listener;
     private Thread? clientThread;
+    private Thread? processGameEventQueueThread;
     public string? ClientIdentifier { get; set; }   // this is the player name
     private NetPeer? serverPeer;
 
@@ -22,6 +24,7 @@ public class Client
 
     public GameState GameState { get; set; } = new GameState();
     public JoinGameValues JoinGameValues { get; set; }
+    ConcurrentQueue<GameEvent> gameEventExecutionQueue = new ConcurrentQueue<GameEvent>();
 
     //public List<GameEvent> GamePlayEvents { get; set; } = new List<GameEvent>();
 
@@ -54,6 +57,12 @@ public class Client
             IsBackground = true // Ensures thread closes with the main app
         };
         clientThread.Start();
+        processGameEventQueueThread = new Thread(new ThreadStart(processGameEventQueue))
+        {
+            IsBackground = true // Ensures thread closes with the main app
+        };
+        processGameEventQueueThread.Start();
+
         PlayerAction action = new(serverPeer, ClientIdentifier, "connect");
     }
 
@@ -120,8 +129,55 @@ public class Client
     private void OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod)
     {
         var jsonString = reader.GetString();
-        //GameState oldGameState = GameState;
-        GameEvent? gameEvent = JsonSerializer.Deserialize<GameEvent>(jsonString);
+        GameEvent gameEvent = null;
+        try 
+        {
+            gameEvent = JsonSerializer.Deserialize<GameEvent>(jsonString);
+        }
+        catch(Exception ex)
+        {
+            Globals.Log("OnNetworkReceive(): Could not deserialize gameEvent: " + ex);
+        }
+        if (gameEvent != null)
+        {
+            if ("execution".Equals(GameState.CurrentPhase))
+            {
+                gameEventExecutionQueue.Enqueue(gameEvent);
+            }
+            else
+            {
+                processGameEvent(gameEvent);
+            }
+        }    
+        reader.Recycle(); // Free up the data reader
+    }
+
+    private void processGameEventQueue()
+    {
+        int currentRound = GameState.CurrentRound;
+        while (true)
+        {
+            GameEvent gameEvent;
+            if (gameEventExecutionQueue.Count > 0)
+            {
+                gameEventExecutionQueue.TryDequeue(out gameEvent);
+                {
+                processGameEvent(gameEvent);
+                    if (currentRound != GameState.CurrentRound)
+                    {
+                        Thread.Sleep(GlobalConquestGame.MyJoinGameValues.GameExecutionSpeed);
+                    }
+                }
+            }
+            else
+            {
+                Thread.Sleep(10);
+            }    
+        }
+    }
+
+    private void processGameEvent(GameEvent gameEvent)
+    {
         handleGamePlayEvent(gameEvent);
 
         if (gameEvent != null && "mapUpdate".Equals(gameEvent.EventType))
@@ -161,7 +217,6 @@ public class Client
             GameState.PlayerPlanningReady[ClientIdentifier] = true;
         }
 
-        reader.Recycle(); // Free up the data reader
     }
 
     private void handleGameOverForClient()

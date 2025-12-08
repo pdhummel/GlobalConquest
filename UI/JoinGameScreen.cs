@@ -26,6 +26,8 @@ public class JoinGameScreen
     Label joinGameLabel = new Label();
     Label observerOnlyLabel = new Label();
     CheckButton observerOnlyCheckButton = new CheckButton();
+    Label gameSpeedLabel = new Label();
+    ComboView gameSpeedComboView = new ComboView();
     Label hostIpLabel = new Label();
     TextBox hostIpTextBox = new TextBox();
     Label portLabel = new Label();
@@ -78,11 +80,14 @@ public class JoinGameScreen
         var textureRegion = new TextureRegion(gcTexture);
         gcImage.Renderable = textureRegion;
 
+        joinGameLabel.Id = "joinGameLabel";
+        joinGameLabel.Text = "Join Game";
+
         observerOnlyLabel.Id = "observerOnlyLabel";
         observerOnlyLabel.Text = "Observer Only";
 
-        joinGameLabel.Id = "joinGameLabel";
-        joinGameLabel.Text = "Join Game";
+        gameSpeedLabel.Id = "gameSpeedLabel";
+        gameSpeedLabel.Text = "Game Speed";
 
         hostIpLabel.Id = "hostIpLabel";
         hostIpLabel.Text = "host IP:";
@@ -115,7 +120,6 @@ public class JoinGameScreen
         nameTextBox.Border = new SolidBrush("#808000FF");
         nameTextBox.BorderThickness = new Thickness(2);
 
-
         fightingForceLabel.Id = "fightingForceLabel";
         fightingForceLabel.Text = "fighting force:";
         fightingForceLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
@@ -136,6 +140,23 @@ public class JoinGameScreen
         fightingForceComboView.Widgets.Add(magentaMobLabel);
         fightingForceComboView.Widgets.Add(cyanCircleLabel);
         fightingForceComboView.SelectedIndex = 0;
+
+        Label snailLabel = new Label();
+        snailLabel.Text = "snail";
+        Label turtleLabel = new Label();
+        turtleLabel.Text = "turtle";
+        Label rabbitLabel = new Label();
+        rabbitLabel.Text = "rabbit";
+        Label jaguarLabel = new Label();
+        jaguarLabel.Text = "jaguar";
+        Label falconLabel = new Label();
+        falconLabel.Text = "falcon";
+        gameSpeedComboView.Widgets.Add(snailLabel);
+        gameSpeedComboView.Widgets.Add(turtleLabel);
+        gameSpeedComboView.Widgets.Add(rabbitLabel);
+        gameSpeedComboView.Widgets.Add(jaguarLabel);
+        gameSpeedComboView.Widgets.Add(falconLabel);
+        gameSpeedComboView.SelectedIndex = 2;
 
         cancelButton.Click += cancelButtonClicked;
         okButton.Click += okButtonClicked;
@@ -161,6 +182,7 @@ public class JoinGameScreen
         addPanelRow(verticalStackPanel, portLabel, portTextBox);
         addPanelRow(verticalStackPanel, nameLabel, nameTextBox);
         addPanelRow(verticalStackPanel, fightingForceLabel, fightingForceComboView);
+        addPanelRow(verticalStackPanel, gameSpeedLabel, gameSpeedComboView);
 
         var buttonsPanel = new HorizontalStackPanel { Spacing = 8 };
         verticalStackPanel.Widgets.Add(buttonsPanel);
@@ -188,6 +210,8 @@ public class JoinGameScreen
         nameTextBox.Visible = false;
         fightingForceLabel.Visible = false;
         fightingForceComboView.Visible = false;
+        gameSpeedLabel.Visible = false;
+        gameSpeedComboView.Visible = false;
         okButton.Visible = false;
         cancelButton.Visible = false;
 
@@ -203,6 +227,8 @@ public class JoinGameScreen
         nameTextBox.RemoveFromParent();
         fightingForceLabel.RemoveFromParent();
         fightingForceComboView.RemoveFromParent();
+        gameSpeedLabel.RemoveFromParent();
+        gameSpeedComboView.RemoveFromParent();
         okButton.RemoveFromParent();
         cancelButton.RemoveFromParent();
     }
@@ -230,8 +256,6 @@ public class JoinGameScreen
 
     private void okButtonClicked(object? sender, EventArgs e)
     {
-        mainGameScreen = new MainGameScreen(game, grid);
-        mainGameScreen.LoadContent();
         GameSettings gameSettings = new GameSettings();
         GlobalConquestGame gcGame = (GlobalConquestGame)game;
         gcGame.Client = new Client(gcGame);
@@ -253,7 +277,14 @@ public class JoinGameScreen
         joinGameValues.HostIp = hostIpTextBox.Text;
         joinGameValues.Name = nameTextBox.Text;
         joinGameValues.FactionName = ((Label)fightingForceComboView.SelectedItem).Text;
+        joinGameValues.setGameExecutionSpeed(((Label)gameSpeedComboView.SelectedItem).Text);
         gcGame.Client.JoinGameValues = joinGameValues;
+        gcGame.MyJoinGameValues = joinGameValues;
+
+        // depends on joinGameValues
+        mainGameScreen = new MainGameScreen(game, grid);
+        mainGameScreen.LoadContent();
+
         if (isValid)
         {
             this.hide();

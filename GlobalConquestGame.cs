@@ -58,7 +58,7 @@ public class GlobalConquestGame : Game
     public bool IsShowDestinations { get; set; }
 
     public bool IsShowAirplanes { get; set; }
-    public bool IsAirTargetSelectionNeeded
+    public bool IsTargetSelectionNeeded
      {get; set;}
 
     public GameControl GameControl { get; set; } = new GameControl();
@@ -401,6 +401,7 @@ public class GlobalConquestGame : Game
                 Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
                 MainGameScreen.HideContextMenu();
                 DrawLine(hexPixelVector, color);
+                IsTargetSelectionNeeded = true;
             }
             else if (ParaDropMode && ParaTrooper == null && lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
             {
@@ -425,7 +426,7 @@ public class GlobalConquestGame : Game
                 {
                     Globals.spriteBatch.DrawCircle(hexPixelVector, longRadius, 32, Color.Red);
                 }
-                IsAirTargetSelectionNeeded = true;
+                IsTargetSelectionNeeded = true;
             }
 
             if (lastSelectedUnit != null)
@@ -805,7 +806,7 @@ public class GlobalConquestGame : Game
                     lastSelectedUnit = unit;
                 }
             }
-            else if (IsAirTargetSelectionNeeded && ReconMode && (previousSelectedHex != null || previousSelectedUnit != null) && lastSelectedHex != null)
+            else if (IsTargetSelectionNeeded && ReconMode && (previousSelectedHex != null || previousSelectedUnit != null) && lastSelectedHex != null)
             {
                 ReconAction action = new ReconAction();
                 action.ClassType = "GlobalConquest.Actions.ReconAction";
@@ -827,7 +828,7 @@ public class GlobalConquestGame : Game
                     lastSelectedUnit = unit;
                 }
             }
-            else if (IsAirTargetSelectionNeeded && AirstrikeMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+            else if (IsTargetSelectionNeeded && AirstrikeMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
                      lastSelectedUnit != null && lastSelectedUnit.Id != null && lastSelectedHex != null)
             {
                 AirstrikeAction action = new AirstrikeAction();
@@ -850,7 +851,7 @@ public class GlobalConquestGame : Game
                     lastSelectedUnit = unit;
                 }
             }
-            else if (TargetUnitMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+            else if (IsTargetSelectionNeeded && TargetUnitMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
                      lastSelectedUnit != null && lastSelectedUnit.Id != null && lastSelectedHex != null)
             {
                 TargetUnitAction action = new TargetUnitAction();
@@ -905,7 +906,7 @@ public class GlobalConquestGame : Game
                     lastSelectedUnit = unit;
                 }
             }
-            else if (IsAirTargetSelectionNeeded && KamikazeMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+            else if (IsTargetSelectionNeeded && KamikazeMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
                      lastSelectedUnit != null && lastSelectedUnit.Id != null && lastSelectedHex != null)
             {
                 KamikazeAction action = new KamikazeAction();
@@ -928,7 +929,7 @@ public class GlobalConquestGame : Game
                     lastSelectedUnit = unit;
                 }
             }
-            else if (IsAirTargetSelectionNeeded && DogfightMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+            else if (IsTargetSelectionNeeded && DogfightMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
                      lastSelectedHex != null)
             {
                 DogfightAction action = new DogfightAction();
@@ -951,7 +952,7 @@ public class GlobalConquestGame : Game
                     lastSelectedUnit = unit;
                 }
             }
-            else if (IsAirTargetSelectionNeeded && TransferMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+            else if (IsTargetSelectionNeeded && TransferMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
                      lastSelectedHex != null)
             {
                 TransferAction action = new TransferAction();
@@ -978,7 +979,7 @@ public class GlobalConquestGame : Game
                     lastSelectedUnit = unit;
                 }
             }
-            else if (IsAirTargetSelectionNeeded && BombMode && (previousSelectedHex != null) && 
+            else if (IsTargetSelectionNeeded && BombMode && (previousSelectedHex != null) && 
                      lastSelectedHex != null)
             {
                 BombAction action = new BombAction();

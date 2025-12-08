@@ -134,7 +134,6 @@ public class GameLogic
             processRound(i, server, units);
             if ("gameOver".Equals(gameState.CurrentPhase))
                 return;
-            Thread.Sleep(1000);
         }
         Globals.Log("doExecutionPhase(): update burb ownership");
         gameState.Map.checkBurbsForOwner(server);
