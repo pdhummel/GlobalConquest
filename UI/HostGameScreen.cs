@@ -402,7 +402,6 @@ public class HostGameScreen
             gameSettings.StartingMoney = validateTextBoxInteger(startingMoneyLabel.Text, startingMoneyTextBox, 0, 999);
             gameSettings.NumberOfTurnsForGame = validateTextBoxInteger(numberOfTurnsLabel.Text, numberOfTurnsTextBox, -1, 999);
             gameSettings.TimedSeconds = validateTextBoxInteger(timedSecondsLabel.Text, timedSecondsTextBox, 1, 300);
-            gameSettings.TimedSeconds = (Int32.Parse(timedSecondsTextBox.Text));
         }
         catch(Exception ex)
         {

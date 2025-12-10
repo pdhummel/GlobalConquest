@@ -63,7 +63,7 @@ public class Server
     public void RestoreHost(GameSettings gameSettings, string key)
     {
         Globals.Log("RestoreHost(): enter");
-        this.maxPeers = gameSettings.NumberOfHumans;
+        this.maxPeers = 8; //gameSettings.NumberOfHumans;
         this.key = key;
         listener = new EventBasedNetListener();
 

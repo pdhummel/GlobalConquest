@@ -117,6 +117,13 @@ public class MainGameMenu
             decreaseGameSpeedMenuItemSelected();
         };
 
+        MenuItem changeGameSettingsMenuItem = new MenuItem("Change Game Settings", "Change Game Settings");
+        clientLogMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.changeSettingsMenuItem";
+        settingsMenuItem.Items.Add(changeGameSettingsMenuItem);
+        changeGameSettingsMenuItem.Selected += (s, a) =>
+        {
+            changeGameSettingsMenuItemSelected();
+        };
 
         executeMenuItem.Selected += (s, a) =>
         {
@@ -342,4 +349,12 @@ public class MainGameMenu
         next = mainGameScreen.gcGame.MyJoinGameValues.getNextSlowerGameSpeed();
         decreaseGameSpeedMenuItem.Text =  "Game Speed- (" + next + ")";
     }
+
+    public void changeGameSettingsMenuItemSelected()
+    {
+        ChangeGameSettingsWindow changeGameSettingsWindow = new ChangeGameSettingsWindow();
+        changeGameSettingsWindow.showChangeGameSettingsWindow(mainGameScreen);
+    }
+
+
 }
