@@ -364,11 +364,39 @@ public class PlaneUnitType : UnitType
         else if (parentUnit == null)
         {
             MapHex planeHex = this.getPlaneMapHex(map, plane);
-            if (planeHex != null)
-                existingPlane = planeHex.Airplane; 
+            if (planeHex != null && planeHex.Airplane != null)
+            {
+                existingPlane = planeHex.Airplane;
+                existingPlane.X = planeHex.X;
+                existingPlane.Y = planeHex.Y;
+            }
         }
         return existingPlane;
     }
+
+    public Unit getPlane(MapHex mapHex, Unit parentUnit)
+    {
+        Unit plane = null;
+        if (parentUnit != null && parentUnit.Airplane != null)
+        {
+            plane = parentUnit.Airplane;
+            plane.X = parentUnit.X;
+            plane.Y = parentUnit.Y;
+        }
+        else if (mapHex != null && mapHex.Airplane != null)
+        {
+            plane = mapHex.Airplane;
+            plane.X = mapHex.X;
+            plane.Y = mapHex.Y;
+        } else if (mapHex != null && mapHex.getUnit() != null && mapHex.getUnit().Airplane != null)
+        {
+            plane = mapHex.getUnit().Airplane;
+            plane.X = mapHex.X;
+            plane.Y = mapHex.Y;
+        }
+        return plane;
+    }
+
 
     public Unit getParentUnit(Map map, Unit plane)
     {

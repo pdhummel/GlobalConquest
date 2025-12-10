@@ -129,12 +129,23 @@ public class PlayGameMenu
         gcGame.Server = server;
         GameLogic gameLogic = new GameLogic();
         gameLogic.restoreGame(server);
-        gcGame.Server.RestoreHost(server.gameState.GameSettings, "GlobalConquest");
-        Window window = new Window
+        if (server.gameState != null && server.gameState.GameSettings != null)
         {
-            Title = "Game Restored"
-        };
-        window.ShowModal(grid.Desktop);
+            gcGame.Server.RestoreHost(server.gameState.GameSettings, "GlobalConquest");
+            Window window = new Window
+            {
+                Title = "Game Restored"
+            };
+            window.ShowModal(grid.Desktop);
+        }
+        else
+        {
+            Window window = new Window
+            {
+                Title = "Game Failed to Restore"
+            };
+            window.ShowModal(grid.Desktop);
+        }
     }
 
     private void backToMainConquestMenuItemSelected(object? sender, EventArgs e)

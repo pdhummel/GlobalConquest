@@ -15,6 +15,7 @@ public class ContextMenu
 {
     public MainGameScreen MainGameScreen { get; set; }
     public bool IsShowContextMenu { get; set; } = false;
+    public bool IsContextMenuVisibleFlag {get; set;}
     public Panel MapPanel { get; set; }
     public GlobalConquestGame gcGame { get; set; }
     VerticalMenu verticalMenu;
@@ -31,19 +32,34 @@ public class ContextMenu
         gcGame = MainGameScreen.gcGame;
     }
 
+    public bool IsContextMenuVisible()
+    {
+        return IsContextMenuVisibleFlag;
+        //if (menuContainer != null)
+        //    return menuContainer.Visible;
+        //return false;
+    }
+
     public bool IsMouseInside(MouseState mouseState)
     {
-        return menuContainer.IsMouseInside;
+        if (menuContainer != null)
+        {
+            return menuContainer.IsMouseInside;
+        }
+        return false;
     }
 
     public void HideContextMenu()
     {
+        if (menuContainer != null)
+            menuContainer.Visible = false;
         if (MapPanel.Widgets.Count > 0)
         {
             Widget widget = MapPanel.Widgets[0];
             MapPanel.Widgets.Remove(widget);
             widget.RemoveFromParent();
         }
+        IsContextMenuVisibleFlag = false;
     }
 
     public void ShowContextMenu(Unit unit)
@@ -267,6 +283,18 @@ public class ContextMenu
         itemIndex += 1;
         verticalMenu.Items.Add(refreshMenuItem);
 
+        var airplanesMenuItem = new MenuItem();
+        airplanesMenuItem.Text = "Show Airplanes";
+        airplanesMenuItem.Id = "ContextMenu.verticalMenu.airplanesMenuItem";
+        airplanesMenuItem.Selected += (s, a) =>
+        {
+            airplanesMenuItemSelected();
+        };
+        actionMapper.registerControlMethod(airplanesMenuItem.Id, this, "airplanesMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, airplanesMenuItem.Id);
+        itemIndex += 1;
+        verticalMenu.Items.Add(airplanesMenuItem);
+
         menuContainer.Widgets.Add(verticalMenu);
 
         MapPanel.Widgets.Add(menuContainer);
@@ -274,7 +302,7 @@ public class ContextMenu
         menuContainer.Top = gcGame.GameControl.currentMouseState.Y;
         menuContainer.Visible = true;
         IsShowContextMenu = false;
-
+        IsContextMenuVisibleFlag = true;
     }
 
     public void ShowContextMenu(MapHex mapHex)
@@ -337,6 +365,7 @@ public class ContextMenu
         menuContainer.Top = gcGame.GameControl.currentMouseState.Y;
         menuContainer.Visible = true;
         IsShowContextMenu = false;
+        IsContextMenuVisibleFlag = true;
     }
 
     public void ShowContextMenuForPlane(Unit plane)
@@ -346,7 +375,7 @@ public class ContextMenu
             return;
         }
         HideContextMenu();
-        if (plane == null || plane.StrengthPoints <= 0)
+        if (plane == null || plane.StrengthPoints <= 0 || !"plane".Equals(plane.UnitType))
         {
             return;
         }
@@ -511,6 +540,19 @@ public class ContextMenu
             itemIndex += 1;
         }
 
+        var airplanesMenuItem = new MenuItem();
+        airplanesMenuItem.Text = "Hide Airplanes";
+        airplanesMenuItem.Id = "ContextMenu.verticalMenu.airplanesMenuItem";
+        airplanesMenuItem.Selected += (s, a) =>
+        {
+            airplanesMenuItemSelected();
+        };
+        actionMapper.registerControlMethod(airplanesMenuItem.Id, this, "airplanesMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, airplanesMenuItem.Id);
+        itemIndex += 1;
+        verticalMenu.Items.Add(airplanesMenuItem);
+
+
 
         menuContainer.Widgets.Add(verticalMenu);
 
@@ -519,6 +561,7 @@ public class ContextMenu
         menuContainer.Top = gcGame.GameControl.currentMouseState.Y;
         menuContainer.Visible = true;
         IsShowContextMenu = false;
+        IsContextMenuVisibleFlag = true;
     }
 
 
@@ -614,7 +657,8 @@ public class ContextMenu
 
     public void stopDefendingMenuItemSelected()
     {
-        if (gcGame.lastSelectedUnit != null)
+        Globals.Log("stopDefendingMenuItemSelected(): enter");
+        if (plane != null)
         {
             ChangeUnitContextAction action = new ChangeUnitContextAction();
             action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
@@ -631,15 +675,19 @@ public class ContextMenu
 
     public void defendMenuItemSelected()
     {
-        ChangeUnitContextAction action = new ChangeUnitContextAction();
-        action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
-        action.ClientIdentifier = gcGame.Client.ClientIdentifier;
-        action.Unit = plane;
-        action.IsBlitzing = plane.IsBlitzing;
-        action.IsSneaking = plane.IsSneaking;
-        action.RoundsToWait = plane.RoundsToWait;
-        action.IsDefending = true;
-        gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+        Globals.Log("defendMenuItemSelected(): enter");
+        if (plane != null)
+        {
+            ChangeUnitContextAction action = new ChangeUnitContextAction();
+            action.ClassType = "GlobalConquest.Actions.ChangeUnitContextAction";
+            action.ClientIdentifier = gcGame.Client.ClientIdentifier;
+            action.Unit = plane;
+            action.IsBlitzing = plane.IsBlitzing;
+            action.IsSneaking = plane.IsSneaking;
+            action.RoundsToWait = plane.RoundsToWait;
+            action.IsDefending = true;
+            gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+        }
         HideContextMenu();
     }
 
@@ -720,51 +768,75 @@ public class ContextMenu
 
     public void reconMenuItemSelected()
     {
-        gcGame.ReconMode = true;
         gcGame.IsTargetSelectionNeeded = false;
+        gcGame.ReconMode = true;
+        gcGame.lastSelectedPlane = plane;
+        gcGame.IsIgnoreNextLeftClick = true;
         HideContextMenu();
+        Globals.Log("reconMenuItemSelected(): lastSelectedPlane=" + gcGame.lastSelectedPlane + 
+            ", IsTargetSelectionNeeded=" + gcGame.IsTargetSelectionNeeded);
     }
     public void airstrikeMenuItemSelected()
     {
-        gcGame.AirstrikeMode = true;
         gcGame.IsTargetSelectionNeeded = false;
+        gcGame.AirstrikeMode = true;
+        gcGame.lastSelectedPlane = plane;
+        gcGame.IsIgnoreNextLeftClick = true;
         HideContextMenu();
     }
     public void transferMenuItemSelected()
     {
-        gcGame.TransferMode = true;
         gcGame.IsTargetSelectionNeeded = false;
+        gcGame.TransferMode = true;
+        gcGame.lastSelectedPlane = plane;
+        gcGame.IsIgnoreNextLeftClick = true;
         HideContextMenu();
+        Globals.Log("transferMenuItemSelected(): lastSelectedPlane=" + gcGame.lastSelectedPlane + 
+            ", IsTargetSelectionNeeded=" + gcGame.IsTargetSelectionNeeded);
     }
     public void bombMenuItemSelected()
     {
-        gcGame.BombMode = true;
         gcGame.IsTargetSelectionNeeded = false;
+        gcGame.BombMode = true;
+        gcGame.lastSelectedPlane = plane;
+        gcGame.IsIgnoreNextLeftClick = true;
         HideContextMenu();
     }
     public void kamikazeMenuItemSelected()
     {
-        gcGame.KamikazeMode = true;
         gcGame.IsTargetSelectionNeeded = false;
+        gcGame.KamikazeMode = true;
+        gcGame.lastSelectedPlane = plane;
+        gcGame.IsIgnoreNextLeftClick = true;
         HideContextMenu();
     }
     public void dogfightMenuItemSelected()
     {
-        gcGame.DogfightMode = true;
         gcGame.IsTargetSelectionNeeded = false;
+        gcGame.DogfightMode = true;
+        gcGame.lastSelectedPlane = plane;
+        gcGame.IsIgnoreNextLeftClick = true;
         HideContextMenu();
     }
 
     public void targetUnitMenuItemSelected()
     {
-        gcGame.TargetUnitMode = true;
         gcGame.IsTargetSelectionNeeded = false;
+        gcGame.TargetUnitMode = true;
         HideContextMenu();
     }
     public void paradropMenuItemSelected()
     {
         gcGame.ParaDropMode = true;
         gcGame.ParaTrooper = null;
+        gcGame.lastSelectedPlane = plane;
+        gcGame.IsIgnoreNextLeftClick = true;
         HideContextMenu();
     }
+
+    public void airplanesMenuItemSelected()
+    {
+        MainGameScreen.MainGameMenu.airplanesMenuItemSelected();
+    }
+
 }

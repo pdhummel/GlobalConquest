@@ -37,10 +37,12 @@ public class GlobalConquestGame : Game
     Texture2D viewPortBox;
     Texture2D drawPixel;
     public SpriteFont? font;
-    public MapHex? lastSelectedHex;
     public Vector2 mouseOverVector = new Vector2(-1, -1);
+    public MapHex? lastSelectedHex;
     public Unit? lastSelectedUnit;
     public Burb? lastSelectedBurb;
+    public Unit? lastSelectedPlane;
+    public bool IsIgnoreNextLeftClick;
     public bool MoveMode { get; set; } = false;
     public bool ReconMode { get; set; } = false;
     public bool AirstrikeMode { get; set; } = false;
@@ -406,27 +408,74 @@ public class GlobalConquestGame : Game
             else if (ParaDropMode && ParaTrooper == null && lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
             {
                 Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
-                MainGameScreen.HideContextMenu();
-                int paraTrooperRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * 2;
-                Globals.spriteBatch.DrawCircle(hexPixelVector, paraTrooperRadius, 32, Color.Red);
+                // This should have been set by the ContextMenu code.
+                Unit plane = lastSelectedPlane;
+                if (plane == null)
+                {
+                    PlaneUnitType planeUnitType = new PlaneUnitType();
+                    plane = planeUnitType.getPlane(lastSelectedHex, null);
+                }
+                if (plane != null)
+                {
+                    MainGameScreen.HideContextMenu();
+                    int paraTrooperRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * 2;
+                    Globals.spriteBatch.DrawCircle(hexPixelVector, paraTrooperRadius, 32, Color.Red);
+                }
+                //if (!IsTargetSelectionNeeded)
+                //{
+                //    IsTargetSelectionNeeded = true;
+                //    Globals.Log("Draw(): lastSelectedPlane=" + lastSelectedPlane + 
+                //        ", IsTargetSelectionNeeded=" + IsTargetSelectionNeeded + ", IsAirplaneMode=" + IsAirplaneMissionMode());
+                //}
             }
             else if ((ReconMode  || AirstrikeMode || TransferMode || BombMode || 
-                      KamikazeMode || DogfightMode || (ParaDropMode && ParaTrooper != null)) && lastSelectedHex != null &&
+                      KamikazeMode || DogfightMode) && lastSelectedHex != null &&
                       lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
             {
-                Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
+                Vector2 pixelHexVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
+                // This should have been set by the ContextMenu code.
+                Unit plane = lastSelectedPlane;
+                if (plane == null)
+                {
+                    PlaneUnitType planeUnitType = new PlaneUnitType();
+                    plane = planeUnitType.getPlane(lastSelectedHex, null);
+                }
+                if (plane != null)
+                {
+                    MainGameScreen.HideContextMenu();
+                    PlaneUnitType planeType = new PlaneUnitType();
+                    int shortRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.shortRangeHexes;
+                    Globals.spriteBatch.DrawCircle(pixelHexVector, shortRadius, 32, Color.Red);
+                    int mediumRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.mediumRangeHexes;
+                    int longRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.longRangeHexes;
+                    Globals.spriteBatch.DrawCircle(pixelHexVector, mediumRadius, 32, Color.Red);
+                    if (TransferMode)
+                    {
+                        Globals.spriteBatch.DrawCircle(pixelHexVector, longRadius, 32, Color.Red);
+                    }
+                    if (!IsTargetSelectionNeeded)
+                    {
+                        IsTargetSelectionNeeded = true;
+                        Globals.Log("Draw(): lastSelectedPlane=" + lastSelectedPlane + 
+                            ", IsTargetSelectionNeeded=" + IsTargetSelectionNeeded + ", IsAirplaneMode=" + IsAirplaneMissionMode());
+                    }
+                }
+            }
+            else if (ParaDropMode && ParaTrooper != null && lastSelectedPlane != null)
+            {
+                Vector2 pixelHexVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedPlane.X, lastSelectedPlane.Y));
                 MainGameScreen.HideContextMenu();
                 PlaneUnitType planeType = new PlaneUnitType();
                 int shortRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.shortRangeHexes;
-                Globals.spriteBatch.DrawCircle(hexPixelVector, shortRadius, 32, Color.Red);
+                Globals.spriteBatch.DrawCircle(pixelHexVector, shortRadius, 32, Color.Red);
                 int mediumRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.mediumRangeHexes;
-                int longRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.longRangeHexes;
-                Globals.spriteBatch.DrawCircle(hexPixelVector, mediumRadius, 32, Color.Red);
-                if (TransferMode)
+                Globals.spriteBatch.DrawCircle(pixelHexVector, mediumRadius, 32, Color.Red);
+                if (!IsTargetSelectionNeeded)
                 {
-                    Globals.spriteBatch.DrawCircle(hexPixelVector, longRadius, 32, Color.Red);
+                    IsTargetSelectionNeeded = true;
+                    Globals.Log("Draw(): lastSelectedPlane=" + lastSelectedPlane + 
+                        ", IsTargetSelectionNeeded=" + IsTargetSelectionNeeded + ", IsAirplaneMode=" + IsAirplaneMissionMode());
                 }
-                IsTargetSelectionNeeded = true;
             }
 
             if (lastSelectedUnit != null)
@@ -456,78 +505,45 @@ public class GlobalConquestGame : Game
         // Draw menus and screens.
         // Myra desktop and widgets need to come after other spritebatch draws for correct screen layer ordering
         // otherwise things like the context menu will be hidden.
-        if (lastSelectedUnit != null)
+        Player player = identifySelf();
+        //Globals.Log("Draw(): player=" + player + ", Client=" + Client + ", MainGameScreen=" + MainGameScreen + ", IsAllowedToPlan=" + IsAllowedToPlan());
+        if (player != null &&  Client != null && MainGameScreen != null && MainGameScreen.IsShowContextMenu() && IsAllowedToPlan())
         {
-            Player player = identifySelf();
-            //Globals.Log("Draw(): unit context: " + Client.ClientIdentifier + ", " + player.FactionColor + " ," + lastSelectedUnit.Color);
-            if (player != null && lastSelectedUnit.Color.Equals(player.FactionColor) && 
-                Client != null &&
-                MainGameScreen.IsShowContextMenu() && IsAllowedToPlan() && IsShowAirplanes &&
-                (lastSelectedUnit.Airplane != null || "plane".Equals(lastSelectedUnit.UnitType)))
+            //Globals.Log("Draw(): check ShowContextMenu");
+            if (IsShowAirplanes && lastSelectedPlane != null && lastSelectedPlane.Color.Equals(player.FactionColor))
             {
-                if (lastSelectedUnit.Airplane != null)
+                MainGameScreen?.ShowContextMenu(lastSelectedPlane);    
+            }
+            else if (!IsShowAirplanes && lastSelectedUnit != null && lastSelectedUnit.Color.Equals(player.FactionColor))
+            {
+                MainGameScreen?.ShowContextMenu(lastSelectedUnit);
+            }
+            else if (!IsShowAirplanes && lastSelectedHex != null && lastSelectedBurb != null)
+            {
+                Burb parentBurb = null;
+                if (lastSelectedBurb.Name == null && lastSelectedBurb.ParentBurbName != null)
                 {
-                    //Globals.Log("Draw(): ShowContextMenu 1");
-                    MainGameScreen?.ShowContextMenu(lastSelectedUnit.Airplane);
+                    parentBurb = Client.GameState.Burbs.NameToBurb[lastSelectedBurb.ParentBurbName];
+                }
+                //Globals.Log("Draw(): burb context: " + lastSelectedBurb.Type + " ," + lastSelectedBurb.OwnerColor);
+                if (lastSelectedHex != null && lastSelectedBurb != null && lastSelectedBurb.OwnerColor != null &&
+                    player != null &&
+                    (lastSelectedBurb.OwnerColor.Equals(player.FactionColor) ||
+                    (parentBurb != null && parentBurb.OwnerColor != null && parentBurb.OwnerColor.Equals(player.FactionColor))) &&
+                    MainGameScreen.IsShowContextMenu() && IsAllowedToPlan())
+                {
+                    //Globals.Log("Draw(): ShowContextMenu 6");
+                    MainGameScreen?.ShowContextMenu(lastSelectedHex);
                 }
                 else
                 {
-                    //Globals.Log("Draw(): ShowContextMenu 2");
-                    MainGameScreen?.ShowContextMenu(lastSelectedUnit);
+                    MainGameScreen?.ShowContextMenu(lastSelectedHex, false);
                 }
             }
-            else if (lastSelectedHex != null && lastSelectedHex.Airplane != null && IsShowAirplanes)
+            else if (lastSelectedHex != null)
             {
-                //Globals.Log("Draw(): ShowContextMenu 3");
-                MainGameScreen?.ShowContextMenu(lastSelectedHex.Airplane);
-            }
-            else if (player != null && lastSelectedUnit.Color.Equals(player.FactionColor) && 
-                Client != null &&
-                MainGameScreen.IsShowContextMenu() && IsAllowedToPlan() && !IsShowAirplanes)
-            {
-                //Globals.Log("Draw(): ShowContextMenu 4");
-                MainGameScreen?.ShowContextMenu(lastSelectedUnit);
-            }
-            else
-            {
-                // Allow Refresh on enemy
                 MainGameScreen?.ShowContextMenu(lastSelectedHex, false);
             }
-        }
-        else if (lastSelectedHex != null && lastSelectedHex.Airplane != null && IsShowAirplanes)
-        {
-            //Globals.Log("Draw(): ShowContextMenu 5");
-            MainGameScreen?.ShowContextMenu(lastSelectedHex.Airplane);
-        }
-        else if (lastSelectedHex != null && lastSelectedBurb != null && !IsShowAirplanes)
-        {
-            Player player = identifySelf();
-            Burb parentBurb = null;
-            if (lastSelectedBurb.Name == null && lastSelectedBurb.ParentBurbName != null)
-            {
-                parentBurb = Client.GameState.Burbs.NameToBurb[lastSelectedBurb.ParentBurbName];
-            }
-            //Globals.Log("Draw(): burb context: " + lastSelectedBurb.Type + " ," + lastSelectedBurb.OwnerColor);
-            if (lastSelectedHex != null && lastSelectedBurb != null && lastSelectedBurb.OwnerColor != null &&
-                player != null &&
-                (lastSelectedBurb.OwnerColor.Equals(player.FactionColor) ||
-                (parentBurb != null && parentBurb.OwnerColor != null && parentBurb.OwnerColor.Equals(player.FactionColor))) &&
-                MainGameScreen.IsShowContextMenu() && IsAllowedToPlan())
-            {
-                //Globals.Log("Draw(): ShowContextMenu 6");
-                MainGameScreen?.ShowContextMenu(lastSelectedHex);
-            }
-            else
-            {
-                // Allow refresh on any hex
-                MainGameScreen?.ShowContextMenu(lastSelectedHex, false);
-            }
-        }
-        else if (lastSelectedHex != null && !IsShowAirplanes)
-        {
-            // Allow refresh on any hex
-            //Globals.Log("Draw(): ShowContextMenu 7");
-            MainGameScreen?.ShowContextMenu(lastSelectedHex, false);
         }
 
         Desktop.Render();
@@ -743,8 +759,7 @@ public class GlobalConquestGame : Game
                 handleClickMouseOnMap();
                 sendMoveAction(previousSelectedHex, previousSelectedUnit);
             }
-            if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode && !ParaDropMode &&
-                 !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
+            if (!IsInContextMenuMode() && lastSelectedHex != null)
             {
                 Unit unit = lastSelectedHex.getUnit();
                 lastSelectedUnit = unit;
@@ -752,9 +767,33 @@ public class GlobalConquestGame : Game
         }
     }
 
+    private bool IsAirplaneMissionMode()
+    {
+        if (AirstrikeMode || KamikazeMode || TransferMode || ReconMode || DogfightMode || ParaDropMode || BombMode)
+        {
+            return true;
+        }
+        return false;
+    }
+    private bool IsInContextMenuMode()
+    {
+        if (IsAirplaneMissionMode() || PursueMode || MoveMode || TargetUnitMode)
+        {
+            return true;
+        }
+        return false;
+    }
+
+
     public void handleLeftClick()
     {
         //Globals.Log("handleLeftClick(): enter");
+        // Set by ContextMenu logic.
+        if (IsIgnoreNextLeftClick)
+        {
+            IsIgnoreNextLeftClick = false;
+            return;
+        }
         if (MainGameScreen == null || hexMapEngineAdapter == null)
             return;
         if (
@@ -768,17 +807,33 @@ public class GlobalConquestGame : Game
             {
                 if (!MainGameScreen.ContextMenu.IsMouseInside(GameControl.currentMouseState))
                 {
+                    IsTargetSelectionNeeded = false;
                     MainGameScreen.HideContextMenu();
                 }
                 return;
             }
-            if (MainGameScreen.MainGameMenu != null && MainGameScreen.MainGameMenu.IsMouseInside())
+            MapHex previousSelectedHex = null;
+            Unit previousSelectedUnit = null;
+            PlaneUnitType planeUnitType = new PlaneUnitType();
+            Unit previousSelectedPlane = null;
+            if (!MainGameScreen.IsContextMenuVisible())
             {
-                return;
+                previousSelectedHex = lastSelectedHex;
+                previousSelectedUnit = lastSelectedUnit;
+                previousSelectedPlane = planeUnitType.getPlane(previousSelectedHex, previousSelectedUnit);
+                if (previousSelectedPlane == null)
+                    previousSelectedPlane = lastSelectedPlane;
             }
-            MapHex previousSelectedHex = lastSelectedHex;
-            Unit previousSelectedUnit = lastSelectedUnit;
-            handleClickMouseOnMap();
+            Globals.Log("handleLeftClick(): previousSelectedPlane=" + previousSelectedPlane + 
+                ", IsTargetSelectionNeeded=" + IsTargetSelectionNeeded + ", IsAirplaneMode=" + IsAirplaneMissionMode());
+            
+            if (!MainGameScreen.IsContextMenuVisible()) //!MainGameScreen.ContextMenu.IsMouseInside(GameControl.currentMouseState))
+            {
+                handleClickMouseOnMap();
+                lastSelectedPlane = planeUnitType.getPlane(lastSelectedHex, lastSelectedUnit);
+            }
+            Globals.Log("handleLeftClick(): lastSelectedPlane=" + lastSelectedPlane + 
+                ", IsTargetSelectionNeeded=" + IsTargetSelectionNeeded + ", IsAirplaneMode=" + IsAirplaneMissionMode());
             if (MoveMode)
             {
                 sendMoveAction(previousSelectedHex, previousSelectedUnit);
@@ -787,6 +842,7 @@ public class GlobalConquestGame : Game
             }
             else if (PursueMode && previousSelectedUnit != null && lastSelectedUnit != null && lastSelectedUnit.Id != null)
             {
+                Globals.Log("handleLeftClick(): PursueMode");
                 PursueUnitAction pursueAction = new PursueUnitAction();
                 pursueAction.ClassType = "GlobalConquest.Actions.PursueUnitAction";
                 pursueAction.Unit = previousSelectedUnit;
@@ -799,208 +855,171 @@ public class GlobalConquestGame : Game
                     Globals.Log("handleLeftClick(): pursueAction sent");
                 }
                 PursueMode = false;
-                if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode && !ParaDropMode &&
-                    !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
+                if (!IsInContextMenuMode() && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
                 }
             }
-            else if (IsTargetSelectionNeeded && ReconMode && (previousSelectedHex != null || previousSelectedUnit != null) && lastSelectedHex != null)
+            else if (IsTargetSelectionNeeded && ReconMode && previousSelectedPlane != null)
             {
+                Globals.Log("handleLeftClick(): ReconMode");
                 ReconAction action = new ReconAction();
                 action.ClassType = "GlobalConquest.Actions.ReconAction";
                 action.ClientIdentifier = Client.ClientIdentifier;
-                Unit plane = null;
-                if (previousSelectedUnit != null && previousSelectedUnit.Airplane != null)
-                    action.Plane = previousSelectedUnit.Airplane;
-                else if (previousSelectedHex  != null && previousSelectedHex.Airplane != null)
-                    action.Plane = previousSelectedHex.Airplane;
+                action.Plane = previousSelectedPlane;
                 action.ReconX = lastSelectedHex.X;
                 action.ReconY = lastSelectedHex.Y;
                 Client.SendAction(Client.ClientIdentifier, action);
                 Globals.Log("handleLeftClick(): recon at " + action.ReconX + "," + action.ReconY);
                 ReconMode = false;
-                if (!PursueMode && !MoveMode && !ReconMode && !TransferMode && !AirstrikeMode && !ParaDropMode &&
-                     !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
+                if (!IsInContextMenuMode() && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
                 }
             }
-            else if (IsTargetSelectionNeeded && AirstrikeMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
-                     lastSelectedUnit != null && lastSelectedUnit.Id != null && lastSelectedHex != null)
+            else if (IsTargetSelectionNeeded && AirstrikeMode && previousSelectedPlane != null && lastSelectedHex != null)
             {
+                Globals.Log("handleLeftClick(): AirstrikeMode");
                 AirstrikeAction action = new AirstrikeAction();
                 action.ClassType = "GlobalConquest.Actions.AirstrikeAction";
                 action.ClientIdentifier = Client.ClientIdentifier;
-                Unit plane = null;
-                if (previousSelectedUnit != null && previousSelectedUnit.Airplane != null)
-                    action.Plane = previousSelectedUnit.Airplane;
-                else if (previousSelectedHex  != null && previousSelectedHex.Airplane != null)
-                    action.Plane = previousSelectedHex.Airplane;
+                action.Plane = previousSelectedPlane;
                 action.StrikeX = lastSelectedHex.X;
                 action.StrikeY = lastSelectedHex.Y;
                 Client.SendAction(Client.ClientIdentifier, action);
                 Globals.Log("handleLeftClick(): airstrike at " + action.StrikeX + "," + action.StrikeY);
                 AirstrikeMode = false;
-                if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode && !ParaDropMode &&
-                    !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
+                if (!IsInContextMenuMode())
                 {
                     Unit unit = lastSelectedHex.getUnit();
-                    lastSelectedUnit = unit;
                 }
             }
-            else if (IsTargetSelectionNeeded && TargetUnitMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+            else if (IsTargetSelectionNeeded && TargetUnitMode && previousSelectedUnit != null && 
                      lastSelectedUnit != null && lastSelectedUnit.Id != null && lastSelectedHex != null)
             {
+                Globals.Log("handleLeftClick(): TargetUnitMode");
                 TargetUnitAction action = new TargetUnitAction();
                 action.ClassType = "GlobalConquest.Actions.TargetUnitAction";
                 action.ClientIdentifier = Client.ClientIdentifier;
-                if (previousSelectedUnit != null)
-                    action.Unit = previousSelectedUnit;
+                action.Unit = previousSelectedUnit;
                 action.TargetX = lastSelectedHex.X;
                 action.TargetY = lastSelectedHex.Y;
                 Client.SendAction(Client.ClientIdentifier, action);
                 Globals.Log("handleLeftClick(): target unit at " + action.TargetX + "," + action.TargetY);
                 TargetUnitMode = false;
-                if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode && !ParaDropMode &&
-                    !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
+                if (!IsInContextMenuMode() && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
                 }
             }
-            else if (ParaDropMode && ParaTrooper == null && lastSelectedHex != null)
+            else if (ParaDropMode && ParaTrooper == null && lastSelectedUnit != null)
             {
-                Unit unit = lastSelectedHex.getUnit();
-                if (unit != null && ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType)))
+                Globals.Log("handleLeftClick(): ParaDropMode, ParaTrooper=null");
+                if (("infantry".Equals(lastSelectedUnit.UnitType) || "dug-in-infantry".Equals(lastSelectedUnit.UnitType)))
                 {
-                    //unit.X = lastSelectedHex.X;
-                    //unit.Y = lastSelectedHex.Y;
-                    ParaTrooper = unit;
-                    Globals.Log("handleLeftClick(): paraTrooper set");
+                    ParaTrooper = lastSelectedUnit;
+                    lastSelectedPlane = previousSelectedPlane;
+                    lastSelectedHex = planeUnitType.getPlaneMapHex(Client.GameState.Map, lastSelectedPlane);
+                    Globals.Log("handleLeftClick(): paraTrooper set, lastSelectedHex=" + lastSelectedHex.X + "," + lastSelectedHex.Y);
+                }
+                else
+                {
+                    Globals.Log("handleLeftClick(): paraTrooper not set " + lastSelectedUnit.UnitType);
                 }
             }
-            else if (ParaDropMode && ParaTrooper != null && (previousSelectedHex != null || previousSelectedUnit != null) && 
+            else if (ParaDropMode && ParaTrooper != null && previousSelectedPlane != null && 
                      lastSelectedHex != null)
             {
+                Globals.Log("handleLeftClick(): ParaDropMode, ParaTrooper set");
                 ParaDropAction action = new ParaDropAction();
                 action.ClassType = "GlobalConquest.Actions.ParaDropAction";
                 action.ClientIdentifier = Client.ClientIdentifier;
-                Unit plane = null;
-                if (previousSelectedUnit != null && previousSelectedUnit.Airplane != null)
-                    action.Plane = previousSelectedUnit.Airplane;
-                else if (previousSelectedHex  != null && previousSelectedHex.Airplane != null)
-                    action.Plane = previousSelectedHex.Airplane;
+                action.Plane = previousSelectedPlane;
                 action.ParaTrooper = ParaTrooper;
                 action.DestinationX = lastSelectedHex.X;
                 action.DestinationY = lastSelectedHex.Y;
                 Client.SendAction(Client.ClientIdentifier, action);
                 Globals.Log("handleLeftClick(): paradrop at " + action.DestinationX + "," + action.DestinationY);
                 ParaDropMode = false;
-                if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode && !ParaDropMode &&
-                    !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
+                if (!IsInContextMenuMode() && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
                 }
             }
-            else if (IsTargetSelectionNeeded && KamikazeMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+            else if (IsTargetSelectionNeeded && KamikazeMode && previousSelectedPlane != null && 
                      lastSelectedUnit != null && lastSelectedUnit.Id != null && lastSelectedHex != null)
             {
+                Globals.Log("handleLeftClick(): KamikazeMode");
                 KamikazeAction action = new KamikazeAction();
                 action.ClassType = "GlobalConquest.Actions.KamikazeAction";
                 action.ClientIdentifier = Client.ClientIdentifier;
-                Unit plane = null;
-                if (previousSelectedUnit != null && previousSelectedUnit.Airplane != null)
-                    action.Plane = previousSelectedUnit.Airplane;
-                else if (previousSelectedHex  != null && previousSelectedHex.Airplane != null)
-                    action.Plane = previousSelectedHex.Airplane;
+                action.Plane = previousSelectedPlane;
                 action.StrikeX = lastSelectedHex.X;
                 action.StrikeY = lastSelectedHex.Y;
                 Client.SendAction(Client.ClientIdentifier, action);
                 Globals.Log("handleLeftClick(): kamikaze strike at " + action.StrikeX + "," + action.StrikeY);
                 KamikazeMode = false;
-                if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode && !ParaDropMode &&
-                    !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
+                if (!IsInContextMenuMode() && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
-                    lastSelectedUnit = unit;
                 }
             }
-            else if (IsTargetSelectionNeeded && DogfightMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+            else if (IsTargetSelectionNeeded && DogfightMode && previousSelectedPlane != null && lastSelectedPlane != null &&
                      lastSelectedHex != null)
             {
+                Globals.Log("handleLeftClick(): DogfightMode");
                 DogfightAction action = new DogfightAction();
                 action.ClassType = "GlobalConquest.Actions.DogfightAction";
                 action.ClientIdentifier = Client.ClientIdentifier;
-                Unit plane = null;
-                if (previousSelectedUnit != null && previousSelectedUnit.Airplane != null)
-                    action.Plane = previousSelectedUnit.Airplane;
-                else if (previousSelectedHex  != null && previousSelectedHex.Airplane != null)
-                    action.Plane = previousSelectedHex.Airplane;
+                action.Plane = previousSelectedPlane;
                 action.StrikeX = lastSelectedHex.X;
                 action.StrikeY = lastSelectedHex.Y;
                 Client.SendAction(Client.ClientIdentifier, action);
                 Globals.Log("handleLeftClick(): dogfight near " + action.StrikeX + "," + action.StrikeY);
                 DogfightMode = false;
-                if (!PursueMode && !MoveMode && !ReconMode && !AirstrikeMode && !TransferMode && !ParaDropMode &&
-                    !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
+                if (!IsInContextMenuMode() && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
                 }
             }
-            else if (IsTargetSelectionNeeded && TransferMode && (previousSelectedHex != null || previousSelectedUnit != null) && 
+            else if (IsTargetSelectionNeeded && TransferMode && previousSelectedPlane != null && 
                      lastSelectedHex != null)
             {
+                Globals.Log("handleLeftClick(): TransferMode");
                 TransferAction action = new TransferAction();
                 action.ClassType = "GlobalConquest.Actions.TransferAction";
                 action.ClientIdentifier = Client.ClientIdentifier;
-                Unit plane = null;
-                if (previousSelectedUnit != null && previousSelectedUnit.Airplane != null)
-                    plane = previousSelectedUnit.Airplane;
-                else if (previousSelectedHex != null && previousSelectedHex.Airplane != null)
-                    plane = previousSelectedHex.Airplane;
-                action.Plane = plane;
+                action.Plane = previousSelectedPlane;
                 action.DestinationX = lastSelectedHex.X;
                 action.DestinationY = lastSelectedHex.Y;
-                if (plane != null)
-                {
-                    Client.SendAction(Client.ClientIdentifier, action);
-                    Globals.Log("handleLeftClick(): transfer at " + action.DestinationX + "," + action.DestinationY);
-                }
+                Client.SendAction(Client.ClientIdentifier, action);
+                Globals.Log("handleLeftClick(): transfer at " + action.DestinationX + "," + action.DestinationY);
                 TransferMode = false;
-                if (!PursueMode && !MoveMode && !ReconMode && !TransferMode && !AirstrikeMode && !ParaDropMode &&
-                     !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
+                if (!IsInContextMenuMode() && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
                 }
             }
-            else if (IsTargetSelectionNeeded && BombMode && (previousSelectedHex != null) && 
+            else if (IsTargetSelectionNeeded && BombMode && previousSelectedPlane != null && 
                      lastSelectedHex != null)
             {
+                Globals.Log("handleLeftClick(): BombMode");
                 BombAction action = new BombAction();
                 action.ClassType = "GlobalConquest.Actions.BombAction";
                 action.ClientIdentifier = Client.ClientIdentifier;
-                Unit plane = null;
-                if (previousSelectedUnit != null && previousSelectedUnit.Airplane != null)
-                    plane = previousSelectedUnit.Airplane;
-                else if (previousSelectedHex != null && previousSelectedHex.Airplane != null)
-                    plane = previousSelectedHex.Airplane;
-                action.Plane = plane;
+                action.Plane = previousSelectedPlane;
                 action.BombX = lastSelectedHex.X;
                 action.BombY = lastSelectedHex.Y;
-                if (plane != null)
-                {
-                    Client.SendAction(Client.ClientIdentifier, action);
-                    Globals.Log("handleLeftClick(): bombing at " + action.BombX + "," + action.BombY);
-                }
+                Client.SendAction(Client.ClientIdentifier, action);
+                Globals.Log("haendleLeftClick(): bombing at " + action.BombX + "," + action.BombY);
                 BombMode = false;
-                if (!PursueMode && !MoveMode && !ReconMode && !TransferMode && !AirstrikeMode && !ParaDropMode &&
-                     !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode && lastSelectedHex != null)
+                if (!IsInContextMenuMode() && lastSelectedHex != null)
                 {
                     Unit unit = lastSelectedHex.getUnit();
                     lastSelectedUnit = unit;
@@ -1039,6 +1058,11 @@ public class GlobalConquestGame : Game
             {
                 Unit unit = lastSelectedHex.getUnit();
                 lastSelectedUnit = unit;
+                PlaneUnitType planeUnitType = new PlaneUnitType();
+                lastSelectedPlane = planeUnitType.getPlane(lastSelectedHex, lastSelectedUnit);
+                IsTargetSelectionNeeded = false;
+                Globals.Log("handleRightClick(): lastSelectedPlane=" + lastSelectedPlane  + 
+                            ", IsTargetSelectionNeeded=" + IsTargetSelectionNeeded + ", IsAirplaneMode=" + IsAirplaneMissionMode());
                 Burb burb = lastSelectedHex.Burb;
                 lastSelectedBurb = burb;
                 // Since planes are always on other units or in burbs,
@@ -1075,10 +1099,17 @@ public class GlobalConquestGame : Game
         if (selectedHexVector.X >= 0 && selectedHexVector.Y >= 0 &&
             selectedHexVector.X < Client.GameState.GameSettings.Width && selectedHexVector.Y < Client.GameState.GameSettings.Height)
         {
+            if (MainGameScreen != null && MainGameScreen.IsVisible)
+                Globals.Log("handleClickMouseOnMap(): IsInContextMenuMode=" + IsInContextMenuMode() + 
+                        ", IsContextMenuVisible=" + MainGameScreen.IsContextMenuVisible() + ", IsShowContextMenu=" + MainGameScreen.IsShowContextMenu());
             lastSelectedHex = Client?.GameState.Map.Hexes[(int)selectedHexVector.Y, (int)selectedHexVector.X];
-            if (!MoveMode && !PursueMode && !ReconMode && !AirstrikeMode && !TransferMode && !ParaDropMode &&
-                !BombMode && !KamikazeMode && !DogfightMode && !TargetUnitMode)
+            
+            Globals.Log("handleClickMouseOnMap(): selectedHexVector=" + selectedHexVector.X + "," + selectedHexVector.Y + 
+                        ", lastSelectedHex=" + lastSelectedHex.X + "," + lastSelectedHex.Y);
+            if (!IsInContextMenuMode() || (ParaDropMode && ParaTrooper == null))
+            {
                 lastSelectedUnit = lastSelectedHex.getUnit();
+            }
         }
         return selectedHexVector;
     }
@@ -1175,13 +1206,13 @@ public class GlobalConquestGame : Game
         Player player;
         if (Client.IsObserverOnly)
             return null;
-        if (Client.GameState.Players.playerNameToPlayer.ContainsKey(Client.ClientIdentifier))
+        if (Client.ClientIdentifier != null &&Client.GameState.Players.playerNameToPlayer.ContainsKey(Client.ClientIdentifier))
         {
             player = Client.GameState.Players.playerNameToPlayer[Client.ClientIdentifier];
         }
         else
         {
-            Globals.Log("identifySelf(): could not find player");
+            //Globals.Log("identifySelf(): could not find player");
             player = new Player();
             HashSet<string> colors = ["amber", "ocher", "magenta", "cyan"];
             foreach (string key in Client.GameState.Players.colorToPlayer.Keys)
@@ -1202,7 +1233,7 @@ public class GlobalConquestGame : Game
             if (player.FactionColor == null && colors.Count > 0)
             {
                 player.FactionColor = colors.ToList<string>()[0];
-                Globals.Log("identifySelf(): color assigned=" + player.FactionColor);
+                //Globals.Log("identifySelf(): color assigned=" + player.FactionColor);
             }
             if (player.FactionColor == null)
             {

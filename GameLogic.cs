@@ -510,21 +510,25 @@ public class GameLogic
             {
                 Unit lastTargetUnit = map.getUnitAtXY((int)unit.lastTargetUnitVector.X, (int)unit.lastTargetUnitVector.Y);
                 // if already attacking a unit, keep attacking the same unit.
-                if (lastTargetUnit != null && lastTargetUnit.StrengthPoints > 0 && lastTargetUnit.Color != unit.Color)
+                if (lastTargetUnit != null && lastTargetUnit.StrengthPoints > 0 && !lastTargetUnit.Color.Equals(unit.Color))
                 {
                     MapHex targetMapHex = map.Hexes[lastTargetUnit.Y, lastTargetUnit.X];
                     UnitType targetUnitType = unitTypes.UnitTypeMap[lastTargetUnit.UnitType];
                     int firingRangeFromAttacker = targetUnitType.FiringRangeFromAttacker[unit.UnitType];
                     int firingRangeToDefender = attackerUnitType.FiringRangeToDefender[lastTargetUnit.UnitType];
-                    if (lastTargetUnit.StrengthPoints > 0 && lastTargetUnit.Visibility[unit.Color] && scanRange <= firingRangeFromAttacker && scanRange <= firingRangeToDefender && hexesToScan.Contains(targetMapHex))
+                    if (lastTargetUnit.StrengthPoints > 0 && lastTargetUnit.Visibility[unit.Color] && 
+                        scanRange <= firingRangeFromAttacker && scanRange <= firingRangeToDefender && hexesToScan.Contains(targetMapHex))
                     {
                         unitToAttack = lastTargetUnit;
-                        Globals.Log("checkForCombat(): " + unit.Id + " wants to continue to attack " + unitToAttack.Id);
+                        if (!"grey".Equals(unit.Color))
+                            Globals.Log("checkForCombat(): " + unit.Id + " wants to continue to attack " + unitToAttack.Id);
                     }
                 }
 
                 if (unitToAttack == null)
                 {
+                    if (!"grey".Equals(unit.Color))
+                        Globals.Log("checkForCombat(): no previous unit to attack found for " + unit.Id);
                     foreach (MapHex hex in hexesToScan.Except(previouslyScannedHexes))
                     {
                         Unit hexUnit = hex.getUnit();
@@ -1453,9 +1457,13 @@ public class GameLogic
         string gcDirectory = Path.Combine(baseFolder, "GlobalConquest");
         string gcDataDirectory = Path.Combine(gcDirectory, "Data");
 
+        if (!Directory.Exists(gcDataDirectory))
+            return;
         // Recreate the game state from the GameState json file.
         string searchPattern = "GameState-*.json";
         string[] files = Directory.GetFiles(gcDataDirectory, searchPattern);
+        if (files.Count() < 1)
+            return;
         string file = files[0];
         string filePath = file;
         string jsonString = File.ReadAllText(filePath);

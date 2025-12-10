@@ -152,12 +152,13 @@ public class MainGameScreen
 
     public bool IsContextMenuVisible()
     {
-        if (MapPanel.Widgets.Count > 0)
-        {
-            Widget widget = MapPanel.Widgets[0];
-            return widget.Visible;
-        }
-        return false;
+        return ContextMenu.IsContextMenuVisible();
+        //if (MapPanel.Widgets.Count > 0)
+        //{
+        //    Widget widget = MapPanel.Widgets[0];
+        //    return widget.Visible;
+        //}
+        //return false;
     }
 
 
@@ -184,7 +185,9 @@ public class MainGameScreen
     public void ShowContextMenu(Unit unit)
     {
         if ("plane".Equals(unit.UnitType) && unit.StrengthPoints > 0)
+        {
             ContextMenu.ShowContextMenuForPlane(unit);
+        }
         else if (! gcGame.IsShowAirplanes)
             ContextMenu.ShowContextMenu(unit);
     }

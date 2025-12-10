@@ -41,7 +41,7 @@ public class BombAction : PlayerAction
                 Globals.Log("execute(): plane is unavailable");
                 if (existingPlane != null)
                 {
-                    Globals.Log("execute(): existingPlane: " + existingPlane.StrengthPoints + ", " + 
+                    Globals.Log("execute(): existingPlane: strength=" + existingPlane.StrengthPoints + ", turnsUnavailable=" + 
                                        existingPlane.TurnsUnavailable);
                 }
                 return;

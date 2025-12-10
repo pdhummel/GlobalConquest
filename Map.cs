@@ -174,10 +174,6 @@ public class Map
     {
         if (unit != null && x >= 0 && x < X && y >= 0 && y < Y)
         {
-            if ("plane".Equals(unit.UnitType))
-                Hexes[y, x].Airplane = unit;
-            else
-                Hexes[y, x].setUnit(unit);
             unit.HomeBurbX = x;
             unit.HomeBurbY = y;
             unit.OriginalBurbX = x;
@@ -185,6 +181,11 @@ public class Map
             unit.X = x;
             unit.Y = y;
             string id = unit.generateId();
+
+            if ("plane".Equals(unit.UnitType))
+                Hexes[y, x].Airplane = unit;
+            else
+                Hexes[y, x].setUnit(unit);
             UnitIdToUnit[id] = unit;
             ColorToUnitIds[unit.Color].Add(id);
         }

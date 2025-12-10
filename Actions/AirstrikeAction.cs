@@ -30,30 +30,9 @@ public class AirstrikeAction : PlayerAction
         Map map = gameState.Map;
         if (StrikeX >= 0 && StrikeX < map.X && StrikeY >= 0 && StrikeY < map.Y)
         {
-            MapHex planeHex = map.Hexes[Plane.Y, Plane.X];
             MapHex mapHex = map.Hexes[StrikeY, StrikeX];
             PlaneUnitType planeType = new PlaneUnitType();
-            Unit parentUnit = null;
-            Unit existingPlane = null;
-            if (Plane.ParentUnitId != null)
-            {
-                if (map.UnitIdToUnit.ContainsKey(Plane.ParentUnitId))
-                {
-                    parentUnit = map.UnitIdToUnit[Plane.ParentUnitId];
-                    existingPlane = parentUnit.Airplane;
-                    if (existingPlane != null)
-                    {
-                        existingPlane.X = parentUnit.X;
-                        existingPlane.Y = parentUnit.Y;
-                        existingPlane = parentUnit.Airplane;
-                        planeHex = map.Hexes[existingPlane.Y, existingPlane.X];
-                    }
-                }
-            }
-            if (Plane.ParentUnitId == null)
-            {
-                existingPlane = planeHex.Airplane; 
-            }
+            Unit existingPlane = planeType.getExistingPlane(map, Plane);
             if (existingPlane == null  || existingPlane.StrengthPoints <= 0 || existingPlane.TurnsUnavailable > 0)
             {
                 Globals.Log("execute(): plane is unavailable");
@@ -66,19 +45,10 @@ public class AirstrikeAction : PlayerAction
                 Globals.Log("execute(): target hex is not in range.");
                 return;
             }
-            if (parentUnit != null && parentUnit.Airplane != null)
-            {
-                parentUnit.Airplane = outcome.Plane;
-            }
-            else if (planeHex != null && planeHex.Airplane != null)
-            {
-                planeHex.Airplane = outcome.Plane;
-            }
             Globals.Log("execute(): turnsUnavailable=" + existingPlane.TurnsUnavailable);
             //Globals.Log("execute(): outcome.turnsUnavailable=" + outcome.Plane.turnsUnavailable);
             if (outcome.IsMissionSuccessful)
             {
-                GameLogic gameLogic = new GameLogic();
                 MapHex targetMapHex = map.Hexes[StrikeY, StrikeX];
                 Unit targetUnit = targetMapHex.getUnit();
                 int factor = 1;
@@ -192,7 +162,9 @@ public class AirstrikeAction : PlayerAction
                 gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
                 gameEvent.Unit = Plane;
                 gameEvent.EnemyColor = outcome.EnemyPlane.Color;
+                planeType.handlePlaneShotDown(gameState, existingPlane);
                 server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
+                //server.sendGameStateAndMapHex(StrikeX, StrikeY);
                 server.sendGameStateAndMapHex(outcome.EnemyPlane.X, outcome.EnemyPlane.Y);
                 server.sendGamePlayEvent(Plane.Color, gameEvent);
             }

@@ -31,7 +31,7 @@ public class GameState
 
 
     // if any of the data elements in the entities change above, then this version should be bumped.
-    public string Version { get; set; } = "v0.6.2";
+    public string Version { get; set; } = "v0.6.3";
     private Random rand = new System.Random();
 
 

@@ -25,25 +25,23 @@ public class ChangeUnitContextAction : PlayerAction
 
     public new void execute(NetPeer peer, Object serverObj)
     {
-        Globals.Log("execute()");
+        Globals.Log("execute(): enter");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         if (Unit != null)
         {
+            Globals.Log("execute(): unitType=" + Unit.UnitType);
             MapHex mapHex = gameState.Map.Hexes[Unit.Y, Unit.X];
             Unit existingUnit = mapHex.getUnit();
+            if ("plane".Equals(Unit.UnitType))
+            {
+                PlaneUnitType planeUnitType = new PlaneUnitType();
+                Unit existingPlane = planeUnitType.getExistingPlane(gameState.Map, Unit);
+                if (existingPlane != null)
+                    existingUnit = existingPlane;
+            }
             if (existingUnit != null)
             {
-                if ("plane".Equals(Unit.UnitType) && !"plane".Equals(existingUnit))
-                {
-                    existingUnit = existingUnit.Airplane;
-                }
-                if (existingUnit == null && "plane".Equals(Unit.UnitType))
-                {
-                    existingUnit = mapHex.Airplane;
-                }
-                if (existingUnit == null)
-                    return;
                 existingUnit.IsBlitzing = IsBlitzing;
                 existingUnit.IsSneaking = IsSneaking;
                 existingUnit.RoundsToWait = RoundsToWait;
