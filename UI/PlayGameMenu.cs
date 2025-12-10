@@ -22,12 +22,14 @@ public class PlayGameMenu
     MenuItem customMenuItem;
     MenuItem backToMainConquestMenuItem;
     MenuItem restoreMenuItem;
+    JoinGameScreen? joinGameScreen;
     Image gcImage = new Image();
 
 
-    public PlayGameMenu(ConquestMenu conquestMenu, Game game, Grid grid)
+    public PlayGameMenu(ConquestMenu conquestMenu, Game game, Grid grid, JoinGameScreen joinGameScreen)
     {
         this.ConquestMenu = conquestMenu;
+        this.joinGameScreen = joinGameScreen;
         this.game = game;
         this.grid = grid;
         playGameMenuLabel = new Label();
@@ -135,6 +137,10 @@ public class PlayGameMenu
             Window window = new Window
             {
                 Title = "Game Restored"
+            };
+            window.Closed += (s, a) => {
+                this.hide();
+                joinGameScreen.show();
             };
             window.ShowModal(grid.Desktop);
         }

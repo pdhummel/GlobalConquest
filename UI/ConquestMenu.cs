@@ -61,11 +61,12 @@ public class ConquestMenu
         quitMenuItem.Menu = conquestVerticalMenu;
         conquestVerticalMenu.Items.Add(quitMenuItem);
 
-        playGameMenu = new PlayGameMenu(this, game, grid);
-        playGameMenu.LoadContent();
-
         joinGameScreen = new JoinGameScreen(this, game, grid);
         joinGameScreen.LoadContent();
+
+        playGameMenu = new PlayGameMenu(this, game, grid, joinGameScreen);
+        playGameMenu.LoadContent();
+
 
         // actionMapper allows our game controller to invoke menu items
         GlobalConquestGame gcGame = (GlobalConquestGame)game;

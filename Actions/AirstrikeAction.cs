@@ -30,7 +30,7 @@ public class AirstrikeAction : PlayerAction
         Map map = gameState.Map;
         if (StrikeX >= 0 && StrikeX < map.X && StrikeY >= 0 && StrikeY < map.Y)
         {
-            MapHex mapHex = map.Hexes[StrikeY, StrikeX];
+            MapHex strikeMapHex = map.Hexes[StrikeY, StrikeX];
             PlaneUnitType planeType = new PlaneUnitType();
             Unit existingPlane = planeType.getExistingPlane(map, Plane);
             if (existingPlane == null  || existingPlane.StrengthPoints <= 0 || existingPlane.TurnsUnavailable > 0)
@@ -39,7 +39,7 @@ public class AirstrikeAction : PlayerAction
                 return;
             }
 
-            AirplaneMissionOutcome outcome = planeType.determineMissionOutcome(gameState, existingPlane, mapHex);
+            AirplaneMissionOutcome outcome = planeType.determineMissionOutcome(gameState, existingPlane, strikeMapHex);
             if (!outcome.IsShortRangeMission && !outcome.IsMediumRangeMission)
             {
                 Globals.Log("execute(): target hex is not in range.");
