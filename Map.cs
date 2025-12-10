@@ -795,10 +795,12 @@ public class Map
                     UnitIdToUnit[unit.Id] = unit;
                 }
 
-                //if (mapHex.Burb != null && mapHex.Burb.Name != null)
-                //{
-                //    burbs.NameToBurb[mapHex.Burb.Name] = mapHex.Burb;
-                //}
+                Burb burb = mapHex.Burb;
+                if (burb != null  && burb.Name != null && !"suburb".Equals(burb.Type) && !"dock".Equals(burb.Type))
+                {
+                    burbs.NameToBurb[burb.Name] = burb;
+                }
+
             }
         }
     }

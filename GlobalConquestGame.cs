@@ -558,7 +558,10 @@ public class GlobalConquestGame : Game
 
     public void DrawPathForUnit(Unit unit, Color color)
     {
+        Player player = identifySelf();
         if (unit == null)
+            return;
+        if (!Client.IsObserverOnly && (player == null || !unit.Color.Equals(player.FactionColor)))
             return;
         MapHex mapHex = Client.GameState.Map.Hexes[unit.Y, unit.X];
         unit = mapHex.getUnit();

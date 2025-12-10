@@ -1445,7 +1445,7 @@ public class GameLogic
             faction.Ai.Faction = faction;
             faction.Ai.initialize(server);
         }
-
+        server.sendGameState();
         server.syncAllMapHexes();
     }
 

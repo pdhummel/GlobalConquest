@@ -105,7 +105,7 @@ The game is being designed with known differences from the original.
 - [x] Resign to AI.
 - [ ] Convert player to AI.
 - [ ] Convert AI to player.
-- [ ] Ability to change game settings.
+- [x] Ability to change game settings.
 - [x] The ability to choose a specific target for attack.
 
 ### Milestone 7
@@ -194,7 +194,7 @@ This is best supported by mouse and keyboard. However, some effort has been made
 - [x] Add audio indicator when grace period begins.
 - [x] Add north and south for cities.
 - [x] Make towns have some suburbs/docks.
-- [ ] Bug: Shouldn't be able to see pathing of enemy units.
+- [x] Bug: Shouldn't be able to see pathing of enemy units.
 - [ ] Bug: Game controller cannot change comboboxes.
 - [ ] Bug: Game controller cannot navigate nested menus -- i.e., File, View.
 - [ ] Bug: Burbs with airplanes are masked by ComCen w/airplanes on the same hex.

@@ -347,13 +347,19 @@ class HexMapEngineAdapter
                         burbId = burb.Color + "-" + burb.Type;
                     drawBurbAtHex(liY, liX, burbId, burb, null, player);
                 }
+            }
+        }
+        for (int liY = 0; liY < hexHeight; liY++)
+        {
+            for (int liX = 0; liX < hexWidth; liX++)
+            {
+                Burb? burb = hexes[liY, liX].Burb;
                 if (burb != null && burb.DirectionFromParent != null)
                 {
                     drawBurbAtHex(liY, liX, "", burb, null, player);
                 }
             }
         }
-
     }
 
     public void DrawUnits()

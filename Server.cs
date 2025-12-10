@@ -428,14 +428,21 @@ public class Server
         if (PeerToPlayerName.ContainsKey(peer))
         {
             string playerName = PeerToPlayerName[peer];
-
-            Player player = gameState.Players.playerNameToPlayer[playerName];
-            Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
-            faction.Status = "disconnected";
-
-            Globals.Log("Player " + playerName + " disconnected");
-            PeerToPlayerName.Remove(peer);
-            PlayerNameToPeer.Remove(playerName);
+            if (gameState.Players.playerNameToPlayer.ContainsKey(playerName))
+            {
+                Player player = gameState.Players.playerNameToPlayer[playerName];
+                Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
+                faction.Status = "disconnected";
+                Globals.Log("Player " + playerName + " disconnected");
+            }
+            else
+            {
+                Globals.Log(playerName + " disconnected");
+            }
+            if (PeerToPlayerName.ContainsKey(peer))
+                PeerToPlayerName.Remove(peer);
+            if (PlayerNameToPeer.ContainsKey(playerName))
+                PlayerNameToPeer.Remove(playerName);
             gameState.Players.RemovePlayer(gameState, playerName);
             initialSync = false;
             sendGameState();
