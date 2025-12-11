@@ -249,10 +249,14 @@ public class GameControl
                 {
                     ((ToggleButton)child).DoClick();
                 }
-                //Myra.Graphics2D.UI.ComboView visibilityComboView
                 else if ("Myra.Graphics2D.UI.ComboView".Equals(child.GetType().ToString()))
                 {
-                    //((ComboView)child)
+                    ComboView comboView = ((ComboView)child);
+                    int items = comboView.Widgets.Count;
+                    if (comboView.SelectedIndex < items - 1)
+                        comboView.SelectedIndex += 1;
+                    else
+                        comboView.SelectedIndex = 0;
                 }
                 else
                 {
