@@ -26,7 +26,7 @@ public class ChangeGameSettingsAction : PlayerAction
         GameState gameState = server.gameState;
         gameState.GameSettings.ExecutionMode = GameSettings.ExecutionMode;
         gameState.GameSettings.TimedSeconds = GameSettings.TimedSeconds;
-        if (gameState.CurrentTurn < GameSettings.NumberOfTurnsForGame)
+        if (GameSettings.NumberOfTurnsForGame == -1 || gameState.CurrentTurn < GameSettings.NumberOfTurnsForGame)
             gameState.GameSettings.NumberOfTurnsForGame = GameSettings.NumberOfTurnsForGame;
         //gameState.GameSettings.ScoringOption = GameSettings.ScoringOption;
         server.sendGameState();

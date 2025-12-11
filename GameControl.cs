@@ -54,7 +54,7 @@ public class GameControl
             (gamepadState2.Buttons.A == ButtonState.Pressed && previousGamepadState2.Buttons.A == ButtonState.Released))
         {
             if (gcGame.Desktop != null && gcGame.Desktop.Widgets.Count > 0)
-                checkAllWidgets(gcGame.Desktop);
+                checkAllWidgets(gcGame.Desktop, "A");
             gcGame.handleLeftClick();
             gcGame.handleLeftMouseButtonOnMiniMap();
         }
@@ -62,6 +62,8 @@ public class GameControl
         if ((gamepadState.Buttons.B == ButtonState.Pressed && previousGamepadState.Buttons.B == ButtonState.Released) ||
             (gamepadState2.Buttons.B == ButtonState.Pressed && previousGamepadState2.Buttons.B == ButtonState.Released))
         {
+            if (gcGame.Desktop != null && gcGame.Desktop.Widgets.Count > 0)
+                checkAllWidgets(gcGame.Desktop, "B");
             gcGame.handleRightClick();
         }
 
@@ -206,7 +208,7 @@ public class GameControl
         previousKeyboardState = currentKeyboardState;
     }
 
-    private void checkAllWidgets(Desktop desktop)
+    private void checkAllWidgets(Desktop desktop, string AorB)
     {
         List<Widget> widgets = new List<Widget>(desktop.Widgets);
         foreach (Widget child in widgets)
@@ -214,12 +216,12 @@ public class GameControl
             if (child.IsMouseInside)
             {
                 Globals.Log(child.GetType() + " " + child.Id);
-                checkAllWidgets(child);
+                checkAllWidgets(child, AorB);
             }
         }
     }
 
-    private void checkAllWidgets(Widget widget)
+    private void checkAllWidgets(Widget widget, string AorB)
     {
         if (widget == null)
             return;
@@ -258,9 +260,24 @@ public class GameControl
                     else
                         comboView.SelectedIndex = 0;
                 }
+                else if ("Myra.Graphics2D.UI.TextBox".Equals(child.GetType().ToString()))
+                {
+                    TextBox textBox = ((TextBox)child);
+                    string text = textBox.Text;
+                    try
+                    {
+                        int number = (Int32.Parse(text));
+                        if ("A".Equals(AorB))
+                            number += 1;
+                        else
+                            number -= 1;
+                        textBox.Text = "" + number;
+                    }
+                    catch(Exception exIgnore) {}
+                }
                 else
                 {
-                    checkAllWidgets(child);
+                    checkAllWidgets(child, AorB);
                 }
             }
         }

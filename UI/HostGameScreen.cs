@@ -244,7 +244,7 @@ public class HostGameScreen
         scoringOptionComboView.SelectedIndex = 0;
 
         timedSecondsLabel.Text = "Seconds*";
-        timedSecondsTextBox.Text = "180";
+        timedSecondsTextBox.Text = "60";
         timedSecondsTextBox.Width = 50;
 
         nativesLabel.Text = "Natives";
