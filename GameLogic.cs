@@ -1438,12 +1438,19 @@ public class GameLogic
         List<string> colors = ["amber", "ocher", "magenta", "cyan"];
         newGameState.Map.restoreMap(newGameState.Burbs);
         server.gameState = newGameState;
+
+        server.gameState.CurrentPhase = "plan";
         foreach (string color in colors)
         {
             Faction faction = server.gameState.Factions.ColorToFaction[color];
             faction.Ai = new Ai();
             faction.Ai.Faction = faction;
             faction.Ai.initialize(server);
+            faction.Status = "pending";
+        }
+        foreach (string clientIdentifier in server.gameState.PlayerPlanningReady.Keys)
+        {
+            server.gameState.PlayerPlanningReady[clientIdentifier] = false;
         }
         server.sendGameState();
         server.syncAllMapHexes();
@@ -1502,9 +1509,19 @@ public class GameLogic
                 Player player = newGameState.Players.colorToPlayer[color];
                 newGameState.Players.RemovePlayer(newGameState, player.Name);
             }
+            Faction faction = server.gameState.Factions.ColorToFaction[color];
+            faction.Status = "pending";
         }
         newGameState.Map.restoreMap(newGameState.Burbs);
         server.gameState = newGameState;
+
+        server.gameState.CurrentPhase = "plan";
+        // Theoretically, this should be empty as there are no clients.
+        foreach (string clientIdentifier in server.gameState.PlayerPlanningReady.Keys)
+        {
+            server.gameState.PlayerPlanningReady[clientIdentifier] = false;
+        }
+
         server.gameState.CurrentTurn += 1;
     }
 

@@ -12,7 +12,7 @@ namespace GlobalConquest.UI;
 
 public class ChangeGameSettingsWindow
 {
-    Game game;
+    GlobalConquestGame gcGame;
     Grid grid;
     Label humanPlayersLabel = new Label();
     TextBox humanPlayersTextBox = new TextBox();
@@ -61,7 +61,7 @@ public class ChangeGameSettingsWindow
     }
 
 
-    private void LoadContent()
+    private void LoadContent(GameSettings gameSettings)
     {
         humanPlayersLabel.Id = "humanPlayersLabel";
         humanPlayersLabel.Text = "human players:";
@@ -77,7 +77,7 @@ public class ChangeGameSettingsWindow
         numberOfTurnsLabel.Text = "turns:";
         numberOfTurnsLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
         numberOfTurnsTextBox.Id = "numberOfTurnsTextBox";
-        numberOfTurnsTextBox.Text = "-1";
+        numberOfTurnsTextBox.Text = "" + gameSettings.NumberOfTurnsForGame;
         numberOfTurnsTextBox.Width = 50;
         numberOfTurnsTextBox.Border = new SolidBrush("#808000FF");
         numberOfTurnsTextBox.BorderThickness = new Thickness(2);
@@ -122,13 +122,20 @@ public class ChangeGameSettingsWindow
         timedLabel.Text = "Timed*";
         Label quorumLabel = new Label();
         quorumLabel.Text = "Quorum";
-        Label infiniteLabel = new Label();
-        infiniteLabel.Text = "Infinite";
         executionComboView.Widgets.Add(quorumLabel);
         executionComboView.Widgets.Add(immediateLabel);
         executionComboView.Widgets.Add(timedLabel);
         executionComboView.Widgets.Add(timedGraceLabel);
         executionComboView.SelectedIndex = 0;
+        string currentExecution = gameSettings.ExecutionMode;
+        for (int i=0; i < executionComboView.Widgets.Count; i++)
+        {
+            if (currentExecution.Equals(((Label)executionComboView.Widgets[i]).Text))
+            {
+                executionComboView.SelectedIndex = i;
+                break;
+            }
+        }
 
         Label combinationScoringLabel = new Label();
         combinationScoringLabel.Text = "Combined";
@@ -143,9 +150,17 @@ public class ChangeGameSettingsWindow
         scoringOptionComboView.Widgets.Add(incomeScoringLabel);
         scoringOptionComboView.Widgets.Add(headCountScoringLabel);
         scoringOptionComboView.SelectedIndex = 0;
+        for (int i=0; i < scoringOptionComboView.Widgets.Count; i++)
+        {
+            if (currentExecution.Equals(((Label)scoringOptionComboView.Widgets[i]).Text))
+            {
+                scoringOptionComboView.SelectedIndex = i;
+                break;
+            }
+        }
 
         timedSecondsLabel.Text = "Seconds*";
-        timedSecondsTextBox.Text = "180";
+        timedSecondsTextBox.Text = "" + gameSettings.TimedSeconds;
         timedSecondsTextBox.Width = 50;
 
         cancelButton.Click += cancelButtonClicked;
@@ -155,8 +170,9 @@ public class ChangeGameSettingsWindow
 
     public void showChangeGameSettingsWindow(MainGameScreen mainGameScreen)
     {
-        game = mainGameScreen.gcGame;
-        LoadContent();
+        gcGame = mainGameScreen.gcGame;
+        GameSettings gameSettings = gcGame.Client.GameState.GameSettings;
+        LoadContent(gameSettings);
         VerticalStackPanel verticalStackPanel = new VerticalStackPanel();
 
 
@@ -202,7 +218,6 @@ public class ChangeGameSettingsWindow
 
     private void okButtonClicked(object? sender, EventArgs e)
     {
-        GlobalConquestGame gcGame = (GlobalConquestGame)game;
         GameSettings gameSettings = new GameSettings();
         bool isValid = true;
         try

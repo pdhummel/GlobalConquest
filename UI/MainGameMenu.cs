@@ -66,22 +66,6 @@ public class MainGameMenu
         GameControlActionMapper actionMapper = mainGameScreen.gcGame.GameControl.GameControlActionMapper;
 
         // View - Burbs, Destinations, Airplanes, Treaties
-        MenuItem refreshStateMenuItem = new MenuItem("Refresh State", "Refresh State");
-        refreshStateMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.refreshStateMenuItem";
-        viewMenuItem.Items.Add(refreshStateMenuItem);
-        refreshStateMenuItem.Selected += (s, a) =>
-        {
-            refreshStateMenuItemSelected();
-        };
-
-        MenuItem refreshMapMenuItem = new MenuItem("Refresh Map", "Refresh Map");
-        refreshMapMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.refreshMapMenuItem";
-        viewMenuItem.Items.Add(refreshMapMenuItem);
-        refreshMapMenuItem.Selected += (s, a) =>
-        {
-            refreshMapMenuItemSelected();
-        };
-
         MenuItem burbMenuItem = new MenuItem("Burbs", "Burbs");
         burbMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.burbMenuItem";
         viewMenuItem.Items.Add(burbMenuItem);
@@ -124,6 +108,31 @@ public class MainGameMenu
         {
             changeGameSettingsMenuItemSelected();
         };
+
+        MenuItem refreshStateMenuItem = new MenuItem("Refresh State", "Refresh State");
+        refreshStateMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.refreshStateMenuItem";
+        settingsMenuItem.Items.Add(refreshStateMenuItem);
+        refreshStateMenuItem.Selected += (s, a) =>
+        {
+            refreshStateMenuItemSelected();
+        };
+
+        MenuItem refreshMapMenuItem = new MenuItem("Refresh Map", "Refresh Map");
+        refreshMapMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.refreshMapMenuItem";
+        settingsMenuItem.Items.Add(refreshMapMenuItem);
+        refreshMapMenuItem.Selected += (s, a) =>
+        {
+            refreshMapMenuItemSelected();
+        };
+
+        MenuItem readyToPlanMenuItem = new MenuItem("Ready to Plan", "Ready to Plan");
+        refreshMapMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.readyToPlanMenuItem";
+        settingsMenuItem.Items.Add(readyToPlanMenuItem);
+        readyToPlanMenuItem.Selected += (s, a) =>
+        {
+            readyToPlanMenuItemSelected();
+        };
+
 
         executeMenuItem.Selected += (s, a) =>
         {
@@ -354,6 +363,16 @@ public class MainGameMenu
     {
         ChangeGameSettingsWindow changeGameSettingsWindow = new ChangeGameSettingsWindow();
         changeGameSettingsWindow.showChangeGameSettingsWindow(mainGameScreen);
+    }
+
+    public void readyToPlanMenuItemSelected()
+    {
+        PlanningReadyAction action = new PlanningReadyAction();
+        action.ClassType = "GlobalConquest.Actions.PlanningReadyAction";  //executeAction.GetType().FullName
+        string clientIdentifier = mainGameScreen.gcGame.Client.ClientIdentifier;
+        action.ClientIdentifier = clientIdentifier;
+        mainGameScreen.gcGame.Client.SendAction(clientIdentifier, action);
+        mainGameScreen.gcGame.Client.GameState.PlayerPlanningReady[clientIdentifier] = true;
     }
 
 

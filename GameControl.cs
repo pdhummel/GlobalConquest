@@ -233,10 +233,15 @@ public class GameControl
                 Globals.Log(child.GetType() + " " + child.Id);
                 if ("Myra.Graphics2D.UI.VerticalMenu".Equals(child.GetType().ToString()))
                 {
-                    GameControlActionMapper.invoke(child);
+                    VerticalMenu menu = ((VerticalMenu)child);
+                    //Globals.Log("checkAllWidgets(): VerticalMenu: children=" + menu.GetChildren());
+                    GameControlActionMapper.invoke(menu);
                 }
                 else if ("Myra.Graphics2D.UI.HorizontalMenu".Equals(child.GetType().ToString()))
                 {
+                    HorizontalMenu menu = ((HorizontalMenu)child);
+                    //Globals.Log("checkAllWidgets(): HorizontalMenu: Items=" + menu.Items.Count());
+                    // TODO: consider showing items in a popup context menu.
                     GameControlActionMapper.invoke(child);
                 }
                 else if ("Myra.Graphics2D.UI.Button".Equals(child.GetType().ToString()))

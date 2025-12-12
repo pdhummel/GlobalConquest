@@ -975,7 +975,8 @@ class HexMapEngineAdapter
                                 );
             return;
         }
-        if (burb != null && burb.DirectionFromParent != null && textures.ContainsKey(burb.DirectionFromParent))
+        if (burb != null && burb.DirectionFromParent != null && textures.ContainsKey(burb.DirectionFromParent) &&
+            gcGame.Client.GameState.Burbs.NameToBurb.ContainsKey(burb.ParentBurbName))
         {
             Burb parentBurb = gcGame.Client.GameState.Burbs.NameToBurb[burb.ParentBurbName];
             string texture = burb.DirectionFromParent;
