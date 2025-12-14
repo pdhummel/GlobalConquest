@@ -270,7 +270,7 @@ public class Server
 
     public void sendMapBuffer(List<MapHex> mapHexBuffer, bool isLast)
     {
-        Globals.Log("sendMapBuffer(): mapHexBuffer=" + mapHexBuffer.Count);
+        //Globals.Log("sendMapBuffer(): mapHexBuffer=" + mapHexBuffer.Count);
         int count = server.ConnectedPeerList.Count;
         for (int i = 0; i < count; i++)
         {
@@ -281,7 +281,7 @@ public class Server
             }
             else
             {
-                Globals.Log("sendMapBuffer(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
+                //Globals.Log("sendMapBuffer(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
             }
         }
     }

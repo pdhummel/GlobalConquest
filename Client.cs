@@ -199,7 +199,7 @@ public class Client
             if (GameState.Map != null && GameState.Map.IsMapReady)
                 newGameState.Map = GameState.Map;
 
-            if (gameEvent.MapHex != null)
+            if (gameEvent != null && gameEvent.MapHex != null && GameState.Map != null)
                 GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X] = gameEvent.MapHex;
             // else if (GameState.Map != null && GameState.Map.Hexes != null && gameEvent.GameState != null && gameEvent.GameState.MapHex != null)
             else if (gameEvent.GameState != null && gameEvent.GameState.MapHex != null)

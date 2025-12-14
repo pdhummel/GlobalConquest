@@ -14,7 +14,11 @@ namespace GlobalConquest
         public static void Log(string message, [CallerFilePath] string sourceFilePath = "")
         {
             string className = Path.GetFileNameWithoutExtension(sourceFilePath);
-            Console.WriteLine("[" + DateTime.Now + "] " + className + " " + message);
+            string output = "[" + DateTime.Now + "] " + className + " " + message;
+            //if (!output.Contains("Ai ") && !output.Contains("AiGoal"))
+            //    return;
+
+            Console.WriteLine(output);
         }
     }
 }

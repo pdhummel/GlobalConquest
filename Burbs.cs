@@ -94,6 +94,8 @@ public class Burbs
             directions = ["north", "south"];
             //directions = [];
 
+        if ("metro".Equals(type))
+            mapHex.Terrain = "swamp";
         if ("metro".Equals(type) || "capital".Equals(type) || "city".Equals(type) || "town".Equals(type))
         {
             foreach (string direction in directions)

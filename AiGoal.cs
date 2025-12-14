@@ -15,6 +15,7 @@ public class AiGoal
     public bool IsOngoingGoal { get; set; } = false;
 
     public bool UseRandomMovement { get; set; } = false;
+    public int DifficultyScore {get; set; }
     Random random = new Random();
 
 
@@ -22,7 +23,7 @@ public class AiGoal
     {
     }
 
-    public AiUnit getNextUnitToBuild()
+    public AiUnit getNextUnitToBuild(bool IsLog=false)
     {
         HashSet<AiUnit> newActualUnits = new HashSet<AiUnit>();
         foreach (AiUnit aiUnit in ActualUnits)
@@ -36,38 +37,81 @@ public class AiGoal
         ActualUnits = newActualUnits;
 
         AiUnit nextUnit = null;
-        //HashSet<AiUnit> tempSet = new HashSet<AiUnit>(DesiredUnits);
-        //tempSet.ExceptWith(ActualUnits);
-        //if (tempSet.Count > 0)
-        //    nextUnit = tempSet.ToList()[0];
-        HashSet<AiUnit> remainingDesiredUnits = new HashSet<AiUnit>();
-        foreach (AiUnit outer in DesiredUnits)
+        Dictionary<string, int> desiredUnitTypeCount = new Dictionary<string, int>();
+        Dictionary<string, int> actualUnitTypeCount = new Dictionary<string, int>();
+        List<string> desiredUnitTypes = new List<string>();
+        foreach (AiUnit aiUnit in DesiredUnits)
         {
-            bool isDesiredUnitFound = false;
-            foreach (AiUnit inner in ActualUnits)
+            if (!desiredUnitTypeCount.ContainsKey(aiUnit.UnitType))
+                desiredUnitTypeCount[aiUnit.UnitType] = 1;
+            else
+                desiredUnitTypeCount[aiUnit.UnitType] += 1;
+        }
+        foreach (AiUnit aiUnit in ActualUnits)
+        {
+            if (!actualUnitTypeCount.ContainsKey(aiUnit.UnitType))
+                actualUnitTypeCount[aiUnit.UnitType] = 1;
+            else
+                actualUnitTypeCount[aiUnit.UnitType] += 1;
+        }
+        foreach (string key in desiredUnitTypeCount.Keys)
+        {
+            int desiredCount = desiredUnitTypeCount[key];
+            if (!actualUnitTypeCount.ContainsKey(key) || actualUnitTypeCount[key] < desiredCount)
             {
-                if (outer.Unit != null && inner.Unit != null &&
-                    outer.Unit.X == inner.Unit.X && outer.Unit.Y == inner.Unit.Y &&
-                    outer.UnitType == inner.UnitType)
+                desiredUnitTypes.Add(key);
+                if (IsLog)
+                    Globals.Log("getNextUnitToBuild(): need " + key + " for " + this);
+            }
+        }
+        if (desiredUnitTypes.Count > 0)
+        {
+            int index = random.Next(desiredUnitTypes.Count);
+            string desiredUnitType = desiredUnitTypes[index];
+            foreach (AiUnit aiUnit in DesiredUnits)
+            {
+                if (aiUnit.UnitType.Equals(desiredUnitType))
                 {
-                    isDesiredUnitFound = true;
+                    nextUnit = aiUnit;
                     break;
                 }
             }
-            if (!isDesiredUnitFound)
-                remainingDesiredUnits.Add(outer);
-        }
-        if (remainingDesiredUnits.Count > 0)
-        {
-            int index = random.Next(0, remainingDesiredUnits.Count);
-            nextUnit = remainingDesiredUnits.ToList<AiUnit>()[index];
         }
 
+        if (IsLog)
+        {
+            Globals.Log("getNextUnitToBuild(): " + this + ": nextUnit=" + nextUnit + ", DesiredUnits=" + DesiredUnits.Count + ", ActualUnits=" + ActualUnits.Count);
+        }
         return nextUnit;
+    }
+
+    public int GetDesiredCountForUnitType(string unitType)
+    {
+        int count = 0;
+        foreach (AiUnit aiUnit in DesiredUnits)
+        {
+            if ("transport-infantry".Equals(unitType))
+                unitType = "infantry";
+            if (aiUnit.UnitType.Equals(unitType))
+                count += 1;
+        }
+        return count;
     }
 
     public string GoalName()
     {
-        return TargetMapHex.X + "," + TargetMapHex.Y;
+        string name = Type;
+        if (TargetMapHex != null)
+            name += " " + TargetMapHex.X + "," + TargetMapHex.Y;
+        return name;
+    }
+
+    public override string ToString()
+    {
+        // Use string interpolation for a clean, readable format
+        string stringValue = GoalName();
+        if ("conquer".Equals(Type))
+            stringValue += ", difficulty=" + DifficultyScore;
+        return stringValue;
     }
 }

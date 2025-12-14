@@ -28,6 +28,8 @@ The game is being designed with known differences from the original.
 * The use of a hex-based map instead of a square-based grid.
 * Unknown areas appear differently from sea tiles. The original conflated sea tiles and the unknown.
 * Will be playable on a modern operating system over the internet.
+* Consider making airplane missions resolve during the execution phase instead of during real time.
+* Find ways to avoid player elimination.
 
 ## Roadmap
 ### Milestone 1
@@ -202,8 +204,5 @@ This is best supported by mouse and keyboard. However, some effort has been made
 - [ ] Request: less noise on attack + add visual indicator on mini-map.
 - [ ] Request: Option to make airplane missions planned and not immediate.
 - [ ] Request: Suggested city density and burb level based on map size.
-- [ ] Request: Add audio indicators for execution countdown.
-
-
-
+- [ ] Request: Add visual and audio indicators for execution countdown.
 

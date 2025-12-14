@@ -527,7 +527,7 @@ public class GameLogic
 
                 if (unitToAttack == null)
                 {
-                    if (!"grey".Equals(unit.Color))
+                    if (!"grey".Equals(unit.Color) && scanRange == 4)
                         Globals.Log("checkForCombat(): no previous unit to attack found for " + unit.Id);
                     foreach (MapHex hex in hexesToScan.Except(previouslyScannedHexes))
                     {

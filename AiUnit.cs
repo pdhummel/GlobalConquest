@@ -33,4 +33,10 @@ public class AiUnit
         return HashCode.Combine(Ticks, UnitType);
     }
 
+    public override string ToString()
+    {
+        // Use string interpolation for a clean, readable format
+        return "AiUnit " + UnitType;
+    }
 }
+

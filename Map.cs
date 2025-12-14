@@ -110,7 +110,7 @@ public class Map
         RightMetro["amber"] = MetroLocations["magenta"];
         DiagonalMetro["amber"] = MetroLocations["cyan"];
         LeftMetro["ocher"] = MetroLocations["cyan"];
-        RightMetro["ocher"] = MetroLocations["ocher"];
+        RightMetro["ocher"] = MetroLocations["amber"];
         DiagonalMetro["ocher"] = MetroLocations["magenta"];
         LeftMetro["cyan"] = MetroLocations["magenta"];
         RightMetro["cyan"] = MetroLocations["ocher"];
