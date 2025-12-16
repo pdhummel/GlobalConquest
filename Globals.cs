@@ -15,6 +15,7 @@ namespace GlobalConquest
         {
             string className = Path.GetFileNameWithoutExtension(sourceFilePath);
             string output = "[" + DateTime.Now + "] " + className + " " + message;
+            // Useful for debugging just the AI planning
             //if (!output.Contains("Ai ") && !output.Contains("AiGoal"))
             //    return;
 

@@ -11,6 +11,7 @@ public class AiUnit
     public Unit? Unit { get; set; }
     public MapHex? LastMapHex { get; set; }
     public int BlockedRounds { get; set; } = 0;
+    public string GoalTargetXy {get; set; }
 
     public AiUnit()
     {
@@ -20,9 +21,10 @@ public class AiUnit
 
     public override bool Equals(object obj)
     {
-        if (obj is MapHex other)
+        if (obj is AiUnit other)
         {
-            return Ticks == Ticks;
+            if (Ticks == Ticks && UnitType == UnitType)
+                return true;
         }
         return false;
     }
@@ -35,8 +37,10 @@ public class AiUnit
 
     public override string ToString()
     {
-        // Use string interpolation for a clean, readable format
-        return "AiUnit " + UnitType;
+        string returnString = "AiUnit " + UnitType;
+        if (Unit != null)
+            returnString += ": " + Unit.Id + "; " + Unit.X + "," + Unit.Y;
+        return returnString;
     }
 }
 

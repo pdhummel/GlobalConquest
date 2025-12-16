@@ -70,7 +70,7 @@ public class AiGoal
             string desiredUnitType = desiredUnitTypes[index];
             foreach (AiUnit aiUnit in DesiredUnits)
             {
-                if (aiUnit.UnitType.Equals(desiredUnitType))
+                if (aiUnit.UnitType.Equals(desiredUnitType) && (aiUnit.Unit == null || aiUnit.Unit.StrengthPoints <= 0))
                 {
                     nextUnit = aiUnit;
                     break;
@@ -90,7 +90,7 @@ public class AiGoal
         int count = 0;
         foreach (AiUnit aiUnit in DesiredUnits)
         {
-            if ("transport-infantry".Equals(unitType))
+            if ("transport-infantry".Equals(unitType) || "dug-in-infantry".Equals(unitType))
                 unitType = "infantry";
             if (aiUnit.UnitType.Equals(unitType))
                 count += 1;

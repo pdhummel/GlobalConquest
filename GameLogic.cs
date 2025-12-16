@@ -49,9 +49,19 @@ public class GameLogic
                 if (player.IsHuman)
                     isFactionAi = false;
             }
+            //if (isFactionAi && color.Equals("ocher"))
             if (isFactionAi)
             {
-                faction.Ai.planTurn();
+                try
+                {
+                    faction.Ai.planTurn();
+                }
+                catch(Exception ex)
+                {
+                    Globals.Log("doExecutionPhase(): Exception from Ai planTurn: " + ex);
+                    // TODO: remove throw as Ai planTurn is best effort.
+                    throw ex;
+                }
             }
         }
 

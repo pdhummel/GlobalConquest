@@ -99,4 +99,10 @@ public class MapHex
         return HashCode.Combine(Terrain, Y, X, Visibility, unitHashCode);
     }
 
+    public override string ToString()
+    {
+        string returnString = "MapHex " + Terrain + ";" + X + "," + Y;
+        return returnString;
+    }
+
 }
