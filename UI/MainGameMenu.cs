@@ -87,7 +87,7 @@ public class MainGameMenu
 
         increaseGameSpeedMenuItem = new MenuItem("Increase Game Speed", "Game Speed+ (" + mainGameScreen.gcGame.MyJoinGameValues.getNextFasterGameSpeed() + ")");
         increaseGameSpeedMenuItem.Id = "MainGameMenu.horizontalMenu.settingsMenuItem.increaseGameSpeedMenuItem";
-        settingsMenuItem.Items.Add(increaseGameSpeedMenuItem);
+        //settingsMenuItem.Items.Add(increaseGameSpeedMenuItem);
         increaseGameSpeedMenuItem.Selected += (s, a) =>
         {
             increaseGameSpeedMenuItemSelected();
@@ -95,19 +95,28 @@ public class MainGameMenu
 
         decreaseGameSpeedMenuItem = new MenuItem("Decrease Game Speed", "Game Speed- (" + mainGameScreen.gcGame.MyJoinGameValues.getNextSlowerGameSpeed() + ")");
         decreaseGameSpeedMenuItem.Id = "MainGameMenu.horizontalMenu.settingsMenuItem.decreaseGameSpeedMenuItem";
-        settingsMenuItem.Items.Add(decreaseGameSpeedMenuItem);
+        //settingsMenuItem.Items.Add(decreaseGameSpeedMenuItem);
         decreaseGameSpeedMenuItem.Selected += (s, a) =>
         {
             decreaseGameSpeedMenuItemSelected();
         };
 
         MenuItem changeGameSettingsMenuItem = new MenuItem("Change Game Settings", "Change Game Settings");
-        clientLogMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.changeSettingsMenuItem";
+        changeGameSettingsMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.changeSettingsMenuItem";
         settingsMenuItem.Items.Add(changeGameSettingsMenuItem);
         changeGameSettingsMenuItem.Selected += (s, a) =>
         {
             changeGameSettingsMenuItemSelected();
         };
+
+        MenuItem changePlayerSettingsMenuItem = new MenuItem("Change Player Settings", "Change Player Settings");
+        changePlayerSettingsMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.changePlayerSettingsMenuItem";
+        settingsMenuItem.Items.Add(changePlayerSettingsMenuItem);
+        changePlayerSettingsMenuItem.Selected += (s, a) =>
+        {
+            changePlayerSettingsMenuItemSelected();
+        };
+
 
         MenuItem refreshStateMenuItem = new MenuItem("Refresh State", "Refresh State");
         refreshStateMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.refreshStateMenuItem";
@@ -364,6 +373,13 @@ public class MainGameMenu
         ChangeGameSettingsWindow changeGameSettingsWindow = new ChangeGameSettingsWindow();
         changeGameSettingsWindow.showChangeGameSettingsWindow(mainGameScreen);
     }
+
+    public void changePlayerSettingsMenuItemSelected()
+    {
+        ChangePlayerSettingsWindow changePlayerSettingsWindow = new ChangePlayerSettingsWindow();
+        changePlayerSettingsWindow.showChangePlayerSettingsWindow(mainGameScreen);
+    }
+
 
     public void readyToPlanMenuItemSelected()
     {

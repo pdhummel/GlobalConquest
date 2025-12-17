@@ -15,6 +15,7 @@ using TextBox = Myra.Graphics2D.UI.TextBox;
 using Thickness = Myra.Graphics2D.Thickness;
 using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
 using Panel = Myra.Graphics2D.UI.Panel;
+using Microsoft.Xna.Framework.Audio;
 
 namespace GlobalConquest.UI;
 
@@ -280,6 +281,7 @@ public class JoinGameScreen
         joinGameValues.setGameExecutionSpeed(((Label)gameSpeedComboView.SelectedItem).Text);
         gcGame.Client.JoinGameValues = joinGameValues;
         gcGame.MyJoinGameValues = joinGameValues;
+        SoundEffect.MasterVolume = (float)joinGameValues.SoundVolume / 100f;
 
         // depends on joinGameValues
         mainGameScreen = new MainGameScreen(game, grid);

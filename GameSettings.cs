@@ -22,6 +22,7 @@ public class GameSettings
     public int StartingMoney { get; set; } = 0;
     public string ScoringOption { get; set; } = "Combined"; // Income, Capital, Head-Count, Combined
     public bool HasNatives { get; set; } = false;
+    public bool CanLoseComCen {get; set;}
 
     public GameSettings()
     {

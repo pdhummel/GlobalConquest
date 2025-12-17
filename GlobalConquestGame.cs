@@ -210,7 +210,8 @@ public class GlobalConquestGame : Game
             SoundEffect soundEffect = soundEffects[soundEffectEventName];
             // Volume during playback is scaled by SoundEffect.MasterVolume.
             //soundEffect.Play();
-            soundEffect.Play(0.5f, 0.0f, 0.0f);
+            soundEffect.Play(SoundEffect.MasterVolume, 0.0f, 0.0f);
+            Globals.Log("playSoundEffect(): volume=" + SoundEffect.MasterVolume);
         }
     }
 

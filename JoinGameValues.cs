@@ -14,6 +14,7 @@ public class JoinGameValues
     Dictionary<string, int> animalToSpeed = new Dictionary<string, int>();
     List<string> animals = ["snail", "turtle", "rabbit", "jaguar", "falcon"];
     int currentAnimalIndex = 2;
+    public int SoundVolume {get; set;} = 50;
 
     public JoinGameValues()
     {
@@ -29,11 +30,22 @@ public class JoinGameValues
         if (animalToSpeed.ContainsKey(animal))
         {
             GameExecutionSpeed = animalToSpeed[animal];
+            int index = 0;
+            foreach (string searchAnimal in animals)
+            {
+                if (animal.Equals(searchAnimal))
+                {
+                    currentAnimalIndex = index;
+                    break;
+                }
+                index += 1;
+            }
         }
         else
         {
             Globals.Log("setGameExecutionSpeed(): " + animal + " not valid. Defaulting to 100ms.");
             GameExecutionSpeed = animalToSpeed["rabbit"];
+            currentAnimalIndex = 2;
         }
     }
 
@@ -65,6 +77,11 @@ public class JoinGameValues
     {
         return animals[currentAnimalIndex];
     }
+    public int getGameSpeedIndex()
+    {
+        return currentAnimalIndex;
+    }
+
     public string getNextFasterGameSpeed()
     {
         //Globals.Log("getNextFasterGameSpeed(): enter");
