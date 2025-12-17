@@ -113,14 +113,16 @@ public class AirstrikeAction : PlayerAction
 
                         if ("comcen".Equals(targetUnit.UnitType))
                         {
-                            gameEvent = new GameEvent("enemyPlayerLostGame");
-                            gameEvent.EnemyColor = targetUnit.Color;
-                            server.sendGamePlayEvent(Plane.Color, gameEvent);
-                            gameEvent.EventType = "playerLostGame";
-                            server.sendGamePlayEvent(targetUnit.Color, gameEvent);
-
                             Faction faction = server.gameState.Factions.ColorToFaction[targetUnit.Color];
                             faction.HasComCen = false;
+                            if (!server.gameState.GameSettings.CanLoseComCen)
+                            {
+                                gameEvent = new GameEvent("enemyPlayerLostGame");
+                                gameEvent.EnemyColor = targetUnit.Color;
+                                server.sendGamePlayEvent(Plane.Color, gameEvent);
+                                gameEvent.EventType = "playerLostGame";
+                                server.sendGamePlayEvent(targetUnit.Color, gameEvent);
+                            }
                         }
                     }
                     else

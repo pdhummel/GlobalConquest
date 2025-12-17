@@ -235,7 +235,7 @@ public class Client
         if (player != null)
         {
             Faction faction = GameState.Factions.ColorToFaction[player.FactionColor];
-            if (!faction.HasComCen)
+            if (!faction.HasComCen && !GameState.GameSettings.CanLoseComCen)
             {
                 IsObserverOnly = true;
                 return;

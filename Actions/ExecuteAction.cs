@@ -29,7 +29,7 @@ public class ExecuteAction : PlayerAction
         {
             Player player = gameState.Players.playerNameToPlayer[ClientIdentifier];
             Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
-            if (!faction.HasComCen)
+            if (!faction.HasComCen  && !gameState.GameSettings.CanLoseComCen)
                 IsFactionActive = false;
             bool first = true;
             foreach (string key in gameState.PlayerExecutionReady.Keys)

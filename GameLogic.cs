@@ -630,14 +630,16 @@ public class GameLogic
                     deadUnitMapHex.Units.RemoveAt(0);
                 if ("comcen".Equals(unitToAttack.UnitType))
                 {
-                    gameEvent = new GameEvent("enemyPlayerLostGame");
-                    gameEvent.EnemyColor = unitToAttack.Color;
-                    server.sendGamePlayEvent(unit.Color, gameEvent);
-                    gameEvent.EventType = "playerLostGame";
-                    server.sendGamePlayEvent(unitToAttack.Color, gameEvent);
-
                     Faction faction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
                     faction.HasComCen = false;
+                    if (!server.gameState.GameSettings.CanLoseComCen)
+                    {
+                        gameEvent = new GameEvent("enemyPlayerLostGame");
+                        gameEvent.EnemyColor = unitToAttack.Color;
+                        server.sendGamePlayEvent(unit.Color, gameEvent);
+                        gameEvent.EventType = "playerLostGame";
+                        server.sendGamePlayEvent(unitToAttack.Color, gameEvent);
+                    }
                 }
             }
             else

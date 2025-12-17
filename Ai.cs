@@ -87,7 +87,7 @@ public class Ai
     public void planTurn()
     {
         Globals.Log("Ai.planTurn(): faction=" + Faction.Color);
-        if (!Faction.HasComCen)
+        if (!Faction.HasComCen && !gameSettings.CanLoseComCen)
             return;
         checkAvailableUnits();
         addGoals();

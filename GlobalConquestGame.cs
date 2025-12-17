@@ -1264,7 +1264,7 @@ public class GlobalConquestGame : Game
         {
             Player player = identifySelf();
             Faction faction = Client.GameState.Factions.ColorToFaction[player.FactionColor];
-            if (!faction.HasComCen)
+            if (!faction.HasComCen && !Client.GameState.GameSettings.CanLoseComCen)
             {
                 canPlan = false;
                 return canPlan;

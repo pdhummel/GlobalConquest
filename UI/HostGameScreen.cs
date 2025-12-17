@@ -61,7 +61,8 @@ public class HostGameScreen
 
     Label timedSecondsLabel = new Label();
     TextBox timedSecondsTextBox = new TextBox();
-
+    Label canLoseComCenLabel = new Label();
+    CheckButton canLoseComCenCheckButton = new CheckButton();
 
 
     public HostGameScreen(PlayGameMenu playGameMenu, Game game, Grid grid)
@@ -251,6 +252,10 @@ public class HostGameScreen
         nativesCheckButton.IsChecked = true;
         nativesCheckButton.VerticalAlignment = VerticalAlignment.Center;
 
+        canLoseComCenLabel.Text = "Can Lose Command Center?";
+        canLoseComCenCheckButton.IsChecked = false;
+        canLoseComCenCheckButton.VerticalAlignment = VerticalAlignment.Center;
+
         cancelButton.Click += cancelButtonClicked;
         okButton.Click += okButtonClicked;
 
@@ -286,6 +291,7 @@ public class HostGameScreen
         addPanelRow(verticalStackPanel, timedSecondsLabel, timedSecondsTextBox);
         addPanelRow(verticalStackPanel, scoringOptionLabel, scoringOptionComboView);
         addPanelRow(verticalStackPanel, nativesLabel, nativesCheckButton);
+        addPanelRow(verticalStackPanel, canLoseComCenLabel, canLoseComCenCheckButton);
 
         var buttonsPanel = new HorizontalStackPanel { Spacing = 8 };
         verticalStackPanel.Widgets.Add(buttonsPanel);
@@ -346,6 +352,8 @@ public class HostGameScreen
         nativesCheckButton.Visible = false;
         standaloneServerLabel.Visible = false;
         standaloneServerCheckButton.Visible = false;
+        canLoseComCenLabel.Visible = false;
+        canLoseComCenCheckButton.Visible = false;
 
         hostSettingsLabel.RemoveFromParent();
         portLabel.RemoveFromParent();
@@ -376,6 +384,8 @@ public class HostGameScreen
         scoringOptionComboView.RemoveFromParent();
         nativesLabel.RemoveFromParent();
         nativesCheckButton.RemoveFromParent();
+        canLoseComCenLabel.RemoveFromParent();
+        canLoseComCenCheckButton.RemoveFromParent();
         standaloneServerLabel.RemoveFromParent();
         standaloneServerCheckButton.RemoveFromParent();
     }
@@ -414,6 +424,10 @@ public class HostGameScreen
             gameSettings.HasNatives = true;
         else
             gameSettings.HasNatives = false;
+        if (canLoseComCenCheckButton.IsChecked)
+            gameSettings.CanLoseComCen = true;
+        else
+            gameSettings.CanLoseComCen = false;
 
         if (isValid)
         {
