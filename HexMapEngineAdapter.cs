@@ -252,6 +252,9 @@ class HexMapEngineAdapter
         Texture2D ocherPlane = game.Content.Load<Texture2D>("ocher-plane-black-30px");
         units["ocher-plane"] = ocherPlane;
 
+        Texture2D hexHighlight = game.Content.Load<Texture2D>("YellowHexagonOutline_72x72");
+        textures["mapHexHighlight"] = hexHighlight;
+
         foreach (string key in burbs.Keys)
         {
             textures[key] = burbs[key];
@@ -786,6 +789,7 @@ class HexMapEngineAdapter
             for (int liX = 0; liX < (HexMapEngine.Structures.Global.ACTUAL_MAP_WIDTH_IN_TILES); liX++)
             {
                 loHexTile = (HexMapEngine.Structures.HexTile)HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[liY, liX];
+                MapHex mapHex = hexes[liY, liX];
 
                 if (loHexTile.TILE_COUNT > 0)
                 {
@@ -801,6 +805,21 @@ class HexMapEngineAdapter
                         loHexTile.PixelX = liCalculatedMapTileX;
                         loHexTile.PixelY = liCalculatedMapTileY;
 
+                        if (mapHex != null && mapHex.IsHighlighted)
+                        {
+                            Vector2 destination = new Vector2(liCalculatedMapTileX, liCalculatedMapTileY);
+                            coSpriteBatch.Draw(
+                                textures["mapHexHighlight"],
+                                destination,
+                                sourceRectangle,
+                                Color.White,
+                                0.0f,
+                                Vector2.Zero,
+                                new Vector2(1.0f, 1.0f),
+                                SpriteEffects.None,
+                                0.8f // higher number at bottom - .85=hex, .8 highlight, .75=burb, .5=unit, .35=plane
+                                );
+                        }
                         Draw_HexTile(loHexTile,
                                         liCalculatedMapTileX,
                                         liCalculatedMapTileY,
@@ -826,7 +845,6 @@ class HexMapEngineAdapter
 
 
                 // DrawUnits
-                MapHex mapHex = hexes[liY, liX];
                 Unit unit = mapHex.getUnit();
                 if (unit != null && unit.StrengthPoints > 0)
                 {

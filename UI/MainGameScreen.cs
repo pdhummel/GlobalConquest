@@ -37,6 +37,8 @@ public class MainGameScreen
     public bool IsVisible { get; set; } = true;
     public ContextMenu ContextMenu { get; set; }
 
+    private Dictionary<string, Window> locationToPopupWindow = new Dictionary<string, Window>();
+
 
 
     public MainGameScreen(Game game, Grid grid)
@@ -214,5 +216,105 @@ public class MainGameScreen
         window.ShowModal(grid.Desktop);
     }
 
+    public void showTimedLocationPopup(string message, int seconds, MapHex mapHex)
+    {
+        if (mapHex == null)
+            return;
+        Window window = new Window
+        {
+            Title = message
+        };
+        //window.Closed += (s, a) =>
+        //{
+        //};
+        mapHex.IsHighlighted = true;
+        gcGame.Client.GameState.Map.Hexes[mapHex.Y, mapHex.X].IsHighlighted = true;
+
+        var locationButton = new Button()
+        {
+            Content = new Label
+            {
+                Text = "Jump to " + mapHex.X + "," + mapHex.Y,
+                Width = 150,
+                Border = new SolidBrush("#808000FF"),
+                BorderThickness = new Thickness(2)
+            }
+        };
+        locationButton.Click += (s, a) =>
+        {
+            gcGame.scrollToPosition(mapHex.Y, mapHex.X);
+            cleanUpPopup(window, mapHex);
+        };
+        window.Content = locationButton;
+        int leftPosition = FactionsPanel.Left;
+        int topPosition = FactionsPanel.Top;
+        //int width = gcGame.GraphicsDevice.Viewport.Width;
+        //if (width > 1900)
+        //    leftPosition = FactionsPanel.Left - 250;
+        Point position = new Point(leftPosition, topPosition);
+        if (locationToPopupWindow.ContainsKey(mapHex.X + "," + mapHex.Y))
+        {
+            Window oldWindow = locationToPopupWindow[mapHex.X + "," + mapHex.Y];
+            if (oldWindow != null && oldWindow.Visible)
+            {
+                position = new Point(oldWindow.Left, oldWindow.Top);
+                oldWindow.Close();                
+            }
+        }
+        else
+        {
+            if (locationToPopupWindow.Count < 5)
+                position = new Point(leftPosition, topPosition + locationToPopupWindow.Count * 64);
+        }
+        window.Show(grid.Desktop, position);
+        locationToPopupWindow[mapHex.X + "," + mapHex.Y] = window;
+
+        Thread timedWindowCloseThread = new Thread(() => timedWindowClose(window, seconds, mapHex));
+        timedWindowCloseThread.IsBackground = true;
+        timedWindowCloseThread.Start();
+    }
+
+    private void timedWindowClose(Window window, int secondsToAppear, MapHex mapHex)
+    {
+        DateTime startDateTime = DateTime.Now;
+        int durationInSeconds = (int)((TimeSpan)(DateTime.Now - startDateTime)).TotalSeconds;
+        int secondsRemaining = secondsToAppear - durationInSeconds;
+        while (window != null && window.Visible &&  secondsRemaining > 0)
+        {
+            Thread.Sleep(1000);
+            durationInSeconds = (int)((TimeSpan)(DateTime.Now - startDateTime)).TotalSeconds;
+            secondsRemaining = secondsToAppear - durationInSeconds;
+        }
+        cleanUpPopup(window, mapHex);
+
+    }
+
+    private void cleanUpPopup(Window window, MapHex mapHex)
+    {
+        bool shouldCleanup = false;
+        if (!locationToPopupWindow.ContainsKey(mapHex.X + "," + mapHex.Y))
+        {
+            shouldCleanup = true;
+        }
+        else if (locationToPopupWindow.ContainsKey(mapHex.X + "," + mapHex.Y))
+        {
+            Window currentWindow = locationToPopupWindow[mapHex.X + "," + mapHex.Y];
+            if (currentWindow != null && currentWindow.Equals(window))
+            {
+                shouldCleanup = true;
+                locationToPopupWindow.Remove(mapHex.X + "," + mapHex.Y);
+            }
+        }
+        //if (shouldCleanup)
+        //{
+        //    mapHex.IsHighlighted = false;
+        //    gcGame.Client.GameState.Map.Hexes[mapHex.Y, mapHex.X].IsHighlighted = false;
+        //}
+        if (window != null)
+        {
+            window.Close();
+        }
+
+    }
 
 }

@@ -1,6 +1,4 @@
-using System.IO;
 using System.Runtime.CompilerServices;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace GlobalConquest

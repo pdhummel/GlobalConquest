@@ -29,9 +29,10 @@ public class GameState
     public string VictoriousColor { get; set; } = "grey";
     public long Ticks { get; set; } = 0;
 
+    public int SecondsRemainingUntilExecution {get; set;}
 
     // if any of the data elements in the entities change above, then this version should be bumped.
-    public string Version { get; set; } = "v0.6.4";
+    public string Version { get; set; } = "v0.6.5";
     private Random rand = new System.Random();
 
 

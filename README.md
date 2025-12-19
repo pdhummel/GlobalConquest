@@ -199,10 +199,10 @@ This is best supported by mouse and keyboard. However, some effort has been made
 - [x] Bug: Shouldn't be able to see pathing of enemy units.
 - [x] Bug: Long range plane transfers are not working.
 - [x] Bug: Game controller cannot change comboboxes --> Use A button.
+- [x] Request: Add visual and audio indicators for execution countdown.
+- [x] Request: Add visual aid to help identify events that are occurring.
 - [ ] Bug: Game controller cannot navigate nested menus -- i.e., File, View.
 - [ ] Bug: Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
-- [ ] Request: less noise on attack + add visual indicator on mini-map.
 - [ ] Request: Option to make airplane missions planned and not immediate.
-- [ ] Request: Suggested city density and burb level based on map size.
-- [ ] Request: Add visual and audio indicators for execution countdown.
+- [ ] Request: Suggest city density and burb level based on map size.
 - [ ] Request: Add decoy comcen.

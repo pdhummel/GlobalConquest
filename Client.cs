@@ -199,11 +199,19 @@ public class Client
             if (GameState.Map != null && GameState.Map.IsMapReady)
                 newGameState.Map = GameState.Map;
 
+            bool isHighlighted = GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X].IsHighlighted;
+
             if (gameEvent != null && gameEvent.MapHex != null && GameState.Map != null)
+            {
+                gameEvent.MapHex.IsHighlighted = isHighlighted;    
                 GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X] = gameEvent.MapHex;
+            }
             // else if (GameState.Map != null && GameState.Map.Hexes != null && gameEvent.GameState != null && gameEvent.GameState.MapHex != null)
             else if (gameEvent.GameState != null && gameEvent.GameState.MapHex != null)
+            {
+                gameEvent.GameState.MapHex.IsHighlighted = isHighlighted;
                 GameState.Map.Hexes[gameEvent.GameState.MapHex.Y, gameEvent.GameState.MapHex.X] = gameEvent.GameState.MapHex;
+            }
             GameState = newGameState;
             handleGameOverForClient();
         }

@@ -44,6 +44,7 @@ public class GameEvent
     public string? EnemyColor { get; set; }
     public string? EventString { get; set; }
     public string? TargetScreenId {get; set;}
+    private int secondsForPopupToAppear = 10;
 
 
 
@@ -87,7 +88,9 @@ public class GameEvent
             "gracePeriodStarted",
             "serverMessage",
             "planeDefending",
-            "planeInDogfight"
+            "planeInDogfight",
+            "planningPhaseEnded",
+            "planningPhaseStarting"
          };
          GamePlayEvents.UnionWith(gamePlayEvents);        
     }
@@ -241,6 +244,7 @@ public class GameEvent
         }
         Game.addGamePlayEvent(this);
         //Game.scrollToPosition(MapHex.Y, MapHex.X);
+        Game.MainGameScreen.showTimedLocationPopup(EventString, secondsForPopupToAppear, MapHex);
     }
 
     public void unitDestroyedHandler()
@@ -250,7 +254,7 @@ public class GameEvent
         Game.playSoundEffect(EventType + "1");
         Game.playSoundEffect(EventType + "2");
         Game.addGamePlayEvent(this);
-        //Game.scrollToPosition(MapHex.Y, MapHex.X);
+        Game.MainGameScreen.showTimedLocationPopup(EventString, secondsForPopupToAppear, MapHex);
     }
 
     public void unitMovementBlockedHandler() 
@@ -311,7 +315,7 @@ public class GameEvent
         EventString =  GetBurbType() + " " + GetBurbName() + " lost to " + GetEnemyColor() + " at " + GetLocation();
         Game.playSoundEffect(EventType);
         Game.addGamePlayEvent(this);
-        //Game.scrollToPosition(MapHex.Y, MapHex.X);
+        Game.MainGameScreen.showTimedLocationPopup(EventString, secondsForPopupToAppear, MapHex);
     }
 
     public void playerLostGameHandler() {      
@@ -412,6 +416,19 @@ public class GameEvent
         Game.playSoundEffect("jetFlyby");
         EventString = "Plane at " + GetUnitLocation() + " grounded from dogfight.";
         Game.addGamePlayEvent(this);
+    }
+
+    public void planningPhaseEndedHandler()
+    {
+        Globals.Log("planningPhaseEndedHandler(): enter");
+        Game.playSoundEffect("stopPlanningStartExecution");
+        Thread.Sleep(2000);
+    }
+
+    public void planningPhaseStartingHandler()
+    {
+        Globals.Log("planningPhaseStartingHandler(): enter");
+        Game.playSoundEffect("startTurnPlanning");
     }
 
 }

@@ -1203,6 +1203,18 @@
 /processorParam:TextureFormat=Color
 /build:south-tab-white.png
 
+#begin startTurnPlanning.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:startTurnPlanning.wav
+
+#begin stopPlanningStartExecution.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:stopPlanningStartExecution.wav
+
 #begin sw-arrow-white.png
 /importer:TextureImporter
 /processor:TextureProcessor

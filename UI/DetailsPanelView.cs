@@ -66,10 +66,13 @@ public class DetailsPanelView
         turnLabel.Text = turnText;
         Label phaseRoundLabel = new Label();
         phaseRoundLabel.Text = "Phase: " + currentPhase + ", round: " + (gameState.CurrentRound + 1);
+        Label countdownLabel = new Label();
+        countdownLabel.Text = "Countdown: " + gameState.SecondsRemainingUntilExecution;
 
         stackPanel.Widgets.Add(mouseLabel);
         stackPanel.Widgets.Add(turnLabel);
         stackPanel.Widgets.Add(phaseRoundLabel);
+        stackPanel.Widgets.Add(countdownLabel);
 
         Panel imagePanel = new Panel();
         stackPanel.Widgets.Add(imagePanel);

@@ -195,6 +195,8 @@ public class GlobalConquestGame : Game
         loadSoundEffect("gracePeriodStarted");
         loadSoundEffect("airplaneNotification");
         loadSoundEffect("jetFlyby");
+        loadSoundEffect("stopPlanningStartExecution");
+        loadSoundEffect("startTurnPlanning");
     }
 
     private void loadSoundEffect(string soundEffectEventName)
@@ -211,7 +213,7 @@ public class GlobalConquestGame : Game
             // Volume during playback is scaled by SoundEffect.MasterVolume.
             //soundEffect.Play();
             soundEffect.Play(SoundEffect.MasterVolume, 0.0f, 0.0f);
-            Globals.Log("playSoundEffect(): volume=" + SoundEffect.MasterVolume);
+            Globals.Log("playSoundEffect(): " + soundEffectEventName + ", volume=" + SoundEffect.MasterVolume);
         }
     }
 
@@ -1107,6 +1109,7 @@ public class GlobalConquestGame : Game
                 Globals.Log("handleClickMouseOnMap(): IsInContextMenuMode=" + IsInContextMenuMode() + 
                         ", IsContextMenuVisible=" + MainGameScreen.IsContextMenuVisible() + ", IsShowContextMenu=" + MainGameScreen.IsShowContextMenu());
             lastSelectedHex = Client?.GameState.Map.Hexes[(int)selectedHexVector.Y, (int)selectedHexVector.X];
+            lastSelectedHex.IsHighlighted = false;
             
             Globals.Log("handleClickMouseOnMap(): selectedHexVector=" + selectedHexVector.X + "," + selectedHexVector.Y + 
                         ", lastSelectedHex=" + lastSelectedHex.X + "," + lastSelectedHex.Y);

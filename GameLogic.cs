@@ -202,11 +202,14 @@ public class GameLogic
         Globals.Log("endTurn(): Syncing map for clients.");
         server.syncAllMapHexes();
 
+        int humans = 0;
         List<string> colors = ["amber", "ocher", "magenta", "cyan"];
         foreach (string color in colors)
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
             faction.Status = "pending";
+            if (faction.Player != null && faction.Player.IsHuman)
+                humans += 1;
         }
         Globals.Log("endTurn(): Put players into pending status before planning for next turn.");
         foreach (string key in gameState.PlayerPlanningReady.Keys)
@@ -217,6 +220,12 @@ public class GameLogic
         Globals.Log("endTurn(): Syncing game state for clients.");
         server.sendGameState();
 
+        Globals.Log("endTurn(): humans=" + humans + " " + gameState.GameSettings.NumberOfHumans);
+        if (humans < 1 || gameState.GameSettings.NumberOfHumans < 1)
+        {
+            timerRunning = false;
+            checkPlayersReadyForTimedPlanning();
+        }
         Globals.Log("endTurn(): exit");
     }
 
@@ -1187,7 +1196,7 @@ public class GameLogic
     public void checkPlayersReadyForTimedPlanning()
     {
         Globals.Log("checkPlayersReadyForTimedPlanning(): enter");
-
+        
         lock (syncLock)
         {
             GameState gameState = server.gameState;
@@ -1216,6 +1225,20 @@ public class GameLogic
                 }
             }
         }
+
+        int readyToPlanCount = 0;
+        foreach (string key in server.gameState.PlayerPlanningReady.Keys)
+        {
+            if (server.gameState.PlayerPlanningReady[key])
+            {
+                readyToPlanCount += 1;
+            }
+        }
+        if (readyToPlanCount >= server.gameState.GameSettings.NumberOfHumans && readyToPlanCount > 1)
+        {
+            server.sendGamePlayEvent(new GameEvent("planningPhaseStarting"));
+        }
+
         Globals.Log("checkPlayersReadyForTimedPlanning(): exit");
     }
 
@@ -1239,9 +1262,13 @@ public class GameLogic
         Globals.Log("waitForExecution(): enter");
         int count = 0;
         GameState gameState = server.gameState;
+        gameState.SecondsRemainingUntilExecution = gameState.GameSettings.TimedSeconds;
+        server.sendGameState();
         bool startExecution = false;
         startDateTime = DateTime.Now;
-        while (!startExecution && count < gameState.GameSettings.TimedSeconds && ((TimeSpan)(DateTime.Now - startDateTime)).TotalSeconds < gameState.GameSettings.TimedSeconds)
+        int durationInSeconds = (int)((TimeSpan)(DateTime.Now - startDateTime)).TotalSeconds;
+        int secondsRemaining = gameState.GameSettings.TimedSeconds - durationInSeconds;
+        while (!startExecution && count < gameState.GameSettings.TimedSeconds && secondsRemaining > 0)
         {
             int readyCount = 0;
             foreach (string key in gameState.PlayerExecutionReady.Keys)
@@ -1255,6 +1282,19 @@ public class GameLogic
                 startExecution = true;
             count += 1;
             Thread.Sleep(1000);
+            durationInSeconds = (int)((TimeSpan)(DateTime.Now - startDateTime)).TotalSeconds;
+            secondsRemaining = gameState.GameSettings.TimedSeconds - durationInSeconds;
+            if (secondsRemaining == 3)
+            {
+                server.sendGamePlayEvent(new GameEvent("planningPhaseEnded"));
+                server.sendGameState();
+            }
+            if (secondsRemaining > 0)
+                gameState.SecondsRemainingUntilExecution = secondsRemaining;
+            else
+                gameState.SecondsRemainingUntilExecution = 0;
+            server.sendGameState();
+            
         }
         foreach (string key in gameState.PlayerExecutionReady.Keys)
         {
@@ -1267,7 +1307,6 @@ public class GameLogic
             }
         }
 
-        server.sendGameState();
         Globals.Log("waitForExecution(): done waiting");
 
         doExecutionPhase();
