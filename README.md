@@ -201,6 +201,7 @@ This is best supported by mouse and keyboard. However, some effort has been made
 - [x] Bug: Game controller cannot change comboboxes --> Use A button.
 - [x] Request: Add visual and audio indicators for execution countdown.
 - [x] Request: Add visual aid to help identify events that are occurring.
+- [ ] Bug: Captured city still has enemy plane.
 - [ ] Bug: Game controller cannot navigate nested menus -- i.e., File, View.
 - [ ] Bug: Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
 - [ ] Request: Option to make airplane missions planned and not immediate.

@@ -213,7 +213,8 @@ public class Client
             else if (gameEvent.GameState != null && gameEvent.GameState.MapHex != null)
             {
                 gameEvent.GameState.MapHex.IsHighlighted = isHighlighted;
-                GameState.Map.Hexes[gameEvent.GameState.MapHex.Y, gameEvent.GameState.MapHex.X] = gameEvent.GameState.MapHex;
+                if (GameState != null && GameState.Map != null && GameState.Map.Hexes != null)
+                    GameState.Map.Hexes[gameEvent.GameState.MapHex.Y, gameEvent.GameState.MapHex.X] = gameEvent.GameState.MapHex;
             }
             GameState = newGameState;
             handleGameOverForClient();

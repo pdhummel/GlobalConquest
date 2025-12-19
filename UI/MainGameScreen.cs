@@ -324,7 +324,11 @@ public class MainGameScreen
             if (currentWindow != null && currentWindow.Equals(window))
             {
                 shouldCleanup = true;
-                locationToPopupWindow.Remove(mapHex.X + "," + mapHex.Y);
+                try
+                {
+                    locationToPopupWindow.Remove(mapHex.X + "," + mapHex.Y);
+                }
+                catch(Exception ex) {}
             }
         }
         Unit unit = mapHex.getUnit();
@@ -333,7 +337,11 @@ public class MainGameScreen
             Window currentWindow = unitIdToPopupWindow[unit.Id];
             if (currentWindow != null && currentWindow.Equals(window))
             {
-                unitIdToPopupWindow.Remove(unit.Id);
+                try
+                {
+                    unitIdToPopupWindow.Remove(unit.Id);
+                }
+                catch(Exception ex) {}
             }
         }
         //if (shouldCleanup)
