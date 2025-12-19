@@ -141,12 +141,20 @@ public class Server
             {
                 if (i <= server.ConnectedPeerList.Count)
                 {
-                    NetPeer peer = server.ConnectedPeerList[i];
-                    sendGameState(peer);
+                    try 
+                    {
+                        NetPeer peer = server.ConnectedPeerList[i];
+                        sendGameState(peer);
+                    }
+                    catch(Exception ex)
+                    {
+                        Globals.Log("sendGameState(): Exception:" + ex + 
+                        ", Count=" + server.ConnectedPeerList.Count + ", i=" + i);    
+                    }
                 }
                 else
                 {
-                    Globals.Log("sendGameStateAndMapHex(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
+                    Globals.Log("sendGameState(): Count=" + server.ConnectedPeerList.Count + ", i=" + i);
                 }
 
             }
@@ -164,8 +172,16 @@ public class Server
             {
                 if (i < server.ConnectedPeerList.Count)
                 {
-                    NetPeer peer = server.ConnectedPeerList[i];
-                    sendGameStateAndMapHex(peer, x, y);
+                    try
+                    {
+                        NetPeer peer = server.ConnectedPeerList[i];
+                        sendGameStateAndMapHex(peer, x, y);
+                    }
+                    catch(Exception ex)
+                    {
+                        Globals.Log("sendGameStateAndMapHex(): Exception:" + ex + 
+                        ", Count=" + server.ConnectedPeerList.Count + ", i=" + i);    
+                    }
                 }
                 else
                 {
@@ -276,8 +292,16 @@ public class Server
         {
             if (i < server.ConnectedPeerList.Count)
             {
-                NetPeer peer = server.ConnectedPeerList[i];
-                sendMapBuffer(peer, mapHexBuffer, isLast);
+                try
+                {
+                    NetPeer peer = server.ConnectedPeerList[i];
+                    sendMapBuffer(peer, mapHexBuffer, isLast);
+                }
+                catch(Exception ex)
+                {
+                    Globals.Log("sendMapBuffer(): Exception:" + ex + 
+                    ", Count=" + server.ConnectedPeerList.Count + ", i=" + i);    
+                }
             }
             else
             {
@@ -313,8 +337,16 @@ public class Server
             {
                 if (i < server.ConnectedPeerList.Count)
                 {
-                    NetPeer peer = server.ConnectedPeerList[i];
-                    sendGamePlayEvent(peer, gameEvent);
+                    try
+                    {
+                        NetPeer peer = server.ConnectedPeerList[i];
+                        sendGamePlayEvent(peer, gameEvent);
+                    }
+                    catch(Exception ex)
+                    {
+                        Globals.Log("sendGamePlayEvent(): Exception:" + ex + 
+                        ", Count=" + server.ConnectedPeerList.Count + ", i=" + i);    
+                    }
                 }
                 else
                 {

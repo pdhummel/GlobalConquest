@@ -38,6 +38,8 @@ public class MainGameScreen
     public ContextMenu ContextMenu { get; set; }
 
     private Dictionary<string, Window> locationToPopupWindow = new Dictionary<string, Window>();
+    private Dictionary<string, Window> unitIdToPopupWindow = new Dictionary<string, Window>();
+    private Dictionary<int, int> popupStacks = new Dictionary<int, int>();
 
 
 
@@ -220,13 +222,17 @@ public class MainGameScreen
     {
         if (mapHex == null)
             return;
+        Unit unit = mapHex.getUnit();
+
         Window window = new Window
         {
             Title = message
         };
-        //window.Closed += (s, a) =>
-        //{
-        //};
+        window.Closing += (s, a) =>
+        {
+            if (popupStacks.ContainsKey(window.Top))
+                popupStacks[window.Top] -= 1;
+        };
         mapHex.IsHighlighted = true;
         gcGame.Client.GameState.Map.Hexes[mapHex.Y, mapHex.X].IsHighlighted = true;
 
@@ -252,6 +258,7 @@ public class MainGameScreen
         //if (width > 1900)
         //    leftPosition = FactionsPanel.Left - 250;
         Point position = new Point(leftPosition, topPosition);
+        bool gotPosition = false;
         if (locationToPopupWindow.ContainsKey(mapHex.X + "," + mapHex.Y))
         {
             Window oldWindow = locationToPopupWindow[mapHex.X + "," + mapHex.Y];
@@ -260,15 +267,30 @@ public class MainGameScreen
                 position = new Point(oldWindow.Left, oldWindow.Top);
                 oldWindow.Close();                
             }
+            gotPosition = true;
         }
-        else
+        if (unit != null && unitIdToPopupWindow.ContainsKey(unit.Id))
         {
-            if (locationToPopupWindow.Count < 5)
-                position = new Point(leftPosition, topPosition + locationToPopupWindow.Count * 64);
+            Window oldWindow = unitIdToPopupWindow[unit.Id];
+            if (!gotPosition && oldWindow != null && oldWindow.Visible)
+            {
+                position = new Point(oldWindow.Left, oldWindow.Top);
+                oldWindow.Close();
+            }
+            gotPosition = true;
+        }
+        if (!gotPosition)
+        {
+            position = new Point(leftPosition, topPosition + ((popupStacks.Count % 4) * 64));
         }
         window.Show(grid.Desktop, position);
+        if (popupStacks.ContainsKey(window.Top))
+            popupStacks[window.Top] += 1;
+        else
+            popupStacks[window.Top] = 1;
         locationToPopupWindow[mapHex.X + "," + mapHex.Y] = window;
-
+        if (unit != null)
+            unitIdToPopupWindow[unit.Id] = window;
         Thread timedWindowCloseThread = new Thread(() => timedWindowClose(window, seconds, mapHex));
         timedWindowCloseThread.IsBackground = true;
         timedWindowCloseThread.Start();
@@ -303,6 +325,15 @@ public class MainGameScreen
             {
                 shouldCleanup = true;
                 locationToPopupWindow.Remove(mapHex.X + "," + mapHex.Y);
+            }
+        }
+        Unit unit = mapHex.getUnit();
+        if (unit != null && unitIdToPopupWindow.ContainsKey(unit.Id))
+        {
+            Window currentWindow = unitIdToPopupWindow[unit.Id];
+            if (currentWindow != null && currentWindow.Equals(window))
+            {
+                unitIdToPopupWindow.Remove(unit.Id);
             }
         }
         //if (shouldCleanup)

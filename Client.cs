@@ -196,10 +196,13 @@ public class Client
         else if (gameEvent != null && "gameStateAndMapUpdate".Equals(gameEvent.EventType))
         {
             GameState? newGameState = gameEvent.GameState;
+            bool isHighlighted = false;
             if (GameState.Map != null && GameState.Map.IsMapReady)
+            {
+                if (gameEvent.MapHex != null)
+                    isHighlighted = GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X].IsHighlighted;
                 newGameState.Map = GameState.Map;
-
-            bool isHighlighted = GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X].IsHighlighted;
+            }
 
             if (gameEvent != null && gameEvent.MapHex != null && GameState.Map != null)
             {
