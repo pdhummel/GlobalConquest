@@ -281,7 +281,13 @@ public class MainGameScreen
         }
         if (!gotPosition)
         {
-            position = new Point(leftPosition, topPosition + ((popupStacks.Count % 4) * 64));
+            int popupStacksCount = 0;
+            foreach (int key in popupStacks.Keys)
+            {
+                if(popupStacks[key] > 0)
+                    popupStacksCount += 1;
+            }
+            position = new Point(leftPosition, topPosition + (popupStacksCount % 4) * 64);
         }
         window.Show(grid.Desktop, position);
         if (popupStacks.ContainsKey(window.Top))
@@ -320,29 +326,29 @@ public class MainGameScreen
         }
         else if (locationToPopupWindow.ContainsKey(mapHex.X + "," + mapHex.Y))
         {
-            Window currentWindow = locationToPopupWindow[mapHex.X + "," + mapHex.Y];
-            if (currentWindow != null && currentWindow.Equals(window))
+            try
             {
-                shouldCleanup = true;
-                try
+                Window currentWindow = locationToPopupWindow[mapHex.X + "," + mapHex.Y];
+                if (currentWindow != null && currentWindow.Equals(window))
                 {
+                    shouldCleanup = true;
                     locationToPopupWindow.Remove(mapHex.X + "," + mapHex.Y);
                 }
-                catch(Exception ex) {}
             }
+            catch(Exception ex) {}
         }
         Unit unit = mapHex.getUnit();
         if (unit != null && unitIdToPopupWindow.ContainsKey(unit.Id))
         {
-            Window currentWindow = unitIdToPopupWindow[unit.Id];
-            if (currentWindow != null && currentWindow.Equals(window))
+            try
             {
-                try
+                Window currentWindow = unitIdToPopupWindow[unit.Id];
+                if (currentWindow != null && currentWindow.Equals(window))
                 {
                     unitIdToPopupWindow.Remove(unit.Id);
                 }
-                catch(Exception ex) {}
             }
+            catch(Exception ex) {}
         }
         //if (shouldCleanup)
         //{

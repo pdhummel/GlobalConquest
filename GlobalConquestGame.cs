@@ -127,7 +127,11 @@ public class GlobalConquestGame : Game
 
     public Dictionary<string, Texture2D> GetTextures()
     {
-        return hexMapEngineAdapter.textures;
+        
+        Dictionary<string, Texture2D> textures = hexMapEngineAdapter.textures;
+        if (textures.Count <= 0)
+            hexMapEngineAdapter.LoadContent();
+        return textures;
     }
 
     private void GlobalConquestGame_VisibleChanged(object? sender, EventArgs e)
@@ -1224,7 +1228,7 @@ public class GlobalConquestGame : Game
             HashSet<string> colors = ["amber", "ocher", "magenta", "cyan"];
             foreach (string key in Client.GameState.Players.colorToPlayer.Keys)
             {
-                Globals.Log("identifySelf(): color " + key + " already assigned.");
+                //Globals.Log("identifySelf(): color " + key + " already assigned.");
                 colors.Remove(key);
             }
             foreach (string color in colors)

@@ -43,6 +43,7 @@ public class JoinGameAction : PlayerAction
             server.sendMap(peer);
             return;
         }
+        int factionsWithHumanPlayer = 0;
         for (int i = 0; i < gameState.Players.playerNameToPlayer.Count; i++)
         {
             Player player = gameState.Players.playerNameToPlayer[playerNames[i]];
@@ -56,6 +57,18 @@ public class JoinGameAction : PlayerAction
                 server.sendGamePlayEvent(peer, gameEvent);
                 return;
             }
+            if (player.FactionColor != null)
+                factionsWithHumanPlayer += 1;
+        }
+        if (factionsWithHumanPlayer >= gameState.GameSettings.NumberOfHumans)
+        {
+            Globals.Log("execute(): Exceeds max number of human players: " + gameState.GameSettings.NumberOfHumans);
+            GameEvent gameEvent = new GameEvent();
+            gameEvent.EventType = "serverMessage";
+            gameEvent.TargetScreenId = "JoinGameScreen";
+            gameEvent.EventString = "Exceeds allowed number of human players. Please increase the setting.";
+            server.sendGamePlayEvent(peer, gameEvent);
+            return;            
         }
         Player newPlayer = gameState.Players.AddPlayer(gameState, JoinGameValues.Name, faction.Color, true);
         if (gameState.PlayerExecutionReady.ContainsKey(newPlayer.Name))
@@ -74,6 +87,7 @@ public class JoinGameAction : PlayerAction
             faction.Status = "planning";
         }
         server.sendGameState();
+        server.sendMap(peer);
 
         gameState.PlayerPlanningReady[newPlayer.Name] = true;
         GameLogic gameLogic = server.GameLogic;

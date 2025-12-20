@@ -5,6 +5,8 @@ namespace GlobalConquest.Actions;
 
 public class ResignAction : PlayerAction
 {
+    // Optional, when specified can convert another player to AI.
+    public string PlayerName {get; set; }
 
     public new void deserializeAndExecute(NetPeer peer, Object serverObj)
     {
@@ -22,9 +24,12 @@ public class ResignAction : PlayerAction
         Globals.Log("execute()");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
-        if (gameState.Players.playerNameToPlayer.ContainsKey(ClientIdentifier))
+        string playerName = ClientIdentifier;
+        if (PlayerName != null)
+            playerName = PlayerName;
+        if (gameState.Players.playerNameToPlayer.ContainsKey(playerName))
         {
-            Player player = gameState.Players.playerNameToPlayer[ClientIdentifier];
+            Player player = gameState.Players.playerNameToPlayer[playerName];
             if (player != null && player.IsHuman)
             {
                 player.IsHuman = false;
@@ -35,9 +40,8 @@ public class ResignAction : PlayerAction
                 faction.Player = player;
                 server.PlayerNameToPeer[player.Name] = peer;
                 server.PeerToPlayerName[peer] = player.Name;
-                
+                gameState.GameSettings.NumberOfHumans -= 1;
             }
-            gameState.GameSettings.NumberOfHumans -= 1;
             server.sendGameState();
         }
         

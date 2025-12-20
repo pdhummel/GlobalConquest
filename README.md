@@ -105,7 +105,7 @@ The game is being designed with known differences from the original.
 - [x] Allow for Non-player observers.
 - [x] Save and load game.
 - [x] Resign to AI.
-- [ ] Convert player to AI.
+- [x] Convert player to AI.
 - [ ] Convert AI to player.
 - [x] Ability to change game settings.
 - [x] The ability to choose a specific target for attack.
@@ -183,24 +183,15 @@ This is best supported by mouse and keyboard. However, some effort has been made
   * Some UI elements like comboboxes and nested menus might not work appropriately.
 * The B button will behave like a mouse right click. (context menus)
 * The X button will act like a long click of the left mouse button. (movement waypoints)
-
+* The A button can be used to cycle through options in ComboViews.
+* The A and B buttons can be used to increase/decrease numeric values in TextBoxes. 
 
 ## Known Issues
 * Functional gaps from incomplete milestones.
-- [x] Bug: Conquest of burb does not show new ownership -- manually need to refresh hex.
-- [x] Bug: Null object reference in DeleteMoveUnitAction. Observed during game play w/G.
-- [x] Bug: Could not build planes on burb with infantry on it.
-- [x] Bug: With Fog-Of-War, players that join can see the amber player setup.
-- [x] Bug: Don't allow defeated players to Execute.
 - [x] Add firing range indicator for units --> shown with Target menu option.
-- [x] Add audio indicator when grace period begins.
-- [x] Add north and south for cities.
-- [x] Make towns have some suburbs/docks.
-- [x] Bug: Shouldn't be able to see pathing of enemy units.
-- [x] Bug: Long range plane transfers are not working.
 - [x] Bug: Game controller cannot change comboboxes --> Use A button.
-- [x] Request: Add visual and audio indicators for execution countdown.
-- [x] Request: Add visual aid to help identify events that are occurring.
+- [x] Request: Add visual and audio indicators for execution countdown. (v0.6.5)
+- [x] Request: Add visual aid to help identify events that are occurring. (v0.6.5)
 - [ ] Bug: Captured city still has enemy plane.
 - [ ] Bug: Game controller cannot navigate nested menus -- i.e., File, View.
 - [ ] Bug: Burbs with airplanes are masked by ComCen w/airplanes on the same hex.

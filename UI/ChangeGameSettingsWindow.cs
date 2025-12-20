@@ -69,7 +69,7 @@ public class ChangeGameSettingsWindow
 
         humanPlayersTextBox.Id = "humanPlayersTextBox";
         humanPlayersTextBox.Width = 50;
-        humanPlayersTextBox.Text = "1";
+        humanPlayersTextBox.Text = "" + gameSettings.NumberOfHumans;
         humanPlayersTextBox.Border = new SolidBrush("#808000FF");
         humanPlayersTextBox.BorderThickness = new Thickness(2);
 
@@ -176,7 +176,7 @@ public class ChangeGameSettingsWindow
         VerticalStackPanel verticalStackPanel = new VerticalStackPanel();
 
 
-        //addPanelRow(verticalStackPanel, humanPlayersLabel, humanPlayersTextBox);
+        addPanelRow(verticalStackPanel, humanPlayersLabel, humanPlayersTextBox);
         addPanelRow(verticalStackPanel, numberOfTurnsLabel, numberOfTurnsTextBox);
         //addPanelRow(verticalStackPanel, visibilityLabel, visibilityComboView);
         addPanelRow(verticalStackPanel, executionLabel, executionComboView);
@@ -222,7 +222,11 @@ public class ChangeGameSettingsWindow
         bool isValid = true;
         try
         {
-            //gameSettings.NumberOfHumans = validateTextBoxInteger(humanPlayersLabel.Text, humanPlayersTextBox, 1, 4);;
+            int humans = validateTextBoxInteger(humanPlayersLabel.Text, humanPlayersTextBox, 1, 4);
+            if (humans >= gameSettings.NumberOfHumans)
+            {
+                gameSettings.NumberOfHumans = humans;
+            }
             gameSettings.NumberOfTurnsForGame = validateTextBoxInteger(numberOfTurnsLabel.Text, numberOfTurnsTextBox, -1, 999);
             gameSettings.TimedSeconds = validateTextBoxInteger(timedSecondsLabel.Text, timedSecondsTextBox, 1, 300);
         }

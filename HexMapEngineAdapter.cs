@@ -284,7 +284,8 @@ class HexMapEngineAdapter
             for (int liX = 0; liX < hexWidth; liX++)
             {
                 string biome = gcGame.Client.GameState.Map.Hexes[liY, liX].Terrain;
-                textures[liY, liX] = terrain[biome].TEXTURE2D_IMAGE_TILE;
+                if (terrain.ContainsKey(biome))
+                    textures[liY, liX] = terrain[biome].TEXTURE2D_IMAGE_TILE;
             }
         }
         HexTile[,] hexTiles = loHexTileMapLoad.Load_MapHexTileArray(textures);
@@ -808,17 +809,18 @@ class HexMapEngineAdapter
                         if (mapHex != null && mapHex.IsHighlighted)
                         {
                             Vector2 destination = new Vector2(liCalculatedMapTileX, liCalculatedMapTileY);
-                            coSpriteBatch.Draw(
-                                textures["mapHexHighlight"],
-                                destination,
-                                sourceRectangle,
-                                Color.White,
-                                0.0f,
-                                Vector2.Zero,
-                                new Vector2(1.0f, 1.0f),
-                                SpriteEffects.None,
-                                0.8f // higher number at bottom - .85=hex, .8 highlight, .75=burb, .5=unit, .35=plane
-                                );
+                            if (textures.ContainsKey("mapHexHighlight"))
+                                coSpriteBatch.Draw(
+                                    textures["mapHexHighlight"],
+                                    destination,
+                                    sourceRectangle,
+                                    Color.White,
+                                    0.0f,
+                                    Vector2.Zero,
+                                    new Vector2(1.0f, 1.0f),
+                                    SpriteEffects.None,
+                                    0.8f // higher number at bottom - .85=hex, .8 highlight, .75=burb, .5=unit, .35=plane
+                                    );
                         }
                         Draw_HexTile(loHexTile,
                                         liCalculatedMapTileX,
@@ -910,7 +912,8 @@ class HexMapEngineAdapter
             return;
         if (!isObserver && !visibility)
         {
-            coSpriteBatch.Draw(
+            if (terrain.ContainsKey("unknown"))
+                coSpriteBatch.Draw(
                                 terrain["unknown"].TEXTURE2D_IMAGE_TILE,
                                 destination,
                                 sourceRectangle,
@@ -980,7 +983,8 @@ class HexMapEngineAdapter
         Map map = gcGame.Client.GameState.Map;
         if (!isObserver && player != null && !map.Hexes[row, column].Visibility[player.FactionColor])
         {
-            coSpriteBatch.Draw(
+            if (terrain.ContainsKey("unknown"))
+                coSpriteBatch.Draw(
                                 terrain["unknown"].TEXTURE2D_IMAGE_TILE,
                                 pixelVector,
                                 null,
@@ -1002,7 +1006,8 @@ class HexMapEngineAdapter
                 texture = burb.DirectionFromParent + "-tab-" + parentBurb.Color;
             if ("capital".Equals(parentBurb.Type))
                 texture = burb.DirectionFromParent + "-tab-capital";
-            coSpriteBatch.Draw(
+            if (textures.ContainsKey(texture))
+                coSpriteBatch.Draw(
                             textures[texture],
                             pixelVector,
                             sourceRectangle,
@@ -1017,7 +1022,8 @@ class HexMapEngineAdapter
         }
         if (!burbs.ContainsKey(burbId))
             return;
-        coSpriteBatch.Draw(
+        if (burbs.ContainsKey(burbId))
+            coSpriteBatch.Draw(
                             burbs[burbId],
                             pixelVector,
                             sourceRectangle,

@@ -28,6 +28,7 @@ public class ChangeGameSettingsAction : PlayerAction
         gameState.GameSettings.TimedSeconds = GameSettings.TimedSeconds;
         if (GameSettings.NumberOfTurnsForGame == -1 || gameState.CurrentTurn < GameSettings.NumberOfTurnsForGame)
             gameState.GameSettings.NumberOfTurnsForGame = GameSettings.NumberOfTurnsForGame;
+        gameState.GameSettings.NumberOfHumans = GameSettings.NumberOfHumans;
         //gameState.GameSettings.ScoringOption = GameSettings.ScoringOption;
         server.sendGameState();
         server.GameLogic.checkPlayersReadyForTimedPlanning();

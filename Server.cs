@@ -366,8 +366,11 @@ public class Server
             if (gameState.Players.colorToPlayer.ContainsKey(color))
             {
                 Player player = gameState.Players.colorToPlayer[color];
-                NetPeer peer = PlayerNameToPeer[player.Name];
-                sendGamePlayEvent(peer, gameEvent);
+                if (PlayerNameToPeer.ContainsKey(player.Name))
+                {
+                    NetPeer peer = PlayerNameToPeer[player.Name];
+                    sendGamePlayEvent(peer, gameEvent);
+                }
             }
             else
             {

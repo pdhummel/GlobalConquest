@@ -26,6 +26,7 @@ public class MainGameMenu
     MenuItem saveMenuItem = new MenuItem("Save", "&Save");
     MenuItem loadMenuItem = new MenuItem("Load", "Load");
     MenuItem resignMenuItem = new MenuItem("Resign", "Resign To AI");
+    MenuItem convertPlayerToAiMenuItem = new MenuItem("ConvertPlayerToAi", "Convert Player To AI");
     MenuItem increaseGameSpeedMenuItem;
     MenuItem decreaseGameSpeedMenuItem;
 
@@ -116,6 +117,13 @@ public class MainGameMenu
         {
             changePlayerSettingsMenuItemSelected();
         };
+
+        settingsMenuItem.Items.Add(convertPlayerToAiMenuItem);
+        convertPlayerToAiMenuItem.Selected += (s, a) =>
+        {
+            convertPlayerToAiMenuItemSelected();
+        };        
+
 
 
         MenuItem refreshStateMenuItem = new MenuItem("Refresh State", "Refresh State");
@@ -380,6 +388,11 @@ public class MainGameMenu
         changePlayerSettingsWindow.showChangePlayerSettingsWindow(mainGameScreen);
     }
 
+    public void convertPlayerToAiMenuItemSelected()
+    {
+        ConvertPlayerToAiWindow convertWindow = new ConvertPlayerToAiWindow();
+        convertWindow.showWindow(mainGameScreen);
+    }
 
     public void readyToPlanMenuItemSelected()
     {
