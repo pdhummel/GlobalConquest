@@ -21,6 +21,76 @@ The planning and execution phase system make it similar to tactical combat games
 ### WIP for Globabl Conquest 2025
 ![Global Conquest 2025 Screenshot](./docs/GC2025-Screenshot.png "Global Conquest 2025")
 
+
+## Installation
+The easiest option for running Global Conquest 2025 is to download the [pre-built binary zip package](https://github.com/pdhummel/GlobalConquest/releases/tag/latest) to a 64 bit Windows machine. And then run `GlobalConquest.exe`.  
+You will also need to install other DotNet bits like these:
+* https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=8.0.0&arch=x64&rid=win10-x64
+* https://aka.ms/dotnet-core-applaunch?framework=Microsoft.WindowsDesktop.App&framework_version=8.0.0&arch=x64&rid=win-x64&os=win10
+
+## User Interface
+This is best supported by mouse and keyboard. However, some effort has been made to work with game controllers as well.
+### Mouse
+* Mouse move used to move the mouse cursor.
+* Left click is used to select menu option items and activate buttons.
+* Left click on a hex on the main map will give information about that hex in the bottom right details panel.
+* Left click on the mini-map will update the position of the focus box and recenter the main map accordingly.
+* Right click on a unit you own, and a context menu will appear.
+  * The Move action will make a line appear indicating the unit path. 
+    * Click the left mouse button on a hex to select the target so the unit will move there.
+    * Long/hard click of the left mouse button to set a waypoint for movement and to draw a line to the next segment in the unit path.
+* Right click on an unoccupied burb hex you own, and a context menu will appear.
+
+### Keyboard
+* Use the arrow keys to scroll and pan the map.
+
+### Game Controller
+* The left thumbstick will move the mouse cursor.
+* The right thumbstick will also move the mouse cursor, but at a faster rate.
+* The dpad is used like the keyboard arrow keys to scroll and pan the map.
+* The A button will in many cases behave like a mouse left click. (hex inspection)
+  * Some UI elements like comboboxes and nested menus might not work appropriately.
+* The B button will behave like a mouse right click. (context menus)
+* The X button will act like a long click of the left mouse button. (movement waypoints)
+* The A button can be used to cycle through options in ComboViews.
+* The A and B buttons can be used to increase/decrease numeric values in TextBoxes. 
+
+## Known Issues
+* Functional gaps from incomplete milestones.
+- [x] Add firing range indicator for units --> shown with Target menu option.
+- [x] Bug: Game controller cannot change comboboxes --> Use A button.
+- [x] Request: Add visual and audio indicators for execution countdown. (v0.6.5)
+- [x] Request: Add visual aid to help identify events that are occurring. (v0.6.5)
+- [ ] Bug: Captured city still has enemy plane.
+- [ ] Bug: Game controller cannot navigate nested menus -- i.e., File, View.
+- [ ] Bug: Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
+- [ ] Request: Option to make airplane missions planned and not immediate.
+- [ ] Request: Suggest city density and burb level based on map size.
+- [ ] Request: Add decoy comcen.
+
+## Technical Notes
+The game is being developed on the DotNet framework and leverages the game library, MonoGame, https://monogame.net/. Furthermore Myra, https://github.com/rds1983/Myra, is used to create a Windows Forms like experience.
+
+### Map Generation
+Much of the Hex Map generation code was borrowed from blackfalconsoftware:
+* https://www.codeproject.com/articles/Hexagonal-grid-for-games-and-other-projects-Part-1
+* https://blackfalconsoftware.com/
+* https://blackfalconsoftware.wordpress.com/
+* https://blackfalconsoftware.wordpress.com/2017/12/12/hexagonal-maps-part-v-designing-contiguous-hexagons/
+* https://blackfalconsoftware.wordpress.com/2025/03/24/the-military-simulation-workbench-msworkbench/
+* https://blackfalconsoftware.wordpress.com/2016/08/22/part-i-creating-a-digital-hexagonal-tile-map/
+* https://blackfalconsoftware.wordpress.com/2017/05/10/part-ii-using-the-mouse-to-scroll-a-hexagonal-tile-map/
+* https://blackfalconsoftware.wordpress.com/2017/06/27/hexagonal-maps-part-iii-selecting-a-tilehexagon/
+* https://blackfalconsoftware.wordpress.com/2017/07/05/hexagonal-maps-part-iv-highlighting-a-selected-a-tilehexagon/
+
+In addition, the idea to use a noise algorithm to create differing terrains, which create cohesive land masses:
+https://www.redblobgames.com/maps/terrain-from-noise/.
+
+### Build and Execute
+* dotnet build
+* dotnet run
+I found it burdensome to setup the DotNet developer experience and will try to document that setup later. I use Visual Studio Code as my IDE.
+
 ## Project Goals and Designed Deviations
 To recreate the hybrid, modified real-time experience of Global Conquest, so that is playable on modern computers over the internet.
 
@@ -133,68 +203,3 @@ The game is being designed with known differences from the original.
 - [ ] Steam integration
 - [ ] Multi-platform support
 - [ ] Playback.
-
-
-## Technical Notes
-The game is being developed on the DotNet framework and leverages the game library, MonoGame, https://monogame.net/. Furthermore Myra, https://github.com/rds1983/Myra, is used to create a Windows Forms like experience.
-
-### Map Generation
-Much of the Hex Map generation code was borrowed from blackfalconsoftware:
-* https://www.codeproject.com/articles/Hexagonal-grid-for-games-and-other-projects-Part-1
-* https://blackfalconsoftware.com/
-* https://blackfalconsoftware.wordpress.com/
-* https://blackfalconsoftware.wordpress.com/2017/12/12/hexagonal-maps-part-v-designing-contiguous-hexagons/
-* https://blackfalconsoftware.wordpress.com/2025/03/24/the-military-simulation-workbench-msworkbench/
-* https://blackfalconsoftware.wordpress.com/2016/08/22/part-i-creating-a-digital-hexagonal-tile-map/
-* https://blackfalconsoftware.wordpress.com/2017/05/10/part-ii-using-the-mouse-to-scroll-a-hexagonal-tile-map/
-* https://blackfalconsoftware.wordpress.com/2017/06/27/hexagonal-maps-part-iii-selecting-a-tilehexagon/
-* https://blackfalconsoftware.wordpress.com/2017/07/05/hexagonal-maps-part-iv-highlighting-a-selected-a-tilehexagon/
-
-In addition, the idea to use a noise algorithm to create differing terrains, which create cohesive land masses:
-https://www.redblobgames.com/maps/terrain-from-noise/.
-
-### Build and Execute
-* dotnet build
-* dotnet run
-
-Or maybe more easily, download the binary zip package to a 64 bit Windows machine and run `GlobalConquest.exe`.
-
-## User Interface
-This is best supported by mouse and keyboard. However, some effort has been made to work with game controllers as well.
-### Mouse
-* Mouse move used to move the mouse cursor.
-* Left click is used to select menu option items and activate buttons.
-* Left click on a hex on the main map will give information about that hex in the bottom right details panel.
-* Left click on the mini-map will update the position of the focus box and recenter the main map accordingly.
-* Right click on a unit you own, and a context menu will appear.
-  * The Move action will make a line appear indicating the unit path. 
-    * Click the left mouse button on a hex to select the target so the unit will move there.
-    * Long/hard click of the left mouse button to set a waypoint for movement and to draw a line to the next segment in the unit path.
-* Right click on an unoccupied burb hex you own, and a context menu will appear.
-
-### Keyboard
-* Use the arrow keys to scroll and pan the map.
-
-### Game Controller
-* The left thumbstick will move the mouse cursor.
-* The right thumbstick will also move the mouse cursor, but at a faster rate.
-* The dpad is used like the keyboard arrow keys to scroll and pan the map.
-* The A button will in many cases behave like a mouse left click. (hex inspection)
-  * Some UI elements like comboboxes and nested menus might not work appropriately.
-* The B button will behave like a mouse right click. (context menus)
-* The X button will act like a long click of the left mouse button. (movement waypoints)
-* The A button can be used to cycle through options in ComboViews.
-* The A and B buttons can be used to increase/decrease numeric values in TextBoxes. 
-
-## Known Issues
-* Functional gaps from incomplete milestones.
-- [x] Add firing range indicator for units --> shown with Target menu option.
-- [x] Bug: Game controller cannot change comboboxes --> Use A button.
-- [x] Request: Add visual and audio indicators for execution countdown. (v0.6.5)
-- [x] Request: Add visual aid to help identify events that are occurring. (v0.6.5)
-- [ ] Bug: Captured city still has enemy plane.
-- [ ] Bug: Game controller cannot navigate nested menus -- i.e., File, View.
-- [ ] Bug: Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
-- [ ] Request: Option to make airplane missions planned and not immediate.
-- [ ] Request: Suggest city density and burb level based on map size.
-- [ ] Request: Add decoy comcen.
