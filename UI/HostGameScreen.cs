@@ -16,6 +16,7 @@ using Button = Myra.Graphics2D.UI.Button;
 using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
 using Panel = Myra.Graphics2D.UI.Panel;
 using ComboBoxStyle = Myra.Graphics2D.UI.Styles.ComboBoxStyle;
+using Microsoft.Xna.Framework.Audio;
 
 namespace GlobalConquest.UI;
 
@@ -63,6 +64,7 @@ public class HostGameScreen
     TextBox timedSecondsTextBox = new TextBox();
     Label canLoseComCenLabel = new Label();
     CheckButton canLoseComCenCheckButton = new CheckButton();
+    MainGameScreen mainGameScreen;
 
 
     public HostGameScreen(PlayGameMenu playGameMenu, Game game, Grid grid)
@@ -437,7 +439,8 @@ public class HostGameScreen
 
             if (standaloneServerCheckButton.IsChecked)
             {
-                gcGame.minimizeScreen();
+                //gcGame.minimizeScreen();
+                setupForStandaloneServer();
             }
             else
             {
@@ -478,6 +481,32 @@ public class HostGameScreen
             Title = message
         };
         window.ShowModal(grid.Desktop);
+    }
+
+    private void setupForStandaloneServer()
+    {
+        GlobalConquestGame gcGame = (GlobalConquestGame)game;
+        JoinGameValues joinGameValues = new JoinGameValues();
+        joinGameValues.IsObserverOnly = true;
+        gcGame.Client.IsObserverOnly = true;
+
+        joinGameValues.HostIp = "127.0.0.1";
+        joinGameValues.Port = validateTextBoxInteger(portLabel.Text, portTextBox, 1024, 49151);
+        joinGameValues.Name = "Server";
+        joinGameValues.FactionName = "";
+        joinGameValues.setGameExecutionSpeed("rabbit");
+        gcGame.Client.JoinGameValues = joinGameValues;
+        gcGame.MyJoinGameValues = joinGameValues;
+        SoundEffect.MasterVolume = 0;
+
+        // depends on joinGameValues
+        mainGameScreen = new MainGameScreen(game, grid);
+        mainGameScreen.LoadContent();
+        this.hide();
+        gcGame.Client.Connect(joinGameValues, "GlobalConquest");
+        gcGame.MyJoinGameValues = joinGameValues;
+        mainGameScreen.show();
+
     }
 
 

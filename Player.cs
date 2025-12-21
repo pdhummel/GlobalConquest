@@ -17,4 +17,10 @@ public class Player
     {
         return gameState.Factions.ColorToFaction[FactionColor];
     }
+
+    public override string ToString()
+    {
+        string returnString = Name + ", " + FactionColor;
+        return returnString;
+    }
 }

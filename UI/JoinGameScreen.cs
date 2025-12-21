@@ -260,6 +260,7 @@ public class JoinGameScreen
         GameSettings gameSettings = new GameSettings();
         GlobalConquestGame gcGame = (GlobalConquestGame)game;
         gcGame.Client = new Client(gcGame);
+        GameState gameState = gcGame.Client.GameState;
         JoinGameValues joinGameValues = new JoinGameValues();
         bool isValid = true;
         if (observerOnlyCheckButton.IsChecked)

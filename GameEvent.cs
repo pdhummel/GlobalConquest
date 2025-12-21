@@ -90,7 +90,8 @@ public class GameEvent
             "planeDefending",
             "planeInDogfight",
             "planningPhaseEnded",
-            "planningPhaseStarting"
+            "planningPhaseStarting",
+            "joinedGame"
          };
          GamePlayEvents.UnionWith(gamePlayEvents);        
     }
@@ -108,8 +109,18 @@ public class GameEvent
         Game = game;
         MethodInfo eventMethodHandler = this.GetType().GetMethod(EventType + "Handler");
         object[] parameters = new object[] { };
-        eventMethodHandler?.Invoke(this, parameters);
-        Globals.Log("handleGamePlayEvent(): " + EventString);
+        try
+        {
+            Globals.Log("handleGamePlayEvent(): " + EventString);
+            Thread eventMethodHandlerThread = new Thread(() => eventMethodHandler?.Invoke(this, parameters));
+            eventMethodHandlerThread.IsBackground = true;
+            eventMethodHandlerThread.Start();
+            //eventMethodHandler?.Invoke(this, parameters);
+        }
+        catch(Exception ex)
+        {
+            Globals.Log("handleGamePlayEvent(): " + EventString + ", Exception: " + ex);
+        }
 
     }
 
@@ -422,7 +433,7 @@ public class GameEvent
     {
         Globals.Log("planningPhaseEndedHandler(): enter");
         Game.playSoundEffect("stopPlanningStartExecution");
-        Thread.Sleep(2000);
+        //Thread.Sleep(2000);
     }
 
     public void planningPhaseStartingHandler()
@@ -430,5 +441,13 @@ public class GameEvent
         Globals.Log("planningPhaseStartingHandler(): enter");
         Game.playSoundEffect("startTurnPlanning");
     }
+
+    public void joinedGameHandler()
+    {
+        Globals.Log("joinedGameHandler(): enter");
+        // TODO: fix scrollToMetro
+        //Game.scrollToMetro();
+    }
+
 
 }

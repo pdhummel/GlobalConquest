@@ -106,7 +106,7 @@ The game is being designed with known differences from the original.
 - [x] Save and load game.
 - [x] Resign to AI.
 - [x] Convert player to AI.
-- [ ] Convert AI to player.
+- [x] Convert AI to player.
 - [x] Ability to change game settings.
 - [x] The ability to choose a specific target for attack.
 

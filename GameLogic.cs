@@ -350,8 +350,13 @@ public class GameLogic
     public void scanUnits(Server server, Unit unit, UnitType unitType)
     {
         // A sneaking unit can't see other units at all.
+        // Also other units need to re-scan for visibility.
         if (unit.IsSneaking)
+        {
+            if (! "Omniscient".Equals(server.gameState.GameSettings.Visibility))
+                unit.setBaseVisibility();
             return;
+        }
 
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];

@@ -552,8 +552,8 @@ public class GlobalConquestGame : Game
                 MainGameScreen?.ShowContextMenu(lastSelectedHex, false);
             }
         }
-
-        Desktop.Render();
+        if (Desktop != null)
+            Desktop.Render();
 
         base.Draw(gameTime);
     }
@@ -1123,6 +1123,24 @@ public class GlobalConquestGame : Game
             }
         }
         return selectedHexVector;
+    }
+
+    public void scrollToMetro()
+    {
+        Globals.Log("scrollToMetro(): enter");
+        Map map = Client.GameState.Map;
+        Player player = identifySelf();
+        Globals.Log("scrollToMetro(): player=" + player);
+        if (player != null && player.FactionColor != null && !"grey".Equals(player.FactionColor))
+        {
+            if (map != null && map.MetroLocationPoints != null && map.MetroLocationPoints.ContainsKey(player.FactionColor))
+            {
+                Point metroPoint = map.MetroLocationPoints[player.FactionColor];
+                Globals.Log("scrollToMetro(): " + metroPoint.X + "," + metroPoint.Y);
+                MapHex metroHex = map.Hexes[metroPoint.Y, metroPoint.X];
+                scrollToPosition(metroHex.Y, metroHex.X);
+            }
+        }
     }
 
     public void scrollToPosition(int row, int column)

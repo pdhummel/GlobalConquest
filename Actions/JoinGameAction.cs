@@ -23,7 +23,6 @@ public class JoinGameAction : PlayerAction
         Globals.Log("execute()");
         Server server = (Server)serverObj;
         GameState gameState = server.gameState;
-        Faction faction = gameState.Factions.NameToFaction[JoinGameValues.FactionName];
         if (gameState.Players.playerNameToPlayer.ContainsKey(JoinGameValues.Name))
         {
             Globals.Log("execute(): Player with that name is already used:" + JoinGameValues.Name);
@@ -43,6 +42,7 @@ public class JoinGameAction : PlayerAction
             server.sendMap(peer);
             return;
         }
+        Faction faction = gameState.Factions.NameToFaction[JoinGameValues.FactionName];
         int factionsWithHumanPlayer = 0;
         for (int i = 0; i < gameState.Players.playerNameToPlayer.Count; i++)
         {
@@ -87,7 +87,17 @@ public class JoinGameAction : PlayerAction
             faction.Status = "planning";
         }
         server.sendGameState();
-        server.sendMap(peer);
+        if (gameState.PlayerJoined.Count >= gameState.GameSettings.NumberOfHumans)
+            server.sendMap(peer);
+        else
+        {
+            GameEvent gameEvent = new GameEvent();
+            gameEvent.EventType = "serverMessage";
+            gameEvent.EventString = "Waiting for other players: " + gameState.PlayerJoined.Count + " of " + 
+                                    gameState.GameSettings.NumberOfHumans + " have joined.";
+            server.sendGamePlayEvent(gameEvent);
+        }
+            
 
         gameState.PlayerPlanningReady[newPlayer.Name] = true;
         GameLogic gameLogic = server.GameLogic;

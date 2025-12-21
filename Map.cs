@@ -1,6 +1,7 @@
 using System.Text.Json;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
+using Microsoft.Xna.Framework;
 namespace GlobalConquest;
 
 public class Map
@@ -13,6 +14,7 @@ public class Map
     public int X { get; set; }
     public string VisibilityMode { get; set; }
     public Dictionary<string, MapHex> MetroLocations { get; set; } = new Dictionary<string, MapHex>();
+    public Dictionary<string, Point> MetroLocationPoints { get; set; } = new Dictionary<string, Point>();
     public Dictionary<string, MapHex> LeftMetro { get; set; } = new Dictionary<string, MapHex>();
     public Dictionary<string, MapHex> RightMetro { get; set; } = new Dictionary<string, MapHex>();
     public Dictionary<string, MapHex> DiagonalMetro { get; set; } = new Dictionary<string, MapHex>();
@@ -23,12 +25,14 @@ public class Map
 
     public Map()
     {
+        positionMetros();
     }
 
     public Map(int y, int x)
     {
         Y = y;
         X = x;
+        positionMetros();
         Hexes = generateMap(y, x);
         buildNodesForShortestPath();
         IsMapReady = true;
@@ -37,6 +41,26 @@ public class Map
         {
             ColorToUnitIds[color] = new HashSet<string>();
         }
+    }
+
+    private void positionMetros()
+    {
+        bool isEven = false;
+        if (X % 2 == 0)
+            isEven = true;
+        MetroLocationPoints["amber"] = new Point(1, 0);
+        MetroLocationPoints["magenta"] = new Point(1, Y-2);
+
+        if (isEven)
+        {
+            MetroLocationPoints["ocher"] = new Point(X-2, 1);
+            MetroLocationPoints["cyan"] = new Point(X-2, Y-1);
+        }
+        else
+        {
+            MetroLocationPoints["ocher"] = new Point(X-2, 0);
+            MetroLocationPoints["cyan"] = new Point(X-2, Y-2);
+        }        
     }
 
     public void addBurbs(Burbs burbs, int desiredBurbCount)
@@ -90,21 +114,10 @@ public class Map
 
     public void addFixedBurbs(Burbs burbs)
     {
-        bool isEven = false;
-        if (X % 2 == 0)
-            isEven = true;
-        burbs.addBurb("Amber Array", "metro", this, Hexes[0, 1], "amber");
-        burbs.addBurb("Magenta Mob", "metro", this, Hexes[Y - 2, 1], "magenta");
-        if (isEven)
-        {
-            burbs.addBurb("Ocher Order", "metro", this, Hexes[1, X - 2], "ocher");
-            burbs.addBurb("Cyan Circle", "metro", this, Hexes[Y - 1, X - 2], "cyan");
-        }
-        else
-        {
-            burbs.addBurb("Ocher Order", "metro", this, Hexes[0, X - 2], "ocher");
-            burbs.addBurb("Cyan Circle", "metro", this, Hexes[Y - 2, X - 2], "cyan");
-        }
+        burbs.addBurb("Amber Array", "metro", this, Hexes[MetroLocationPoints["amber"].Y, MetroLocationPoints["amber"].X], "amber");
+        burbs.addBurb("Magenta Mob", "metro", this, Hexes[MetroLocationPoints["magenta"].Y, MetroLocationPoints["magenta"].X], "magenta");
+        burbs.addBurb("Ocher Order", "metro", this, Hexes[MetroLocationPoints["ocher"].Y, MetroLocationPoints["ocher"].X], "ocher");
+        burbs.addBurb("Cyan Circle", "metro", this, Hexes[MetroLocationPoints["cyan"].Y, MetroLocationPoints["cyan"].X], "cyan");
         burbs.addBurb("Washington", "capital", this, Hexes[Y / 2, X / 2]);
         LeftMetro["amber"] = MetroLocations["ocher"];
         RightMetro["amber"] = MetroLocations["magenta"];

@@ -42,6 +42,8 @@ public class Unit
     // If the beach square has a friendly dug-in infantry unit squatting in it,
     // this loading/unloading takes only one round.
     public int RoundsToPause { get; set; } = 0;
+
+    // TODO: Add option, wait till repaired
     public int RoundsToWait { get; set; } = 0;
 
     public int MoveSteps { get; set; } = 0;
@@ -99,8 +101,16 @@ public class Unit
         Visibility["ocher"] = false;
         Visibility["cyan"] = false;
         Visibility["grey"] = false;
+        RoundsToBeSeen["amber"] = 0;
+        RoundsToBeSeen["magenta"] = 0;
+        RoundsToBeSeen["ocher"] = 0;
+        RoundsToBeSeen["cyan"] = 0;
+        RoundsToBeSeen["grey"] = 0;
+
         if (Color != null)
+        {
             Visibility[Color] = true;
+        }
     }
 
     public void setOmniVisibility()

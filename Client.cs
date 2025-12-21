@@ -274,11 +274,9 @@ public class Client
             if (GameState.Map == null)
             {
                 Globals.Log("updateMap(): new Map");
-                GameState.Map = new Map();
-                Map map = GameState.Map;
                 GameSettings gameSettings = GameState.GameSettings;
-                map.Y = gameSettings.Height;
-                map.X = gameSettings.Width;
+                GameState.Map = new Map(gameSettings.Width, gameSettings.Height);
+                Map map = GameState.Map;
                 map.Hexes = new MapHex[gameSettings.Height, gameSettings.Width];
             }
             if (GameState.Map.Hexes == null)
@@ -302,7 +300,6 @@ public class Client
                 }
             }
 
-
             if (gameEvent.MapHex != null)
             {
                 Globals.Log("updateMap(): sync mapHex");
@@ -320,7 +317,7 @@ public class Client
                 {
                     GameState.Map.IsMapReady = true;
                     Globals.Log("updateMap(): Loading map content into client hexMapEngineAdapter");
-                    GlobalConquestGame?.HexMapLoadContent();
+                    GlobalConquestGame?.HexMapLoadContent();                    
                     isLoadContentComplete = true;
                 }
                 else if (isLoadContentComplete && gameEvent.IsLastMapHexBufferUpdate)
@@ -331,7 +328,8 @@ public class Client
 
     private void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
     {
-        Globals.Log($"OnPeerDisconnected(): Client peer disconnected: {peer.Address}. Reason: {disconnectInfo.Reason}");
+        if (peer != null)
+            Globals.Log($"OnPeerDisconnected(): Client peer disconnected: {peer.Address}. Reason: {disconnectInfo.Reason}");
         GameState.CurrentPhase = "disconnected";
         Thread localThread = new Thread(new ThreadStart(ReConnect))
         {

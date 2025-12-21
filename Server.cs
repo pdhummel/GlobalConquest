@@ -109,6 +109,7 @@ public class Server
                 Globals.Log("ServerLoop(): all clients joined");
                 syncAllMapHexes();
                 initialSync = true;
+                sendGamePlayEvent(new GameEvent("joinedGame"));
             }
             Thread.Sleep(sleepTime); // Adjust sleep time to control CPU usage.
         }
@@ -215,9 +216,15 @@ public class Server
         {
             if (gameState.Players.colorToPlayer.ContainsKey(color))
             {
-                Player player = gameState.Players.colorToPlayer[color];
-                NetPeer peer = PlayerNameToPeer[player.Name];
-                sendGameStateAndMapHex(peer, x, y);
+                if (gameState.Players.colorToPlayer.ContainsKey(color))
+                {
+                    Player player = gameState.Players.colorToPlayer[color];
+                    if (PlayerNameToPeer.ContainsKey(player.Name))
+                    {
+                        NetPeer peer = PlayerNameToPeer[player.Name];
+                        sendGameStateAndMapHex(peer, x, y);
+                    }
+                }
             }
             else
             {
