@@ -23,7 +23,7 @@ The planning and execution phase system make it similar to tactical combat games
 
 
 ## Installation
-The easiest option for running Global Conquest 2025 is to download the [pre-built binary zip package](https://github.com/pdhummel/GlobalConquest/releases/tag/latest) to a 64 bit Windows machine. And then run `GlobalConquest.exe`.  
+The easiest option for running Global Conquest 2025 is to download the [pre-built binary zip package](https://github.com/pdhummel/GlobalConquest/releases) to a 64 bit Windows machine. And then run `GlobalConquest.exe`.  
 You will also need to install other DotNet bits like these:
 * https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=8.0.0&arch=x64&rid=win10-x64
 * https://aka.ms/dotnet-core-applaunch?framework=Microsoft.WindowsDesktop.App&framework_version=8.0.0&arch=x64&rid=win-x64&os=win10
@@ -183,7 +183,7 @@ The game is being designed with known differences from the original.
 ### Milestone 7
 - [x] Sub sneakiness
 - [x] Spies visible only to other spies.
-- [ ] Spy sabotage
+- [ ] Spy sabotage burbs.
 - [ ] Spies steal burb secrets.
 - [ ] Spies steal ComCen secrets.
 - [ ] Build decoy ComCen
