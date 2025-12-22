@@ -181,7 +181,8 @@ The game is being designed with known differences from the original.
 - [x] The ability to choose a specific target for attack.
 
 ### Milestone 7
-- [ ] Sub sneakiness
+- [x] Sub sneakiness
+- [x] Spies visible only to other spies.
 - [ ] Spy sabotage
 - [ ] Spies steal burb secrets.
 - [ ] Spies steal ComCen secrets.

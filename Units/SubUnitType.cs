@@ -9,7 +9,6 @@ public class SubUnitType : UnitType
 // battleships) but for a shorter period of time (only 2 rounds, which is 
 // considerably shorter than the 8 rounds for all other units). 
 
-// TODO: They can't be spotted by planes, spies or any other unit until they attack.
 
     public SubUnitType()
     {

@@ -374,6 +374,14 @@ public class GameLogic
             {
                 if (hexUnit.Color == unit.Color)
                     continue;
+
+                // Subs can't be spotted by planes, spies or any other unit until they attack.
+                if ("sub".Equals(hexUnit.UnitType) && !hexUnit.IsAttacking)
+                    continue;
+
+                if ("spy".Equals(hexUnit.UnitType) && !"spy".Equals(unit.UnitType))
+                    continue;
+
                 bool isHexUnitMoving = false;
                 if (hexUnit.ActionQueue.Count > 0)
                     isHexUnitMoving = true;
@@ -516,6 +524,7 @@ public class GameLogic
 
     private void checkForCombat(Server server, Unit unit)
     {
+        unit.IsAttacking = false;
         if (unit.StrengthPoints <= 0)
             return;
         // A sneaking unit can't fire at other units at all.
@@ -607,6 +616,7 @@ public class GameLogic
             }
             else
                 return;
+            unit.IsAttacking = true;
 
             // Battleships and carriers can "bombard" land units once they are within range.
             // However, this type of combat cannot reduce the land unit below 30% strength.
