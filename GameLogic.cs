@@ -415,6 +415,8 @@ public class GameLogic
                 // (e.g., 6 for carriers and Comcens, 5 for battleships)
                 // but for a shorter period of time
                 // (only 2 rounds, which is considerably shorter than the 8 rounds for all other units).
+                
+                // TODO: They can't be spotted by planes, spies or any other unit until they attack.
                 bool previousVisibility = false;
                 if (hexUnit.Visibility.ContainsKey(unit.Color))
                     previousVisibility = hexUnit.Visibility[unit.Color];

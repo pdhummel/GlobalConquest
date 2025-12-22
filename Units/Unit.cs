@@ -80,6 +80,7 @@ public class Unit
     public bool IsSneaking { get; set; } = false;
 
     public bool IsAttacked {get;set;} = false;
+    public bool IsAttacking {get; set;}
 
     public bool IsDefending {get; set;} = true;
 

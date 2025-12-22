@@ -1467,33 +1467,23 @@ public class Ai
         AiGoal defendGoal = new AiGoal();
         defendGoal.Type = "defend";
         defendGoal.IsOngoingGoal = true;
-        if ("village".Equals(burbHex.Burb.Type) || "town".Equals(burbHex.Burb.Type))
+        defendGoal.TargetMapHex = burbHex;
+        AiUnit infantry = new AiUnit();
+        infantry.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
+        infantry.InitialPosition = burbHex;
+        infantry.UnitType = "infantry";
+        defendGoal.DesiredUnits.Add(infantry);
+        AiUnit plane = new AiUnit();
+        plane.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
+        plane.InitialPosition = burbHex;
+        plane.UnitType = "plane";
+        defendGoal.DesiredUnits.Add(plane);
+        Globals.Log("createDefendBurbGoal(): " + burbHex.Burb.Type);
+        if ("village".Equals(burbHex.Burb.Type))
         {
-            defendGoal.TargetMapHex = burbHex;
-            AiUnit infantry = new AiUnit();
-            infantry.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
-            infantry.InitialPosition = burbHex;
-            infantry.UnitType = "infantry";
-            defendGoal.DesiredUnits.Add(infantry);
-            AiUnit plane = new AiUnit();
-            plane.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
-            plane.InitialPosition = burbHex;
-            plane.UnitType = "plane";
-            defendGoal.DesiredUnits.Add(plane);
         }
-        else if ("city".Equals(burbHex.Burb.Type) || "metro".Equals(burbHex.Burb.Type) || "capital".Equals(burbHex.Burb.Type))
+        else if ("town".Equals(burbHex.Burb.Type) || "city".Equals(burbHex.Burb.Type) || "metro".Equals(burbHex.Burb.Type) || "capital".Equals(burbHex.Burb.Type))
         {
-            defendGoal.TargetMapHex = burbHex;
-            AiUnit infantry = new AiUnit();
-            infantry.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
-            infantry.InitialPosition = burbHex;
-            infantry.UnitType = "infantry";
-            defendGoal.DesiredUnits.Add(infantry);
-            AiUnit plane = new AiUnit();
-            plane.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
-            plane.InitialPosition = burbHex;
-            plane.UnitType = "plane";
-            defendGoal.DesiredUnits.Add(plane);
             List<MapHex> neighbors = map.getSurroundingHexesList(burbHex);
             bool hasDock = false;
             foreach (MapHex mapHex in neighbors)
@@ -1502,30 +1492,20 @@ public class Ai
                 {
                     hasDock = true;
                     break;
-                    //AiUnit sub = new AiUnit();
-                    //sub.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
-                    //sub.InitialPosition = mapHex;
-                    //sub.UnitType = "sub";
-                    //defendGoal.DesiredUnits.Add(sub);
                 }
-                //else
-                //{
-                //    AiUnit suburbInfantry = new AiUnit();
-                //    suburbInfantry.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
-                //    suburbInfantry.InitialPosition = mapHex;
-                //    suburbInfantry.UnitType = "infantry";
-                //    defendGoal.DesiredUnits.Add(suburbInfantry);
-                //}
-                if (hasDock)
+            }
+            if (hasDock)
+            {
+                AiUnit sub1 = new AiUnit();
+                sub1.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
+                sub1.DistanceFromTarget = 3;
+                sub1.UnitType = "sub";
+                defendGoal.DesiredUnits.Add(sub1);
+                if (!"town".Equals(burbHex.Burb.Type))
                 {
-                    AiUnit sub1 = new AiUnit();
-                    sub1.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
-                    sub1.DistanceFromTarget = 5;
-                    sub1.UnitType = "sub";
-                    defendGoal.DesiredUnits.Add(sub1);
                     AiUnit sub2 = new AiUnit();
                     sub2.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
-                    sub2.DistanceFromTarget = 5;
+                    sub2.DistanceFromTarget = 4;
                     sub2.UnitType = "sub";
                     defendGoal.DesiredUnits.Add(sub2);
                 }

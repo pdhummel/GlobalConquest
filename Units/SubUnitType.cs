@@ -3,6 +3,14 @@ namespace GlobalConquest.Units;
 public class SubUnitType : UnitType
 {
 
+// Subs have special scanning rules. They can't be spotted by planes, spies or 
+// any other unit until they attack. However, once a sub is spotted it stays "seen" 
+// at the normal range of the "seeing" unit (e.g., 6 for carriers and Comcens, 5 for 
+// battleships) but for a shorter period of time (only 2 rounds, which is 
+// considerably shorter than the 8 rounds for all other units). 
+
+// TODO: They can't be spotted by planes, spies or any other unit until they attack.
+
     public SubUnitType()
     {
 

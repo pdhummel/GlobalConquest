@@ -80,7 +80,6 @@ public class GameEvent
             "gameOver",             // Game Over                           
             "burbCaptured",         // BurbType BurbName captured at MapHex
             "burbLost",             // BurbType BurbName lost at MapHex
-            // TODO: handle these Game Play Events:
             "unitMovementBlocked",  // UnitType at MapHex movement blocked
             "unitSufferedAttrition",// UnitType at Maphex suffered attrition
             "enemyUnitDiscovered",  // EnemyColor UnitType discovered at MapHex

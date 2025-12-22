@@ -99,7 +99,7 @@ The game is being designed with known differences from the original.
 * Unknown areas appear differently from sea tiles. The original conflated sea tiles and the unknown.
 * Will be playable on a modern operating system over the internet.
 * Consider making airplane missions resolve during the execution phase instead of during real time.
-* Find ways to avoid player elimination.
+* Avoid player elimination.
 
 ## Roadmap
 ### Milestone 1
@@ -181,21 +181,29 @@ The game is being designed with known differences from the original.
 - [x] The ability to choose a specific target for attack.
 
 ### Milestone 7
-- [ ] Improved Economics
-- [ ] Unit Context Menu - home
-- [ ] Unit production automation by city.
-- [ ] Unit supported by city.
-- [ ] Add oil and mineral resources.
-- [ ] Exploit
+- [ ] Sub sneakiness
 - [ ] Spy sabotage
+- [ ] Spies steal burb secrets.
+- [ ] Spies steal ComCen secrets.
+- [ ] Build decoy ComCen
+
 
 ### Milestone 8
-- [ ] Treaties
+- [ ] Complex Economics
+  - [ ] Central treasury vs. city purse.
+  - [ ] Unit production automation by city.
+  - [ ] Unit supported by a city.
+  - [ ] Unit Context Menu - home
+  - [ ] Add oil and mineral resources.
+  - [ ] Exploit resources.
 
 ### Milestone 9
-- [ ] Event Cards
+- [ ] Treaties
 
 ### Milestone 10
+- [ ] Event Cards
+
+### Milestone 11
 - [ ] Support headless server.
 - [ ] Game controller support.
 - [ ] UI improvements.

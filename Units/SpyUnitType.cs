@@ -3,6 +3,51 @@ namespace GlobalConquest.Units;
 public class SpyUnitType : UnitType
 {
 
+// Spies are former politicians who, not being trusted with live ammunition, 
+// have been recruited for the dirty work needed to be done in Conquest. These units 
+// cannot carry weapons; the spy is used to gain information about the location of the 
+// enemy's units. The best feature about spies is that only an enemy spy can "see" 
+// another spy: to all other units the spy is invisible.
+// Typical to the politician's profession, the spy can also "steal." Unlike today's 
+// politicians, however, spies mostly steal information. If a spy ends its turn in an 
+// enemy burb, all enemy units within 25 spaces will be visible and the status of units 
+// being made in the enemy burb will be accessible. If a spy ends its turn next to an 
+// enemy Comcen, info on all enemy units and burbs is available. In both cases this 
+// information is temporary and will vanish after the orders phase ends. Finally, 
+// spies ending their turn in an enemy burb sabotage that burb's production (for 
+// specifics see the "Economics" section).
+
+// Spies have a unique set of characteristics. They can't be spotted except by 
+// other spies, and they can't be destroyed unless they are spotted. Therefore, it takes 
+// a destroying unit (such as a Comcen or infantry) working with an allied spy to track 
+// down and destroy an enemy spy. (That, or the player can obtain a court order, 
+// which is extraordinarily difficult.) Also, spies specialize in personnel, not discovery: 
+// they "see" units at a range of 10, but only "discover" the area of the world that 
+// they physically pass over.
+
+// Spies and Production Sabotage
+// It is perhaps in this area where Conquest most closely resembles life as we 
+// know it: the spy (former politician) will sabotage the income of a burb if it ends its 
+// turn in an enemy-held burb. It will add eight bucks per turn to the cost of the unit 
+// currently under production. For example, if, after supporting existing units, a burb 
+// is earning ten bucks/turn toward production of new units, the spy will in effect 
+// "cancel" eight of those bucks, and the burb will end up only two bucks closer to 
+// producing the unit. Multiple spies bring about results which closely simulate long 
+// court proceedings: they are devastatingly cumulative. A burb with enough spies 
+// in it may never be able to produce new units.
+
+// TODO: If a spy ends its turn in an enemy burb, 
+// all enemy units within 25 spaces will be visible and the status of units 
+// being made in the enemy burb will be accessible.
+// Information is temporary and will vanish after the orders phase ends. 
+
+// TODO: If a spy ends its turn next to an enemy Comcen, info on all enemy units and burbs is available. 
+// Information is temporary and will vanish after the orders phase ends. 
+
+// TODO: the spy will sabotage the income of a burb if it ends its 
+// turn in an enemy-held burb. 
+// It will add eight bucks per turn to the cost of the unit currently under production.
+
     public SpyUnitType()
     {
 
