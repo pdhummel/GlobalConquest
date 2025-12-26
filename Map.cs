@@ -535,6 +535,8 @@ public class Map
             checkedHexes[range].Add(mapHex);
             hexes.Add(mapHex);
         }
+        else if (range == 0)
+            hexes.Add(mapHex);
 
         return hexes;
     }

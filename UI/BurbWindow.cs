@@ -94,7 +94,7 @@ public class BurbWindow
             }
             // TODO: check cities, metros, capital for space to build
 
-            var button = new Button()
+            var buildButton = new Button()
             {
                 Id = "buildButton" + burb.Name,
                 Content = new Label
@@ -105,14 +105,37 @@ public class BurbWindow
                     BorderThickness = new Thickness(2)
                 }
             };
-            Grid.SetRow(button, row);
-            Grid.SetColumn(button, 4);
-            grid.Widgets.Add(button);
-            button.Click += (s, a) =>
+            Grid.SetRow(buildButton, row);
+            Grid.SetColumn(buildButton, 4);
+            grid.Widgets.Add(buildButton);
+            buildButton.Click += (s, a) =>
             {
                 window.Close();
                 showPurchaseUnit(mainGameScreen, mapHex, burb);
             };
+
+            if (gameState.GameSettings.IsAdvancedEconomics)
+            {
+                var moneyButton = new Button()
+                {
+                    Id = "moneyButton" + burb.Name,
+                    Content = new Label
+                    {
+                        Text = "Transfer $",
+                        Width = 100,
+                        Border = new SolidBrush("#808000FF"),
+                        BorderThickness = new Thickness(2)
+                    }
+                };
+                Grid.SetRow(moneyButton, row);
+                Grid.SetColumn(moneyButton, 5);
+                grid.Widgets.Add(moneyButton);
+                moneyButton.Click += (s, a) =>
+                {
+                    window.Close();
+                    //showPurchaseUnit(mainGameScreen, mapHex, burb);
+                };
+            }
         }
 
 
@@ -200,63 +223,79 @@ public class BurbWindow
             RowSpacing = 8,
         };
         window.Content = grid;
-        addLabelToGrid(grid, 0, 0, "Burb:");
-        addLabelToGrid(grid, 0, 1, burb.Name);
-        addLabelToGrid(grid, 1, 0, "Balance:");
-        addLabelToGrid(grid, 1, 1, "" + faction.Money);
-
-        addLabelToGrid(grid, 3, 0, "Infantry");
-        addLabelToGrid(grid, 3, 1, "25");
-        addLabelToGrid(grid, 4, 0, "Armor");
-        addLabelToGrid(grid, 4, 1, "35");
-        addLabelToGrid(grid, 5, 0, "Sub");
-        addLabelToGrid(grid, 5, 1, "25");
-        addLabelToGrid(grid, 6, 0, "Battleship");
-        addLabelToGrid(grid, 6, 1, "35");
-        addLabelToGrid(grid, 7, 0, "Carrier");
-        addLabelToGrid(grid, 7, 1, "45");
-        addLabelToGrid(grid, 8, 0, "Spy");
-        addLabelToGrid(grid, 8, 1, "85");
-        addLabelToGrid(grid, 9, 0, "Plane");
-        addLabelToGrid(grid, 9, 1, "35");
+        Dictionary<int, int> costByRow = new Dictionary<int, int>();
+        List<int> airUnitRows = new List<int>();
+        List<int> landUnitRows = new List<int>();
+        List<int> seaUnitRows = new List<int>();
+        Dictionary<int, string> unitTypeByRow = new Dictionary<int, string>();
+        int rowIndex = 0;
+        addLabelToGrid(grid, rowIndex, 0, "Burb:");
+        addLabelToGrid(grid, rowIndex++, 1, burb.Name);
+        addLabelToGrid(grid, rowIndex, 0, "Treasury:");
+        addLabelToGrid(grid, rowIndex++, 1, "" + faction.Money);
+        addLabelToGrid(grid, rowIndex, 0, "Burb Balance:");
+        addLabelToGrid(grid, rowIndex++, 1, "" + burb.Money);
+        rowIndex += 1;
+        costByRow[rowIndex] = 25;
+        landUnitRows.Add(rowIndex);
+        unitTypeByRow[rowIndex] = "infantry";
+        addLabelToGrid(grid, rowIndex, 0, "Infantry");
+        addLabelToGrid(grid, rowIndex++, 1, "25");
+        costByRow[rowIndex] = 35;
+        landUnitRows.Add(rowIndex);
+        unitTypeByRow[rowIndex] = "tank";
+        addLabelToGrid(grid, rowIndex, 0, "Armor");
+        addLabelToGrid(grid, rowIndex++, 1, "35");
+        costByRow[rowIndex] = 25;
+        seaUnitRows.Add(rowIndex);
+        unitTypeByRow[rowIndex] = "sub";
+        addLabelToGrid(grid, rowIndex, 0, "Sub");
+        addLabelToGrid(grid, rowIndex++, 1, "25");
+        costByRow[rowIndex] = 35;
+        seaUnitRows.Add(rowIndex);
+        unitTypeByRow[rowIndex] = "battleship";
+        addLabelToGrid(grid, rowIndex, 0, "Battleship");
+        addLabelToGrid(grid, rowIndex++, 1, "35");
+        costByRow[rowIndex] = 45;
+        seaUnitRows.Add(rowIndex);
+        unitTypeByRow[rowIndex] = "carrier";
+        addLabelToGrid(grid, rowIndex, 0, "Carrier");
+        addLabelToGrid(grid, rowIndex++, 1, "45");
+        costByRow[rowIndex] = 85;
+        landUnitRows.Add(rowIndex);
+        unitTypeByRow[rowIndex] = "spy";
+        addLabelToGrid(grid, rowIndex, 0, "Spy");
+        addLabelToGrid(grid, rowIndex++, 1, "85");
+        costByRow[rowIndex] = 35;
+        airUnitRows.Add(rowIndex);
+        unitTypeByRow[rowIndex] = "plane";
+        addLabelToGrid(grid, rowIndex, 0, "Plane");
+        addLabelToGrid(grid, rowIndex++, 1, "35");
 
         List<int> rows = [];
-        List<int> airUnitRows = [9];
-        List<int> landUnitRows = [3, 4, 8];
-        List<int> seaUnitRows = [5, 6, 7];
-        Dictionary<int, int> costByRow = new Dictionary<int, int>();
-        costByRow[3] = 25;
-        costByRow[4] = 35;
-        costByRow[5] = 25;
-        costByRow[6] = 35;
-        costByRow[7] = 45;
-        costByRow[8] = 85;
-        costByRow[9] = 35;
-
         foreach (int row in landUnitRows)
         {
-            if (costByRow[row] <= faction.Money)
-            {
-                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, openSpaceDirections);
-            }
+            if (costByRow[row] <= faction.Money && !gameState.GameSettings.IsAdvancedEconomics)
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, openSpaceDirections, unitTypeByRow);
+            else if (costByRow[row] <= burb.Money && gameState.GameSettings.IsAdvancedEconomics)
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, openSpaceDirections, unitTypeByRow);
         }
         foreach (int row in seaUnitRows)
         {
-            if (costByRow[row] <= faction.Money)
-            {
-                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, dockDirections);
-            }
+            if (costByRow[row] <= faction.Money && !gameState.GameSettings.IsAdvancedEconomics)
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, dockDirections, unitTypeByRow);
+            else if (costByRow[row] <= burb.Money && gameState.GameSettings.IsAdvancedEconomics)
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, dockDirections, unitTypeByRow);
+
         }
         foreach (int row in airUnitRows)
         {
-            if (costByRow[row] <= faction.Money)
-            {
-                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, airDirections);
-            }
+            if (costByRow[row] <= faction.Money && !gameState.GameSettings.IsAdvancedEconomics)
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, airDirections, unitTypeByRow);
+            else if (costByRow[row] <= burb.Money && gameState.GameSettings.IsAdvancedEconomics)
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, airDirections, unitTypeByRow);
+
         }
-        window.Closed += (s, a) =>
-        {
-        };
 
         window.ShowModal(mainGameScreen.grid.Desktop);
         window.AcceptsKeyboardFocus = true;
@@ -264,14 +303,15 @@ public class BurbWindow
 
     }
 
-    private void addPurchaseBuildButton(Window window, Grid grid, int row, MainGameScreen mainGameScreen, MapHex mapHex, Burb burb, List<string> directions)
+    private void addPurchaseBuildButton(Window window, Grid grid, int row, MainGameScreen mainGameScreen, 
+        MapHex mapHex, Burb burb, List<string> directions, Dictionary<int, string> unitTypeByRow)
     {
         if (!mainGameScreen.gcGame.IsAllowedToPlan())
             return;
         int count = 0;
         foreach (string direction in directions)
         {
-            var button = new Button()
+            var buildButton = new Button()
             {
                 Id = "buildButton" + row + direction,
                 Content = new Label
@@ -282,22 +322,15 @@ public class BurbWindow
                     BorderThickness = new Thickness(2)
                 }
             };
-            Grid.SetRow(button, row);
-            Grid.SetColumn(button, 2 + count);
-            grid.Widgets.Add(button);
-            button.Click += (s, a) =>
+            Grid.SetRow(buildButton, row);
+            Grid.SetColumn(buildButton, 2 + count);
+            grid.Widgets.Add(buildButton);
+            buildButton.Click += (s, a) =>
             {
-                Dictionary<int, string> unitTypeByRow = new Dictionary<int, string>();
-                unitTypeByRow[3] = "infantry";
-                unitTypeByRow[4] = "tank";
-                unitTypeByRow[5] = "sub";
-                unitTypeByRow[6] = "battleship";
-                unitTypeByRow[7] = "carrier";
-                unitTypeByRow[8] = "spy";
-                unitTypeByRow[9] = "plane";
                 window.Close();
                 purchaseUnit(mainGameScreen, unitTypeByRow[row], mapHex, direction);
             };
+
             //Globals.Log("addPurchaseBuildButton(): " + "Build " + direction + ", row=" + row + ", column=" + "" + (2 + count));
             count += 1;
         }

@@ -107,7 +107,7 @@ public class SpyUnitType : UnitType
         unitType.DamageReductionForDefenderByTerrain["burb"] = 0;
         unitType.DamageReductionForDefenderByTerrain["mountain"] = 0;
 
-        unitType.DiscoveryRange = 1;
+        unitType.DiscoveryRange = 0;
         unitType.ScanningRange = 10;
         unitType.PointsPerHit = 12;
 

@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Collections.Concurrent;
 using GlobalConquest.Units;
 using GlobalConquest.Actions;
+using Microsoft.Xna.Framework;
 
 namespace GlobalConquest;
 
@@ -271,6 +272,8 @@ public class Client
         Globals.Log("updateMap(): gameEvent mapHexBuffer=" + gameEvent.MapHexBuffer.Count);
         if (GameState != null)
         {
+            //if (!isLoadContentComplete)
+            //    GlobalConquestGame.MainGameScreen.showTimedMessagePopup("loading map", 5);
             if (GameState.Map == null)
             {
                 Globals.Log("updateMap(): new Map");

@@ -10,6 +10,7 @@ public class Burb
     public string? DirectionFromParent {get;set;}
     public int X { get; set; }
     public int Y { get; set; }
+    public int Money {get; set;}
 
     public Burb()
     {

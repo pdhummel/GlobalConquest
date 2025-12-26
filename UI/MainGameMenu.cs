@@ -43,113 +43,13 @@ public class MainGameMenu
         airplanesMenuItem.Id = "MainGameMenu.horizontalMenu.airplanesMenuItem";
         airplanesMenuItem.Color = Color.Yellow;
 
-
-        // File - Save, Load, Resign, Restart
-        fileMenuItem.Items.Add(saveMenuItem);
-        saveMenuItem.Selected += (s, a) =>
-        {
-            saveMenuItemSelected();
-        };        
-        fileMenuItem.Items.Add(loadMenuItem);
-        loadMenuItem.Selected += (s, a) =>
-        {
-            loadMenuItemSelected();
-        };        
-
-        fileMenuItem.Items.Add(resignMenuItem);
-        resignMenuItem.Selected += (s, a) =>
-        {
-            resignMenuItemSelected();
-        };        
-
-        //fileMenuItem.Items.Add(new MenuItem("Restart", "Restart"));
-
         GameControlActionMapper actionMapper = mainGameScreen.gcGame.GameControl.GameControlActionMapper;
-
-        // View - Burbs, Destinations, Airplanes, Treaties
-        MenuItem burbMenuItem = new MenuItem("Burbs", "Burbs");
-        burbMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.burbMenuItem";
-        viewMenuItem.Items.Add(burbMenuItem);
-        burbMenuItem.Selected += (s, a) =>
-        {
-            burbMenuItemSelected();
-        };
-
-        MenuItem clientLogMenuItem = new MenuItem("Client Log", "Client Log");
-        clientLogMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.clientLogMenuItem";
-        viewMenuItem.Items.Add(clientLogMenuItem);
-        clientLogMenuItem.Selected += (s, a) =>
-        {
-            clientLogMenuItemSelected();
-        };
-
-        String version = mainGameScreen.gcGame.Client.GameState.Version;
-        viewMenuItem.Items.Add(new MenuItem("MainGameMenu.horizontalMenu.viewMenuItem.version", "Version " + version));
-
-        increaseGameSpeedMenuItem = new MenuItem("Increase Game Speed", "Game Speed+ (" + mainGameScreen.gcGame.MyJoinGameValues.getNextFasterGameSpeed() + ")");
-        increaseGameSpeedMenuItem.Id = "MainGameMenu.horizontalMenu.settingsMenuItem.increaseGameSpeedMenuItem";
-        //settingsMenuItem.Items.Add(increaseGameSpeedMenuItem);
-        increaseGameSpeedMenuItem.Selected += (s, a) =>
-        {
-            increaseGameSpeedMenuItemSelected();
-        };
-
-        decreaseGameSpeedMenuItem = new MenuItem("Decrease Game Speed", "Game Speed- (" + mainGameScreen.gcGame.MyJoinGameValues.getNextSlowerGameSpeed() + ")");
-        decreaseGameSpeedMenuItem.Id = "MainGameMenu.horizontalMenu.settingsMenuItem.decreaseGameSpeedMenuItem";
-        //settingsMenuItem.Items.Add(decreaseGameSpeedMenuItem);
-        decreaseGameSpeedMenuItem.Selected += (s, a) =>
-        {
-            decreaseGameSpeedMenuItemSelected();
-        };
-
-        MenuItem changeGameSettingsMenuItem = new MenuItem("Change Game Settings", "Change Game Settings");
-        changeGameSettingsMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.changeSettingsMenuItem";
-        settingsMenuItem.Items.Add(changeGameSettingsMenuItem);
-        changeGameSettingsMenuItem.Selected += (s, a) =>
-        {
-            changeGameSettingsMenuItemSelected();
-        };
-
-        MenuItem changePlayerSettingsMenuItem = new MenuItem("Change Player Settings", "Change Player Settings");
-        changePlayerSettingsMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.changePlayerSettingsMenuItem";
-        settingsMenuItem.Items.Add(changePlayerSettingsMenuItem);
-        changePlayerSettingsMenuItem.Selected += (s, a) =>
-        {
-            changePlayerSettingsMenuItemSelected();
-        };
-
-        settingsMenuItem.Items.Add(convertPlayerToAiMenuItem);
-        convertPlayerToAiMenuItem.Selected += (s, a) =>
-        {
-            convertPlayerToAiMenuItemSelected();
-        };        
-
-
-
-        MenuItem refreshStateMenuItem = new MenuItem("Refresh State", "Refresh State");
-        refreshStateMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.refreshStateMenuItem";
-        settingsMenuItem.Items.Add(refreshStateMenuItem);
-        refreshStateMenuItem.Selected += (s, a) =>
-        {
-            refreshStateMenuItemSelected();
-        };
-
-        MenuItem refreshMapMenuItem = new MenuItem("Refresh Map", "Refresh Map");
-        refreshMapMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.refreshMapMenuItem";
-        settingsMenuItem.Items.Add(refreshMapMenuItem);
-        refreshMapMenuItem.Selected += (s, a) =>
-        {
-            refreshMapMenuItemSelected();
-        };
-
-        MenuItem readyToPlanMenuItem = new MenuItem("Ready to Plan", "Ready to Plan");
-        refreshMapMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.readyToPlanMenuItem";
-        settingsMenuItem.Items.Add(readyToPlanMenuItem);
-        readyToPlanMenuItem.Selected += (s, a) =>
-        {
-            readyToPlanMenuItemSelected();
-        };
-
+        actionMapper.registerControlMethod(executeMenuItem.Id, this, "executeMenuItemSelected");
+        actionMapper.registerSelectedIndex(horizontalMenu.Id, 0, executeMenuItem.Id);
+        actionMapper.registerControlMethod(destinationsMenuItem.Id, this, "destinationsMenuItemSelected");
+        actionMapper.registerSelectedIndex(horizontalMenu.Id, 1, destinationsMenuItem.Id);
+        actionMapper.registerControlMethod(airplanesMenuItem.Id, this, "airplanesMenuItemSelected");
+        actionMapper.registerSelectedIndex(horizontalMenu.Id, 2, airplanesMenuItem.Id);
 
         executeMenuItem.Selected += (s, a) =>
         {
@@ -166,24 +66,151 @@ public class MainGameMenu
             airplanesMenuItemSelected();
         };
 
+
+        saveMenuItem.Selected += (s, a) =>
+        {
+            saveMenuItemSelected();
+        };        
+        loadMenuItem.Selected += (s, a) =>
+        {
+            loadMenuItemSelected();
+        };
+        convertPlayerToAiMenuItem.Selected += (s, a) =>
+        {
+            convertPlayerToAiMenuItemSelected();
+        };
+        resignMenuItem.Selected += (s, a) =>
+        {
+            resignMenuItemSelected();
+        };
+
+
         horizontalMenu.Items.Add(executeMenuItem);
         horizontalMenu.Items.Add(destinationsMenuItem);
         horizontalMenu.Items.Add(airplanesMenuItem);
+        mainGameScreen.MainGameMenuPanel.Widgets.Add(horizontalMenu);
+        refreshMenu();
+    }
+
+    public void refreshMenu()
+    {
+        fileMenuItem.Items.Clear();
+        settingsMenuItem.Items.Clear();
+        viewMenuItem.Items.Clear();
+        //horizontalMenu.Items.Clear();
+        horizontalMenu.Items.Remove(fileMenuItem);
+        horizontalMenu.Items.Remove(settingsMenuItem);
+        horizontalMenu.Items.Remove(viewMenuItem);
+
+        // File - Save, Load, Resign, Restart
+        fileMenuItem.Items.Add(saveMenuItem);
+        saveMenuItem.UserData["Selected"] = "saveMenuItemSelected";
+        fileMenuItem.Items.Add(loadMenuItem);
+
+        loadMenuItem.UserData["Selected"] = "loadMenuItemSelected";
+
+        fileMenuItem.Items.Add(resignMenuItem);
+        resignMenuItem.UserData["Selected"] = "resignMenuItemSelected";
+
+        //fileMenuItem.Items.Add(new MenuItem("Restart", "Restart"));
+
+        // View - Burbs, Destinations, Airplanes, Treaties
+        MenuItem burbMenuItem = new MenuItem("Burbs", "Burbs");
+        burbMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.burbMenuItem";
+        viewMenuItem.Items.Add(burbMenuItem);
+        burbMenuItem.UserData["Selected"] = "burbMenuItemSelected";
+        burbMenuItem.Selected += (s, a) =>
+        {
+            burbMenuItemSelected();
+        };
+
+        MenuItem clientLogMenuItem = new MenuItem("Client Log", "Client Log");
+        clientLogMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.clientLogMenuItem";
+        clientLogMenuItem.UserData["Selected"] = "clientLogMenuItemSelected";
+        viewMenuItem.Items.Add(clientLogMenuItem);
+        clientLogMenuItem.Selected += (s, a) =>
+        {
+            clientLogMenuItemSelected();
+        };
+
+        String version = mainGameScreen.gcGame.Client.GameState.Version;
+        MenuItem versionMenuItem = new MenuItem("MainGameMenu.horizontalMenu.viewMenuItem.version", "Version " + version);
+        viewMenuItem.Items.Add(versionMenuItem);
+        
+        //increaseGameSpeedMenuItem = new MenuItem("Increase Game Speed", "Game Speed+ (" + mainGameScreen.gcGame.MyJoinGameValues.getNextFasterGameSpeed() + ")");        
+        //increaseGameSpeedMenuItem.Id = "MainGameMenu.horizontalMenu.settingsMenuItem.increaseGameSpeedMenuItem";
+        //increaseGameSpeedMenuItem.UserData["Selected"] = "increaseGameSpeedMenuItemSelected";
+        //settingsMenuItem.Items.Add(increaseGameSpeedMenuItem);
+        //increaseGameSpeedMenuItem.Selected += (s, a) =>
+        //{
+        //    increaseGameSpeedMenuItemSelected();
+        //};
+
+        //decreaseGameSpeedMenuItem = new MenuItem("Decrease Game Speed", "Game Speed- (" + mainGameScreen.gcGame.MyJoinGameValues.getNextSlowerGameSpeed() + ")");
+        //decreaseGameSpeedMenuItem.Id = "MainGameMenu.horizontalMenu.settingsMenuItem.decreaseGameSpeedMenuItem";
+        //decreaseGameSpeedMenuItem.UserData["Selected"] = "decreaseGameSpeedMenuItemSelected";
+        //settingsMenuItem.Items.Add(decreaseGameSpeedMenuItem);
+        //decreaseGameSpeedMenuItem.Selected += (s, a) =>
+        //{
+        //    decreaseGameSpeedMenuItemSelected();
+        //};
+
+        MenuItem changeGameSettingsMenuItem = new MenuItem("Change Game Settings", "Change Game Settings");
+        changeGameSettingsMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.changeSettingsMenuItem";
+        changeGameSettingsMenuItem.UserData["Selected"] = "changeGameSettingsMenuItemSelected";
+        settingsMenuItem.Items.Add(changeGameSettingsMenuItem);
+        changeGameSettingsMenuItem.Selected += (s, a) =>
+        {
+            changeGameSettingsMenuItemSelected();
+        };
+
+        MenuItem changePlayerSettingsMenuItem = new MenuItem("Change Player Settings", "Change Player Settings");
+        changePlayerSettingsMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.changePlayerSettingsMenuItem";
+        changePlayerSettingsMenuItem.UserData["Selected"] = "changePlayerSettingsMenuItemSelected";
+        settingsMenuItem.Items.Add(changePlayerSettingsMenuItem);
+        changePlayerSettingsMenuItem.Selected += (s, a) =>
+        {
+            changePlayerSettingsMenuItemSelected();
+        };
+
+        settingsMenuItem.Items.Add(convertPlayerToAiMenuItem);
+        convertPlayerToAiMenuItem.Id = "convertPlayerToAiMenuItem";
+        convertPlayerToAiMenuItem.UserData["Selected"] = "convertPlayerToAiMenuItemSelected";
+
+        MenuItem refreshStateMenuItem = new MenuItem("Refresh State", "Refresh State");
+        refreshStateMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.refreshStateMenuItem";
+        refreshStateMenuItem.UserData["Selected"] = "refreshStateMenuItemSelected";
+        settingsMenuItem.Items.Add(refreshStateMenuItem);
+        refreshStateMenuItem.Selected += (s, a) =>
+        {
+            refreshStateMenuItemSelected();
+        };
+
+        MenuItem refreshMapMenuItem = new MenuItem("Refresh Map", "Refresh Map");
+        refreshMapMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.refreshMapMenuItem";
+        refreshMapMenuItem.UserData["Selected"] = "refreshMapMenuItemSelected";
+        settingsMenuItem.Items.Add(refreshMapMenuItem);
+        refreshMapMenuItem.Selected += (s, a) =>
+        {
+            refreshMapMenuItemSelected();
+        };
+
+        MenuItem readyToPlanMenuItem = new MenuItem("Ready to Plan", "Ready to Plan");
+        readyToPlanMenuItem.Id = "MainGameMenu.horizontalMenu.viewMenuItem.readyToPlanMenuItem";
+        readyToPlanMenuItem.UserData["Selected"] = "readyToPlanMenuItemSelected";
+        settingsMenuItem.Items.Add(readyToPlanMenuItem);
+        readyToPlanMenuItem.Selected += (s, a) =>
+        {
+            readyToPlanMenuItemSelected();
+        };
+
+
         horizontalMenu.Items.Add(fileMenuItem);
         horizontalMenu.Items.Add(settingsMenuItem);
         horizontalMenu.Items.Add(viewMenuItem);
-        mainGameScreen.MainGameMenuPanel.Widgets.Add(horizontalMenu);
 
-        actionMapper.registerControlMethod(executeMenuItem.Id, this, "executeMenuItemSelected");
-        actionMapper.registerSelectedIndex(horizontalMenu.Id, 0, executeMenuItem.Id);
-        actionMapper.registerControlMethod(destinationsMenuItem.Id, this, "destinationsMenuItemSelected");
-        actionMapper.registerSelectedIndex(horizontalMenu.Id, 1, destinationsMenuItem.Id);
-        actionMapper.registerControlMethod(airplanesMenuItem.Id, this, "airplanesMenuItemSelected");
-        actionMapper.registerSelectedIndex(horizontalMenu.Id, 1, airplanesMenuItem.Id);
-        // TODO: this doesn't work with the game controller and is actually horizontalMenu-viewMenuItem-refreshStateMenuItem.
-        actionMapper.registerControlMethod(refreshStateMenuItem.Id, this, "refreshStateMenuItemSelected");
-        actionMapper.registerSelectedIndex(horizontalMenu.Id, 2, refreshStateMenuItem.Id);
-
+        // Cannot register sub-menu items with game controller here, as items will be like horizontalMenu-viewMenuItem-refreshStateMenuItem.
+        // As a work around, we'll make a context menu for those items.        
     }
 
     public bool IsMouseInside()

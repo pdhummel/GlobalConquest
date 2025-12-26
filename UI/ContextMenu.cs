@@ -9,6 +9,7 @@ using Panel = Myra.Graphics2D.UI.Panel;
 using Label = Myra.Graphics2D.UI.Label;
 using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.ObjectModel;
 namespace GlobalConquest.UI;
 
 public class ContextMenu
@@ -18,7 +19,7 @@ public class ContextMenu
     public bool IsContextMenuVisibleFlag {get; set;}
     public Panel MapPanel { get; set; }
     public GlobalConquestGame gcGame { get; set; }
-    VerticalMenu verticalMenu;
+    VerticalMenu verticalMenu = new VerticalMenu();
     Unit unit;
     Unit plane;
     MapHex mapHex;
@@ -30,6 +31,7 @@ public class ContextMenu
         MainGameScreen = mainGameScreen;
         MapPanel = MainGameScreen.MapPanel;
         gcGame = MainGameScreen.gcGame;
+        verticalMenu.Id = "ContextMenu.verticalMenu";
     }
 
     public bool IsContextMenuVisible()
@@ -53,6 +55,8 @@ public class ContextMenu
     {
         if (menuContainer != null)
             menuContainer.Visible = false;
+        if (verticalMenu != null)
+            verticalMenu.Items.Clear();
         if (MapPanel.Widgets.Count > 0)
         {
             Widget widget = MapPanel.Widgets[0];
@@ -60,6 +64,55 @@ public class ContextMenu
             widget.RemoveFromParent();
         }
         IsContextMenuVisibleFlag = false;
+        gcGame.MainGameScreen.MainGameMenu.refreshMenu();
+    }
+
+
+    //public void ShowContextMenu(Menu parentMenu)
+    //{
+    //    ShowContextMenu(parentMenu.Items);
+    //}
+
+    //public void ShowContextMenu(MenuItem parentMenuItem)
+    //{
+    //    ShowContextMenu(parentMenuItem.Items);
+    //}
+
+    public void ShowContextMenu(ObservableCollection<IMenuItem> menuItems)
+    {
+        HideContextMenu();
+        verticalMenu = new VerticalMenu();
+        verticalMenu.Id = "ContextMenu.verticalMenu";
+        // actionMapper allows our game controller to invoke menu items
+        GameControlActionMapper actionMapper = gcGame.GameControl.GameControlActionMapper;
+        int itemIndex = 0;
+
+
+        menuContainer = new VerticalStackPanel
+        {
+            Spacing = 4
+        };
+        menuContainer.Widgets.Add(verticalMenu);
+        MapPanel.Widgets.Add(menuContainer);
+
+        foreach (MenuItem menuItem in menuItems)
+        {
+            verticalMenu.Items.Add(menuItem);
+            if (menuItem.UserData.ContainsKey("Selected"))
+            {
+                actionMapper.registerControlMethod(menuItem.Id, this, menuItem.UserData["Selected"]);
+                actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, menuItem.Id);
+                itemIndex += 1;
+            }
+        }
+
+        // File=310, Settings=360, View=465
+        menuContainer.Left = gcGame.GameControl.currentMouseState.X;
+        //menuContainer.Top = gcGame.GameControl.currentMouseState.Y;
+        menuContainer.Top = 0;
+        menuContainer.Visible = true;
+        IsShowContextMenu = false;
+        IsContextMenuVisibleFlag = true;
     }
 
     public void ShowContextMenu(Unit unit)
@@ -86,17 +139,6 @@ public class ContextMenu
             Spacing = 4
         };
 
-        var titleContainer = new Panel
-        {
-        };
-
-        var titleLabel = new Label
-        {
-            Text = "Choose Option",
-            HorizontalAlignment = HorizontalAlignment.Center
-        };
-
-        titleContainer.Widgets.Add(titleLabel);
 
         var moveMenuItem = new MenuItem();
         moveMenuItem.Id = "ContextMenu.verticalMenu.moveMenuItem";
@@ -839,4 +881,53 @@ public class ContextMenu
         MainGameScreen.MainGameMenu.airplanesMenuItemSelected();
     }
 
+
+    // Support for Main menu items with Game Controller:
+    public void saveMenuItemSelected()
+    {
+        MainGameScreen.MainGameMenu.saveMenuItemSelected();
+    }
+    public void loadMenuItemSelected()
+    {
+        MainGameScreen.MainGameMenu.loadMenuItemSelected();
+    }
+    public void resignMenuItemSelected()
+    {
+        MainGameScreen.MainGameMenu.resignMenuItemSelected();
+    }
+    public void burbMenuItemSelected()
+    {
+        MainGameScreen.MainGameMenu.burbMenuItemSelected();
+    }
+    public void clientLogMenuItemSelected()
+    {
+        MainGameScreen.MainGameMenu.clientLogMenuItemSelected();
+    }
+    public void changeGameSettingsMenuItemSelected()
+    {
+        MainGameScreen.MainGameMenu.changeGameSettingsMenuItemSelected();
+    }
+    public void changePlayerSettingsMenuItemSelected()
+    {
+        MainGameScreen.MainGameMenu.changePlayerSettingsMenuItemSelected();
+    }
+    public void convertPlayerToAiMenuItemSelected()
+    {
+        MainGameScreen.MainGameMenu.convertPlayerToAiMenuItemSelected();
+    }
+    public void readyToPlanMenuItemSelected()
+    {
+        MainGameScreen.MainGameMenu.readyToPlanMenuItemSelected();
+    }
+    public void refreshMapMenuItemSelected()
+    {
+        MainGameScreen.MainGameMenu.refreshMapMenuItemSelected();
+    }
+    public void refreshStateMenuItemSelected()
+    {
+        MainGameScreen.MainGameMenu.refreshStateMenuItemSelected();
+    }
+
+
 }
+

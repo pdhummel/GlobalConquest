@@ -23,6 +23,7 @@ public class GameSettings
     public string ScoringOption { get; set; } = "Combined"; // Income, Capital, Head-Count, Combined
     public bool HasNatives { get; set; } = false;
     public bool CanLoseComCen {get; set;}
+    public bool IsAdvancedEconomics {get;set;}
 
     public GameSettings()
     {

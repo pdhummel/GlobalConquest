@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using Myra.Graphics2D.UI;
 namespace GlobalConquest;
 
@@ -27,42 +28,24 @@ public class GameControlActionMapper
         IdToObject[id] = o;
     }
 
-    public void invoke(Widget widget)
+    public bool invoke(Widget widget)
     {
+        bool isInvoked = false;
         Globals.Log("invoke(): enter: " + widget.GetType() + " " + widget.Id);
         String controlId = null;
-        if ("Myra.Graphics2D.UI.VerticalMenu".Equals(widget.GetType().ToString()))
+        if ("Myra.Graphics2D.UI.VerticalMenu".Equals(widget.GetType().ToString()) ||
+            "Myra.Graphics2D.UI.HorizontalMenu".Equals(widget.GetType().ToString()))
         {
-            VerticalMenu verticalMenu = (VerticalMenu)widget;
+            Menu menu = (Menu)widget;
             if (widget.Id != null && MenuIdToSelectedIndexMap.ContainsKey(widget.Id))
             {
                 Globals.Log("invoke(): " + widget.Id + " in MenuIdToSelectedIndexMap");
                 Dictionary<int, string> map = MenuIdToSelectedIndexMap[widget.Id];
                 int selectedIndex = -1;
-                if (verticalMenu.SelectedIndex != null)
-                    selectedIndex = (int)verticalMenu.SelectedIndex;
-                else if (verticalMenu.HoverIndex != null)
-                    selectedIndex = (int)verticalMenu.HoverIndex;
-                if (map.ContainsKey(selectedIndex))
-                {
-                    string menuItemId = map[selectedIndex];
-                    controlId = menuItemId;
-                    Globals.Log("invoke(): controlId=" + menuItemId);
-                }
-            }
-        }
-        if ("Myra.Graphics2D.UI.HorizontalMenu".Equals(widget.GetType().ToString()))
-        {
-            HorizontalMenu horizontalMenu = (HorizontalMenu)widget;
-            if (widget.Id != null && MenuIdToSelectedIndexMap.ContainsKey(widget.Id))
-            {
-                Globals.Log("invoke(): " + widget.Id + " in MenuIdToSelectedIndexMap");
-                Dictionary<int, string> map = MenuIdToSelectedIndexMap[widget.Id];
-                int selectedIndex = -1;
-                if (horizontalMenu.SelectedIndex != null)
-                    selectedIndex = (int)horizontalMenu.SelectedIndex;
-                else if (horizontalMenu.HoverIndex != null)
-                    selectedIndex = (int)horizontalMenu.HoverIndex;
+                if (menu.SelectedIndex != null)
+                    selectedIndex = (int)menu.SelectedIndex;
+                else if (menu.HoverIndex != null)
+                    selectedIndex = (int)menu.HoverIndex;
                 if (map.ContainsKey(selectedIndex))
                 {
                     string menuItemId = map[selectedIndex];
@@ -82,8 +65,12 @@ public class GameControlActionMapper
             MethodInfo method = o.GetType().GetMethod(methodName);
             object[] parameters = new object[] { };
             if (method != null)
+            {
                 method.Invoke(o, parameters);
+                isInvoked = true;
+            }
         }
+        return isInvoked;
     }
 
 }

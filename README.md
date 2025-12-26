@@ -61,8 +61,8 @@ This is best supported by mouse and keyboard. However, some effort has been made
 - [x] Bug: Game controller cannot change comboboxes --> Use A button.
 - [x] Request: Add visual and audio indicators for execution countdown. (v0.6.5)
 - [x] Request: Add visual aid to help identify events that are occurring. (v0.6.5)
+- [x] Bug: Game controller cannot navigate nested menus -- i.e., File, View. (v0.7.1)
 - [ ] Bug: Captured city still has enemy plane.
-- [ ] Bug: Game controller cannot navigate nested menus -- i.e., File, View.
 - [ ] Bug: Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
 - [ ] Request: Option to make airplane missions planned and not immediate.
 - [ ] Request: Suggest city density and burb level based on map size.
@@ -186,7 +186,7 @@ The game is being designed with known differences from the original.
 - [ ] Spy sabotage burbs.
 - [ ] Spies steal burb secrets.
 - [ ] Spies steal ComCen secrets.
-- [ ] Build decoy ComCen
+- [ ] Build decoy ComCen/units.
 
 
 ### Milestone 8

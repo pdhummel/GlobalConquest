@@ -30,15 +30,35 @@ public class PurchaseUnitAction : PlayerAction
         GameState gameState = server.gameState;
         if (Unit != null)
         {
+            bool canPlaceUnit = false;
             gameState.Map.placeNewUnit(Unit, X, Y);
             Unit.X = X;
             Unit.Y = Y;
-            Faction faction = gameState.Factions.ColorToFaction[FactionColor];
-            faction.Money -= Cost;
-            if (faction.Money < 0)
-                faction.Money = 0;
-            //gameState.updateTicks();
-            server.sendGameStateAndMapHex(X, Y);
+            if (gameState.GameSettings.IsAdvancedEconomics)
+            {
+                MapHex mapHex = gameState.Map.Hexes[Y, X];
+                Burb burb = mapHex.Burb;
+                if (burb != null && burb.Money >= Cost)
+                {
+                    canPlaceUnit = true;
+                    burb.Money -= Cost;
+                }
+            }
+            else
+            {
+                Faction faction = gameState.Factions.ColorToFaction[FactionColor];
+                if (faction.Money >= Cost)
+                {
+                    canPlaceUnit = true;
+                    faction.Money -= Cost;
+                }
+
+            }
+            if (canPlaceUnit)
+            {
+                gameState.Map.placeNewUnit(Unit, X, Y);
+                server.sendGameStateAndMapHex(X, Y);
+            }
         }
     }
 }

@@ -187,7 +187,10 @@ public class GameLogic
             if (burb.OwnerColor != null && !"grey".Equals(burb.OwnerColor))
             {
                 Faction faction = gameState.Factions.ColorToFaction[burb.OwnerColor];
-                faction.Money += income;
+                if (gameState.GameSettings.IsAdvancedEconomics)
+                    burb.Money += income;
+                else
+                    faction.Money += income;
                 Globals.Log("endTurn(): added " + income + " income to " + burb.OwnerColor);
             }
         }

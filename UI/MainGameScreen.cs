@@ -116,6 +116,7 @@ public class MainGameScreen
         DetailsPanel.Top = (int)MainGameMenuPanel.Height + (int)FactionsPanel.Height + (int)MiniMapPanel.Height;
         DetailsPanel.Visible = true;
         IsVisible = true;
+        showTimedMessagePopup("loading", 5);
     }
 
     public void hide()
@@ -218,6 +219,19 @@ public class MainGameScreen
         window.ShowModal(grid.Desktop);
     }
 
+    public void showTimedMessagePopup(string message, int seconds)
+    {
+        Window window = new Window
+        {
+            Title = message
+        };
+        window.Show(grid.Desktop);
+        Thread timedWindowCloseThread = new Thread(() => timedWindowClose(window, seconds, null));
+        timedWindowCloseThread.IsBackground = true;
+        timedWindowCloseThread.Start();
+
+    }
+
     public void showTimedLocationPopup(string message, int seconds, MapHex mapHex)
     {
         if (mapHex == null)
@@ -313,8 +327,10 @@ public class MainGameScreen
             durationInSeconds = (int)((TimeSpan)(DateTime.Now - startDateTime)).TotalSeconds;
             secondsRemaining = secondsToAppear - durationInSeconds;
         }
-        cleanUpPopup(window, mapHex);
-
+        if (mapHex != null)
+            cleanUpPopup(window, mapHex);
+        else if (window != null)
+            window.Close();
     }
 
     private void cleanUpPopup(Window window, MapHex mapHex)
