@@ -953,9 +953,6 @@ public class GameLogic
                         unit.IsBlitzing = false;
                 }
 
-
-                server.sendGameStateAndMapHex(nextMapHex.X, nextMapHex.Y);
-                server.sendGameStateAndMapHex(fromX, fromY);
                 // Infantry and armor when on land may move only once per round.
                 if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) ||
                     "tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
@@ -970,6 +967,16 @@ public class GameLogic
                 {
                     isMovingDone = true;
                 }
+
+                if (!isMovingDone)
+                {
+                    UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
+                    if (unitType.DiscoveryRange == 0)
+                        scanTerrain(server, unit);
+                }
+
+                server.sendGameStateAndMapHex(nextMapHex.X, nextMapHex.Y);
+                server.sendGameStateAndMapHex(fromX, fromY);
                 movesMade += 1;
             }
         }
