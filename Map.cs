@@ -568,10 +568,14 @@ public class Map
     }
     public void updateBurbOwners(Server server, MapHex mapHex)
     {
-        //MapHex mapHex = Hexes[y, x];
+        bool burbCaptured = false;
         if (mapHex.Burb != null)
         {
+            string previousOwnerColor = mapHex.Burb.OwnerColor;
+            string newOwnerColor = mapHex.Burb.OwnerColor;
             List<string> directions = [];
+            if ("dock".Equals(mapHex.Burb.Type) || "suburb".Equals(mapHex.Burb.Type))
+                return;
             if ("Capital".Equals(mapHex.Burb.Type) || "Metro".Equals(mapHex.Burb.Type) || "City".Equals(mapHex.Burb.Type) ||
                 "capital".Equals(mapHex.Burb.Type) || "metro".Equals(mapHex.Burb.Type) || "city".Equals(mapHex.Burb.Type))
                 directions = ["north", "south", "northWest", "southWest", "northEast", "southEast"];
@@ -603,21 +607,13 @@ public class Map
                         }
                     }
                 }
-                if (mapHex.Burb != null && color != null)
+                if (color != null)
                 {
-                    string previousOwnerColor = mapHex.Burb.OwnerColor;
                     mapHex.Burb.OwnerColor = color;
                     if (previousOwnerColor != null && !previousOwnerColor.Equals(color))
                     {
-                        mapHex.Airplane = null;
-                        server.sendGameStateAndMapHex(mapHex.X, mapHex.Y);
-                        GameEvent gameEvent = new GameEvent("burbCaptured");
-                        gameEvent.EnemyColor = previousOwnerColor;
-                        gameEvent.MapHex = mapHex;
-                        server.sendGamePlayEvent(color, gameEvent);
-                        gameEvent.EventType = "burbLost";
-                        gameEvent.EnemyColor = color;
-                        server.sendGamePlayEvent(previousOwnerColor, gameEvent);
+                        burbCaptured = true;
+                        newOwnerColor = color;
                     }
                 }
                 foreach (string direction in directions)
@@ -634,25 +630,30 @@ public class Map
             }
             else
             {
-                string previousOwnerColor = mapHex.Burb.OwnerColor;
                 Unit unit = mapHex.getUnit();
                 if (previousOwnerColor != null && unit != null && !"spy".Equals(unit.UnitType))
                 {
                     mapHex.Burb.OwnerColor = unit.Color;
                     if (!previousOwnerColor.Equals(unit.Color))
                     {
-                        mapHex.Airplane = null;
-                        server.sendGameStateAndMapHex(mapHex.X, mapHex.Y);
-                        GameEvent gameEvent = new GameEvent("burbCaptured");
-                        gameEvent.EnemyColor = previousOwnerColor;
-                        gameEvent.MapHex = mapHex;
-                        server.sendGamePlayEvent(unit.Color, gameEvent);
-                        gameEvent.EventType = "burbLost";
-                        gameEvent.EnemyColor = unit.Color;
-                        server.sendGamePlayEvent(previousOwnerColor, gameEvent);
+                        burbCaptured = true;
+                        newOwnerColor = unit.Color;
                     }
                 }
             }
+            if (burbCaptured)
+            {
+                mapHex.Airplane = null;
+                server.sendGameStateAndMapHex(mapHex.X, mapHex.Y);
+                GameEvent gameEvent = new GameEvent("burbCaptured");
+                gameEvent.EnemyColor = previousOwnerColor;
+                gameEvent.MapHex = mapHex;
+                server.sendGamePlayEvent(newOwnerColor, gameEvent);
+                gameEvent.EventType = "burbLost";
+                gameEvent.EnemyColor = newOwnerColor;
+                server.sendGamePlayEvent(previousOwnerColor, gameEvent);
+            }
+
         }
     }
 

@@ -274,7 +274,7 @@ public class Client
         {
             //if (!isLoadContentComplete)
             //    GlobalConquestGame.MainGameScreen.showTimedMessagePopup("loading map", 5);
-            if (GameState.Map == null)
+            if (GameState.Map == null && GameState.GameSettings != null)
             {
                 Globals.Log("updateMap(): new Map");
                 GameSettings gameSettings = GameState.GameSettings;

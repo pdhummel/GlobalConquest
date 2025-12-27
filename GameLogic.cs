@@ -80,6 +80,16 @@ public class GameLogic
             {
                 MapHex mapHex = gameState.Map.Hexes[liY, liX];
                 Unit plane = mapHex.Airplane;
+                if (plane != null && plane.StrengthPoints <= 0)
+                {
+                    mapHex.Airplane = null;
+                    plane = null;
+                }
+                if (plane != null && mapHex.Burb != null && !mapHex.Burb.OwnerColor.Equals(plane.Color))
+                {
+                    mapHex.Airplane = null;
+                    plane = null;
+                }
                 if (plane != null && plane.TurnsUnavailable > 0)
                 {
                     plane.TurnsUnavailable -= 1;

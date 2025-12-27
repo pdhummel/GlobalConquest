@@ -146,27 +146,7 @@ public class GlobalConquestGame : Game
 
     protected override void LoadContent()
     {
-        MyraEnvironment.Game = this;
-        Desktop = new Desktop();
-        var grid = new Grid
-        {
-            RowSpacing = 8,
-            ColumnSpacing = 8
-        };
-
-        grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-        grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-        grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
-        grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
-        Desktop.Root = grid;
-        var verticalStackPanel = new VerticalStackPanel();
-        Grid.SetColumn(verticalStackPanel, 0);
-        Grid.SetRow(verticalStackPanel, 0);
-        grid.Widgets.Add(verticalStackPanel);
-
-
-        ConquestMenu conquestMenu = new ConquestMenu(this, grid);
-        conquestMenu.LoadContent();
+        setupDesktop();
 
         camera = new OrthographicCamera(GraphicsDevice);
         miniMapCamera = new Custom2dCamera(GraphicsDevice);
@@ -201,6 +181,32 @@ public class GlobalConquestGame : Game
         loadSoundEffect("jetFlyby");
         loadSoundEffect("stopPlanningStartExecution");
         loadSoundEffect("startTurnPlanning");
+    }
+
+    private void setupDesktop()
+    {
+        Globals.Log("setupDesktop(): enter");
+        MyraEnvironment.Game = this;
+        Desktop = new Desktop();
+        var grid = new Grid
+        {
+            RowSpacing = 8,
+            ColumnSpacing = 8
+        };
+
+        grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+        grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+        grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
+        grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
+        Desktop.Root = grid;
+        var verticalStackPanel = new VerticalStackPanel();
+        Grid.SetColumn(verticalStackPanel, 0);
+        Grid.SetRow(verticalStackPanel, 0);
+        grid.Widgets.Add(verticalStackPanel);
+
+
+        ConquestMenu conquestMenu = new ConquestMenu(this, grid);
+        conquestMenu.LoadContent();        
     }
 
     private void loadSoundEffect(string soundEffectEventName)
@@ -557,7 +563,11 @@ public class GlobalConquestGame : Game
             {
                 Desktop.Render();    
             }
-            catch(Exception exIgnore) {}
+            catch(Exception ex)
+            {
+                Globals.Log("Draw(): Exception: " + ex);
+                setupDesktop();
+            }
 
         base.Draw(gameTime);
     }

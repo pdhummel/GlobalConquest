@@ -144,13 +144,15 @@ public class DetailsPanelView
             Label unitStatusLabel = new Label();
             unitStatusLabel.Text = "Status: ";
             if (lastSelectedUnit.IsLoading)
-                unitStatusLabel.Text += "loading ";
+                unitStatusLabel.Text += " loading ";
             if (lastSelectedUnit.IsUnloading)
-                unitStatusLabel.Text += "unloading ";
+                unitStatusLabel.Text += " unloading ";
             if (lastSelectedUnit.IsBlitzing)
-                unitStatusLabel.Text += "blitzing ";
+                unitStatusLabel.Text += " blitzing ";
             if (lastSelectedUnit.IsSneaking)
-                unitStatusLabel.Text += "sneaking ";
+                unitStatusLabel.Text += " sneaking ";
+            if (lastSelectedUnit.Patrol.Count > 0)
+                unitStatusLabel.Text += " patroling ";
             stackPanel.Widgets.Add(unitStatusLabel);
             Label unitMovesLabel = new Label();
             if (lastSelectedUnit.ActionQueue.Count > 0)
@@ -159,7 +161,7 @@ public class DetailsPanelView
                   "Moves:" + lastSelectedUnit.ActionQueue[0].TargetX + "," + lastSelectedUnit.ActionQueue[0].TargetY :
                   "Moves:" + lastSelectedUnit.ActionQueue[0].TargetX + "," + lastSelectedUnit.ActionQueue[0].TargetY + " ... " + 
                   lastSelectedUnit.ActionQueue[lastSelectedUnit.ActionQueue.Count-1].TargetX + "," + lastSelectedUnit.ActionQueue[lastSelectedUnit.ActionQueue.Count-1].TargetY;
-                  unitMovesLabel.Text += " " + lastSelectedUnit.MoveSteps;
+                unitMovesLabel.Text += " (" + lastSelectedUnit.MoveSteps + "MP)";
                 stackPanel.Widgets.Add(unitMovesLabel);
             }
         }

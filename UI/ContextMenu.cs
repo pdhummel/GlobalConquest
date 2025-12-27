@@ -438,21 +438,6 @@ public class ContextMenu
 
         if (plane.TurnsUnavailable <= 0)
         {
-            var reconMenuItem = new MenuItem();
-            reconMenuItem.Id = "ContextMenu.verticalMenu.reconMenuItem";
-            reconMenuItem.Text = "Recon";
-            reconMenuItem.Selected += (s, a) =>
-            {
-                reconMenuItemSelected();
-            };
-            verticalMenu.Items.Add(reconMenuItem);
-            actionMapper.registerControlMethod(reconMenuItem.Id, this, "reconMenuItemSelected");
-            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, reconMenuItem.Id);
-            itemIndex += 1;
-        }
-
-        if (plane.TurnsUnavailable <= 0)
-        {
             var airstrikeMenuItem = new MenuItem();
             airstrikeMenuItem.Id = "ContextMenu.verticalMenu.airstrikeMenuItem";
             airstrikeMenuItem.Text = "Airstrike";
@@ -463,6 +448,21 @@ public class ContextMenu
             verticalMenu.Items.Add(airstrikeMenuItem);
             actionMapper.registerControlMethod(airstrikeMenuItem.Id, this, "airstrikeMenuItemSelected");
             actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, airstrikeMenuItem.Id);
+            itemIndex += 1;
+        }
+
+        if (plane.TurnsUnavailable <= 0)
+        {
+            var reconMenuItem = new MenuItem();
+            reconMenuItem.Id = "ContextMenu.verticalMenu.reconMenuItem";
+            reconMenuItem.Text = "Recon";
+            reconMenuItem.Selected += (s, a) =>
+            {
+                reconMenuItemSelected();
+            };
+            verticalMenu.Items.Add(reconMenuItem);
+            actionMapper.registerControlMethod(reconMenuItem.Id, this, "reconMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, reconMenuItem.Id);
             itemIndex += 1;
         }
 
@@ -541,18 +541,6 @@ public class ContextMenu
             itemIndex += 1;
         }
 
-        var refreshMapHexMenuItem = new MenuItem();
-        refreshMapHexMenuItem.Id = "ContextMenu.verticalMenu.refreshMapHexMenuItem";
-        refreshMapHexMenuItem.Text = "Refresh";
-        refreshMapHexMenuItem.Selected += (s, a) =>
-        {
-            refreshMapHexMenuItemSelected();
-        };
-        verticalMenu.Items.Add(refreshMapHexMenuItem);
-        actionMapper.registerControlMethod(refreshMapHexMenuItem.Id, this, "refreshMapHexMenuItemSelected");
-        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, refreshMapHexMenuItem.Id);
-        itemIndex += 1;
-
         if (plane.IsDefending)
         {
             var stopDefendingMenuItem = new MenuItem();
@@ -581,6 +569,33 @@ public class ContextMenu
             actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, defendMenuItem.Id);
             itemIndex += 1;
         }
+
+        // if (mapHex.Burb != null)
+        // {
+        //     var buildMenuItem = new MenuItem();
+        //     buildMenuItem.Id = "ContextMenu.verticalMenu.buildMenuItem";
+        //     buildMenuItem.Text = "Build";
+        //     buildMenuItem.Selected += (s, a) =>
+        //     {
+        //         buildMenuItemSelected();
+        //     };
+        //     verticalMenu.Items.Add(buildMenuItem);
+        //     actionMapper.registerControlMethod(buildMenuItem.Id, this, "buildMenuItemSelected");
+        //     actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, buildMenuItem.Id);
+        //     itemIndex += 1;
+        // }
+
+        var refreshMapHexMenuItem = new MenuItem();
+        refreshMapHexMenuItem.Id = "ContextMenu.verticalMenu.refreshMapHexMenuItem";
+        refreshMapHexMenuItem.Text = "Refresh";
+        refreshMapHexMenuItem.Selected += (s, a) =>
+        {
+            refreshMapHexMenuItemSelected();
+        };
+        verticalMenu.Items.Add(refreshMapHexMenuItem);
+        actionMapper.registerControlMethod(refreshMapHexMenuItem.Id, this, "refreshMapHexMenuItemSelected");
+        actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, refreshMapHexMenuItem.Id);
+        itemIndex += 1;
 
         var airplanesMenuItem = new MenuItem();
         airplanesMenuItem.Text = "Hide Airplanes";

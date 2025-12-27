@@ -65,8 +65,8 @@ This is best supported by mouse and keyboard. However, some effort has been made
 - [ ] Bug: Captured city still has enemy plane.
 - [ ] Bug: Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
 - [ ] Request: Option to make airplane missions planned and not immediate.
-- [ ] Request: Suggest city density and burb level based on map size.
-- [ ] Request: Add decoy comcen.
+- [ ] Request: Suggest/adjust city density and burb level based on map size.
+- [ ] Request: Add decoy comcen unit.
 
 ## Technical Notes
 The game is being developed on the DotNet framework and leverages the game library, MonoGame, https://monogame.net/. Furthermore Myra, https://github.com/rds1983/Myra, is used to create a Windows Forms like experience.
