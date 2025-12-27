@@ -91,6 +91,12 @@ public class GameLogic
                 Unit unit = mapHex.getUnit();
                 if (unit != null)
                 {
+                    if (unit.StrengthPoints <= 0)
+                    {
+                        killUnit(unit);
+                        server.sendGameStateAndMapHex(mapHex.Y, mapHex.X);
+                        continue;
+                    }
                     plane = unit.Airplane;
                     if (plane != null && plane.TurnsUnavailable > 0)
                     {
@@ -352,6 +358,8 @@ public class GameLogic
 
     public void scanUnits(Server server, Unit unit, UnitType unitType)
     {
+        if (unit == null || unit.StrengthPoints <= 0)
+            return;
         // A sneaking unit can't see other units at all.
         // Also other units need to re-scan for visibility.
         if (unit.IsSneaking)
@@ -457,6 +465,8 @@ public class GameLogic
 
     public void scanTerrain(Server server, Unit unit, UnitType unitType)
     {
+        if (unit == null || unit.StrengthPoints <= 0)
+            return;
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
         HashSet<MapHex> hexesToScan = map.getMapHexesInRange(mapHex, unitType.DiscoveryRange);
@@ -477,6 +487,9 @@ public class GameLogic
 
     private void sufferAttrition(Server server, Unit unit)
     {
+        if (unit == null || unit.StrengthPoints <= 0)
+            return;
+
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
         UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
@@ -494,6 +507,9 @@ public class GameLogic
 
     private void repair(Server server, Unit unit)
     {
+        if (unit == null || unit.StrengthPoints <= 0)
+            return;
+
         // TODO: handle resources
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
@@ -527,6 +543,9 @@ public class GameLogic
 
     private void checkForCombat(Server server, Unit unit)
     {
+        if (unit == null || unit.StrengthPoints <= 0)
+            return;
+
         unit.IsAttacking = false;
         if (unit.StrengthPoints <= 0)
             return;
@@ -650,13 +669,7 @@ public class GameLogic
                 gameEvent.EventType = "unitDestroyed";
                 server.sendGamePlayEvent(unitToAttack.Color, gameEvent);
 
-                map.UnitIdToUnit.Remove(unitToAttack.Id);
-                map.ColorToUnitIds[unitToAttack.Color].Remove(unitToAttack.Id);
-                MapHex deadUnitMapHex = map.Hexes[unitToAttack.Y, unitToAttack.X];
-                unit.lastTargetUnitVector = new Vector2(-1, -1);
-
-                if (deadUnitMapHex.Units.Count > 0)
-                    deadUnitMapHex.Units.RemoveAt(0);
+                killUnit(unitToAttack);
                 if ("comcen".Equals(unitToAttack.UnitType))
                 {
                     Faction faction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
@@ -699,7 +712,6 @@ public class GameLogic
             }
             if (unitToAttack.StrengthPoints > 0 && ("tank".Equals(unitToAttack.UnitType) || "armor".Equals(unitToAttack.UnitType)))
             {
-
                 unitToAttack.MoveSteps -= damage / 2;
             }
             if (unitToAttack.StrengthPoints > 0 && unitToAttack.MoveSteps < -25)
@@ -745,6 +757,22 @@ public class GameLogic
         }
     }
 
+    private void killUnit(Unit unit, MapHex mapHex=null)
+    {
+        if (unit == null)
+            return;
+        Map map = server.gameState.Map;
+        map.UnitIdToUnit.Remove(unit.Id);
+        map.ColorToUnitIds[unit.Color].Remove(unit.Id);
+        MapHex deadUnitMapHex = map.Hexes[unit.Y, unit.X];
+        unit.lastTargetUnitVector = new Vector2(-1, -1);
+
+        if (deadUnitMapHex.Units.Count > 0)
+            deadUnitMapHex.Units.RemoveAt(0);
+        if (mapHex != null && mapHex.Units.Count > 0)
+            mapHex.Units.RemoveAt(0);
+    }
+
     private string makeXyString(int x, int y)
     {
         return x + "," + y;
@@ -752,9 +780,12 @@ public class GameLogic
 
     private void moveUnit(Server server, Unit unit)
     {
+        if (unit == null || unit.StrengthPoints <= 0)
+            return;
+
         // Spies and Comcens move on land like they do at sea.
 
-        if (unit != null && unit.UnitIdToPursue != null && server.gameState.Map.UnitIdToUnit.ContainsKey(unit.UnitIdToPursue))
+        if (unit.UnitIdToPursue != null && server.gameState.Map.UnitIdToUnit.ContainsKey(unit.UnitIdToPursue))
         {
             Unit unitToPursue = server.gameState.Map.UnitIdToUnit[unit.UnitIdToPursue];
             if (unitToPursue.Visibility[unit.Color])
@@ -1038,6 +1069,9 @@ public class GameLogic
 
     private void digInInfantry(Server server, Unit unit)
     {
+        if (unit == null || unit.StrengthPoints <= 0)
+            return;
+
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
         Unit unitToCheck = mapHex.getUnit();
@@ -1099,17 +1133,17 @@ public class GameLogic
             {
                 commandCenters += 1;
                 // TODO: Right now only humans should be candidates for victory
-                if (gameState.Players.colorToPlayer.ContainsKey(color))
-                    candidate = color;
+                //if (gameState.Players.colorToPlayer.ContainsKey(color))
+                candidate = color;
             }
         }
-        if (commandCenters <= 1 && gameState.GameSettings.NumberOfHumans > 1)
+        //if (commandCenters <= 1 && gameState.GameSettings.NumberOfHumans > 1)
+        if (commandCenters <= 1)
         {
             victoriousColor = candidate;
             gameOver = true;
             Globals.Log("checkForVictory(): commandCenters=" + commandCenters);
         }
-
 
 
         // Someone took all Metros and the capital.
@@ -1205,7 +1239,7 @@ public class GameLogic
 
     // The scoring of this type of Conquest is calculated as (get ready for this)
     // the total of one-half the money in your Treasury,
-    // TODO: plus the sum of the balance of all your burbs,
+    // Plus the sum of the balance of all your burbs,
     // plus the sum of income per turn of all your burbs and resources,
     // plus the "scrap value" of all your units (one tenth their cost).
     private int calculateIncomeScore(Server server, Faction faction, List<Unit> units, int moneyFactor=2)
@@ -1220,11 +1254,12 @@ public class GameLogic
             if (burb.OwnerColor.Equals(faction.Color))
             {
                 score += gameState.Burbs.IncomeMap[burb.Type];
+                score += burb.Money;
             }
         }
         foreach (Unit unit in units)
         {
-            if (unit.Color.Equals(faction.Color))
+            if (unit.Color.Equals(faction.Color) && unit.StrengthPoints > 0)
             {
                 UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
                 score += unitType.Cost / 10;
