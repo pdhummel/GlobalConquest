@@ -142,7 +142,15 @@ public class DetailsPanelView
             unitStrengthLabel.Text = "Strength: " + lastSelectedUnit.StrengthPoints;
             stackPanel.Widgets.Add(unitStrengthLabel);
             Label unitStatusLabel = new Label();
-            unitStatusLabel.Text = lastSelectedUnit.IsLoading ? "Status: loading" : lastSelectedUnit.IsUnloading ? "Status: unloading" : "Status: ";
+            unitStatusLabel.Text = "Status: ";
+            if (lastSelectedUnit.IsLoading)
+                unitStatusLabel.Text += "loading ";
+            if (lastSelectedUnit.IsUnloading)
+                unitStatusLabel.Text += "unloading ";
+            if (lastSelectedUnit.IsBlitzing)
+                unitStatusLabel.Text += "blitzing ";
+            if (lastSelectedUnit.IsSneaking)
+                unitStatusLabel.Text += "sneaking ";
             stackPanel.Widgets.Add(unitStatusLabel);
             Label unitMovesLabel = new Label();
             if (lastSelectedUnit.ActionQueue.Count > 0)
@@ -151,6 +159,7 @@ public class DetailsPanelView
                   "Moves:" + lastSelectedUnit.ActionQueue[0].TargetX + "," + lastSelectedUnit.ActionQueue[0].TargetY :
                   "Moves:" + lastSelectedUnit.ActionQueue[0].TargetX + "," + lastSelectedUnit.ActionQueue[0].TargetY + " ... " + 
                   lastSelectedUnit.ActionQueue[lastSelectedUnit.ActionQueue.Count-1].TargetX + "," + lastSelectedUnit.ActionQueue[lastSelectedUnit.ActionQueue.Count-1].TargetY;
+                  unitMovesLabel.Text += " " + lastSelectedUnit.MoveSteps;
                 stackPanel.Widgets.Add(unitMovesLabel);
             }
         }

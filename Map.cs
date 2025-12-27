@@ -198,7 +198,17 @@ public class Map
             if ("plane".Equals(unit.UnitType))
                 Hexes[y, x].Airplane = unit;
             else
-                Hexes[y, x].setUnit(unit);
+            {
+                MapHex mapHex = Hexes[y, x];
+                mapHex.setUnit(unit);
+                if (mapHex.Burb != null && mapHex.Burb.Type.Equals("dock"))
+                {
+                    if (unit.UnitType.Equals("infantry"))
+                        unit.UnitType = "transport-infantry";
+                    if (unit.UnitType.Equals("tank"))
+                        unit.UnitType = "transport-tank";
+                }
+            }
             UnitIdToUnit[id] = unit;
             ColorToUnitIds[unit.Color].Add(id);
         }
@@ -214,8 +224,9 @@ public class Map
         return unit;
     }
 
-    public void moveUnit(Unit unit, int destinationX, int destinationY)
+    public bool moveUnit(Unit unit, int destinationX, int destinationY)
     {
+        bool hasUnitMoved = false;
         if (unit.X != destinationX || unit.Y != destinationY)
         {
             MapHex targetMapHex = Hexes[destinationY, destinationX];
@@ -225,10 +236,12 @@ public class Map
                 targetMapHex.setUnit(unit);
                 if (Hexes[unit.Y, unit.X].Units.Count > 0)
                     Hexes[unit.Y, unit.X].Units.RemoveAt(0);
+                hasUnitMoved = true;
             }
             unit.X = destinationX;
             unit.Y = destinationY;
         }
+        return hasUnitMoved;
     }
 
 
@@ -570,7 +583,7 @@ public class Map
             {
                 string color = null;
                 Unit unit = mapHex.getUnit();
-                if (unit != null)
+                if (unit != null && !"spy".Equals(unit.UnitType))
                 {
                     color = unit.Color;
                 }
@@ -581,7 +594,7 @@ public class Map
                     {
                         MapHex neighborHex = surroundingHexes[direction];
                         unit = neighborHex.getUnit();
-                        if (unit != null)
+                        if (unit != null && !"spy".Equals(unit.UnitType))
                         {
                             if (color == null)
                                 color = unit.Color;
@@ -623,7 +636,7 @@ public class Map
             {
                 string previousOwnerColor = mapHex.Burb.OwnerColor;
                 Unit unit = mapHex.getUnit();
-                if (previousOwnerColor != null && unit != null)
+                if (previousOwnerColor != null && unit != null && !"spy".Equals(unit.UnitType))
                 {
                     mapHex.Burb.OwnerColor = unit.Color;
                     if (!previousOwnerColor.Equals(unit.Color))

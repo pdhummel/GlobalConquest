@@ -152,7 +152,7 @@ public class Ai
             processGoal(goalsToKeep, bestConquestGoal, true);
         }
 
-        // Next pick a random goal
+        // Pick a random goal
         if (goals.Count > 0)
         {
             int index = random.Next(0, goals.Count);
@@ -611,7 +611,10 @@ public class Ai
             goal.IsGoalStarted = true;
             aiUnit.Unit = newUnit;
             unitIdToAiUnit[newUnit.Id] = aiUnit;
-            aiUnit.UnitType = newUnit.UnitType;
+            string newUnitType = newUnit.UnitType;
+            if ("transport-infantry".Equals(newUnitType))
+                newUnitType = "infantry";
+            aiUnit.UnitType = newUnitType;
             goal.ActualUnits.Add(aiUnit);
             Globals.Log("buildUnits(): building " + newUnit.Id + " for " + goal);
         }
@@ -660,6 +663,7 @@ public class Ai
                 Unit unit = nearbyHex.getUnit();
                 if (unit == null)
                     continue;
+                unit.IsSneaking = false;
                 UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
                 if (unit.Color.Equals(Faction.Color) && ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) || "transport-infantry".Equals(unit.UnitType)))
                 {
@@ -712,12 +716,14 @@ public class Ai
                 if (!"sea".Equals(unitType.LandOrSea))
                 {
                     Globals.Log("Ai.moveUnits(): ShouldMoveToTarget " + aiUnit.Unit.Id + " to " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                    aiUnit.Unit.IsSneaking = false;
                     moveUnit(unitType, aiUnit.Unit, goal.TargetMapHex);
                 }
                 else
                 {
                     int distance = 3;
                     Unit unit = aiUnit.Unit;
+                    aiUnit.Unit.IsSneaking = false;
                     if ("metro".Equals(goal.TargetMapHex.Burb.Type) && "battleship".Equals(unit.UnitType))
                         distance = 2;
                     else if ("metro".Equals(goal.TargetMapHex.Burb.Type) && "carrier".Equals(unit.UnitType))
@@ -732,7 +738,11 @@ public class Ai
             {
                 Globals.Log("Ai.moveUnits(): InitialPosition " + aiUnit.Unit.Id + " to " + aiUnit.InitialPosition.X + "," + aiUnit.InitialPosition.Y);
                 if (!"sea".Equals(unitType.LandOrSea))
-                    moveUnit(unitType, aiUnit.Unit, aiUnit.InitialPosition);
+                    {
+                        if ("conquer".Equals(goal.Type) || "transport-infantry".Equals(unitType.Name))
+                            aiUnit.Unit.IsSneaking = true;
+                        moveUnit(unitType, aiUnit.Unit, aiUnit.InitialPosition);
+                    }
                 else
                 {
                     if ("sea".Equals(aiUnit.InitialPosition.Terrain) || "swamp".Equals(aiUnit.InitialPosition.Terrain) || "marsh".Equals(aiUnit.InitialPosition.Terrain))
@@ -753,6 +763,8 @@ public class Ai
                 if (foundMapHex != null && aiUnit.Unit != null)
                 {
                     Globals.Log("Ai.moveUnits(): DistanceFromTarget=" + aiUnit.DistanceFromTarget + ", " + aiUnit.Unit.Id + " to " + foundMapHex.X + "," + foundMapHex.Y);
+                    if ("conquer".Equals(goal.Type) && (!"sea".Equals(unitType.LandOrSea) || "transport-infantry".Equals(unitType.Name)))
+                        aiUnit.Unit.IsSneaking = true;
                     moveUnit(unitType, aiUnit.Unit, foundMapHex);
                     count += 1;
                 }

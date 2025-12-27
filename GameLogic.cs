@@ -810,84 +810,96 @@ public class GameLogic
                         return;
                     }
 
-                    if ("sea".Equals(unitType.LandOrSea) && (unitType.Name.Contains("transport")) &&
+                    // Start unloading
+                    if ("sea".Equals(unitType.LandOrSea) && (unitType.Name.Contains("transport")) && 
+                       !unit.IsUnloading && !unit.IsLoading &&
                        ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
                     {
                         // When going from transport to land (unloading), it will take eight rounds.
                         // TODO: If the beach square has a friendly dug-in infantry unit squatting in it,
                         // this loading/unloading takes only one round.
-                        if (unit.RoundsToPause > 0)
+                        Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " is unloading.");
+                        unit.IsUnloading = true;
+                        if (unit.RoundsToPause <= 0)
                         {
-                            Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " is unloading.");
-                            unit.IsUnloading = true;
-                            unit.RoundsToPause -= 1;
-                            if (unit.RoundsToPause > 0)
-                            {
-                                return;
-                            }
-                            Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " has unloaded.");
-                            unit.IsUnloading = false;
-                            if ("transport-tank".Equals(unit.UnitType) || "transport-armor".Equals(unit.UnitType))
-                            {
-                                unit.UnitType = "tank";
-                            }
-                            else if ("transport-infantry".Equals(unit.UnitType))
-                            {
-                                unit.UnitType = "infantry";
-                            }
-                        }
-                        else
-                        {
-                            Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " needs to unload.");
-                            unit.IsUnloading = true;
                             unit.RoundsToPause = 8;
                             return;
                         }
-
                     }
-                    else if ("land".Equals(unitType.LandOrSea) &&
+
+                    // Start loading
+                    if ("land".Equals(unitType.LandOrSea) && 
+                       !unit.IsLoading && !unit.IsUnloading &&
                        ("infantry".Equals(unitType.Name) || "dug-in-infantry".Equals(unitType.Name) || "tank".Equals(unitType.Name) || "armor".Equals(unitType.Name)) &&
                        "sea".Equals(nextMapHex.Terrain))
                     {
-                        if (unit.RoundsToPause > 0)
+                        Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " is loading into a transport.");
+                        unit.IsLoading = true;
+                        if (unit.RoundsToPause <= 0)
                         {
-                            Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " is loading into a transport.");
-                            unit.IsLoading = true;
-                            unit.RoundsToPause -= 1;
-                            if (unit.RoundsToPause > 0)
-                            {
-                                return;
-                            }
-                            Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " has loaded into a transport.");
-                            unit.IsLoading = false;
-                            if ("tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
-                            {
-                                unit.UnitType = "transport-tank";
-                            }
-                            else if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
-                            {
-                                unit.UnitType = "transport-infantry";
-                            }
-                        }
-                        else
-                        {
-                            Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " needs to load into a transport.");
-                            unit.IsLoading = true;
                             unit.RoundsToPause = 4;
                             return;
                         }
                     }
-                    else if ("sea".Equals(unitType.LandOrSea) &&
+
+                    // Continue loading/unloading
+                    if (unit.RoundsToPause > 0)
+                    {
+                        unit.RoundsToPause -= 1;
+                        if (unit.RoundsToPause > 0)
+                            return;
+                    }
+
+                    // Done unloading
+                    if (unit.IsUnloading)
+                    {
+                        Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " has unloaded.");
+                        unit.IsUnloading = false;
+                        if ("transport-tank".Equals(unit.UnitType) || "transport-armor".Equals(unit.UnitType))
+                        {
+                            unit.UnitType = "tank";
+                        }
+                        else if ("transport-infantry".Equals(unit.UnitType))
+                        {
+                            unit.UnitType = "infantry";
+                        }
+                    }
+
+                    // Done loading
+                    if (unit.IsLoading)
+                    {
+                        Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " has loaded into a transport.");
+                        unit.IsLoading = false;
+                        if ("tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
+                        {
+                            unit.UnitType = "transport-tank";
+                        }
+                        else if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
+                        {
+                            unit.UnitType = "transport-infantry";
+                        }
+                    }
+
+                    if ("sea".Equals(unitType.LandOrSea) && (!unitType.Name.Contains("transport")) &&
                        ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
                     {
                         Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " cannot move on land.");
+                        checkForTransport(unit, mapHex);
                         return;
                     }
 
-                    gameState.Map.moveUnit(unit, nextMapHex.X, nextMapHex.Y);
-                    unit.X = nextMapHex.X;
-                    unit.Y = nextMapHex.Y;
-                    movingUnitsXy.Add(makeXyString(unit.X, unit.Y));
+                    bool hasUnitMoved = gameState.Map.moveUnit(unit, nextMapHex.X, nextMapHex.Y);
+                    if (hasUnitMoved)
+                    {
+                        unit.X = nextMapHex.X;
+                        unit.Y = nextMapHex.Y;
+                        movingUnitsXy.Add(makeXyString(unit.X, unit.Y));
+                        checkForTransport(unit, nextMapHex);
+                    }
+                    else
+                    {
+                        checkForTransport(unit, mapHex);
+                    }
 
                     if (nextMapHex.X == unitAction.TargetX && nextMapHex.Y == unitAction.TargetY && unit.ActionQueue.Count > 0)
                     {
@@ -929,6 +941,34 @@ public class GameLogic
                 }
                 movesMade += 1;
             }
+        }
+    }
+
+
+    private void checkForTransport(Unit unit, MapHex mapHex)
+    {
+        if ("sea".Equals(mapHex.Terrain))
+        {
+            if ("tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
+            {
+                unit.UnitType = "transport-tank";
+            }
+            else if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
+            {
+                unit.UnitType = "transport-infantry";
+            }
+        }
+        if ("grass".Equals(mapHex.Terrain) || "mountain".Equals(mapHex.Terrain) || "forest".Equals(mapHex.Terrain) || "desert".Equals(mapHex.Terrain))
+        {
+            if ("transport-tank".Equals(unit.UnitType))
+            {
+                unit.UnitType = "tank";
+            }
+            else if ("transport-infantry".Equals(unit.UnitType))
+            {
+                unit.UnitType = "infantry";
+            }
+            
         }
     }
 
