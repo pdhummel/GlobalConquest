@@ -553,7 +553,11 @@ public class GlobalConquestGame : Game
             }
         }
         if (Desktop != null)
-            Desktop.Render();
+            try
+            {
+                Desktop.Render();    
+            }
+            catch(Exception exIgnore) {}
 
         base.Draw(gameTime);
     }
