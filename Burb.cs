@@ -16,4 +16,17 @@ public class Burb
     {
 
     }
+
+    public HashSet<MapHex> getHexesInBurb(Map map)
+    {
+        HashSet<MapHex> hexesInBurb = new HashSet<MapHex>();
+        MapHex centerHex = map.Hexes[Y, X];
+        hexesInBurb.Add(centerHex);
+        List<MapHex> burbHexes = map.getSurroundingHexesList(centerHex);
+        foreach (MapHex burbHex in burbHexes)
+        {
+            hexesInBurb.Add(burbHex);
+        }
+        return hexesInBurb;
+    }
 }

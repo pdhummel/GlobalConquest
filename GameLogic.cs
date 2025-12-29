@@ -38,32 +38,7 @@ public class GameLogic
         }
         server.sendGameState();
 
-        Globals.Log("doExecutionPhase(): Ai plan turn");
-        foreach (string color in colors)
-        {
-            bool isFactionAi = true;
-            Faction faction = gameState.Factions.ColorToFaction[color];
-            if (gameState.Players.colorToPlayer.ContainsKey(color))
-            {
-                Player player = gameState.Players.colorToPlayer[color];
-                if (player.IsHuman)
-                    isFactionAi = false;
-            }
-            //if (isFactionAi && color.Equals("ocher"))
-            if (isFactionAi)
-            {
-                try
-                {
-                    faction.Ai.planTurn();
-                }
-                catch(Exception ex)
-                {
-                    Globals.Log("doExecutionPhase(): Exception from Ai planTurn: " + ex);
-                    // TODO: remove throw as Ai planTurn is best effort.
-                    throw ex;
-                }
-            }
-        }
+        aiPlanTurn();
 
         infantryUnitsXy.Clear();
         movingUnitsXy.Clear();
@@ -79,25 +54,7 @@ public class GameLogic
             for (int liX = 0; liX < gameState.Map.X; liX++)
             {
                 MapHex mapHex = gameState.Map.Hexes[liY, liX];
-                Unit plane = mapHex.Airplane;
-                if (plane != null && plane.StrengthPoints <= 0)
-                {
-                    mapHex.Airplane = null;
-                    plane = null;
-                }
-                if (plane != null && mapHex.Burb != null && !mapHex.Burb.OwnerColor.Equals(plane.Color))
-                {
-                    mapHex.Airplane = null;
-                    plane = null;
-                }
-                if (plane != null && plane.TurnsUnavailable > 0)
-                {
-                    plane.TurnsUnavailable -= 1;
-                    if (plane.TurnsUnavailable < 0)
-                        plane.TurnsUnavailable = 0;
-                    //Globals.Log("doExecutionPhase(): hex plane: " + mapHex.X + "," + mapHex.Y + " " + plane.TurnsUnavailable);
-                    server.sendGameStateAndMapHex(mapHex.Y, mapHex.X);
-                }
+                updatePlane(mapHex, null);
                 Unit unit = mapHex.getUnit();
                 if (unit != null)
                 {
@@ -107,15 +64,7 @@ public class GameLogic
                         server.sendGameStateAndMapHex(mapHex.Y, mapHex.X);
                         continue;
                     }
-                    plane = unit.Airplane;
-                    if (plane != null && plane.TurnsUnavailable > 0)
-                    {
-                        plane.TurnsUnavailable -= 1;
-                        if (plane.TurnsUnavailable < 0)
-                            plane.TurnsUnavailable = 0; 
-                        //Globals.Log("doExecutionPhase(): unit plane: " + mapHex.X + "," + mapHex.Y + " " + plane.TurnsUnavailable);
-                        server.sendGameStateAndMapHex(mapHex.Y, mapHex.X);
-                    }
+                    updatePlane(null, unit);
                 }
                 if (unit != null)
                 {
@@ -183,6 +132,123 @@ public class GameLogic
         Globals.Log("doExecutionPhase(): exit");
     }
 
+
+    private void updatePlane(MapHex mapHex, Unit parentUnit)
+    {
+        Unit plane = null;
+        if (mapHex != null)
+        {
+            plane = mapHex.Airplane;
+            if (plane != null && plane.StrengthPoints <= 0)
+            {
+                mapHex.Airplane = null;
+                plane = null;
+            }
+            if (plane != null && mapHex.Burb != null && !mapHex.Burb.OwnerColor.Equals(plane.Color))
+            {
+                mapHex.Airplane = null;
+                plane = null;
+            }
+        }
+        if (parentUnit != null)
+        {
+            plane = parentUnit.Airplane;
+            if (plane != null && plane.StrengthPoints <= 0 || parentUnit.StrengthPoints <= 0)
+            {
+                parentUnit.Airplane = null;
+                plane = null;
+            }
+        }
+        if (plane != null && plane.TurnsUnavailable > 0)
+        {
+            plane.TurnsUnavailable -= 1;
+            if (plane.TurnsUnavailable < 0)
+                plane.TurnsUnavailable = 0;
+        }
+    }
+    private void aiPlanTurn()
+    {
+        Globals.Log("doExecutionPhase(): Ai plan turn");
+        Server? server = this.server;
+        GameState gameState = server.gameState;
+        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        foreach (string color in colors)
+        {
+            bool isFactionAi = true;
+            Faction faction = gameState.Factions.ColorToFaction[color];
+            if (gameState.Players.colorToPlayer.ContainsKey(color))
+            {
+                Player player = gameState.Players.colorToPlayer[color];
+                if (player.IsHuman)
+                    isFactionAi = false;
+            }
+            //if (isFactionAi && color.Equals("ocher"))
+            if (isFactionAi)
+            {
+                try
+                {
+                    faction.Ai.planTurn();
+                }
+                catch(Exception ex)
+                {
+                    Globals.Log("doExecutionPhase(): Exception from Ai planTurn: " + ex);
+                    // TODO: remove throw as Ai planTurn is best effort.
+                    throw ex;
+                }
+            }
+        }
+    }
+
+    private void collectIncome(Server server)
+    {
+        GameState gameState = server.gameState;
+
+        // Collect income
+        foreach (string key in gameState.Burbs.NameToBurb.Keys)
+        {
+            Burb burb = gameState.Burbs.NameToBurb[key];
+            bool isSabotaged = false;
+            HashSet<MapHex> burbHexes = burb.getHexesInBurb(gameState.Map);
+            foreach (MapHex burbHex in burbHexes)
+            {
+                Unit unitInBurb = burbHex.getUnit();
+                if (unitInBurb != null && !unitInBurb.Color.Equals(burb.OwnerColor) && "spy".Equals(unitInBurb.UnitType))
+                {
+                    isSabotaged = true;
+                    break;
+                }
+            }
+            
+            int income = gameState.Burbs.IncomeMap[burb.Type];
+            // TODO: change sabotage logic once unit production is in place.
+            //Globals.Log("endTurn(): burb=" + burb.Name);
+            if (burb.OwnerColor != null && !"grey".Equals(burb.OwnerColor))
+            {
+                if (isSabotaged)
+                {
+                    Globals.Log("endTurn(): burb " + key + " sabotaged and lost income");
+                    income -= 8;
+                    if (income < 0)
+                        income = 0;
+                    GameEvent gameEvent = new GameEvent("burbSabotaged");
+                    gameEvent.MapHex = gameState.Map.Hexes[burb.Y, burb.X];
+                    server.sendGamePlayEvent(burb.OwnerColor, gameEvent);
+                }
+
+                Faction faction = gameState.Factions.ColorToFaction[burb.OwnerColor];
+                if (gameState.GameSettings.IsAdvancedEconomics)
+                {
+                    burb.Money += income;
+                }
+                else
+                {
+                    faction.Money += income;
+                }
+                Globals.Log("endTurn(): added " + income + " income to " + burb.OwnerColor);
+            }
+        }
+    } 
+
     public void endTurn(Server server)
     {
         Globals.Log("endTurn(): enter");
@@ -194,22 +260,7 @@ public class GameLogic
             gameState.PlayerExecutionReady[key] = false;
         }
 
-        // Collect income
-        foreach (string key in gameState.Burbs.NameToBurb.Keys)
-        {
-            Burb burb = gameState.Burbs.NameToBurb[key];
-            int income = gameState.Burbs.IncomeMap[burb.Type];
-            //Globals.Log("endTurn(): burb=" + burb.Name);
-            if (burb.OwnerColor != null && !"grey".Equals(burb.OwnerColor))
-            {
-                Faction faction = gameState.Factions.ColorToFaction[burb.OwnerColor];
-                if (gameState.GameSettings.IsAdvancedEconomics)
-                    burb.Money += income;
-                else
-                    faction.Money += income;
-                Globals.Log("endTurn(): added " + income + " income to " + burb.OwnerColor);
-            }
-        }
+        collectIncome(server);
 
         gameState.CurrentRound = 0;
         server.gameState.CurrentPhase = "plan";
@@ -776,6 +827,7 @@ public class GameLogic
         map.ColorToUnitIds[unit.Color].Remove(unit.Id);
         MapHex deadUnitMapHex = map.Hexes[unit.Y, unit.X];
         unit.lastTargetUnitVector = new Vector2(-1, -1);
+        unit.Airplane = null;
 
         if (deadUnitMapHex.Units.Count > 0)
             deadUnitMapHex.Units.RemoveAt(0);

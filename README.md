@@ -183,7 +183,7 @@ The game is being designed with known differences from the original.
 ### Milestone 7
 - [x] Sub sneakiness
 - [x] Spies visible only to other spies.
-- [ ] Spy sabotage burbs.
+- [x] Spy sabotage burbs.
 - [ ] Spies steal burb secrets.
 - [ ] Spies steal ComCen secrets.
 - [ ] Build decoy ComCen/units.

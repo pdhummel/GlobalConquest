@@ -309,7 +309,7 @@ public class MainGameScreen
         else
             popupStacks[window.Top] = 1;
         /*
-        TODO: exception
+        TODO: non-fatal exception
         Unhandled exception. System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation.
         ---> System.IndexOutOfRangeException: Index was outside the bounds of the array.
         at System.Collections.Generic.Dictionary`2.TryInsert(TKey key, TValue value, InsertionBehavior behavior)

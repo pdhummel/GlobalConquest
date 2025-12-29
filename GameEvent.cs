@@ -9,24 +9,7 @@ namespace GlobalConquest;
 public class GameEvent
 {
     // Used to send separate message to clients for Events.
-    // Also keep track of these events in a server log.
-    // EventTypes:
-    // gameStateUpdate
-    // mapUpdate
-    // gameStateAndMapUpdate
-    //
-    // unitAttacked (comcenAttacked)
-    // unitDestroyed
-    // unitMovementBlocked
-    // enemyUnitDiscovered
-    // enemyUnitAttacked
-    // enemyUnitDestroyed
-    // burbDiscovered
-    // burbCaptured
-    // burbLost
-    // playerLostGame
-    // playerWonGame
-    // gameOver
+    // TODO: Also keep track of these events in a server log.
     public string EventType { get; set; }
     public long Ticks { get; set; }
     public int Turn { get; set; }
@@ -34,7 +17,7 @@ public class GameEvent
     //public string? Message {get; set;}
 
     public List<MapHex>? MapHexBuffer { get; set; } = new List<MapHex>();
-    public bool IsLastMapHexBufferUpdate {get; set;} = false;
+    public bool IsLastMapHexBufferUpdate { get; set; } = false;
     public GameState? GameState { get; set; }
 
     public GlobalConquestGame? Game { get; set; }
@@ -43,7 +26,7 @@ public class GameEvent
     public Unit? Unit { get; set; }
     public string? EnemyColor { get; set; }
     public string? EventString { get; set; }
-    public string? TargetScreenId {get; set;}
+    public string? TargetScreenId { get; set; }
     private int secondsForPopupToAppear = 10;
 
 
@@ -63,8 +46,8 @@ public class GameEvent
 
     private void initializeGamePlayEvents()
     {
-         var gamePlayEvents = new string[]
-         {
+        var gamePlayEvents = new string[]
+        {
             "unitAttacked",         // UnitType at MapHex attacked
             "enemyUnitAttacked",    // EnemyColor UnitType attacked at MapHex 
             "unitDestroyed",        // UnitType at MapHex destroyed           
@@ -90,9 +73,10 @@ public class GameEvent
             "planeInDogfight",
             "planningPhaseEnded",
             "planningPhaseStarting",
-            "joinedGame"
-         };
-         GamePlayEvents.UnionWith(gamePlayEvents);        
+            "joinedGame",
+            "burbSabotaged"
+        };
+        GamePlayEvents.UnionWith(gamePlayEvents);
     }
 
     public bool IsGamePlayEvent()
@@ -116,7 +100,7 @@ public class GameEvent
             eventMethodHandlerThread.Start();
             //eventMethodHandler?.Invoke(this, parameters);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Globals.Log("handleGamePlayEvent(): " + EventString + ", Exception: " + ex);
         }
@@ -258,7 +242,7 @@ public class GameEvent
     }
 
     public void unitDestroyedHandler()
-    {        
+    {
         // UnitType at MapHex destroyed
         EventString = GetUnitType() + " at " + GetLocation() + " destroyed.";
         Game.playSoundEffect(EventType + "1");
@@ -267,14 +251,14 @@ public class GameEvent
         Game.MainGameScreen.showTimedLocationPopup(EventString, secondsForPopupToAppear, MapHex);
     }
 
-    public void unitMovementBlockedHandler() 
+    public void unitMovementBlockedHandler()
     {
         // Movement blocked for UnitType at MapHex
         EventString = "Movement blocked for " + GetUnitType() + " at " + GetLocation() + ".";
         //Game.addGamePlayEvent(this);
     }
 
-    public void unitSufferedAttritionHandler() 
+    public void unitSufferedAttritionHandler()
     {
         // UnitType at MapHex suffered attrition
         EventString = GetUnitType() + " at " + GetLocation() + " suffered attrition.";
@@ -286,10 +270,10 @@ public class GameEvent
         // EnemyColor UnitType discovered at MapHex
         EventString = GetEnemyColor() + " " + GetUnitType() + " discovered at " + GetLocation();
         //Game.addGamePlayEvent(this);
-    } 
+    }
 
-    public void enemyUnitAttackedHandler() 
-    {    
+    public void enemyUnitAttackedHandler()
+    {
         // EnemyColor UnitType attacked at MapHex
         EventString = GetEnemyColor() + " " + GetUnitType() + " attacked at " + GetLocation();
         //Game.playSoundEffect(EventType);
@@ -314,7 +298,7 @@ public class GameEvent
     public void burbCapturedHandler()
     {
         // BurbType BurbName captured at MapHex
-        EventString =  GetBurbType() + " " + GetBurbName() + " captured from " + GetEnemyColor() + " at " + GetLocation();
+        EventString = GetBurbType() + " " + GetBurbName() + " captured from " + GetEnemyColor() + " at " + GetLocation();
         Game.playSoundEffect(EventType);
         Game.addGamePlayEvent(this);
     }
@@ -322,20 +306,22 @@ public class GameEvent
     public void burbLostHandler()
     {
         // BurbType BurbName lost at MapHex
-        EventString =  GetBurbType() + " " + GetBurbName() + " lost to " + GetEnemyColor() + " at " + GetLocation();
+        EventString = GetBurbType() + " " + GetBurbName() + " lost to " + GetEnemyColor() + " at " + GetLocation();
         Game.playSoundEffect(EventType);
         Game.addGamePlayEvent(this);
         Game.MainGameScreen.showTimedLocationPopup(EventString, secondsForPopupToAppear, MapHex);
     }
 
-    public void playerLostGameHandler() {      
+    public void playerLostGameHandler()
+    {
         // Game Lost
         EventString = "You Lost the Game.";
         Game.playSoundEffect(EventType);
         Game.addGamePlayEvent(this);
     }
 
-    public void playerWonGameHandler() {    
+    public void playerWonGameHandler()
+    {
         // Game Won
         EventString = "You Won the Game.";
         //Game.playSoundEffect(EventType + "1");
@@ -343,40 +329,40 @@ public class GameEvent
         Game.addGamePlayEvent(this);
     }
 
-    public void enemyPlayerLostGameHandler() 
-    { 
+    public void enemyPlayerLostGameHandler()
+    {
         // EnemyColor Lost Game
         EventString = GetEnemyColor() + " Lost the Game.";
         Game.playSoundEffect(EventType);
         Game.addGamePlayEvent(this);
     }
 
-    public void enemyPlayerWonGameHandler() 
-    {  
+    public void enemyPlayerWonGameHandler()
+    {
         // EnemyColor Won Game
         EventString = GetEnemyColor() + " Won the Game.";
         Game.addGamePlayEvent(this);
     }
 
-    public void gameOverHandler() 
-    {            
+    public void gameOverHandler()
+    {
         // Game Over
         EventString = "The Game is Over.";
         Game.addGamePlayEvent(this);
     }
 
-   public void airplaneMissionSuceededHandler()
+    public void airplaneMissionSuceededHandler()
     {
         EventString = "Air mission suceeded for " + GetUnitType() + " at " + GetLocation() + ".";
         Game.playSoundEffect("airplaneNotification");
         //Game.addGamePlayEvent(this);
-    } 
-   public void airplaneStrikeSuceededHandler()
+    }
+    public void airplaneStrikeSuceededHandler()
     {
         EventString = "Air strike suceeded for " + GetUnitType() + " at " + GetLocation() + ".";
         Game.playSoundEffect("enemyUnitAttacked");
         //Game.addGamePlayEvent(this);
-    } 
+    }
 
     public void airplaneMissionFailedHandler()
     {
@@ -409,10 +395,10 @@ public class GameEvent
             Game.JoinGameScreen.show();
             Game.JoinGameScreen.showMessage(EventString);
         }
-            
+
     }
 
-   public void planeDefendingHandler()
+    public void planeDefendingHandler()
     {
         Globals.Log("planeDefendingHandler(): enter");
         Game.playSoundEffect("jetFlyby");
@@ -420,7 +406,7 @@ public class GameEvent
         Game.addGamePlayEvent(this);
     }
 
-   public void planeInDogfightHandler()
+    public void planeInDogfightHandler()
     {
         Globals.Log("planeInDogfightHandler(): enter");
         Game.playSoundEffect("jetFlyby");
@@ -448,5 +434,12 @@ public class GameEvent
         //Game.scrollToMetro();
     }
 
+    public void burbSabotagedHandler()
+    {
+        Globals.Log("burbSabotagedHandler(): enter");
+        EventString = "Burb " + GetBurbName() + " at " + GetLocation() + " sabotaged by spy.";
+        Game.addGamePlayEvent(this);
+        Game.playSoundEffect("unitDestroyed2");
+    }
 
 }
