@@ -29,7 +29,7 @@ public class SubUnitType : UnitType
         unitType.BattleDamageFromAttacker[INFANTRY] = 25;
         unitType.BattleDamageFromAttacker["armor"] = 25;
         unitType.BattleDamageFromAttacker["tank"] = 25;
-        unitType.BattleDamageFromAttacker["dug-in-infantry"] = 25;
+        unitType.BattleDamageFromAttacker[DUG_IN_INFANTRY] = 25;
         unitType.BattleDamageFromAttacker[TRANSPORT_INFANTRY] = 5;
         unitType.BattleDamageFromAttacker["transport-armor"] = 5;
         unitType.BattleDamageFromAttacker["transport-tank"] = 5;
@@ -48,7 +48,7 @@ public class SubUnitType : UnitType
         unitType.BattleDamageToDefender[INFANTRY] = 0;
         unitType.BattleDamageToDefender["armor"] = 0;
         unitType.BattleDamageToDefender["tank"] = 0;
-        unitType.BattleDamageToDefender["dug-in-infantry"] = 0;
+        unitType.BattleDamageToDefender[DUG_IN_INFANTRY] = 0;
         unitType.BattleDamageToDefender[TRANSPORT_INFANTRY] = 100;
         unitType.BattleDamageToDefender["transport-armor"] = 100;
         unitType.BattleDamageToDefender["transport-tank"] = 100;
@@ -83,7 +83,7 @@ public class SubUnitType : UnitType
         unitType.FiringRangeFromAttacker[INFANTRY] = 1;
         unitType.FiringRangeFromAttacker["armor"] = 1;
         unitType.FiringRangeFromAttacker["tank"] = 1;
-        unitType.FiringRangeFromAttacker["dug-in-infantry"] = 1;
+        unitType.FiringRangeFromAttacker[DUG_IN_INFANTRY] = 1;
         unitType.FiringRangeFromAttacker[TRANSPORT_INFANTRY] = 1;
         unitType.FiringRangeFromAttacker["transport-armor"] = 1;
         unitType.FiringRangeFromAttacker["transport-tank"] = 1;
@@ -102,7 +102,7 @@ public class SubUnitType : UnitType
         unitType.FiringRangeToDefender[INFANTRY] = 0;
         unitType.FiringRangeToDefender["armor"] = 0;
         unitType.FiringRangeToDefender["tank"] = 0;
-        unitType.FiringRangeToDefender["dug-in-infantry"] = 0;
+        unitType.FiringRangeToDefender[DUG_IN_INFANTRY] = 0;
         unitType.FiringRangeToDefender[TRANSPORT_INFANTRY] = 2;
         unitType.FiringRangeToDefender["transport-armor"] = 2;
         unitType.FiringRangeToDefender["transport-tank"] = 2;

@@ -32,7 +32,7 @@ public class ParaDropAction : PlayerAction
         {
             return;
         }
-        if (!(INFANTRY.Equals(ParaTrooper.UnitType) || "dug-in-infantry".Equals(ParaTrooper.UnitType)))
+        if (!(INFANTRY.Equals(ParaTrooper.UnitType) || DUG_IN_INFANTRY.Equals(ParaTrooper.UnitType)))
         {
             Globals.Log("execute(): can only transport infantry: " + ParaTrooper.UnitType);
             return;

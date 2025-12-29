@@ -87,7 +87,7 @@ public class KamikazeAction : PlayerAction
                     {
                         damage = ((targetUnit.StrengthPoints / 2) / factor);
                     }
-                    else if ("dug-in-infantry".Equals(type) || ("comcen".Equals(type) && !"sea".Equals(targetMapHex.Terrain)) )
+                    else if (DUG_IN_INFANTRY.Equals(type) || ("comcen".Equals(type) && !"sea".Equals(targetMapHex.Terrain)) )
                     {
                         damage = ((targetUnit.StrengthPoints / 3) / factor);
                     }

@@ -942,7 +942,7 @@ public class GlobalConquestGame : Game
             else if (ParaDropMode && ParaTrooper == null && lastSelectedUnit != null)
             {
                 Globals.Log("handleLeftClick(): ParaDropMode, ParaTrooper=null");
-                if ((INFANTRY.Equals(lastSelectedUnit.UnitType) || "dug-in-infantry".Equals(lastSelectedUnit.UnitType)))
+                if ((INFANTRY.Equals(lastSelectedUnit.UnitType) || DUG_IN_INFANTRY.Equals(lastSelectedUnit.UnitType)))
                 {
                     ParaTrooper = lastSelectedUnit;
                     lastSelectedPlane = previousSelectedPlane;
