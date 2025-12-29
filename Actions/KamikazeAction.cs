@@ -91,7 +91,7 @@ public class KamikazeAction : PlayerAction
                     {
                         damage = ((targetUnit.StrengthPoints / 3) / factor);
                     }
-                    else if ("battleship".Equals(type) || "carrier".Equals(type) || (COMMAND_CENTER.Equals(type) && "sea".Equals(targetMapHex.Terrain)))
+                    else if (BATTLESHIP.Equals(type) || "carrier".Equals(type) || (COMMAND_CENTER.Equals(type) && "sea".Equals(targetMapHex.Terrain)))
                     {
                         damage = (25 / factor);
                     }

@@ -251,8 +251,8 @@ public class BurbWindow
         addLabelToGrid(grid, rowIndex++, 1, "25");
         costByRow[rowIndex] = 35;
         seaUnitRows.Add(rowIndex);
-        unitTypeByRow[rowIndex] = "battleship";
-        addLabelToGrid(grid, rowIndex, 0, "Battleship");
+        unitTypeByRow[rowIndex] = BATTLESHIP;
+        addLabelToGrid(grid, rowIndex, 0, BATTLESHIP);
         addLabelToGrid(grid, rowIndex++, 1, "35");
         costByRow[rowIndex] = 45;
         seaUnitRows.Add(rowIndex);

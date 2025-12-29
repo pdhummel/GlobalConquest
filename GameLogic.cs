@@ -703,7 +703,7 @@ public class GameLogic
 
             // Battleships and carriers can "bombard" land units once they are within range.
             // However, this type of combat cannot reduce the land unit below 30% strength.
-            if (("carrier".Equals(unit.UnitType) || "battleship".Equals(unit.UnitType)) &&
+            if (("carrier".Equals(unit.UnitType) || BATTLESHIP.Equals(unit.UnitType)) &&
                  (ARMOR.Equals(unitToAttack.UnitType) || ARMOR.Equals(unitToAttack.UnitType) || INFANTRY.Equals(unitToAttack.UnitType) || DUG_IN_INFANTRY.Equals(unitToAttack.UnitType)))
             {
                 if (unitToAttack.StrengthPoints <= 30 && previousStrength >= 30)

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using GlobalConquest.Units;
 using LiteNetLib;
+using static UnitTypeConstants;
 namespace GlobalConquest.Actions;
 
 public class TransferAction : PlayerAction

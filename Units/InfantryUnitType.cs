@@ -27,7 +27,7 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageFromAttacker[TRANSPORT_ARMOR] = 9;
         unitType.BattleDamageFromAttacker["submarine"] = 0;
         unitType.BattleDamageFromAttacker["sub"] = 0;
-        unitType.BattleDamageFromAttacker["battleship"] = 12;
+        unitType.BattleDamageFromAttacker[BATTLESHIP] = 12;
         unitType.BattleDamageFromAttacker["carrier"] = 10;
         unitType.BattleDamageFromAttacker[SPY] = 0;
         unitType.BattleDamageFromAttacker[DECOY_COMMAND_CENTER] = 0;
@@ -46,7 +46,7 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageToDefender[TRANSPORT_ARMOR] = 25;
         unitType.BattleDamageToDefender["submarine"] = 25;
         unitType.BattleDamageToDefender["sub"] = 25;
-        unitType.BattleDamageToDefender["battleship"] = 25;
+        unitType.BattleDamageToDefender[BATTLESHIP] = 25;
         unitType.BattleDamageToDefender["carrier"] = 25;
         unitType.BattleDamageToDefender[SPY] = 34;
         unitType.BattleDamageToDefender[DECOY_COMMAND_CENTER] = 34;
@@ -78,7 +78,7 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeFromAttacker[TRANSPORT_ARMOR] = 2;
         unitType.FiringRangeFromAttacker["submarine"] = 0;
         unitType.FiringRangeFromAttacker["sub"] = 0;
-        unitType.FiringRangeFromAttacker["battleship"] = 3;
+        unitType.FiringRangeFromAttacker[BATTLESHIP] = 3;
         unitType.FiringRangeFromAttacker["carrier"] = 4;
         unitType.FiringRangeFromAttacker[SPY] = 0;
         unitType.FiringRangeFromAttacker[DECOY_COMMAND_CENTER] = 0;
@@ -97,7 +97,7 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeToDefender[TRANSPORT_ARMOR] = 2;
         unitType.FiringRangeToDefender["submarine"] = 1;
         unitType.FiringRangeToDefender["sub"] = 1;
-        unitType.FiringRangeToDefender["battleship"] = 1;
+        unitType.FiringRangeToDefender[BATTLESHIP] = 1;
         unitType.FiringRangeToDefender["carrier"] = 1;
         unitType.FiringRangeToDefender[SPY] = 2;
         unitType.FiringRangeToDefender[DECOY_COMMAND_CENTER] = 2;
@@ -172,7 +172,7 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageFromAttacker[TRANSPORT_ARMOR] = 10;
         unitType.BattleDamageFromAttacker["submarine"] = 100;
         unitType.BattleDamageFromAttacker["sub"] = 100;
-        unitType.BattleDamageFromAttacker["battleship"] = 50;
+        unitType.BattleDamageFromAttacker[BATTLESHIP] = 50;
         unitType.BattleDamageFromAttacker["carrier"] = 50;
         unitType.BattleDamageFromAttacker[SPY] = 0;
         unitType.BattleDamageFromAttacker[DECOY_COMMAND_CENTER] = 0;
@@ -191,7 +191,7 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageToDefender[TRANSPORT_ARMOR] = 10;
         unitType.BattleDamageToDefender["submarine"] = 5;
         unitType.BattleDamageToDefender["sub"] = 5;
-        unitType.BattleDamageToDefender["battleship"] = 5;
+        unitType.BattleDamageToDefender[BATTLESHIP] = 5;
         unitType.BattleDamageToDefender["carrier"] = 5;
         unitType.BattleDamageToDefender[SPY] = 34;
         unitType.BattleDamageToDefender[DECOY_COMMAND_CENTER] = 34;
@@ -223,7 +223,7 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeFromAttacker[TRANSPORT_ARMOR] = 2;
         unitType.FiringRangeFromAttacker["submarine"] = 2;
         unitType.FiringRangeFromAttacker["sub"] = 2;
-        unitType.FiringRangeFromAttacker["battleship"] = 3;
+        unitType.FiringRangeFromAttacker[BATTLESHIP] = 3;
         unitType.FiringRangeFromAttacker["carrier"] = 4;
         unitType.FiringRangeFromAttacker[SPY] = 0;
         unitType.FiringRangeFromAttacker[DECOY_COMMAND_CENTER] = 0;
@@ -242,7 +242,7 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeToDefender[TRANSPORT_ARMOR] = 2;
         unitType.FiringRangeToDefender["submarine"] = 1;
         unitType.FiringRangeToDefender["sub"] = 1;
-        unitType.FiringRangeToDefender["battleship"] = 1;
+        unitType.FiringRangeToDefender[BATTLESHIP] = 1;
         unitType.FiringRangeToDefender["carrier"] = 1;
         unitType.FiringRangeToDefender[SPY] = 2;
         unitType.FiringRangeToDefender[DECOY_COMMAND_CENTER] = 2;
@@ -317,7 +317,7 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageFromAttacker[TRANSPORT_ARMOR] = 7;
         unitType.BattleDamageFromAttacker["submarine"] = 0;
         unitType.BattleDamageFromAttacker["sub"] = 0;
-        unitType.BattleDamageFromAttacker["battleship"] = 6;
+        unitType.BattleDamageFromAttacker[BATTLESHIP] = 6;
         unitType.BattleDamageFromAttacker["carrier"] = 5;
         unitType.BattleDamageFromAttacker[SPY] = 0;
         unitType.BattleDamageFromAttacker[DECOY_COMMAND_CENTER] = 0;
@@ -336,7 +336,7 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageToDefender[TRANSPORT_ARMOR] = 25;
         unitType.BattleDamageToDefender["submarine"] = 25;
         unitType.BattleDamageToDefender["sub"] = 25;
-        unitType.BattleDamageToDefender["battleship"] = 25;
+        unitType.BattleDamageToDefender[BATTLESHIP] = 25;
         unitType.BattleDamageToDefender["carrier"] = 25;
         unitType.BattleDamageToDefender[SPY] = 34;
         unitType.BattleDamageToDefender[DECOY_COMMAND_CENTER] = 34;
@@ -368,7 +368,7 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeFromAttacker[TRANSPORT_ARMOR] = 2;
         unitType.FiringRangeFromAttacker["submarine"] = 0;
         unitType.FiringRangeFromAttacker["sub"] = 0;
-        unitType.FiringRangeFromAttacker["battleship"] = 3;
+        unitType.FiringRangeFromAttacker[BATTLESHIP] = 3;
         unitType.FiringRangeFromAttacker["carrier"] = 4;
         unitType.FiringRangeFromAttacker[SPY] = 0;
         unitType.FiringRangeFromAttacker[DECOY_COMMAND_CENTER] = 0;
@@ -387,7 +387,7 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeToDefender[TRANSPORT_ARMOR] = 2;
         unitType.FiringRangeToDefender["submarine"] = 1;
         unitType.FiringRangeToDefender["sub"] = 1;
-        unitType.FiringRangeToDefender["battleship"] = 1;
+        unitType.FiringRangeToDefender[BATTLESHIP] = 1;
         unitType.FiringRangeToDefender["carrier"] = 1;
         unitType.FiringRangeToDefender[SPY] = 2;
         unitType.FiringRangeToDefender[DECOY_COMMAND_CENTER] = 2;

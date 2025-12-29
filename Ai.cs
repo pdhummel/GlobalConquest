@@ -675,7 +675,7 @@ public class Ai
                 else if (unit.Color.Equals(Faction.Color) && "sea".Equals(unitType.LandOrSea) && !TRANSPORT_INFANTRY.Equals(unit.UnitType))
                 {
                     int distance = 3;
-                    if ("metro".Equals(goal.TargetMapHex.Burb.Type) && "battleship".Equals(unit.UnitType))
+                    if ("metro".Equals(goal.TargetMapHex.Burb.Type) && BATTLESHIP.Equals(unit.UnitType))
                         distance = 2;
                     else if ("metro".Equals(goal.TargetMapHex.Burb.Type) && "carrier".Equals(unit.UnitType))
                         distance = 3;
@@ -732,7 +732,7 @@ public class Ai
                     int distance = 3;
                     Unit unit = aiUnit.Unit;
                     aiUnit.Unit.IsSneaking = false;
-                    if ("metro".Equals(goal.TargetMapHex.Burb.Type) && "battleship".Equals(unit.UnitType))
+                    if ("metro".Equals(goal.TargetMapHex.Burb.Type) && BATTLESHIP.Equals(unit.UnitType))
                         distance = 2;
                     else if ("metro".Equals(goal.TargetMapHex.Burb.Type) && "carrier".Equals(unit.UnitType))
                         distance = 3;
@@ -1078,36 +1078,36 @@ public class Ai
                 break;
             }
             else if (ARMOR.Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { INFANTRY, TRANSPORT_INFANTRY, TRANSPORT_ARMOR, "sub", "battleship", DUG_IN_INFANTRY }
+                     new HashSet<string>() { INFANTRY, TRANSPORT_INFANTRY, TRANSPORT_ARMOR, "sub", BATTLESHIP, DUG_IN_INFANTRY }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
             else if (INFANTRY.Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { TRANSPORT_ARMOR, TRANSPORT_INFANTRY, "sub", "battleship", DUG_IN_INFANTRY }
+                     new HashSet<string>() { TRANSPORT_ARMOR, TRANSPORT_INFANTRY, "sub", BATTLESHIP, DUG_IN_INFANTRY }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
             else if (TRANSPORT_ARMOR.Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { TRANSPORT_INFANTRY, "sub", "battleship", DUG_IN_INFANTRY }
+                     new HashSet<string>() { TRANSPORT_INFANTRY, "sub", BATTLESHIP, DUG_IN_INFANTRY }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
             else if (TRANSPORT_INFANTRY.Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { "sub", "battleship", DUG_IN_INFANTRY }
+                     new HashSet<string>() { "sub", BATTLESHIP, DUG_IN_INFANTRY }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
             else if ("sub".Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { "battleship", DUG_IN_INFANTRY }
+                     new HashSet<string>() { BATTLESHIP, DUG_IN_INFANTRY }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
-            else if ("battleship".Equals(targetUnit.UnitType) &&
+            else if (BATTLESHIP.Equals(targetUnit.UnitType) &&
                      new HashSet<string>() { DUG_IN_INFANTRY }
                      .Contains(targetUnit.UnitType))
             {
@@ -1458,7 +1458,7 @@ public class Ai
         AiUnit battleship = new AiUnit();
         battleship.GoalTargetXy = myMetroHex.X + "," + myMetroHex.Y;
         battleship.DistanceFromTarget = 4;
-        battleship.UnitType = "battleship";
+        battleship.UnitType = BATTLESHIP;
         defendMetro.DesiredUnits.Add(battleship);
         AiUnit carrier = new AiUnit();
         carrier.GoalTargetXy = myMetroHex.X + "," + myMetroHex.Y;
@@ -1686,7 +1686,7 @@ public class Ai
             {
                 if ("carrier".Equals(actualAiUnit.Unit.UnitType))
                     needsCarrier = false;
-                if ("battleship".Equals(actualAiUnit.Unit.UnitType))
+                if (BATTLESHIP.Equals(actualAiUnit.Unit.UnitType))
                     needsBattleship = false;
             }
             if (needsCarrier && attackGoal.GetDesiredCountForUnitType("carrier") < 1)
@@ -1697,11 +1697,11 @@ public class Ai
                 carrier.DistanceFromTarget = 4;
                 attackGoal.DesiredUnits.Add(carrier);
             }
-            if (needsBattleship && attackGoal.GetDesiredCountForUnitType("battleship") < 1)
+            if (needsBattleship && attackGoal.GetDesiredCountForUnitType(BATTLESHIP) < 1)
             {
                 AiUnit battleship = new AiUnit();
                 battleship.GoalTargetXy = attackGoal.TargetMapHex.X + "," + attackGoal.TargetMapHex.Y;
-                battleship.UnitType = "battleship";
+                battleship.UnitType = BATTLESHIP;
                 if ("village".Equals(burbHex.Burb.Type) || "town".Equals(burbHex.Burb.Type))
                     battleship.DistanceFromTarget = 3;
                 else

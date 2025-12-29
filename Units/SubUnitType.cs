@@ -35,7 +35,7 @@ public class SubUnitType : UnitType
         unitType.BattleDamageFromAttacker[TRANSPORT_ARMOR] = 5;
         unitType.BattleDamageFromAttacker["submarine"] = 25;
         unitType.BattleDamageFromAttacker["sub"] = 25;
-        unitType.BattleDamageFromAttacker["battleship"] = 34;
+        unitType.BattleDamageFromAttacker[BATTLESHIP] = 34;
         unitType.BattleDamageFromAttacker["carrier"] = 25;
         unitType.BattleDamageFromAttacker[SPY] = 0;
         unitType.BattleDamageFromAttacker[DECOY_COMMAND_CENTER] = 0;
@@ -54,7 +54,7 @@ public class SubUnitType : UnitType
         unitType.BattleDamageToDefender[TRANSPORT_ARMOR] = 100;
         unitType.BattleDamageToDefender["submarine"] = 25;
         unitType.BattleDamageToDefender["sub"] = 25;
-        unitType.BattleDamageToDefender["battleship"] = 34;
+        unitType.BattleDamageToDefender[BATTLESHIP] = 34;
         unitType.BattleDamageToDefender["carrier"] = 34;
         unitType.BattleDamageToDefender[SPY] = 34;
         unitType.BattleDamageToDefender[DECOY_COMMAND_CENTER] = 34;
@@ -89,7 +89,7 @@ public class SubUnitType : UnitType
         unitType.FiringRangeFromAttacker[TRANSPORT_ARMOR] = 1;
         unitType.FiringRangeFromAttacker["submarine"] = 2;
         unitType.FiringRangeFromAttacker["sub"] = 2;
-        unitType.FiringRangeFromAttacker["battleship"] = 3;
+        unitType.FiringRangeFromAttacker[BATTLESHIP] = 3;
         unitType.FiringRangeFromAttacker["carrier"] = 4;
         unitType.FiringRangeFromAttacker[SPY] = 0;
         unitType.FiringRangeFromAttacker[DECOY_COMMAND_CENTER] = 0;
@@ -108,7 +108,7 @@ public class SubUnitType : UnitType
         unitType.FiringRangeToDefender[TRANSPORT_ARMOR] = 2;
         unitType.FiringRangeToDefender["submarine"] = 2;
         unitType.FiringRangeToDefender["sub"] = 2;
-        unitType.FiringRangeToDefender["battleship"] = 2;
+        unitType.FiringRangeToDefender[BATTLESHIP] = 2;
         unitType.FiringRangeToDefender["carrier"] = 2;
         unitType.FiringRangeToDefender[SPY] = 2;
         unitType.FiringRangeToDefender[DECOY_COMMAND_CENTER] = 2;

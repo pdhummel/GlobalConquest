@@ -1,4 +1,4 @@
-
+using static UnitTypeConstants;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using GlobalConquest.Units;
