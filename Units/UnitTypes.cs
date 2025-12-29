@@ -38,7 +38,7 @@ public class UnitTypes
         SubUnitType subUnitType = new SubUnitType();
         UnitType unitTypeSub = subUnitType.defineSub();
         UnitTypeMap[unitTypeSub.Name] = unitTypeSub;
-        UnitTypeMap["sub"] = unitTypeSub;
+        UnitTypeMap[SUBMARINE] = unitTypeSub;
         UnitTypeMap["submarine"] = unitTypeSub;
 
         BattleshipUnitType battleshipUnitType = new BattleshipUnitType();

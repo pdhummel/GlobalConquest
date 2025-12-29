@@ -10,6 +10,7 @@ using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
+using static UnitTypeConstants;
 using Point = Microsoft.Xna.Framework.Point;
 using Thickness = Myra.Graphics2D.Thickness;
 using Microsoft.Xna.Framework.Input;
@@ -189,7 +190,7 @@ public class MainGameScreen
     }
     public void ShowContextMenu(Unit unit)
     {
-        if ("plane".Equals(unit.UnitType) && unit.StrengthPoints > 0)
+        if (AIRPLANE.Equals(unit.UnitType) && unit.StrengthPoints > 0)
         {
             ContextMenu.ShowContextMenuForPlane(unit);
         }

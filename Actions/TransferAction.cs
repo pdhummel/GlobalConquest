@@ -57,7 +57,7 @@ public class TransferAction : PlayerAction
             MapHex targetMapHex = map.Hexes[DestinationY, DestinationX];
             Unit targetUnit = targetMapHex.getUnit();
             if (targetUnit != null && targetUnit.Color.Equals(Plane.Color) &&
-                (COMMAND_CENTER.Equals(targetUnit.UnitType) || "carrier".Equals(targetUnit.UnitType)) &&
+                (COMMAND_CENTER.Equals(targetUnit.UnitType) || AIRCRAFT_CARRIER.Equals(targetUnit.UnitType)) &&
                 targetUnit.Airplane == null
                )
             {

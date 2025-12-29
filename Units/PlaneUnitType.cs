@@ -417,7 +417,7 @@ public class PlaneUnitType : UnitType
     public UnitType definePlane()
     {
         UnitType unitType = new UnitType();
-        unitType.Name = "plane";
+        unitType.Name = AIRPLANE;
         unitType.LandOrSea = "neither";
 
 
@@ -434,9 +434,9 @@ public class PlaneUnitType : UnitType
         unitType.BattleDamageFromAttacker[TRANSPORT_ARMOR] = 0;
         unitType.BattleDamageFromAttacker[TRANSPORT_ARMOR] = 0;
         unitType.BattleDamageFromAttacker["submarine"] = 0;
-        unitType.BattleDamageFromAttacker["sub"] = 0;
+        unitType.BattleDamageFromAttacker[SUBMARINE] = 0;
         unitType.BattleDamageFromAttacker[BATTLESHIP] = 0;
-        unitType.BattleDamageFromAttacker["carrier"] = 0;
+        unitType.BattleDamageFromAttacker[AIRCRAFT_CARRIER] = 0;
         unitType.BattleDamageFromAttacker[SPY] = 0;
         unitType.BattleDamageFromAttacker[DECOY_COMMAND_CENTER] = 0;
         unitType.BattleDamageFromAttacker["com"] = 0;
@@ -453,9 +453,9 @@ public class PlaneUnitType : UnitType
         unitType.BattleDamageToDefender[TRANSPORT_ARMOR] = 0;
         unitType.BattleDamageToDefender[TRANSPORT_ARMOR] = 0;
         unitType.BattleDamageToDefender["submarine"] = 0;
-        unitType.BattleDamageToDefender["sub"] = 0;
+        unitType.BattleDamageToDefender[SUBMARINE] = 0;
         unitType.BattleDamageToDefender[BATTLESHIP] = 0;
-        unitType.BattleDamageToDefender["carrier"] = 0;
+        unitType.BattleDamageToDefender[AIRCRAFT_CARRIER] = 0;
         unitType.BattleDamageToDefender[SPY] = 0;
         unitType.BattleDamageToDefender[DECOY_COMMAND_CENTER] = 0;
         unitType.BattleDamageToDefender["com"] = 0;
@@ -488,9 +488,9 @@ public class PlaneUnitType : UnitType
         unitType.FiringRangeFromAttacker[TRANSPORT_ARMOR] = 0;
         unitType.FiringRangeFromAttacker[TRANSPORT_ARMOR] = 0;
         unitType.FiringRangeFromAttacker["submarine"] = 0;
-        unitType.FiringRangeFromAttacker["sub"] = 0;
+        unitType.FiringRangeFromAttacker[SUBMARINE] = 0;
         unitType.FiringRangeFromAttacker[BATTLESHIP] = 0;
-        unitType.FiringRangeFromAttacker["carrier"] = 0;
+        unitType.FiringRangeFromAttacker[AIRCRAFT_CARRIER] = 0;
         unitType.FiringRangeFromAttacker[SPY] = 0;
         unitType.FiringRangeFromAttacker[DECOY_COMMAND_CENTER] = 0;
         unitType.FiringRangeFromAttacker["com"] = 0;
@@ -507,9 +507,9 @@ public class PlaneUnitType : UnitType
         unitType.FiringRangeToDefender[TRANSPORT_ARMOR] = 0;
         unitType.FiringRangeToDefender[TRANSPORT_ARMOR] = 0;
         unitType.FiringRangeToDefender["submarine"] = 0;
-        unitType.FiringRangeToDefender["sub"] = 0;
+        unitType.FiringRangeToDefender[SUBMARINE] = 0;
         unitType.FiringRangeToDefender[BATTLESHIP] = 0;
-        unitType.FiringRangeToDefender["carrier"] = 0;
+        unitType.FiringRangeToDefender[AIRCRAFT_CARRIER] = 0;
         unitType.FiringRangeToDefender[SPY] = 0;
         unitType.FiringRangeToDefender[DECOY_COMMAND_CENTER] = 0;
         unitType.FiringRangeToDefender["com"] = 0;

@@ -7,7 +7,7 @@ using GlobalConquest.HexMapEngine.Structures;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
-using System.Numerics;
+using static UnitTypeConstants;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Color = Microsoft.Xna.Framework.Color;
 
@@ -432,7 +432,7 @@ class HexMapEngineAdapter
 
         if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
         {
-            if (unitTypeId.Contains("plane"))
+            if (unitTypeId.Contains(AIRPLANE))
             {
                 pixelVector.X += 20 - currentPixelPosition.X;
                 pixelVector.Y += 19 - currentPixelPosition.Y;
@@ -457,7 +457,7 @@ class HexMapEngineAdapter
             return;
         }
         float layerDepth = 0.5f;
-        if (unitTypeId.Contains("plane"))
+        if (unitTypeId.Contains(AIRPLANE))
             layerDepth = 0.35f;
         if (units.ContainsKey(unitTypeId))
         {

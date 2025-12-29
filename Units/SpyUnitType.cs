@@ -72,9 +72,9 @@ public class SpyUnitType : UnitType
         unitType.BattleDamageFromAttacker[TRANSPORT_ARMOR] = 34;
         unitType.BattleDamageFromAttacker[TRANSPORT_ARMOR] = 34;
         unitType.BattleDamageFromAttacker["submarine"] = 34;
-        unitType.BattleDamageFromAttacker["sub"] = 34;
+        unitType.BattleDamageFromAttacker[SUBMARINE] = 34;
         unitType.BattleDamageFromAttacker[BATTLESHIP] = 34;
-        unitType.BattleDamageFromAttacker["carrier"] = 34;
+        unitType.BattleDamageFromAttacker[AIRCRAFT_CARRIER] = 34;
         unitType.BattleDamageFromAttacker[SPY] = 0;
         unitType.BattleDamageFromAttacker[DECOY_COMMAND_CENTER] = 0;
         unitType.BattleDamageFromAttacker["com"] = 34;
@@ -91,9 +91,9 @@ public class SpyUnitType : UnitType
         unitType.BattleDamageToDefender[TRANSPORT_ARMOR] = 0;
         unitType.BattleDamageToDefender[TRANSPORT_ARMOR] = 0;
         unitType.BattleDamageToDefender["submarine"] = 0;
-        unitType.BattleDamageToDefender["sub"] = 0;
+        unitType.BattleDamageToDefender[SUBMARINE] = 0;
         unitType.BattleDamageToDefender[BATTLESHIP] = 0;
-        unitType.BattleDamageToDefender["carrier"] = 0;
+        unitType.BattleDamageToDefender[AIRCRAFT_CARRIER] = 0;
         unitType.BattleDamageToDefender[SPY] = 0;
         unitType.BattleDamageToDefender[DECOY_COMMAND_CENTER] = 0;
         unitType.BattleDamageToDefender["com"] = 0;
@@ -123,9 +123,9 @@ public class SpyUnitType : UnitType
         unitType.FiringRangeFromAttacker[TRANSPORT_ARMOR] = 2;
         unitType.FiringRangeFromAttacker[TRANSPORT_ARMOR] = 2;
         unitType.FiringRangeFromAttacker["submarine"] = 2;
-        unitType.FiringRangeFromAttacker["sub"] = 2;
+        unitType.FiringRangeFromAttacker[SUBMARINE] = 2;
         unitType.FiringRangeFromAttacker[BATTLESHIP] = 3;
-        unitType.FiringRangeFromAttacker["carrier"] = 4;
+        unitType.FiringRangeFromAttacker[AIRCRAFT_CARRIER] = 4;
         unitType.FiringRangeFromAttacker[SPY] = 0;
         unitType.FiringRangeFromAttacker[DECOY_COMMAND_CENTER] = 0;
         unitType.FiringRangeFromAttacker["com"] = 2;
@@ -142,9 +142,9 @@ public class SpyUnitType : UnitType
         unitType.FiringRangeToDefender[TRANSPORT_ARMOR] = 0;
         unitType.FiringRangeToDefender[TRANSPORT_ARMOR] = 0;
         unitType.FiringRangeToDefender["submarine"] = 0;
-        unitType.FiringRangeToDefender["sub"] = 0;
+        unitType.FiringRangeToDefender[SUBMARINE] = 0;
         unitType.FiringRangeToDefender[BATTLESHIP] = 0;
-        unitType.FiringRangeToDefender["carrier"] = 0;
+        unitType.FiringRangeToDefender[AIRCRAFT_CARRIER] = 0;
         unitType.FiringRangeToDefender[SPY] = 0;
         unitType.FiringRangeToDefender[DECOY_COMMAND_CENTER] = 0;
         unitType.FiringRangeToDefender["com"] = 0;

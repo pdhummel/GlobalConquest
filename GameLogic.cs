@@ -448,7 +448,7 @@ public class GameLogic
                     continue;
 
                 // Subs can't be spotted by planes, spies or any other unit until they attack.
-                if ("sub".Equals(hexUnit.UnitType) && !hexUnit.IsAttacking)
+                if (SUBMARINE.Equals(hexUnit.UnitType) && !hexUnit.IsAttacking)
                     continue;
 
                 if (SPY.Equals(hexUnit.UnitType) && !SPY.Equals(unit.UnitType))
@@ -469,7 +469,7 @@ public class GameLogic
                 }
 
                 // Sub scanning range is reduced to 3 if target not moving.
-                if (("sub".Equals(unit.UnitType) || "submarine".Equals(unit.UnitType)) &&
+                if ((SUBMARINE.Equals(unit.UnitType) || "submarine".Equals(unit.UnitType)) &&
                     !isHexUnitMoving &&
                     !hexesToScanBySubForNonMovingUnits.Contains(hex))
                 {
@@ -479,7 +479,7 @@ public class GameLogic
 
                 // Subs can only be spotted at a range of 1 if they are stationary or
                 // if the scanning unit is moving regardless of unit's normal range.
-                if (("sub".Equals(hexUnit.UnitType) || "submarine".Equals(hexUnit.UnitType)) &&
+                if ((SUBMARINE.Equals(hexUnit.UnitType) || "submarine".Equals(hexUnit.UnitType)) &&
                     (isUnitMoving || !isHexUnitMoving) &&
                     !hexesToScanForStationarySubs.Contains(hex))
                 {
@@ -502,7 +502,7 @@ public class GameLogic
                     previousVisibility = hexUnit.Visibility[unit.Color];
                 hexUnit.Visibility[unit.Color] = true;
                 hexUnit.RoundsToBeSeen[unit.Color] = 8;
-                if ("sub".Equals(hexUnit.UnitType) || "submarine".Equals(hexUnit.UnitType))
+                if (SUBMARINE.Equals(hexUnit.UnitType) || "submarine".Equals(hexUnit.UnitType))
                 {
                     hexUnit.RoundsToBeSeen[unit.Color] = 2;
                 }
@@ -703,7 +703,7 @@ public class GameLogic
 
             // Battleships and carriers can "bombard" land units once they are within range.
             // However, this type of combat cannot reduce the land unit below 30% strength.
-            if (("carrier".Equals(unit.UnitType) || BATTLESHIP.Equals(unit.UnitType)) &&
+            if ((AIRCRAFT_CARRIER.Equals(unit.UnitType) || BATTLESHIP.Equals(unit.UnitType)) &&
                  (ARMOR.Equals(unitToAttack.UnitType) || ARMOR.Equals(unitToAttack.UnitType) || INFANTRY.Equals(unitToAttack.UnitType) || DUG_IN_INFANTRY.Equals(unitToAttack.UnitType)))
             {
                 if (unitToAttack.StrengthPoints <= 30 && previousStrength >= 30)
@@ -757,7 +757,7 @@ public class GameLogic
                 previousVisibility = unit.Visibility[unitToAttack.Color];
             unit.Visibility[unitToAttack.Color] = true;
             unit.RoundsToBeSeen[unitToAttack.Color] = 8;
-            if ("sub".Equals(unit.UnitType) || "submarine".Equals(unit.UnitType))
+            if (SUBMARINE.Equals(unit.UnitType) || "submarine".Equals(unit.UnitType))
             {
                 unit.RoundsToBeSeen[unitToAttack.Color] = 2;
             }
@@ -904,7 +904,7 @@ public class GameLogic
                     }
 
                     // Start unloading
-                    if ("sea".Equals(unitType.LandOrSea) && (unitType.Name.Contains("transport")) && 
+                    if ("sea".Equals(unitType.LandOrSea) && (unitType.Name.Contains(TRANSPORT)) && 
                        !unit.IsUnloading && !unit.IsLoading &&
                        ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
                     {
@@ -973,7 +973,7 @@ public class GameLogic
                         }
                     }
 
-                    if ("sea".Equals(unitType.LandOrSea) && (!unitType.Name.Contains("transport")) &&
+                    if ("sea".Equals(unitType.LandOrSea) && (!unitType.Name.Contains(TRANSPORT)) &&
                        ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
                     {
                         Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " cannot move on land.");

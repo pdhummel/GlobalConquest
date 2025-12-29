@@ -195,7 +195,7 @@ public class Map
             unit.Y = y;
             string id = unit.generateId();
 
-            if ("plane".Equals(unit.UnitType))
+            if (AIRPLANE.Equals(unit.UnitType))
                 Hexes[y, x].Airplane = unit;
             else
             {

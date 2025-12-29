@@ -313,7 +313,7 @@ public class Ai
             if (unit != null && unit.Color.Equals(myMetroHex.Burb.Color) &&
                 !unit.UnitType.Equals(COMMAND_CENTER) &&
                 !unit.UnitType.Equals(SPY) &&
-                !unit.UnitType.Equals("carrier") &&
+                !unit.UnitType.Equals(AIRCRAFT_CARRIER) &&
                 !(unit.X == myMetroHex.X && unit.Y == myMetroHex.Y))
             {
                 if (unit.ActionQueue.Count <= 0)
@@ -677,7 +677,7 @@ public class Ai
                     int distance = 3;
                     if ("metro".Equals(goal.TargetMapHex.Burb.Type) && BATTLESHIP.Equals(unit.UnitType))
                         distance = 2;
-                    else if ("metro".Equals(goal.TargetMapHex.Burb.Type) && "carrier".Equals(unit.UnitType))
+                    else if ("metro".Equals(goal.TargetMapHex.Burb.Type) && AIRCRAFT_CARRIER.Equals(unit.UnitType))
                         distance = 3;
                     MapHex nearbySeaHex = findHexAroundBurb(goal.TargetMapHex, unit, distance);
                     if (nearbySeaHex != null)
@@ -704,7 +704,7 @@ public class Ai
             {
                 goal.ActualUnits.Remove(aiUnit);
             }
-            if ("plane".Equals(aiUnit.UnitType) && aiUnit.Unit != null)
+            if (AIRPLANE.Equals(aiUnit.UnitType) && aiUnit.Unit != null)
             {
                 flyMission(goal, aiUnit.Unit);
                 continue;
@@ -734,7 +734,7 @@ public class Ai
                     aiUnit.Unit.IsSneaking = false;
                     if ("metro".Equals(goal.TargetMapHex.Burb.Type) && BATTLESHIP.Equals(unit.UnitType))
                         distance = 2;
-                    else if ("metro".Equals(goal.TargetMapHex.Burb.Type) && "carrier".Equals(unit.UnitType))
+                    else if ("metro".Equals(goal.TargetMapHex.Burb.Type) && AIRCRAFT_CARRIER.Equals(unit.UnitType))
                         distance = 3;
                     MapHex nearbyHex = findHexAroundBurb(goal.TargetMapHex, aiUnit, distance);
                     if (nearbyHex != null)
@@ -769,13 +769,13 @@ public class Ai
             {
                 if (IsUnitInPosition(goal, aiUnit))
                 {
-                    if ("conquer".Equals(goal.Type) && "carrier".Equals(unitType.Name))
+                    if ("conquer".Equals(goal.Type) && AIRCRAFT_CARRIER.Equals(unitType.Name))
                     {
                         aiUnit.Unit.IsSneaking = false;
                     }
                     continue;
                 }
-                //if ("conquer".Equals(goal.Type) && "carrier".Equals(unitType.Name) && aiUnit.Unit.StrengthPoints < 100)
+                //if ("conquer".Equals(goal.Type) && AIRCRAFT_CARRIER.Equals(unitType.Name) && aiUnit.Unit.StrengthPoints < 100)
                 //{
                 //    aiUnit.Unit.IsSneaking = false;
                 //}
@@ -785,7 +785,7 @@ public class Ai
                     Globals.Log("Ai.moveUnits(): DistanceFromTarget=" + aiUnit.DistanceFromTarget + ", " +
                         aiUnit.Unit.Id + " to " + foundMapHex.X + "," + foundMapHex.Y);
                     //if ("conquer".Equals(goal.Type) &&
-                    //    ("carrier".Equals(unitType.Name) && aiUnit.Unit.StrengthPoints == 100))
+                    //    (AIRCRAFT_CARRIER.Equals(unitType.Name) && aiUnit.Unit.StrengthPoints == 100))
                     //{
                     //    aiUnit.Unit.IsSneaking = true;
                     //}
@@ -970,7 +970,7 @@ public class Ai
 
     private void moveUnit(UnitType unitType, Unit unit, MapHex toHex)
     {
-        if ("plane".Equals(unitType.Name) || !unit.Color.Equals(Faction.Color))
+        if (AIRPLANE.Equals(unitType.Name) || !unit.Color.Equals(Faction.Color))
         {
             return;
         }
@@ -1078,30 +1078,30 @@ public class Ai
                 break;
             }
             else if (ARMOR.Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { INFANTRY, TRANSPORT_INFANTRY, TRANSPORT_ARMOR, "sub", BATTLESHIP, DUG_IN_INFANTRY }
+                     new HashSet<string>() { INFANTRY, TRANSPORT_INFANTRY, TRANSPORT_ARMOR, SUBMARINE, BATTLESHIP, DUG_IN_INFANTRY }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
             else if (INFANTRY.Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { TRANSPORT_ARMOR, TRANSPORT_INFANTRY, "sub", BATTLESHIP, DUG_IN_INFANTRY }
+                     new HashSet<string>() { TRANSPORT_ARMOR, TRANSPORT_INFANTRY, SUBMARINE, BATTLESHIP, DUG_IN_INFANTRY }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
             else if (TRANSPORT_ARMOR.Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { TRANSPORT_INFANTRY, "sub", BATTLESHIP, DUG_IN_INFANTRY }
+                     new HashSet<string>() { TRANSPORT_INFANTRY, SUBMARINE, BATTLESHIP, DUG_IN_INFANTRY }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
             else if (TRANSPORT_INFANTRY.Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { "sub", BATTLESHIP, DUG_IN_INFANTRY }
+                     new HashSet<string>() { SUBMARINE, BATTLESHIP, DUG_IN_INFANTRY }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
-            else if ("sub".Equals(targetUnit.UnitType) &&
+            else if (SUBMARINE.Equals(targetUnit.UnitType) &&
                      new HashSet<string>() { BATTLESHIP, DUG_IN_INFANTRY }
                      .Contains(targetUnit.UnitType))
             {
@@ -1215,7 +1215,7 @@ public class Ai
     {
         UnitType unitType = gameState.UnitTypes.UnitTypeMap[unitTypeString];
         Unit unit = null;
-        if ("plane".Equals(unitTypeString) && burbHex.Airplane == null)
+        if (AIRPLANE.Equals(unitTypeString) && burbHex.Airplane == null)
         {
             unit = new Unit();
             unit.UnitType = unitTypeString;
@@ -1292,7 +1292,7 @@ public class Ai
         {
             foreach (MapHex suburbHex in map.getSurroundingHexesList(burbHex))
             {
-                if ("plane".Equals(unitTypeString) && suburbHex.Burb != null && ("suburb".Equals(suburbHex.Burb.Type)) && suburbHex.Airplane == null)
+                if (AIRPLANE.Equals(unitTypeString) && suburbHex.Burb != null && ("suburb".Equals(suburbHex.Burb.Type)) && suburbHex.Airplane == null)
                 {
                     unit = new Unit();
                     unit.UnitType = unitTypeString;
@@ -1344,7 +1344,7 @@ public class Ai
             MapHex targetHex = null;
             int randomNumber = random.Next(0, 4);
             // Sea units can't go to the capital
-            if ("sea".Equals(unitType.LandOrSea) && randomNumber == 0 && !unitType.Name.Contains("transport"))
+            if ("sea".Equals(unitType.LandOrSea) && randomNumber == 0 && !unitType.Name.Contains(TRANSPORT))
                 randomNumber = 3;
             if (randomNumber == 0)
                 targetHex = Server.gameState.Map.getCapitalHex();
@@ -1432,17 +1432,17 @@ public class Ai
         AiUnit sub1 = new AiUnit();
         sub1.GoalTargetXy = myMetroHex.X + "," + myMetroHex.Y;
         sub1.DistanceFromTarget = 5;
-        sub1.UnitType = "sub";
+        sub1.UnitType = SUBMARINE;
         defendMetro.DesiredUnits.Add(sub1);
         AiUnit sub2 = new AiUnit();
         sub2.GoalTargetXy = myMetroHex.X + "," + myMetroHex.Y;
         sub2.DistanceFromTarget = 5;
-        sub2.UnitType = "sub";
+        sub2.UnitType = SUBMARINE;
         defendMetro.DesiredUnits.Add(sub2);
         AiUnit sub3 = new AiUnit();
         sub3.GoalTargetXy = myMetroHex.X + "," + myMetroHex.Y;
         sub3.DistanceFromTarget = 5;
-        sub3.UnitType = "sub";
+        sub3.UnitType = SUBMARINE;
         defendMetro.DesiredUnits.Add(sub3);
         AiUnit infantry = new AiUnit();
         infantry.GoalTargetXy = myMetroHex.X + "," + myMetroHex.Y;
@@ -1453,7 +1453,7 @@ public class Ai
         AiUnit plane = new AiUnit();
         plane.GoalTargetXy = myMetroHex.X + "," + myMetroHex.Y;
         plane.InitialPosition = myMetroHex;
-        plane.UnitType = "plane";
+        plane.UnitType = AIRPLANE;
         defendMetro.DesiredUnits.Add(plane);
         AiUnit battleship = new AiUnit();
         battleship.GoalTargetXy = myMetroHex.X + "," + myMetroHex.Y;
@@ -1463,7 +1463,7 @@ public class Ai
         AiUnit carrier = new AiUnit();
         carrier.GoalTargetXy = myMetroHex.X + "," + myMetroHex.Y;
         carrier.DistanceFromTarget = 3;
-        carrier.UnitType = "carrier";
+        carrier.UnitType = AIRCRAFT_CARRIER;
         defendMetro.DesiredUnits.Add(carrier);
         goals.Add(defendMetro);
     }
@@ -1478,7 +1478,7 @@ public class Ai
         AiUnit sub1 = new AiUnit();
         sub1.GoalTargetXy = metro.X + "," + metro.Y;
         sub1.DistanceFromTarget = 3;
-        sub1.UnitType = "sub";
+        sub1.UnitType = SUBMARINE;
         exploreMetro.DesiredUnits.Add(sub1);
         AiUnit infantry = new AiUnit();
         infantry.GoalTargetXy = metro.X + "," + metro.Y;
@@ -1517,7 +1517,7 @@ public class Ai
         AiUnit plane = new AiUnit();
         plane.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
         plane.InitialPosition = burbHex;
-        plane.UnitType = "plane";
+        plane.UnitType = AIRPLANE;
         defendGoal.DesiredUnits.Add(plane);
         Globals.Log("createDefendBurbGoal(): " + burbHex.Burb.Type);
         if ("village".Equals(burbHex.Burb.Type))
@@ -1540,14 +1540,14 @@ public class Ai
                 AiUnit sub1 = new AiUnit();
                 sub1.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
                 sub1.DistanceFromTarget = 3;
-                sub1.UnitType = "sub";
+                sub1.UnitType = SUBMARINE;
                 defendGoal.DesiredUnits.Add(sub1);
                 if (!"town".Equals(burbHex.Burb.Type))
                 {
                     AiUnit sub2 = new AiUnit();
                     sub2.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
                     sub2.DistanceFromTarget = 4;
-                    sub2.UnitType = "sub";
+                    sub2.UnitType = SUBMARINE;
                     defendGoal.DesiredUnits.Add(sub2);
                 }
             }
@@ -1684,16 +1684,16 @@ public class Ai
             bool needsBattleship = true;
             foreach (AiUnit actualAiUnit in attackGoal.ActualUnits)
             {
-                if ("carrier".Equals(actualAiUnit.Unit.UnitType))
+                if (AIRCRAFT_CARRIER.Equals(actualAiUnit.Unit.UnitType))
                     needsCarrier = false;
                 if (BATTLESHIP.Equals(actualAiUnit.Unit.UnitType))
                     needsBattleship = false;
             }
-            if (needsCarrier && attackGoal.GetDesiredCountForUnitType("carrier") < 1)
+            if (needsCarrier && attackGoal.GetDesiredCountForUnitType(AIRCRAFT_CARRIER) < 1)
             {
                 AiUnit carrier = new AiUnit();
                 carrier.GoalTargetXy = attackGoal.TargetMapHex.X + "," + attackGoal.TargetMapHex.Y;
-                carrier.UnitType = "carrier";
+                carrier.UnitType = AIRCRAFT_CARRIER;
                 carrier.DistanceFromTarget = 4;
                 attackGoal.DesiredUnits.Add(carrier);
             }

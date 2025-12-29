@@ -1,4 +1,4 @@
-using System.Collections;
+using static UnitTypeConstants;
 using System.Text.Json;
 using GlobalConquest.Units;
 namespace GlobalConquest;
@@ -65,7 +65,7 @@ public class MapHex
         if (Airplane != null)
             return Airplane;
         Unit unit = getUnit();
-        if ("plane".Equals(unit.UnitType))
+        if (AIRPLANE.Equals(unit.UnitType))
         {
             return unit;
         }

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using LiteNetLib;
 using GlobalConquest.Units;
+using static UnitTypeConstants;
 namespace GlobalConquest.Actions;
 
 public class ChangeUnitContextAction : PlayerAction
@@ -33,7 +34,7 @@ public class ChangeUnitContextAction : PlayerAction
             Globals.Log("execute(): unitType=" + Unit.UnitType);
             MapHex mapHex = gameState.Map.Hexes[Unit.Y, Unit.X];
             Unit existingUnit = mapHex.getUnit();
-            if ("plane".Equals(Unit.UnitType))
+            if (AIRPLANE.Equals(Unit.UnitType))
             {
                 PlaneUnitType planeUnitType = new PlaneUnitType();
                 Unit existingPlane = planeUnitType.getExistingPlane(gameState.Map, Unit);

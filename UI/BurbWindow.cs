@@ -246,8 +246,8 @@ public class BurbWindow
         addLabelToGrid(grid, rowIndex++, 1, "35");
         costByRow[rowIndex] = 25;
         seaUnitRows.Add(rowIndex);
-        unitTypeByRow[rowIndex] = "sub";
-        addLabelToGrid(grid, rowIndex, 0, "Sub");
+        unitTypeByRow[rowIndex] = SUBMARINE;
+        addLabelToGrid(grid, rowIndex, 0, SUBMARINE);
         addLabelToGrid(grid, rowIndex++, 1, "25");
         costByRow[rowIndex] = 35;
         seaUnitRows.Add(rowIndex);
@@ -256,8 +256,8 @@ public class BurbWindow
         addLabelToGrid(grid, rowIndex++, 1, "35");
         costByRow[rowIndex] = 45;
         seaUnitRows.Add(rowIndex);
-        unitTypeByRow[rowIndex] = "carrier";
-        addLabelToGrid(grid, rowIndex, 0, "Carrier");
+        unitTypeByRow[rowIndex] = AIRCRAFT_CARRIER;
+        addLabelToGrid(grid, rowIndex, 0, AIRCRAFT_CARRIER);
         addLabelToGrid(grid, rowIndex++, 1, "45");
         costByRow[rowIndex] = 85;
         landUnitRows.Add(rowIndex);
@@ -266,8 +266,8 @@ public class BurbWindow
         addLabelToGrid(grid, rowIndex++, 1, "85");
         costByRow[rowIndex] = 35;
         airUnitRows.Add(rowIndex);
-        unitTypeByRow[rowIndex] = "plane";
-        addLabelToGrid(grid, rowIndex, 0, "Plane");
+        unitTypeByRow[rowIndex] = AIRPLANE;
+        addLabelToGrid(grid, rowIndex, 0, AIRPLANE);
         addLabelToGrid(grid, rowIndex++, 1, "35");
 
         List<int> rows = [];

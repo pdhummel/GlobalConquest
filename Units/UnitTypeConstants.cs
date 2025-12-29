@@ -17,8 +17,8 @@ public static class UnitTypeConstants
     public const string AIRPLANE = "plane";
     public const string TRANSPORT = "transport";
 
-
 }
+
 
 
 

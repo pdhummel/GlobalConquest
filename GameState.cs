@@ -85,7 +85,7 @@ public class GameState
         spy.Color = color;
 
         Unit plane1 = new Unit();
-        plane1.UnitType = "plane";
+        plane1.UnitType = AIRPLANE;
         plane1.Color = color;
 
         if ("Omniscient".Equals(GameSettings.Visibility))

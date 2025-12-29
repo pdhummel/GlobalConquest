@@ -19,7 +19,7 @@ public class SubUnitType : UnitType
     public UnitType defineSub()
     {
         UnitType unitType = new UnitType();
-        unitType.Name = "sub";
+        unitType.Name = SUBMARINE;
         unitType.LandOrSea = "sea";
 
         // can't become dug-in infantry in swamp
@@ -34,9 +34,9 @@ public class SubUnitType : UnitType
         unitType.BattleDamageFromAttacker[TRANSPORT_ARMOR] = 5;
         unitType.BattleDamageFromAttacker[TRANSPORT_ARMOR] = 5;
         unitType.BattleDamageFromAttacker["submarine"] = 25;
-        unitType.BattleDamageFromAttacker["sub"] = 25;
+        unitType.BattleDamageFromAttacker[SUBMARINE] = 25;
         unitType.BattleDamageFromAttacker[BATTLESHIP] = 34;
-        unitType.BattleDamageFromAttacker["carrier"] = 25;
+        unitType.BattleDamageFromAttacker[AIRCRAFT_CARRIER] = 25;
         unitType.BattleDamageFromAttacker[SPY] = 0;
         unitType.BattleDamageFromAttacker[DECOY_COMMAND_CENTER] = 0;
         unitType.BattleDamageFromAttacker["com"] = 20;
@@ -53,9 +53,9 @@ public class SubUnitType : UnitType
         unitType.BattleDamageToDefender[TRANSPORT_ARMOR] = 100;
         unitType.BattleDamageToDefender[TRANSPORT_ARMOR] = 100;
         unitType.BattleDamageToDefender["submarine"] = 25;
-        unitType.BattleDamageToDefender["sub"] = 25;
+        unitType.BattleDamageToDefender[SUBMARINE] = 25;
         unitType.BattleDamageToDefender[BATTLESHIP] = 34;
-        unitType.BattleDamageToDefender["carrier"] = 34;
+        unitType.BattleDamageToDefender[AIRCRAFT_CARRIER] = 34;
         unitType.BattleDamageToDefender[SPY] = 34;
         unitType.BattleDamageToDefender[DECOY_COMMAND_CENTER] = 34;
         unitType.BattleDamageToDefender["com"] = 10;
@@ -88,9 +88,9 @@ public class SubUnitType : UnitType
         unitType.FiringRangeFromAttacker[TRANSPORT_ARMOR] = 1;
         unitType.FiringRangeFromAttacker[TRANSPORT_ARMOR] = 1;
         unitType.FiringRangeFromAttacker["submarine"] = 2;
-        unitType.FiringRangeFromAttacker["sub"] = 2;
+        unitType.FiringRangeFromAttacker[SUBMARINE] = 2;
         unitType.FiringRangeFromAttacker[BATTLESHIP] = 3;
-        unitType.FiringRangeFromAttacker["carrier"] = 4;
+        unitType.FiringRangeFromAttacker[AIRCRAFT_CARRIER] = 4;
         unitType.FiringRangeFromAttacker[SPY] = 0;
         unitType.FiringRangeFromAttacker[DECOY_COMMAND_CENTER] = 0;
         unitType.FiringRangeFromAttacker["com"] = 2;
@@ -107,9 +107,9 @@ public class SubUnitType : UnitType
         unitType.FiringRangeToDefender[TRANSPORT_ARMOR] = 2;
         unitType.FiringRangeToDefender[TRANSPORT_ARMOR] = 2;
         unitType.FiringRangeToDefender["submarine"] = 2;
-        unitType.FiringRangeToDefender["sub"] = 2;
+        unitType.FiringRangeToDefender[SUBMARINE] = 2;
         unitType.FiringRangeToDefender[BATTLESHIP] = 2;
-        unitType.FiringRangeToDefender["carrier"] = 2;
+        unitType.FiringRangeToDefender[AIRCRAFT_CARRIER] = 2;
         unitType.FiringRangeToDefender[SPY] = 2;
         unitType.FiringRangeToDefender[DECOY_COMMAND_CENTER] = 2;
         unitType.FiringRangeToDefender["com"] = 2;

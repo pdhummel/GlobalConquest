@@ -10,6 +10,7 @@ using Label = Myra.Graphics2D.UI.Label;
 using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.ObjectModel;
+using static UnitTypeConstants;
 namespace GlobalConquest.UI;
 
 public class ContextMenu
@@ -417,7 +418,7 @@ public class ContextMenu
             return;
         }
         HideContextMenu();
-        if (plane == null || plane.StrengthPoints <= 0 || !"plane".Equals(plane.UnitType))
+        if (plane == null || plane.StrengthPoints <= 0 || !AIRPLANE.Equals(plane.UnitType))
         {
             return;
         }

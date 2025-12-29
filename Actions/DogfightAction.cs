@@ -1,6 +1,7 @@
 using System.Text.Json;
 using GlobalConquest.Units;
 using LiteNetLib;
+using static UnitTypeConstants;
 namespace GlobalConquest.Actions;
 
 public class DogfightAction : PlayerAction
@@ -46,7 +47,7 @@ public class DogfightAction : PlayerAction
             Unit enemyPlane = null;
             if (targetUnit != null)
             {   
-                if ("plane".Equals(targetUnit.UnitType))
+                if (AIRPLANE.Equals(targetUnit.UnitType))
                     enemyPlane = targetUnit;
                 else if (targetUnit.Airplane != null)
                     {

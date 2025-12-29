@@ -169,14 +169,14 @@
             <summary>
             Gets type of intersection between specified <see cref="T:Microsoft.Xna.Framework.Plane"/> and this <see cref="T:Microsoft.Xna.Framework.BoundingFrustum"/>.
             </summary>
-            <param name="plane">A <see cref="T:Microsoft.Xna.Framework.Plane"/> for intersection test.</param>
+            <param name=AIRPLANE>A <see cref="T:Microsoft.Xna.Framework.Plane"/> for intersection test.</param>
             <returns>A plane intersection type.</returns>
         </member>
         <member name="M:Microsoft.Xna.Framework.BoundingFrustum.Intersects(Microsoft.Xna.Framework.Plane@,Microsoft.Xna.Framework.PlaneIntersectionType@)">
             <summary>
             Gets type of intersection between specified <see cref="T:Microsoft.Xna.Framework.Plane"/> and this <see cref="T:Microsoft.Xna.Framework.BoundingFrustum"/>.
             </summary>
-            <param name="plane">A <see cref="T:Microsoft.Xna.Framework.Plane"/> for intersection test.</param>
+            <param name=AIRPLANE>A <see cref="T:Microsoft.Xna.Framework.Plane"/> for intersection test.</param>
             <param name="result">A plane intersection type as an output parameter.</param>
         </member>
         <member name="M:Microsoft.Xna.Framework.BoundingFrustum.Intersects(Microsoft.Xna.Framework.Ray)">
@@ -409,14 +409,14 @@
             <summary>
             Gets whether or not a specified <see cref="T:Microsoft.Xna.Framework.Plane"/> intersects with this sphere.
             </summary>
-            <param name="plane">The plane for testing.</param>
+            <param name=AIRPLANE>The plane for testing.</param>
             <returns>Type of intersection.</returns>
         </member>
         <member name="M:Microsoft.Xna.Framework.BoundingSphere.Intersects(Microsoft.Xna.Framework.Plane@,Microsoft.Xna.Framework.PlaneIntersectionType@)">
             <summary>
             Gets whether or not a specified <see cref="T:Microsoft.Xna.Framework.Plane"/> intersects with this sphere.
             </summary>
-            <param name="plane">The plane for testing.</param>
+            <param name=AIRPLANE>The plane for testing.</param>
             <param name="result">Type of intersection as an output parameter.</param>
         </member>
         <member name="M:Microsoft.Xna.Framework.BoundingSphere.Intersects(Microsoft.Xna.Framework.Ray)">
@@ -2712,7 +2712,7 @@
             Creates a new <see cref="T:Microsoft.Xna.Framework.Matrix"/> that flattens geometry into a specified <see cref="T:Microsoft.Xna.Framework.Plane"/> as if casting a shadow from a specified light source. 
             </summary>
             <param name="lightDirection">A vector specifying the direction from which the light that will cast the shadow is coming.</param>
-            <param name="plane">The plane onto which the new matrix should flatten geometry so as to cast a shadow.</param>
+            <param name=AIRPLANE>The plane onto which the new matrix should flatten geometry so as to cast a shadow.</param>
             <returns>A <see cref="T:Microsoft.Xna.Framework.Matrix"/> that can be used to flatten geometry onto the specified plane from the specified direction. </returns>
         </member>
         <member name="M:Microsoft.Xna.Framework.Matrix.CreateShadow(Microsoft.Xna.Framework.Vector3@,Microsoft.Xna.Framework.Plane@,Microsoft.Xna.Framework.Matrix@)">
@@ -2720,7 +2720,7 @@
             Creates a new <see cref="T:Microsoft.Xna.Framework.Matrix"/> that flattens geometry into a specified <see cref="T:Microsoft.Xna.Framework.Plane"/> as if casting a shadow from a specified light source. 
             </summary>
             <param name="lightDirection">A vector specifying the direction from which the light that will cast the shadow is coming.</param>
-            <param name="plane">The plane onto which the new matrix should flatten geometry so as to cast a shadow.</param>
+            <param name=AIRPLANE>The plane onto which the new matrix should flatten geometry so as to cast a shadow.</param>
             <param name="result">A <see cref="T:Microsoft.Xna.Framework.Matrix"/> that can be used to flatten geometry onto the specified plane from the specified direction as an output parameter.</param>
         </member>
         <member name="M:Microsoft.Xna.Framework.Matrix.CreateTranslation(System.Single,System.Single,System.Single)">
@@ -3134,7 +3134,7 @@
             Returns a value indicating what side (positive/negative) of a plane a point is
             </summary>
             <param name="point">The point to check with</param>
-            <param name="plane">The plane to check against</param>
+            <param name=AIRPLANE>The plane to check against</param>
             <returns>Greater than zero if on the positive side, less than zero if on the negative size, 0 otherwise</returns>
         </member>
         <member name="M:Microsoft.Xna.Framework.PlaneHelper.PerpendicularDistance(Microsoft.Xna.Framework.Vector3@,Microsoft.Xna.Framework.Plane@)">
@@ -3142,14 +3142,14 @@
             Returns the perpendicular distance from a point to a plane
             </summary>
             <param name="point">The point to check</param>
-            <param name="plane">The place to check</param>
+            <param name=AIRPLANE>The place to check</param>
             <returns>The perpendicular distance from the point to the plane</returns>
         </member>
         <member name="M:Microsoft.Xna.Framework.Plane.Transform(Microsoft.Xna.Framework.Plane,Microsoft.Xna.Framework.Matrix)">
             <summary>
             Transforms a normalized plane by a matrix.
             </summary>
-            <param name="plane">The normalized plane to transform.</param>
+            <param name=AIRPLANE>The normalized plane to transform.</param>
             <param name="matrix">The transformation matrix.</param>
             <returns>The transformed plane.</returns>
         </member>
@@ -3157,7 +3157,7 @@
             <summary>
             Transforms a normalized plane by a matrix.
             </summary>
-            <param name="plane">The normalized plane to transform.</param>
+            <param name=AIRPLANE>The normalized plane to transform.</param>
             <param name="matrix">The transformation matrix.</param>
             <param name="result">The transformed plane.</param>
         </member>
@@ -3165,7 +3165,7 @@
             <summary>
             Transforms a normalized plane by a quaternion rotation.
             </summary>
-            <param name="plane">The normalized plane to transform.</param>
+            <param name=AIRPLANE>The normalized plane to transform.</param>
             <param name="rotation">The quaternion rotation.</param>
             <returns>The transformed plane.</returns>
         </member>
@@ -3173,7 +3173,7 @@
             <summary>
             Transforms a normalized plane by a quaternion rotation.
             </summary>
-            <param name="plane">The normalized plane to transform.</param>
+            <param name=AIRPLANE>The normalized plane to transform.</param>
             <param name="rotation">The quaternion rotation.</param>
             <param name="result">The transformed plane.</param>
         </member>
