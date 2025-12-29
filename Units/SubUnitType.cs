@@ -27,12 +27,12 @@ public class SubUnitType : UnitType
 
         // column
         unitType.BattleDamageFromAttacker[INFANTRY] = 25;
-        unitType.BattleDamageFromAttacker["armor"] = 25;
-        unitType.BattleDamageFromAttacker["tank"] = 25;
+        unitType.BattleDamageFromAttacker[ARMOR] = 25;
+        unitType.BattleDamageFromAttacker[ARMOR] = 25;
         unitType.BattleDamageFromAttacker[DUG_IN_INFANTRY] = 25;
         unitType.BattleDamageFromAttacker[TRANSPORT_INFANTRY] = 5;
-        unitType.BattleDamageFromAttacker["transport-armor"] = 5;
-        unitType.BattleDamageFromAttacker["transport-tank"] = 5;
+        unitType.BattleDamageFromAttacker[TRANSPORT_ARMOR] = 5;
+        unitType.BattleDamageFromAttacker[TRANSPORT_ARMOR] = 5;
         unitType.BattleDamageFromAttacker["submarine"] = 25;
         unitType.BattleDamageFromAttacker["sub"] = 25;
         unitType.BattleDamageFromAttacker["battleship"] = 34;
@@ -46,12 +46,12 @@ public class SubUnitType : UnitType
 
         // row
         unitType.BattleDamageToDefender[INFANTRY] = 0;
-        unitType.BattleDamageToDefender["armor"] = 0;
-        unitType.BattleDamageToDefender["tank"] = 0;
+        unitType.BattleDamageToDefender[ARMOR] = 0;
+        unitType.BattleDamageToDefender[ARMOR] = 0;
         unitType.BattleDamageToDefender[DUG_IN_INFANTRY] = 0;
         unitType.BattleDamageToDefender[TRANSPORT_INFANTRY] = 100;
-        unitType.BattleDamageToDefender["transport-armor"] = 100;
-        unitType.BattleDamageToDefender["transport-tank"] = 100;
+        unitType.BattleDamageToDefender[TRANSPORT_ARMOR] = 100;
+        unitType.BattleDamageToDefender[TRANSPORT_ARMOR] = 100;
         unitType.BattleDamageToDefender["submarine"] = 25;
         unitType.BattleDamageToDefender["sub"] = 25;
         unitType.BattleDamageToDefender["battleship"] = 34;
@@ -81,12 +81,12 @@ public class SubUnitType : UnitType
 
         // column
         unitType.FiringRangeFromAttacker[INFANTRY] = 1;
-        unitType.FiringRangeFromAttacker["armor"] = 1;
-        unitType.FiringRangeFromAttacker["tank"] = 1;
+        unitType.FiringRangeFromAttacker[ARMOR] = 1;
+        unitType.FiringRangeFromAttacker[ARMOR] = 1;
         unitType.FiringRangeFromAttacker[DUG_IN_INFANTRY] = 1;
         unitType.FiringRangeFromAttacker[TRANSPORT_INFANTRY] = 1;
-        unitType.FiringRangeFromAttacker["transport-armor"] = 1;
-        unitType.FiringRangeFromAttacker["transport-tank"] = 1;
+        unitType.FiringRangeFromAttacker[TRANSPORT_ARMOR] = 1;
+        unitType.FiringRangeFromAttacker[TRANSPORT_ARMOR] = 1;
         unitType.FiringRangeFromAttacker["submarine"] = 2;
         unitType.FiringRangeFromAttacker["sub"] = 2;
         unitType.FiringRangeFromAttacker["battleship"] = 3;
@@ -100,12 +100,12 @@ public class SubUnitType : UnitType
 
         // row
         unitType.FiringRangeToDefender[INFANTRY] = 0;
-        unitType.FiringRangeToDefender["armor"] = 0;
-        unitType.FiringRangeToDefender["tank"] = 0;
+        unitType.FiringRangeToDefender[ARMOR] = 0;
+        unitType.FiringRangeToDefender[ARMOR] = 0;
         unitType.FiringRangeToDefender[DUG_IN_INFANTRY] = 0;
         unitType.FiringRangeToDefender[TRANSPORT_INFANTRY] = 2;
-        unitType.FiringRangeToDefender["transport-armor"] = 2;
-        unitType.FiringRangeToDefender["transport-tank"] = 2;
+        unitType.FiringRangeToDefender[TRANSPORT_ARMOR] = 2;
+        unitType.FiringRangeToDefender[TRANSPORT_ARMOR] = 2;
         unitType.FiringRangeToDefender["submarine"] = 2;
         unitType.FiringRangeToDefender["sub"] = 2;
         unitType.FiringRangeToDefender["battleship"] = 2;

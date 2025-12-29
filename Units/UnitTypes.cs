@@ -1,5 +1,6 @@
 using System.Data;
 using GlobalConquest.Units;
+using static UnitTypeConstants;
 
 public class UnitTypes
 {
@@ -25,13 +26,13 @@ public class UnitTypes
         ArmorUnitType armorUnitType = new ArmorUnitType();
         UnitType unitTypeArmor = armorUnitType.defineArmor();
         UnitTypeMap[unitTypeArmor.Name] = unitTypeArmor;
-        UnitTypeMap["armor"] = unitTypeArmor;
-        UnitTypeMap["tank"] = unitTypeArmor;
+        UnitTypeMap[ARMOR] = unitTypeArmor;
+        UnitTypeMap[ARMOR] = unitTypeArmor;
 
         UnitType unitTypeTransportArmor = armorUnitType.defineTransportArmor();
         UnitTypeMap[unitTypeTransportArmor.Name] = unitTypeTransportArmor;
-        UnitTypeMap["transport-armor"] = unitTypeTransportArmor;
-        UnitTypeMap["transport-tank"] = unitTypeTransportArmor;
+        UnitTypeMap[TRANSPORT_ARMOR] = unitTypeTransportArmor;
+        UnitTypeMap[TRANSPORT_ARMOR] = unitTypeTransportArmor;
 
 
         SubUnitType subUnitType = new SubUnitType();

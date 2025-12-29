@@ -1077,19 +1077,19 @@ public class Ai
                 priorityTargetUnit = targetUnit;
                 break;
             }
-            else if ("tank".Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { INFANTRY, TRANSPORT_INFANTRY, "transport-tank", "sub", "battleship", DUG_IN_INFANTRY }
+            else if (ARMOR.Equals(targetUnit.UnitType) &&
+                     new HashSet<string>() { INFANTRY, TRANSPORT_INFANTRY, TRANSPORT_ARMOR, "sub", "battleship", DUG_IN_INFANTRY }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
             else if (INFANTRY.Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { "transport-tank", TRANSPORT_INFANTRY, "sub", "battleship", DUG_IN_INFANTRY }
+                     new HashSet<string>() { TRANSPORT_ARMOR, TRANSPORT_INFANTRY, "sub", "battleship", DUG_IN_INFANTRY }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
-            else if ("transport-tank".Equals(targetUnit.UnitType) &&
+            else if (TRANSPORT_ARMOR.Equals(targetUnit.UnitType) &&
                      new HashSet<string>() { TRANSPORT_INFANTRY, "sub", "battleship", DUG_IN_INFANTRY }
                      .Contains(targetUnit.UnitType))
             {

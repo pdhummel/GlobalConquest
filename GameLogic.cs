@@ -79,7 +79,7 @@ public class GameLogic
                     if (unit.ActionQueue.Count <= 0)
                     {
                         if (INFANTRY.Equals(unit.UnitType) || DUG_IN_INFANTRY.Equals(unit.UnitType) ||
-                            "tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
+                            ARMOR.Equals(unit.UnitType) || ARMOR.Equals(unit.UnitType))
                         {
                             unit.MoveSteps = 0;
                         }
@@ -393,7 +393,7 @@ public class GameLogic
         UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
         if (unit.ActionQueue.Count <= 0 &&
            (INFANTRY.Equals(unit.UnitType) || DUG_IN_INFANTRY.Equals(unit.UnitType) ||
-            "tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType)))
+            ARMOR.Equals(unit.UnitType) || ARMOR.Equals(unit.UnitType)))
         {
             return;
         }
@@ -704,7 +704,7 @@ public class GameLogic
             // Battleships and carriers can "bombard" land units once they are within range.
             // However, this type of combat cannot reduce the land unit below 30% strength.
             if (("carrier".Equals(unit.UnitType) || "battleship".Equals(unit.UnitType)) &&
-                 ("tank".Equals(unitToAttack.UnitType) || "armor".Equals(unitToAttack.UnitType) || INFANTRY.Equals(unitToAttack.UnitType) || DUG_IN_INFANTRY.Equals(unitToAttack.UnitType)))
+                 (ARMOR.Equals(unitToAttack.UnitType) || ARMOR.Equals(unitToAttack.UnitType) || INFANTRY.Equals(unitToAttack.UnitType) || DUG_IN_INFANTRY.Equals(unitToAttack.UnitType)))
             {
                 if (unitToAttack.StrengthPoints <= 30 && previousStrength >= 30)
                 {
@@ -771,7 +771,7 @@ public class GameLogic
 
                 unitToAttack.MoveSteps -= damage;
             }
-            if (unitToAttack.StrengthPoints > 0 && ("tank".Equals(unitToAttack.UnitType) || "armor".Equals(unitToAttack.UnitType)))
+            if (unitToAttack.StrengthPoints > 0 && (ARMOR.Equals(unitToAttack.UnitType) || ARMOR.Equals(unitToAttack.UnitType)))
             {
                 unitToAttack.MoveSteps -= damage / 2;
             }
@@ -782,7 +782,7 @@ public class GameLogic
             {
                 unit.MoveSteps -= damage;
             }
-            if ("tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
+            if (ARMOR.Equals(unit.UnitType) || ARMOR.Equals(unit.UnitType))
             {
                 unit.MoveSteps -= damage / 2;
             }
@@ -923,7 +923,7 @@ public class GameLogic
                     // Start loading
                     if ("land".Equals(unitType.LandOrSea) && 
                        !unit.IsLoading && !unit.IsUnloading &&
-                       (INFANTRY.Equals(unitType.Name) || DUG_IN_INFANTRY.Equals(unitType.Name) || "tank".Equals(unitType.Name) || "armor".Equals(unitType.Name)) &&
+                       (INFANTRY.Equals(unitType.Name) || DUG_IN_INFANTRY.Equals(unitType.Name) || ARMOR.Equals(unitType.Name) || ARMOR.Equals(unitType.Name)) &&
                        "sea".Equals(nextMapHex.Terrain))
                     {
                         Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " is loading into a transport.");
@@ -948,9 +948,9 @@ public class GameLogic
                     {
                         Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " has unloaded.");
                         unit.IsUnloading = false;
-                        if ("transport-tank".Equals(unit.UnitType) || "transport-armor".Equals(unit.UnitType))
+                        if (TRANSPORT_ARMOR.Equals(unit.UnitType) || TRANSPORT_ARMOR.Equals(unit.UnitType))
                         {
-                            unit.UnitType = "tank";
+                            unit.UnitType = ARMOR;
                         }
                         else if (TRANSPORT_INFANTRY.Equals(unit.UnitType))
                         {
@@ -963,9 +963,9 @@ public class GameLogic
                     {
                         Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " has loaded into a transport.");
                         unit.IsLoading = false;
-                        if ("tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
+                        if (ARMOR.Equals(unit.UnitType) || ARMOR.Equals(unit.UnitType))
                         {
-                            unit.UnitType = "transport-tank";
+                            unit.UnitType = TRANSPORT_ARMOR;
                         }
                         else if (INFANTRY.Equals(unit.UnitType) || DUG_IN_INFANTRY.Equals(unit.UnitType))
                         {
@@ -1017,7 +1017,7 @@ public class GameLogic
 
                 // Infantry and armor when on land may move only once per round.
                 if (INFANTRY.Equals(unit.UnitType) || DUG_IN_INFANTRY.Equals(unit.UnitType) ||
-                    "tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
+                    ARMOR.Equals(unit.UnitType) || ARMOR.Equals(unit.UnitType))
                 {
                     isMovingDone = true;
                 }
@@ -1049,9 +1049,9 @@ public class GameLogic
     {
         if ("sea".Equals(mapHex.Terrain))
         {
-            if ("tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
+            if (ARMOR.Equals(unit.UnitType) || ARMOR.Equals(unit.UnitType))
             {
-                unit.UnitType = "transport-tank";
+                unit.UnitType = TRANSPORT_ARMOR;
             }
             else if (INFANTRY.Equals(unit.UnitType) || DUG_IN_INFANTRY.Equals(unit.UnitType))
             {
@@ -1060,9 +1060,9 @@ public class GameLogic
         }
         if ("grass".Equals(mapHex.Terrain) || "mountain".Equals(mapHex.Terrain) || "forest".Equals(mapHex.Terrain) || "desert".Equals(mapHex.Terrain))
         {
-            if ("transport-tank".Equals(unit.UnitType))
+            if (TRANSPORT_ARMOR.Equals(unit.UnitType))
             {
-                unit.UnitType = "tank";
+                unit.UnitType = ARMOR;
             }
             else if (TRANSPORT_INFANTRY.Equals(unit.UnitType))
             {

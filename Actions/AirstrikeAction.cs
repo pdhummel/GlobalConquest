@@ -77,7 +77,7 @@ public class AirstrikeAction : PlayerAction
                     outcome.EnemyPlane = targetUnit;
                     string type = targetUnit.UnitType;
                     int damage = 0;
-                    if ("tank".Equals(type) || "armor".Equals(type) || INFANTRY.Equals(type))
+                    if (ARMOR.Equals(type) || ARMOR.Equals(type) || INFANTRY.Equals(type))
                     {
                         damage = ((targetUnit.StrengthPoints / 2) / factor);
                     }
@@ -93,7 +93,7 @@ public class AirstrikeAction : PlayerAction
                     {
                         damage = (34 / factor);
                     }
-                    else if (TRANSPORT_INFANTRY.Equals(type) || "transport-tank".Equals(type))
+                    else if (TRANSPORT_INFANTRY.Equals(type) || TRANSPORT_ARMOR.Equals(type))
                     {
                         damage = (50 / factor);
                     }

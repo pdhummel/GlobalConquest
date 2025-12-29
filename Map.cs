@@ -205,8 +205,8 @@ public class Map
                 {
                     if (unit.UnitType.Equals(INFANTRY))
                         unit.UnitType = TRANSPORT_INFANTRY;
-                    if (unit.UnitType.Equals("tank"))
-                        unit.UnitType = "transport-tank";
+                    if (unit.UnitType.Equals(ARMOR))
+                        unit.UnitType = TRANSPORT_ARMOR;
                 }
             }
             UnitIdToUnit[id] = unit;

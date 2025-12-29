@@ -72,10 +72,10 @@ public class GameState
         comcen.UnitType = "comcen";
         comcen.Color = color;
         Unit tank1 = new Unit();
-        tank1.UnitType = "tank";
+        tank1.UnitType = ARMOR;
         tank1.Color = color;
         Unit tank2 = new Unit();
-        tank2.UnitType = "tank";
+        tank2.UnitType = ARMOR;
         tank2.Color = color;
         Unit infantry = new Unit();
         infantry.UnitType = INFANTRY;
