@@ -61,7 +61,7 @@ public class Ai
         foreach (MapHex neighbor in metroNeighbors)
         {
             Unit neighborUnit = neighbor.getUnit();
-            if (neighborUnit != null && "comcen".Equals(neighborUnit.UnitType))
+            if (neighborUnit != null && COMMAND_CENTER.Equals(neighborUnit.UnitType))
             {
                 comcen = neighborUnit;
                 break;
@@ -77,7 +77,7 @@ public class Ai
             aiUnit.GoalTargetXy = myMetroHex.X + "," + myMetroHex.Y;
             MapHex comcenHex = map.Hexes[comcen.Y, comcen.X];
             aiUnit.InitialPosition = comcenHex;
-            aiUnit.UnitType = "comcen";
+            aiUnit.UnitType = COMMAND_CENTER;
             aiUnit.Unit = comcen;
             unitIdToAiUnit[comcen.Id] = aiUnit;
             aiUnit.ShouldMoveToTarget = false;
@@ -294,7 +294,7 @@ public class Ai
         // {
         //     Unit unit = mapHex.getUnit();
         //     if (unit != null && unit.Color.Equals(myMetroHex.Burb.Color) &&
-        //         !unit.UnitType.Equals("comcen") &&
+        //         !unit.UnitType.Equals(COMMAND_CENTER) &&
         //         !unit.UnitType.Equals(SPY) &&
         //         !(unit.X == myMetroHex.X && unit.Y == myMetroHex.Y))
         //     {
@@ -311,7 +311,7 @@ public class Ai
         {
             Unit unit = mapHex.getUnit();
             if (unit != null && unit.Color.Equals(myMetroHex.Burb.Color) &&
-                !unit.UnitType.Equals("comcen") &&
+                !unit.UnitType.Equals(COMMAND_CENTER) &&
                 !unit.UnitType.Equals(SPY) &&
                 !unit.UnitType.Equals("carrier") &&
                 !(unit.X == myMetroHex.X && unit.Y == myMetroHex.Y))
@@ -339,7 +339,7 @@ public class Ai
                 Unit unit = mapHex.getUnit();
                 if (unit != null &&
                     unit.Color.Equals(Faction.Color) &&
-                    !unit.UnitType.Equals("comcen") &&
+                    !unit.UnitType.Equals(COMMAND_CENTER) &&
                     !unit.UnitType.Equals(SPY))
                 {
                     if (unitIdToAiUnit.ContainsKey(unit.Id))
@@ -1072,7 +1072,7 @@ public class Ai
             {
                 priorityTargetUnit = targetUnit;
             }
-            if ("comcen".Equals(targetUnit.UnitType))
+            if (COMMAND_CENTER.Equals(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
                 break;

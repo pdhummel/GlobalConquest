@@ -30,10 +30,10 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageFromAttacker["battleship"] = 12;
         unitType.BattleDamageFromAttacker["carrier"] = 10;
         unitType.BattleDamageFromAttacker[SPY] = 0;
-        unitType.BattleDamageFromAttacker["decoy-comcen"] = 0;
+        unitType.BattleDamageFromAttacker[DECOY_COMMAND_CENTER] = 0;
         unitType.BattleDamageFromAttacker["com"] = 20;
-        unitType.BattleDamageFromAttacker["ComCen"] = 20;
-        unitType.BattleDamageFromAttacker["comcen"] = 20;
+        unitType.BattleDamageFromAttacker[COMMAND_CENTER] = 20;
+        unitType.BattleDamageFromAttacker[COMMAND_CENTER] = 20;
         unitType.BattleDamageFromAttacker["CommandCenter"] = 20;
 
         // row
@@ -49,10 +49,10 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageToDefender["battleship"] = 25;
         unitType.BattleDamageToDefender["carrier"] = 25;
         unitType.BattleDamageToDefender[SPY] = 34;
-        unitType.BattleDamageToDefender["decoy-comcen"] = 34;
+        unitType.BattleDamageToDefender[DECOY_COMMAND_CENTER] = 34;
         unitType.BattleDamageToDefender["com"] = 10;
-        unitType.BattleDamageToDefender["ComCen"] = 10;
-        unitType.BattleDamageToDefender["comcen"] = 10;
+        unitType.BattleDamageToDefender[COMMAND_CENTER] = 10;
+        unitType.BattleDamageToDefender[COMMAND_CENTER] = 10;
         unitType.BattleDamageToDefender["CommandCenter"] = 10;
 
         unitType.NormalStepsAddedPerRound = 6;
@@ -81,10 +81,10 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeFromAttacker["battleship"] = 3;
         unitType.FiringRangeFromAttacker["carrier"] = 4;
         unitType.FiringRangeFromAttacker[SPY] = 0;
-        unitType.FiringRangeFromAttacker["decoy-comcen"] = 0;
+        unitType.FiringRangeFromAttacker[DECOY_COMMAND_CENTER] = 0;
         unitType.FiringRangeFromAttacker["com"] = 2;
-        unitType.FiringRangeFromAttacker["ComCen"] = 2;
-        unitType.FiringRangeFromAttacker["comcen"] = 2;
+        unitType.FiringRangeFromAttacker[COMMAND_CENTER] = 2;
+        unitType.FiringRangeFromAttacker[COMMAND_CENTER] = 2;
         unitType.FiringRangeFromAttacker["CommandCenter"] = 2;
 
         // row
@@ -100,10 +100,10 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeToDefender["battleship"] = 1;
         unitType.FiringRangeToDefender["carrier"] = 1;
         unitType.FiringRangeToDefender[SPY] = 2;
-        unitType.FiringRangeToDefender["decoy-comcen"] = 2;
+        unitType.FiringRangeToDefender[DECOY_COMMAND_CENTER] = 2;
         unitType.FiringRangeToDefender["com"] = 2;
-        unitType.FiringRangeToDefender["ComCen"] = 2;
-        unitType.FiringRangeToDefender["comcen"] = 2;
+        unitType.FiringRangeToDefender[COMMAND_CENTER] = 2;
+        unitType.FiringRangeToDefender[COMMAND_CENTER] = 2;
         unitType.FiringRangeToDefender["CommandCenter"] = 2;
 
         // only applies to infantry
@@ -175,10 +175,10 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageFromAttacker["battleship"] = 50;
         unitType.BattleDamageFromAttacker["carrier"] = 50;
         unitType.BattleDamageFromAttacker[SPY] = 0;
-        unitType.BattleDamageFromAttacker["decoy-comcen"] = 0;
+        unitType.BattleDamageFromAttacker[DECOY_COMMAND_CENTER] = 0;
         unitType.BattleDamageFromAttacker["com"] = 20;
-        unitType.BattleDamageFromAttacker["ComCen"] = 20;
-        unitType.BattleDamageFromAttacker["comcen"] = 20;
+        unitType.BattleDamageFromAttacker[COMMAND_CENTER] = 20;
+        unitType.BattleDamageFromAttacker[COMMAND_CENTER] = 20;
         unitType.BattleDamageFromAttacker["CommandCenter"] = 20;
 
         // row
@@ -194,10 +194,10 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageToDefender["battleship"] = 5;
         unitType.BattleDamageToDefender["carrier"] = 5;
         unitType.BattleDamageToDefender[SPY] = 34;
-        unitType.BattleDamageToDefender["decoy-comcen"] = 34;
+        unitType.BattleDamageToDefender[DECOY_COMMAND_CENTER] = 34;
         unitType.BattleDamageToDefender["com"] = 10;
-        unitType.BattleDamageToDefender["ComCen"] = 10;
-        unitType.BattleDamageToDefender["comcen"] = 10;
+        unitType.BattleDamageToDefender[COMMAND_CENTER] = 10;
+        unitType.BattleDamageToDefender[COMMAND_CENTER] = 10;
         unitType.BattleDamageToDefender["CommandCenter"] = 10;
 
         unitType.NormalStepsAddedPerRound = 18;
@@ -226,10 +226,10 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeFromAttacker["battleship"] = 3;
         unitType.FiringRangeFromAttacker["carrier"] = 4;
         unitType.FiringRangeFromAttacker[SPY] = 0;
-        unitType.FiringRangeFromAttacker["decoy-comcen"] = 0;
+        unitType.FiringRangeFromAttacker[DECOY_COMMAND_CENTER] = 0;
         unitType.FiringRangeFromAttacker["com"] = 2;
-        unitType.FiringRangeFromAttacker["ComCen"] = 2;
-        unitType.FiringRangeFromAttacker["comcen"] = 2;
+        unitType.FiringRangeFromAttacker[COMMAND_CENTER] = 2;
+        unitType.FiringRangeFromAttacker[COMMAND_CENTER] = 2;
         unitType.FiringRangeFromAttacker["CommandCenter"] = 2;
 
         // row
@@ -245,10 +245,10 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeToDefender["battleship"] = 1;
         unitType.FiringRangeToDefender["carrier"] = 1;
         unitType.FiringRangeToDefender[SPY] = 2;
-        unitType.FiringRangeToDefender["decoy-comcen"] = 2;
+        unitType.FiringRangeToDefender[DECOY_COMMAND_CENTER] = 2;
         unitType.FiringRangeToDefender["com"] = 1;
-        unitType.FiringRangeToDefender["ComCen"] = 1;
-        unitType.FiringRangeToDefender["comcen"] = 1;
+        unitType.FiringRangeToDefender[COMMAND_CENTER] = 1;
+        unitType.FiringRangeToDefender[COMMAND_CENTER] = 1;
         unitType.FiringRangeToDefender["CommandCenter"] = 1;
 
         // Only applies to infantry
@@ -320,10 +320,10 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageFromAttacker["battleship"] = 6;
         unitType.BattleDamageFromAttacker["carrier"] = 5;
         unitType.BattleDamageFromAttacker[SPY] = 0;
-        unitType.BattleDamageFromAttacker["decoy-comcen"] = 0;
+        unitType.BattleDamageFromAttacker[DECOY_COMMAND_CENTER] = 0;
         unitType.BattleDamageFromAttacker["com"] = 20;
-        unitType.BattleDamageFromAttacker["ComCen"] = 20;
-        unitType.BattleDamageFromAttacker["comcen"] = 20;
+        unitType.BattleDamageFromAttacker[COMMAND_CENTER] = 20;
+        unitType.BattleDamageFromAttacker[COMMAND_CENTER] = 20;
         unitType.BattleDamageFromAttacker["CommandCenter"] = 20;
 
         // row
@@ -339,10 +339,10 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageToDefender["battleship"] = 25;
         unitType.BattleDamageToDefender["carrier"] = 25;
         unitType.BattleDamageToDefender[SPY] = 34;
-        unitType.BattleDamageToDefender["decoy-comcen"] = 34;
+        unitType.BattleDamageToDefender[DECOY_COMMAND_CENTER] = 34;
         unitType.BattleDamageToDefender["com"] = 10;
-        unitType.BattleDamageToDefender["ComCen"] = 10;
-        unitType.BattleDamageToDefender["comcen"] = 10;
+        unitType.BattleDamageToDefender[COMMAND_CENTER] = 10;
+        unitType.BattleDamageToDefender[COMMAND_CENTER] = 10;
         unitType.BattleDamageToDefender["CommandCenter"] = 10;
 
         unitType.NormalStepsAddedPerRound = 6;
@@ -371,10 +371,10 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeFromAttacker["battleship"] = 3;
         unitType.FiringRangeFromAttacker["carrier"] = 4;
         unitType.FiringRangeFromAttacker[SPY] = 0;
-        unitType.FiringRangeFromAttacker["decoy-comcen"] = 0;
+        unitType.FiringRangeFromAttacker[DECOY_COMMAND_CENTER] = 0;
         unitType.FiringRangeFromAttacker["com"] = 2;
-        unitType.FiringRangeFromAttacker["ComCen"] = 2;
-        unitType.FiringRangeFromAttacker["comcen"] = 2;
+        unitType.FiringRangeFromAttacker[COMMAND_CENTER] = 2;
+        unitType.FiringRangeFromAttacker[COMMAND_CENTER] = 2;
         unitType.FiringRangeFromAttacker["CommandCenter"] = 2;
 
         // row
@@ -390,10 +390,10 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeToDefender["battleship"] = 1;
         unitType.FiringRangeToDefender["carrier"] = 1;
         unitType.FiringRangeToDefender[SPY] = 2;
-        unitType.FiringRangeToDefender["decoy-comcen"] = 2;
+        unitType.FiringRangeToDefender[DECOY_COMMAND_CENTER] = 2;
         unitType.FiringRangeToDefender["com"] = 2;
-        unitType.FiringRangeToDefender["ComCen"] = 2;
-        unitType.FiringRangeToDefender["comcen"] = 2;
+        unitType.FiringRangeToDefender[COMMAND_CENTER] = 2;
+        unitType.FiringRangeToDefender[COMMAND_CENTER] = 2;
         unitType.FiringRangeToDefender["CommandCenter"] = 2;
 
         // only applies to infantry

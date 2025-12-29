@@ -232,7 +232,7 @@ public class GameEvent
         // UnitType at MapHex attacked
         EventString = GetUnitType() + " at " + GetLocation() + " attacked.";
         Game.playSoundEffect(EventType);
-        if ("comcen".Equals(GetUnitType()))
+        if (COMMAND_CENTER.Equals(GetUnitType()))
         {
             Game.playSoundEffect("comcenAttacked");
         }

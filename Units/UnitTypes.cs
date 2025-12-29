@@ -57,13 +57,13 @@ public class UnitTypes
         UnitType unitTypeComCen = comCenUnitType.defineComCen();
         UnitTypeMap[unitTypeComCen.Name] = unitTypeComCen;
         UnitTypeMap["com"] = unitTypeComCen;
-        UnitTypeMap["comcen"] = unitTypeComCen;
-        UnitTypeMap["ComCen"] = unitTypeComCen;
+        UnitTypeMap[COMMAND_CENTER] = unitTypeComCen;
+        UnitTypeMap[COMMAND_CENTER] = unitTypeComCen;
         UnitTypeMap["CommandCenter"] = unitTypeComCen;
 
         UnitType unitTypeDecoyComCen = comCenUnitType.defineDecoyComCen();
         UnitTypeMap[unitTypeDecoyComCen.Name] = unitTypeDecoyComCen;
-        UnitTypeMap["decoy-comcen"] = unitTypeDecoyComCen;
+        UnitTypeMap[DECOY_COMMAND_CENTER] = unitTypeDecoyComCen;
 
         PlaneUnitType planeUnitType = new PlaneUnitType();
         UnitType unitTypePlane = planeUnitType.definePlane();

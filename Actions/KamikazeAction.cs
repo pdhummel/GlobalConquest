@@ -87,11 +87,11 @@ public class KamikazeAction : PlayerAction
                     {
                         damage = ((targetUnit.StrengthPoints / 2) / factor);
                     }
-                    else if (DUG_IN_INFANTRY.Equals(type) || ("comcen".Equals(type) && !"sea".Equals(targetMapHex.Terrain)) )
+                    else if (DUG_IN_INFANTRY.Equals(type) || (COMMAND_CENTER.Equals(type) && !"sea".Equals(targetMapHex.Terrain)) )
                     {
                         damage = ((targetUnit.StrengthPoints / 3) / factor);
                     }
-                    else if ("battleship".Equals(type) || "carrier".Equals(type) || ("comcen".Equals(type) && "sea".Equals(targetMapHex.Terrain)))
+                    else if ("battleship".Equals(type) || "carrier".Equals(type) || (COMMAND_CENTER.Equals(type) && "sea".Equals(targetMapHex.Terrain)))
                     {
                         damage = (25 / factor);
                     }
@@ -118,7 +118,7 @@ public class KamikazeAction : PlayerAction
                         gameEvent.EventType = "unitDestroyed";
                         server.sendGamePlayEvent(targetUnit.Color, gameEvent);
                         Globals.Log("execute(): airstrike destroyed enemy");
-                        if ("comcen".Equals(targetUnit.UnitType))
+                        if (COMMAND_CENTER.Equals(targetUnit.UnitType))
                         {
                             Faction faction = server.gameState.Factions.ColorToFaction[targetUnit.Color];
                             faction.HasComCen = false;

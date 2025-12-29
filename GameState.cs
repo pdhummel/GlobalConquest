@@ -69,7 +69,7 @@ public class GameState
         int height = GameSettings.Height;
 
         Unit comcen = new Unit();
-        comcen.UnitType = "comcen";
+        comcen.UnitType = COMMAND_CENTER;
         comcen.Color = color;
         Unit tank1 = new Unit();
         tank1.UnitType = ARMOR;

@@ -731,7 +731,7 @@ public class GameLogic
                 server.sendGamePlayEvent(unitToAttack.Color, gameEvent);
 
                 killUnit(unitToAttack);
-                if ("comcen".Equals(unitToAttack.UnitType))
+                if (COMMAND_CENTER.Equals(unitToAttack.UnitType))
                 {
                     Faction faction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
                     faction.HasComCen = false;

@@ -56,7 +56,7 @@ public class MoveUnitAction : PlayerAction
             else
             {
                 MapHex destination = gameState.Map.Hexes[ToY, ToX];
-                if ("comcen".Equals(existingUnit.UnitType) || SPY.Equals(existingUnit.UnitType))
+                if (COMMAND_CENTER.Equals(existingUnit.UnitType) || SPY.Equals(existingUnit.UnitType))
                 {
                     existingUnit?.setUnitAction(unitAction);
                 }
