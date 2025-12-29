@@ -14,7 +14,7 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Point = Microsoft.Xna.Framework.Point;
 using Microsoft.Xna.Framework.Audio;
 using GlobalConquest.HexMapEngine.Structures;
-
+using static UnitTypeConstants;
 namespace GlobalConquest;
 
 public class GlobalConquestGame : Game
@@ -942,7 +942,7 @@ public class GlobalConquestGame : Game
             else if (ParaDropMode && ParaTrooper == null && lastSelectedUnit != null)
             {
                 Globals.Log("handleLeftClick(): ParaDropMode, ParaTrooper=null");
-                if (("infantry".Equals(lastSelectedUnit.UnitType) || "dug-in-infantry".Equals(lastSelectedUnit.UnitType)))
+                if ((INFANTRY.Equals(lastSelectedUnit.UnitType) || "dug-in-infantry".Equals(lastSelectedUnit.UnitType)))
                 {
                     ParaTrooper = lastSelectedUnit;
                     lastSelectedPlane = previousSelectedPlane;

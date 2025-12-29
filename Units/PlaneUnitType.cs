@@ -426,7 +426,7 @@ public class PlaneUnitType : UnitType
         unitType.AttritionByTerrain["swamp"] = 0;
 
         // column
-        unitType.BattleDamageFromAttacker["infantry"] = 0;
+        unitType.BattleDamageFromAttacker[INFANTRY] = 0;
         unitType.BattleDamageFromAttacker["armor"] = 0;
         unitType.BattleDamageFromAttacker["tank"] = 0;
         unitType.BattleDamageFromAttacker["dug-in-infantry"] = 0;
@@ -445,7 +445,7 @@ public class PlaneUnitType : UnitType
         unitType.BattleDamageFromAttacker["CommandCenter"] = 0;
 
         // row
-        unitType.BattleDamageToDefender["infantry"] = 0;
+        unitType.BattleDamageToDefender[INFANTRY] = 0;
         unitType.BattleDamageToDefender["armor"] = 0;
         unitType.BattleDamageToDefender["tank"] = 0;
         unitType.BattleDamageToDefender["dug-in-infantry"] = 0;
@@ -480,7 +480,7 @@ public class PlaneUnitType : UnitType
         unitType.PointsPerHit = 10;
 
         // column
-        unitType.FiringRangeFromAttacker["infantry"] = 0;
+        unitType.FiringRangeFromAttacker[INFANTRY] = 0;
         unitType.FiringRangeFromAttacker["armor"] = 0;
         unitType.FiringRangeFromAttacker["tank"] = 0;
         unitType.FiringRangeFromAttacker["dug-in-infantry"] = 0;
@@ -499,7 +499,7 @@ public class PlaneUnitType : UnitType
         unitType.FiringRangeFromAttacker["CommandCenter"] = 0;
 
         // row
-        unitType.FiringRangeToDefender["infantry"] = 0;
+        unitType.FiringRangeToDefender[INFANTRY] = 0;
         unitType.FiringRangeToDefender["armor"] = 0;
         unitType.FiringRangeToDefender["tank"] = 0;
         unitType.FiringRangeToDefender["dug-in-infantry"] = 0;

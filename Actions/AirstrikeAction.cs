@@ -1,6 +1,7 @@
 using System.Text.Json;
 using GlobalConquest.Units;
 using LiteNetLib;
+using static UnitTypeConstants;
 namespace GlobalConquest.Actions;
 
 public class AirstrikeAction : PlayerAction
@@ -76,7 +77,7 @@ public class AirstrikeAction : PlayerAction
                     outcome.EnemyPlane = targetUnit;
                     string type = targetUnit.UnitType;
                     int damage = 0;
-                    if ("tank".Equals(type) || "armor".Equals(type) || "infantry".Equals(type))
+                    if ("tank".Equals(type) || "armor".Equals(type) || INFANTRY.Equals(type))
                     {
                         damage = ((targetUnit.StrengthPoints / 2) / factor);
                     }

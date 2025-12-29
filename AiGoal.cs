@@ -1,5 +1,6 @@
 using GlobalConquest;
 using GlobalConquest.Units;
+using static UnitTypeConstants;
 
 public class AiGoal
 {
@@ -91,7 +92,7 @@ public class AiGoal
         foreach (AiUnit aiUnit in DesiredUnits)
         {
             if ("transport-infantry".Equals(unitType) || "dug-in-infantry".Equals(unitType))
-                unitType = "infantry";
+                unitType = INFANTRY;
             if (aiUnit.UnitType.Equals(unitType))
                 count += 1;
         }

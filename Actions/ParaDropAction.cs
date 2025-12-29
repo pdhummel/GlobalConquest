@@ -1,3 +1,4 @@
+using static UnitTypeConstants;
 using System.Text.Json;
 using GlobalConquest.Units;
 using LiteNetLib;
@@ -31,7 +32,7 @@ public class ParaDropAction : PlayerAction
         {
             return;
         }
-        if (!("infantry".Equals(ParaTrooper.UnitType) || "dug-in-infantry".Equals(ParaTrooper.UnitType)))
+        if (!(INFANTRY.Equals(ParaTrooper.UnitType) || "dug-in-infantry".Equals(ParaTrooper.UnitType)))
         {
             Globals.Log("execute(): can only transport infantry: " + ParaTrooper.UnitType);
             return;
@@ -86,7 +87,7 @@ public class ParaDropAction : PlayerAction
                 if (existingInfantry.StrengthPoints < 0)
                     existingInfantry.StrengthPoints = 1;
                 // no longer dug-in
-                existingInfantry.UnitType = "infantry";
+                existingInfantry.UnitType = INFANTRY;
 
                 GameEvent gameEvent = new GameEvent("airplaneMissionSuceeded");
                 gameEvent.MapHex = targetMapHex;

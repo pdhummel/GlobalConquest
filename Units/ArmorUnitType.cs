@@ -19,7 +19,7 @@ public class ArmorUnitType : UnitType
         unitType.AttritionByTerrain["mountain"] = 2;
 
         // column
-        unitType.BattleDamageFromAttacker["infantry"] = 17;
+        unitType.BattleDamageFromAttacker[INFANTRY] = 17;
         unitType.BattleDamageFromAttacker["armor"] = 20;
         unitType.BattleDamageFromAttacker["tank"] = 20;
         unitType.BattleDamageFromAttacker["dug-in-infantry"] = 17;
@@ -38,7 +38,7 @@ public class ArmorUnitType : UnitType
         unitType.BattleDamageFromAttacker["CommandCenter"] = 20;
 
         // row
-        unitType.BattleDamageToDefender["infantry"] = 26;
+        unitType.BattleDamageToDefender[INFANTRY] = 26;
         unitType.BattleDamageToDefender["armor"] = 20;
         unitType.BattleDamageToDefender["tank"] = 20;
         unitType.BattleDamageToDefender["dug-in-infantry"] = 20;
@@ -70,7 +70,7 @@ public class ArmorUnitType : UnitType
         unitType.PointsPerHit = 5;
 
         // column
-        unitType.FiringRangeFromAttacker["infantry"] = 2;
+        unitType.FiringRangeFromAttacker[INFANTRY] = 2;
         unitType.FiringRangeFromAttacker["armor"] = 2;
         unitType.FiringRangeFromAttacker["tank"] = 2;
         unitType.FiringRangeFromAttacker["dug-in-infantry"] = 2;
@@ -89,7 +89,7 @@ public class ArmorUnitType : UnitType
         unitType.FiringRangeFromAttacker["CommandCenter"] = 2;
 
         // row
-        unitType.FiringRangeToDefender["infantry"] = 2;
+        unitType.FiringRangeToDefender[INFANTRY] = 2;
         unitType.FiringRangeToDefender["armor"] = 2;
         unitType.FiringRangeToDefender["tank"] = 2;
         unitType.FiringRangeToDefender["dug-in-infantry"] = 2;
@@ -166,7 +166,7 @@ public class ArmorUnitType : UnitType
         unitType.AttritionByTerrain["mountain"] = 0;
 
         // column
-        unitType.BattleDamageFromAttacker["infantry"] = 25;
+        unitType.BattleDamageFromAttacker[INFANTRY] = 25;
         unitType.BattleDamageFromAttacker["armor"] = 25;
         unitType.BattleDamageFromAttacker["tank"] = 25;
         unitType.BattleDamageFromAttacker["dug-in-infantry"] = 25;
@@ -185,7 +185,7 @@ public class ArmorUnitType : UnitType
         unitType.BattleDamageFromAttacker["CommandCenter"] = 20;
 
         // row
-        unitType.BattleDamageToDefender["infantry"] = 9;
+        unitType.BattleDamageToDefender[INFANTRY] = 9;
         unitType.BattleDamageToDefender["armor"] = 8;
         unitType.BattleDamageToDefender["tank"] = 8;
         unitType.BattleDamageToDefender["dug-in-infantry"] = 7;
@@ -217,7 +217,7 @@ public class ArmorUnitType : UnitType
         unitType.PointsPerHit = 5;
 
         // column
-        unitType.FiringRangeFromAttacker["infantry"] = 2;
+        unitType.FiringRangeFromAttacker[INFANTRY] = 2;
         unitType.FiringRangeFromAttacker["armor"] = 2;
         unitType.FiringRangeFromAttacker["tank"] = 2;
         unitType.FiringRangeFromAttacker["dug-in-infantry"] = 2;
@@ -236,7 +236,7 @@ public class ArmorUnitType : UnitType
         unitType.FiringRangeFromAttacker["CommandCenter"] = 2;
 
         // row
-        unitType.FiringRangeToDefender["infantry"] = 2;
+        unitType.FiringRangeToDefender[INFANTRY] = 2;
         unitType.FiringRangeToDefender["armor"] = 2;
         unitType.FiringRangeToDefender["tank"] = 2;
         unitType.FiringRangeToDefender["dug-in-infantry"] = 2;

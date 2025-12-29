@@ -68,7 +68,7 @@ public class GameLogic
                 }
                 if (unit != null)
                 {
-                    if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
+                    if (INFANTRY.Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
                     {
                         infantryUnitsXy.Add(makeXyString(unit.X, unit.Y));
                     }
@@ -78,7 +78,7 @@ public class GameLogic
                     // (thus ships are quick to make an initial move while land units are not).
                     if (unit.ActionQueue.Count <= 0)
                     {
-                        if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) ||
+                        if (INFANTRY.Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) ||
                             "tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
                         {
                             unit.MoveSteps = 0;
@@ -392,7 +392,7 @@ public class GameLogic
         // (thus ships are quick to make an initial move while land units are not).
         UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
         if (unit.ActionQueue.Count <= 0 &&
-           ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) ||
+           (INFANTRY.Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) ||
             "tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType)))
         {
             return;
@@ -704,7 +704,7 @@ public class GameLogic
             // Battleships and carriers can "bombard" land units once they are within range.
             // However, this type of combat cannot reduce the land unit below 30% strength.
             if (("carrier".Equals(unit.UnitType) || "battleship".Equals(unit.UnitType)) &&
-                 ("tank".Equals(unitToAttack.UnitType) || "armor".Equals(unitToAttack.UnitType) || "infantry".Equals(unitToAttack.UnitType) || "dug-in-infantry".Equals(unitToAttack.UnitType)))
+                 ("tank".Equals(unitToAttack.UnitType) || "armor".Equals(unitToAttack.UnitType) || INFANTRY.Equals(unitToAttack.UnitType) || "dug-in-infantry".Equals(unitToAttack.UnitType)))
             {
                 if (unitToAttack.StrengthPoints <= 30 && previousStrength >= 30)
                 {
@@ -766,7 +766,7 @@ public class GameLogic
             // attacking or defending. Armor lose steps equal to 1/2 the damage. This
             // effect can reduce the steps to a deficit of -25 (when steps are negative
             // the unit is pinned.)
-            if (unitToAttack.StrengthPoints > 0 && ("infantry".Equals(unitToAttack.UnitType) || "dug-in-infantry".Equals(unitToAttack.UnitType)))
+            if (unitToAttack.StrengthPoints > 0 && (INFANTRY.Equals(unitToAttack.UnitType) || "dug-in-infantry".Equals(unitToAttack.UnitType)))
             {
 
                 unitToAttack.MoveSteps -= damage;
@@ -778,7 +778,7 @@ public class GameLogic
             if (unitToAttack.StrengthPoints > 0 && unitToAttack.MoveSteps < -25)
                 unitToAttack.MoveSteps = -25;
 
-            if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
+            if (INFANTRY.Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
             {
                 unit.MoveSteps -= damage;
             }
@@ -923,7 +923,7 @@ public class GameLogic
                     // Start loading
                     if ("land".Equals(unitType.LandOrSea) && 
                        !unit.IsLoading && !unit.IsUnloading &&
-                       ("infantry".Equals(unitType.Name) || "dug-in-infantry".Equals(unitType.Name) || "tank".Equals(unitType.Name) || "armor".Equals(unitType.Name)) &&
+                       (INFANTRY.Equals(unitType.Name) || "dug-in-infantry".Equals(unitType.Name) || "tank".Equals(unitType.Name) || "armor".Equals(unitType.Name)) &&
                        "sea".Equals(nextMapHex.Terrain))
                     {
                         Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " is loading into a transport.");
@@ -954,7 +954,7 @@ public class GameLogic
                         }
                         else if ("transport-infantry".Equals(unit.UnitType))
                         {
-                            unit.UnitType = "infantry";
+                            unit.UnitType = INFANTRY;
                         }
                     }
 
@@ -967,7 +967,7 @@ public class GameLogic
                         {
                             unit.UnitType = "transport-tank";
                         }
-                        else if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
+                        else if (INFANTRY.Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
                         {
                             unit.UnitType = "transport-infantry";
                         }
@@ -1016,7 +1016,7 @@ public class GameLogic
                 }
 
                 // Infantry and armor when on land may move only once per round.
-                if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) ||
+                if (INFANTRY.Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) ||
                     "tank".Equals(unit.UnitType) || "armor".Equals(unit.UnitType))
                 {
                     isMovingDone = true;
@@ -1053,7 +1053,7 @@ public class GameLogic
             {
                 unit.UnitType = "transport-tank";
             }
-            else if ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
+            else if (INFANTRY.Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
             {
                 unit.UnitType = "transport-infantry";
             }
@@ -1066,7 +1066,7 @@ public class GameLogic
             }
             else if ("transport-infantry".Equals(unit.UnitType))
             {
-                unit.UnitType = "infantry";
+                unit.UnitType = INFANTRY;
             }
             
         }
@@ -1146,7 +1146,7 @@ public class GameLogic
         Unit unitToCheck = mapHex.getUnit();
         if (unitToCheck == null)
             return;
-        if (!("infantry".Equals(unitToCheck.UnitType) || "dug-in-infantry".Equals(unitToCheck.UnitType)))
+        if (!(INFANTRY.Equals(unitToCheck.UnitType) || "dug-in-infantry".Equals(unitToCheck.UnitType)))
             return;
         string unitXy = makeXyString(unit.X, unit.Y);
         if (infantryUnitsXy.Contains(unitXy))
@@ -1160,7 +1160,7 @@ public class GameLogic
             }
             else if ("dug-in-infantry".Equals(unit.UnitType) && unit.getNextAction() != null)
             {
-                unit.UnitType = "infantry";
+                unit.UnitType = INFANTRY;
                 server.sendGameStateAndMapHex(unit.X, unit.Y);
             }
         }

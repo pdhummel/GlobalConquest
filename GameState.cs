@@ -78,7 +78,7 @@ public class GameState
         tank2.UnitType = "tank";
         tank2.Color = color;
         Unit infantry = new Unit();
-        infantry.UnitType = "infantry";
+        infantry.UnitType = INFANTRY;
         infantry.Color = color;
         Unit spy = new Unit();
         spy.UnitType = SPY;
@@ -121,7 +121,7 @@ public class GameState
                     if (mapHex.getUnit() == null)
                     {
                         infantry = new Unit();
-                        infantry.UnitType = "infantry";
+                        infantry.UnitType = INFANTRY;
                         infantry.Color = color;
                         infantry.setOmniVisibility();
                         placeUnit(mapHex, infantry);
@@ -186,7 +186,7 @@ public class GameState
     {
         Unit unit = new Unit();
         unit.Color = "grey";
-        unit.UnitType = "infantry";
+        unit.UnitType = INFANTRY;
         if ("Omniscient".Equals(GameSettings.Visibility))
         {
             unit.setOmniVisibility();

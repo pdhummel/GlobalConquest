@@ -236,7 +236,7 @@ public class BurbWindow
         rowIndex += 1;
         costByRow[rowIndex] = 25;
         landUnitRows.Add(rowIndex);
-        unitTypeByRow[rowIndex] = "infantry";
+        unitTypeByRow[rowIndex] = INFANTRY;
         addLabelToGrid(grid, rowIndex, 0, "Infantry");
         addLabelToGrid(grid, rowIndex++, 1, "25");
         costByRow[rowIndex] = 35;
@@ -354,7 +354,7 @@ public class BurbWindow
         action.Unit = new Unit();
         action.Unit.Owner = faction;
         action.Unit.Color = faction.Color;
-        if ("infantry".Equals(unitTypeName) && "dock".Equals(targetHex.Burb.Type))
+        if (INFANTRY.Equals(unitTypeName) && "dock".Equals(targetHex.Burb.Type))
             unitTypeName = "transport-infantry";
         if (("tank".Equals(unitTypeName) || "armor".Equals(unitTypeName)) && "dock".Equals(targetHex.Burb.Type))
             unitTypeName = "transport-tank";

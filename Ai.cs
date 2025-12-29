@@ -215,8 +215,8 @@ public class Ai
                         UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
                         difficulty += 1;
                         difficulty += (unit.StrengthPoints / 10);
-                        difficulty += (25 - unitType.BattleDamageFromAttacker["infantry"]);
-                        difficulty += unitType.BattleDamageToDefender["infantry"];
+                        difficulty += (25 - unitType.BattleDamageFromAttacker[INFANTRY]);
+                        difficulty += unitType.BattleDamageToDefender[INFANTRY];
                     }
                 }
                 if (goal.IsGoalStarted)
@@ -409,7 +409,7 @@ public class Ai
                 {
                     string unitType = unit.UnitType;
                     if ("transport-infantry".Equals(unitType) || "dug-in-infantry".Equals(unitType))
-                        unitType = "infantry";
+                        unitType = INFANTRY;
                     if (!unitTypeToAvailableUnits.ContainsKey(unitType))
                         unitTypeToAvailableUnits[unitType] = new HashSet<AiUnit>();
                     continue;
@@ -420,7 +420,7 @@ public class Ai
                 {
                     string unitType = unit.UnitType;
                     if ("transport-infantry".Equals(unitType) || "dug-in-infantry".Equals(unitType))
-                        unitType = "infantry";
+                        unitType = INFANTRY;
                     if (!unitTypeToAvailableUnits.ContainsKey(unitType))
                         unitTypeToAvailableUnits[unitType] = new HashSet<AiUnit>();
                     goal.ActualUnits.Remove(availableAiUnit);
@@ -614,7 +614,7 @@ public class Ai
             unitIdToAiUnit[newUnit.Id] = aiUnit;
             string newUnitType = newUnit.UnitType;
             if ("transport-infantry".Equals(newUnitType))
-                newUnitType = "infantry";
+                newUnitType = INFANTRY;
             aiUnit.UnitType = newUnitType;
             goal.ActualUnits.Add(aiUnit);
             Globals.Log("buildUnits(): building " + newUnit.Id + " for " + goal);
@@ -628,7 +628,7 @@ public class Ai
         Unit unit = null;
         AiUnit availableAiUnit = null;
         if ("transport-infantry".Equals(unitType) || "dug-in-infantry".Equals(unitType))
-            unitType = "infantry";
+            unitType = INFANTRY;
         if (unitTypeToAvailableUnits.ContainsKey(unitType))
         {
             List<AiUnit> availableAiUnits = unitTypeToAvailableUnits[unitType].ToList<AiUnit>();
@@ -666,7 +666,7 @@ public class Ai
                     continue;
                 unit.IsSneaking = false;
                 UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
-                if (unit.Color.Equals(Faction.Color) && ("infantry".Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) || "transport-infantry".Equals(unit.UnitType)))
+                if (unit.Color.Equals(Faction.Color) && (INFANTRY.Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) || "transport-infantry".Equals(unit.UnitType)))
                 {
                     moveUnit(unitType, unit, goal.TargetMapHex);
                     count += 1;
@@ -838,7 +838,7 @@ public class Ai
             {
                 string unitTypeString = aiUnit.UnitType;
                 if ("transport-infantry".Equals(unitTypeString) || "dug-in-infantry".Equals(unitTypeString))
-                    unitTypeString = "infantry";
+                    unitTypeString = INFANTRY;
 
                 if (!unitTypeToAvailableUnits.ContainsKey(unitTypeString))
                 {
@@ -927,7 +927,7 @@ public class Ai
                         }
                     }
                     if (aiUnit.Unit.ActionQueue.Count <= 0 && aiGoal != null &&
-                        ("infantry".Equals(unitType.Name) || "dug-in-infantry".Equals(unitType.Name) || "transport-infantry".Equals(unitType.Name)))
+                        (INFANTRY.Equals(unitType.Name) || "dug-in-infantry".Equals(unitType.Name) || "transport-infantry".Equals(unitType.Name)))
                     {
                         List<MapHex> surroundingHexes = map.getSurroundingHexesList(aiUnit.LastMapHex);
                         for (int i = 0; i < surroundingHexes.Count; i++)
@@ -1078,12 +1078,12 @@ public class Ai
                 break;
             }
             else if ("tank".Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { "infantry", "transport-infantry", "transport-tank", "sub", "battleship", "dug-in-infantry" }
+                     new HashSet<string>() { INFANTRY, "transport-infantry", "transport-tank", "sub", "battleship", "dug-in-infantry" }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
-            else if ("infantry".Equals(targetUnit.UnitType) &&
+            else if (INFANTRY.Equals(targetUnit.UnitType) &&
                      new HashSet<string>() { "transport-tank", "transport-infantry", "sub", "battleship", "dug-in-infantry" }
                      .Contains(targetUnit.UnitType))
             {
@@ -1448,7 +1448,7 @@ public class Ai
         infantry.GoalTargetXy = myMetroHex.X + "," + myMetroHex.Y;
         infantry.InitialPosition = myMetroHex;
         infantry.DistanceFromTarget = 0;
-        infantry.UnitType = "infantry";
+        infantry.UnitType = INFANTRY;
         defendMetro.DesiredUnits.Add(infantry);
         AiUnit plane = new AiUnit();
         plane.GoalTargetXy = myMetroHex.X + "," + myMetroHex.Y;
@@ -1483,7 +1483,7 @@ public class Ai
         AiUnit infantry = new AiUnit();
         infantry.GoalTargetXy = metro.X + "," + metro.Y;
         infantry.InitialPosition = metro;
-        infantry.UnitType = "infantry";
+        infantry.UnitType = INFANTRY;
         exploreMetro.DesiredUnits.Add(infantry);
         exploreGoals.Add(exploreMetro);
         return exploreMetro;
@@ -1497,7 +1497,7 @@ public class Ai
         exploreGoal.TargetMapHex = Server.gameState.Map.getCapitalHex();
         AiUnit infantry = new AiUnit();
         infantry.GoalTargetXy = exploreGoal.TargetMapHex.X + "," + exploreGoal.TargetMapHex.Y;
-        infantry.UnitType = "infantry";
+        infantry.UnitType = INFANTRY;
         infantry.DistanceFromTarget = 3;
         exploreGoal.DesiredUnits.Add(infantry);
         exploreGoals.Add(exploreGoal);
@@ -1512,7 +1512,7 @@ public class Ai
         AiUnit infantry = new AiUnit();
         infantry.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
         infantry.InitialPosition = burbHex;
-        infantry.UnitType = "infantry";
+        infantry.UnitType = INFANTRY;
         defendGoal.DesiredUnits.Add(infantry);
         AiUnit plane = new AiUnit();
         plane.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
@@ -1617,7 +1617,7 @@ public class Ai
         else
             desiredInfantry = attackGoal.Enemies + 2;
         int count = 0;
-        int currentDesire = attackGoal.GetDesiredCountForUnitType("infantry");
+        int currentDesire = attackGoal.GetDesiredCountForUnitType(INFANTRY);
         if (currentDesire >= desiredInfantry)
             count = 0;
         else
@@ -1627,7 +1627,7 @@ public class Ai
         {
             AiUnit infantry = new AiUnit();
             infantry.GoalTargetXy = attackGoal.TargetMapHex.X + "," + attackGoal.TargetMapHex.Y;
-            infantry.UnitType = "infantry";
+            infantry.UnitType = INFANTRY;
             if ("village".Equals(burbHex.Burb.Type) || "town".Equals(burbHex.Burb.Type))
                 infantry.DistanceFromTarget = 3;
             else
@@ -1672,7 +1672,7 @@ public class Ai
         else
             desiredInfantry = attackGoal.Enemies + 2;
         int count = 0;
-        int currentDesire = attackGoal.GetDesiredCountForUnitType("infantry");
+        int currentDesire = attackGoal.GetDesiredCountForUnitType(INFANTRY);
         if (currentDesire >= desiredInfantry)
             count = 0;
         else
@@ -1714,7 +1714,7 @@ public class Ai
         {
             AiUnit infantry = new AiUnit();
             infantry.GoalTargetXy = attackGoal.TargetMapHex.X + "," + attackGoal.TargetMapHex.Y;
-            infantry.UnitType = "infantry";
+            infantry.UnitType = INFANTRY;
             if ("village".Equals(burbHex.Burb.Type) || "town".Equals(burbHex.Burb.Type))
                 infantry.DistanceFromTarget = 3;
             else
