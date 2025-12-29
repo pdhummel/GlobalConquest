@@ -355,7 +355,7 @@ public class BurbWindow
         action.Unit.Owner = faction;
         action.Unit.Color = faction.Color;
         if (INFANTRY.Equals(unitTypeName) && "dock".Equals(targetHex.Burb.Type))
-            unitTypeName = "transport-infantry";
+            unitTypeName = TRANSPORT_INFANTRY;
         if (("tank".Equals(unitTypeName) || "armor".Equals(unitTypeName)) && "dock".Equals(targetHex.Burb.Type))
             unitTypeName = "transport-tank";
         action.Unit.UnitType = unitTypeName;

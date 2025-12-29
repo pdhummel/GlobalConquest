@@ -91,7 +91,7 @@ public class AiGoal
         int count = 0;
         foreach (AiUnit aiUnit in DesiredUnits)
         {
-            if ("transport-infantry".Equals(unitType) || "dug-in-infantry".Equals(unitType))
+            if (TRANSPORT_INFANTRY.Equals(unitType) || "dug-in-infantry".Equals(unitType))
                 unitType = INFANTRY;
             if (aiUnit.UnitType.Equals(unitType))
                 count += 1;

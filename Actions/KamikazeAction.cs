@@ -99,7 +99,7 @@ public class KamikazeAction : PlayerAction
                     {
                         damage = (34 / factor);
                     }
-                    else if ("transport-infantry".Equals(type) || "transport-tank".Equals(type))
+                    else if (TRANSPORT_INFANTRY.Equals(type) || "transport-tank".Equals(type))
                     {
                         damage = (50 / factor);
                     }

@@ -430,7 +430,7 @@ public class PlaneUnitType : UnitType
         unitType.BattleDamageFromAttacker["armor"] = 0;
         unitType.BattleDamageFromAttacker["tank"] = 0;
         unitType.BattleDamageFromAttacker["dug-in-infantry"] = 0;
-        unitType.BattleDamageFromAttacker["transport-infantry"] = 0;
+        unitType.BattleDamageFromAttacker[TRANSPORT_INFANTRY] = 0;
         unitType.BattleDamageFromAttacker["transport-armor"] = 0;
         unitType.BattleDamageFromAttacker["transport-tank"] = 0;
         unitType.BattleDamageFromAttacker["submarine"] = 0;
@@ -449,7 +449,7 @@ public class PlaneUnitType : UnitType
         unitType.BattleDamageToDefender["armor"] = 0;
         unitType.BattleDamageToDefender["tank"] = 0;
         unitType.BattleDamageToDefender["dug-in-infantry"] = 0;
-        unitType.BattleDamageToDefender["transport-infantry"] = 0;
+        unitType.BattleDamageToDefender[TRANSPORT_INFANTRY] = 0;
         unitType.BattleDamageToDefender["transport-armor"] = 0;
         unitType.BattleDamageToDefender["transport-tank"] = 0;
         unitType.BattleDamageToDefender["submarine"] = 0;
@@ -484,7 +484,7 @@ public class PlaneUnitType : UnitType
         unitType.FiringRangeFromAttacker["armor"] = 0;
         unitType.FiringRangeFromAttacker["tank"] = 0;
         unitType.FiringRangeFromAttacker["dug-in-infantry"] = 0;
-        unitType.FiringRangeFromAttacker["transport-infantry"] = 0;
+        unitType.FiringRangeFromAttacker[TRANSPORT_INFANTRY] = 0;
         unitType.FiringRangeFromAttacker["transport-armor"] = 0;
         unitType.FiringRangeFromAttacker["transport-tank"] = 0;
         unitType.FiringRangeFromAttacker["submarine"] = 0;
@@ -503,7 +503,7 @@ public class PlaneUnitType : UnitType
         unitType.FiringRangeToDefender["armor"] = 0;
         unitType.FiringRangeToDefender["tank"] = 0;
         unitType.FiringRangeToDefender["dug-in-infantry"] = 0;
-        unitType.FiringRangeToDefender["transport-infantry"] = 0;
+        unitType.FiringRangeToDefender[TRANSPORT_INFANTRY] = 0;
         unitType.FiringRangeToDefender["transport-armor"] = 0;
         unitType.FiringRangeToDefender["transport-tank"] = 0;
         unitType.FiringRangeToDefender["submarine"] = 0;

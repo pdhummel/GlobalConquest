@@ -952,7 +952,7 @@ public class GameLogic
                         {
                             unit.UnitType = "tank";
                         }
-                        else if ("transport-infantry".Equals(unit.UnitType))
+                        else if (TRANSPORT_INFANTRY.Equals(unit.UnitType))
                         {
                             unit.UnitType = INFANTRY;
                         }
@@ -969,7 +969,7 @@ public class GameLogic
                         }
                         else if (INFANTRY.Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
                         {
-                            unit.UnitType = "transport-infantry";
+                            unit.UnitType = TRANSPORT_INFANTRY;
                         }
                     }
 
@@ -1055,7 +1055,7 @@ public class GameLogic
             }
             else if (INFANTRY.Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType))
             {
-                unit.UnitType = "transport-infantry";
+                unit.UnitType = TRANSPORT_INFANTRY;
             }
         }
         if ("grass".Equals(mapHex.Terrain) || "mountain".Equals(mapHex.Terrain) || "forest".Equals(mapHex.Terrain) || "desert".Equals(mapHex.Terrain))
@@ -1064,7 +1064,7 @@ public class GameLogic
             {
                 unit.UnitType = "tank";
             }
-            else if ("transport-infantry".Equals(unit.UnitType))
+            else if (TRANSPORT_INFANTRY.Equals(unit.UnitType))
             {
                 unit.UnitType = INFANTRY;
             }

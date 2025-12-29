@@ -408,7 +408,7 @@ public class Ai
                 if (unit != null && unit.X == goal.TargetMapHex.X && unit.Y == goal.TargetMapHex.Y)
                 {
                     string unitType = unit.UnitType;
-                    if ("transport-infantry".Equals(unitType) || "dug-in-infantry".Equals(unitType))
+                    if (TRANSPORT_INFANTRY.Equals(unitType) || "dug-in-infantry".Equals(unitType))
                         unitType = INFANTRY;
                     if (!unitTypeToAvailableUnits.ContainsKey(unitType))
                         unitTypeToAvailableUnits[unitType] = new HashSet<AiUnit>();
@@ -419,7 +419,7 @@ public class Ai
                 if (unit != null)
                 {
                     string unitType = unit.UnitType;
-                    if ("transport-infantry".Equals(unitType) || "dug-in-infantry".Equals(unitType))
+                    if (TRANSPORT_INFANTRY.Equals(unitType) || "dug-in-infantry".Equals(unitType))
                         unitType = INFANTRY;
                     if (!unitTypeToAvailableUnits.ContainsKey(unitType))
                         unitTypeToAvailableUnits[unitType] = new HashSet<AiUnit>();
@@ -613,7 +613,7 @@ public class Ai
             aiUnit.Unit = newUnit;
             unitIdToAiUnit[newUnit.Id] = aiUnit;
             string newUnitType = newUnit.UnitType;
-            if ("transport-infantry".Equals(newUnitType))
+            if (TRANSPORT_INFANTRY.Equals(newUnitType))
                 newUnitType = INFANTRY;
             aiUnit.UnitType = newUnitType;
             goal.ActualUnits.Add(aiUnit);
@@ -627,7 +627,7 @@ public class Ai
     {
         Unit unit = null;
         AiUnit availableAiUnit = null;
-        if ("transport-infantry".Equals(unitType) || "dug-in-infantry".Equals(unitType))
+        if (TRANSPORT_INFANTRY.Equals(unitType) || "dug-in-infantry".Equals(unitType))
             unitType = INFANTRY;
         if (unitTypeToAvailableUnits.ContainsKey(unitType))
         {
@@ -666,13 +666,13 @@ public class Ai
                     continue;
                 unit.IsSneaking = false;
                 UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
-                if (unit.Color.Equals(Faction.Color) && (INFANTRY.Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) || "transport-infantry".Equals(unit.UnitType)))
+                if (unit.Color.Equals(Faction.Color) && (INFANTRY.Equals(unit.UnitType) || "dug-in-infantry".Equals(unit.UnitType) || TRANSPORT_INFANTRY.Equals(unit.UnitType)))
                 {
                     moveUnit(unitType, unit, goal.TargetMapHex);
                     count += 1;
                     Globals.Log("Ai.moveUnits(): request assault by " + unit.Id + " for " + goal);
                 }
-                else if (unit.Color.Equals(Faction.Color) && "sea".Equals(unitType.LandOrSea) && !"transport-infantry".Equals(unit.UnitType))
+                else if (unit.Color.Equals(Faction.Color) && "sea".Equals(unitType.LandOrSea) && !TRANSPORT_INFANTRY.Equals(unit.UnitType))
                 {
                     int distance = 3;
                     if ("metro".Equals(goal.TargetMapHex.Burb.Type) && "battleship".Equals(unit.UnitType))
@@ -747,7 +747,7 @@ public class Ai
                 Globals.Log("Ai.moveUnits(): InitialPosition " + aiUnit.Unit.Id + " to " + aiUnit.InitialPosition.X + "," + aiUnit.InitialPosition.Y);
                 if (!"sea".Equals(unitType.LandOrSea))
                 {
-                    if ("conquer".Equals(goal.Type) || "transport-infantry".Equals(unitType.Name))
+                    if ("conquer".Equals(goal.Type) || TRANSPORT_INFANTRY.Equals(unitType.Name))
                         aiUnit.Unit.IsSneaking = true;
                     moveUnit(unitType, aiUnit.Unit, aiUnit.InitialPosition);
                 }
@@ -790,7 +790,7 @@ public class Ai
                     //    aiUnit.Unit.IsSneaking = true;
                     //}
                     if ("conquer".Equals(goal.Type) && (!"sea".Equals(unitType.LandOrSea) ||
-                        "transport-infantry".Equals(unitType.Name)))
+                        TRANSPORT_INFANTRY.Equals(unitType.Name)))
                     {
                         aiUnit.Unit.IsSneaking = true;
                     }
@@ -837,7 +837,7 @@ public class Ai
             if (!partOfOpenGoal)
             {
                 string unitTypeString = aiUnit.UnitType;
-                if ("transport-infantry".Equals(unitTypeString) || "dug-in-infantry".Equals(unitTypeString))
+                if (TRANSPORT_INFANTRY.Equals(unitTypeString) || "dug-in-infantry".Equals(unitTypeString))
                     unitTypeString = INFANTRY;
 
                 if (!unitTypeToAvailableUnits.ContainsKey(unitTypeString))
@@ -927,7 +927,7 @@ public class Ai
                         }
                     }
                     if (aiUnit.Unit.ActionQueue.Count <= 0 && aiGoal != null &&
-                        (INFANTRY.Equals(unitType.Name) || "dug-in-infantry".Equals(unitType.Name) || "transport-infantry".Equals(unitType.Name)))
+                        (INFANTRY.Equals(unitType.Name) || "dug-in-infantry".Equals(unitType.Name) || TRANSPORT_INFANTRY.Equals(unitType.Name)))
                     {
                         List<MapHex> surroundingHexes = map.getSurroundingHexesList(aiUnit.LastMapHex);
                         for (int i = 0; i < surroundingHexes.Count; i++)
@@ -981,7 +981,7 @@ public class Ai
             return;
         Globals.Log("moveUnit(): enter: " + unit.Id + " to " + toHex.X + "," + toHex.Y);
         MapHex fromHex = map.Hexes[unit.Y, unit.X];
-        if ("sea".Equals(unitType.LandOrSea) && !"transport-infantry".Equals(unit.UnitType))
+        if ("sea".Equals(unitType.LandOrSea) && !TRANSPORT_INFANTRY.Equals(unit.UnitType))
         {
             Globals.Log("moveUnit(): trying to find path by sea for " + unit.Id + " to " + toHex.X + "," + toHex.Y);
             gameState.Map.buildNodesForShortestPath(true, null, seaGraph, null);
@@ -1078,24 +1078,24 @@ public class Ai
                 break;
             }
             else if ("tank".Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { INFANTRY, "transport-infantry", "transport-tank", "sub", "battleship", "dug-in-infantry" }
+                     new HashSet<string>() { INFANTRY, TRANSPORT_INFANTRY, "transport-tank", "sub", "battleship", "dug-in-infantry" }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
             else if (INFANTRY.Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { "transport-tank", "transport-infantry", "sub", "battleship", "dug-in-infantry" }
+                     new HashSet<string>() { "transport-tank", TRANSPORT_INFANTRY, "sub", "battleship", "dug-in-infantry" }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
             else if ("transport-tank".Equals(targetUnit.UnitType) &&
-                     new HashSet<string>() { "transport-infantry", "sub", "battleship", "dug-in-infantry" }
+                     new HashSet<string>() { TRANSPORT_INFANTRY, "sub", "battleship", "dug-in-infantry" }
                      .Contains(targetUnit.UnitType))
             {
                 priorityTargetUnit = targetUnit;
             }
-            else if ("transport-infantry".Equals(targetUnit.UnitType) &&
+            else if (TRANSPORT_INFANTRY.Equals(targetUnit.UnitType) &&
                      new HashSet<string>() { "sub", "battleship", "dug-in-infantry" }
                      .Contains(targetUnit.UnitType))
             {

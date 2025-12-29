@@ -235,7 +235,7 @@ public class GameState
                     {
                         Unit neighborUnit = createNativeInfantry(mapHex);
                         if ("dock".Equals(neighbor.Burb.Type))
-                            neighborUnit.UnitType = "transport-infantry";
+                            neighborUnit.UnitType = TRANSPORT_INFANTRY;
                         placeUnit(neighbor, neighborUnit);
                     }
                 }
@@ -250,7 +250,7 @@ public class GameState
                     Unit neighborUnit = createNativeInfantry(mapHex);
                     if (neighbor.Burb != null && "dock".Equals(neighbor.Burb.Type))
                     {
-                        neighborUnit.UnitType = "transport-infantry";
+                        neighborUnit.UnitType = TRANSPORT_INFANTRY;
                     }
                     placeUnit(neighbor, neighborUnit);
                 }

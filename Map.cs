@@ -204,7 +204,7 @@ public class Map
                 if (mapHex.Burb != null && mapHex.Burb.Type.Equals("dock"))
                 {
                     if (unit.UnitType.Equals(INFANTRY))
-                        unit.UnitType = "transport-infantry";
+                        unit.UnitType = TRANSPORT_INFANTRY;
                     if (unit.UnitType.Equals("tank"))
                         unit.UnitType = "transport-tank";
                 }
