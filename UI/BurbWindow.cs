@@ -1,9 +1,7 @@
-using GlobalConquest;
+using static UnitTypeConstants;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
-using GumRuntime;
 using Myra.Graphics2D;
-using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 using Button = Myra.Graphics2D.UI.Button;
 using Label = Myra.Graphics2D.UI.Label;
@@ -263,8 +261,8 @@ public class BurbWindow
         addLabelToGrid(grid, rowIndex++, 1, "45");
         costByRow[rowIndex] = 85;
         landUnitRows.Add(rowIndex);
-        unitTypeByRow[rowIndex] = "spy";
-        addLabelToGrid(grid, rowIndex, 0, "Spy");
+        unitTypeByRow[rowIndex] = SPY;
+        addLabelToGrid(grid, rowIndex, 0, SPY);
         addLabelToGrid(grid, rowIndex++, 1, "85");
         costByRow[rowIndex] = 35;
         airUnitRows.Add(rowIndex);

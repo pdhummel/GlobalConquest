@@ -1,8 +1,8 @@
+using static UnitTypeConstants;
 using GlobalConquest.Actions;
 using Microsoft.Xna.Framework;
 using GlobalConquest.Units;
 using System.Text.Json;
-using System.IO;
 using System.IO.Compression;
 namespace GlobalConquest;
 
@@ -212,7 +212,7 @@ public class GameLogic
             foreach (MapHex burbHex in burbHexes)
             {
                 Unit unitInBurb = burbHex.getUnit();
-                if (unitInBurb != null && !unitInBurb.Color.Equals(burb.OwnerColor) && "spy".Equals(unitInBurb.UnitType))
+                if (unitInBurb != null && !unitInBurb.Color.Equals(burb.OwnerColor) && SPY.Equals(unitInBurb.UnitType))
                 {
                     isSabotaged = true;
                     break;
@@ -451,7 +451,7 @@ public class GameLogic
                 if ("sub".Equals(hexUnit.UnitType) && !hexUnit.IsAttacking)
                     continue;
 
-                if ("spy".Equals(hexUnit.UnitType) && !"spy".Equals(unit.UnitType))
+                if (SPY.Equals(hexUnit.UnitType) && !SPY.Equals(unit.UnitType))
                     continue;
 
                 bool isHexUnitMoving = false;

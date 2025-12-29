@@ -1,4 +1,5 @@
 namespace GlobalConquest.Units;
+using static UnitTypeConstants;
 
 public class SpyUnitType : UnitType
 {
@@ -56,7 +57,7 @@ public class SpyUnitType : UnitType
     public UnitType defineSpy()
     {
         UnitType unitType = new UnitType();
-        unitType.Name = "spy";
+        unitType.Name = SPY;
         unitType.LandOrSea = "both";
 
         // can't become dug-in infantry in swamp
@@ -74,7 +75,7 @@ public class SpyUnitType : UnitType
         unitType.BattleDamageFromAttacker["sub"] = 34;
         unitType.BattleDamageFromAttacker["battleship"] = 34;
         unitType.BattleDamageFromAttacker["carrier"] = 34;
-        unitType.BattleDamageFromAttacker["spy"] = 0;
+        unitType.BattleDamageFromAttacker[SPY] = 0;
         unitType.BattleDamageFromAttacker["decoy-comcen"] = 0;
         unitType.BattleDamageFromAttacker["com"] = 34;
         unitType.BattleDamageFromAttacker["ComCen"] = 34;
@@ -93,7 +94,7 @@ public class SpyUnitType : UnitType
         unitType.BattleDamageToDefender["sub"] = 0;
         unitType.BattleDamageToDefender["battleship"] = 0;
         unitType.BattleDamageToDefender["carrier"] = 0;
-        unitType.BattleDamageToDefender["spy"] = 0;
+        unitType.BattleDamageToDefender[SPY] = 0;
         unitType.BattleDamageToDefender["decoy-comcen"] = 0;
         unitType.BattleDamageToDefender["com"] = 0;
         unitType.BattleDamageToDefender["ComCen"] = 0;
@@ -125,7 +126,7 @@ public class SpyUnitType : UnitType
         unitType.FiringRangeFromAttacker["sub"] = 2;
         unitType.FiringRangeFromAttacker["battleship"] = 3;
         unitType.FiringRangeFromAttacker["carrier"] = 4;
-        unitType.FiringRangeFromAttacker["spy"] = 0;
+        unitType.FiringRangeFromAttacker[SPY] = 0;
         unitType.FiringRangeFromAttacker["decoy-comcen"] = 0;
         unitType.FiringRangeFromAttacker["com"] = 2;
         unitType.FiringRangeFromAttacker["ComCen"] = 2;
@@ -144,7 +145,7 @@ public class SpyUnitType : UnitType
         unitType.FiringRangeToDefender["sub"] = 0;
         unitType.FiringRangeToDefender["battleship"] = 0;
         unitType.FiringRangeToDefender["carrier"] = 0;
-        unitType.FiringRangeToDefender["spy"] = 0;
+        unitType.FiringRangeToDefender[SPY] = 0;
         unitType.FiringRangeToDefender["decoy-comcen"] = 0;
         unitType.FiringRangeToDefender["com"] = 0;
         unitType.FiringRangeToDefender["ComCen"] = 0;

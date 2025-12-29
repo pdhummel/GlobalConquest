@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Numerics;
+using static UnitTypeConstants;
 using System.Text.Json.Serialization;
 using GlobalConquest.Units;
 namespace GlobalConquest;
@@ -82,7 +81,7 @@ public class GameState
         infantry.UnitType = "infantry";
         infantry.Color = color;
         Unit spy = new Unit();
-        spy.UnitType = "spy";
+        spy.UnitType = SPY;
         spy.Color = color;
 
         Unit plane1 = new Unit();

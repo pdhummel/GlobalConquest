@@ -1,5 +1,4 @@
-using System.Numerics;
-
+using static UnitTypeConstants;
 namespace GlobalConquest.Units;
 
 public class PlaneUnitType : UnitType
@@ -438,7 +437,7 @@ public class PlaneUnitType : UnitType
         unitType.BattleDamageFromAttacker["sub"] = 0;
         unitType.BattleDamageFromAttacker["battleship"] = 0;
         unitType.BattleDamageFromAttacker["carrier"] = 0;
-        unitType.BattleDamageFromAttacker["spy"] = 0;
+        unitType.BattleDamageFromAttacker[SPY] = 0;
         unitType.BattleDamageFromAttacker["decoy-comcen"] = 0;
         unitType.BattleDamageFromAttacker["com"] = 0;
         unitType.BattleDamageFromAttacker["ComCen"] = 0;
@@ -457,7 +456,7 @@ public class PlaneUnitType : UnitType
         unitType.BattleDamageToDefender["sub"] = 0;
         unitType.BattleDamageToDefender["battleship"] = 0;
         unitType.BattleDamageToDefender["carrier"] = 0;
-        unitType.BattleDamageToDefender["spy"] = 0;
+        unitType.BattleDamageToDefender[SPY] = 0;
         unitType.BattleDamageToDefender["decoy-comcen"] = 0;
         unitType.BattleDamageToDefender["com"] = 0;
         unitType.BattleDamageToDefender["ComCen"] = 0;
@@ -492,7 +491,7 @@ public class PlaneUnitType : UnitType
         unitType.FiringRangeFromAttacker["sub"] = 0;
         unitType.FiringRangeFromAttacker["battleship"] = 0;
         unitType.FiringRangeFromAttacker["carrier"] = 0;
-        unitType.FiringRangeFromAttacker["spy"] = 0;
+        unitType.FiringRangeFromAttacker[SPY] = 0;
         unitType.FiringRangeFromAttacker["decoy-comcen"] = 0;
         unitType.FiringRangeFromAttacker["com"] = 0;
         unitType.FiringRangeFromAttacker["ComCen"] = 0;
@@ -511,7 +510,7 @@ public class PlaneUnitType : UnitType
         unitType.FiringRangeToDefender["sub"] = 0;
         unitType.FiringRangeToDefender["battleship"] = 0;
         unitType.FiringRangeToDefender["carrier"] = 0;
-        unitType.FiringRangeToDefender["spy"] = 0;
+        unitType.FiringRangeToDefender[SPY] = 0;
         unitType.FiringRangeToDefender["decoy-comcen"] = 0;
         unitType.FiringRangeToDefender["com"] = 0;
         unitType.FiringRangeToDefender["ComCen"] = 0;

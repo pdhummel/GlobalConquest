@@ -1,3 +1,4 @@
+using static UnitTypeConstants;
 using System.Text.Json;
 using GlobalConquest.Units;
 using LiteNetLib;
@@ -55,7 +56,7 @@ public class MoveUnitAction : PlayerAction
             else
             {
                 MapHex destination = gameState.Map.Hexes[ToY, ToX];
-                if ("comcen".Equals(existingUnit.UnitType) || "spy".Equals(existingUnit.UnitType))
+                if ("comcen".Equals(existingUnit.UnitType) || SPY.Equals(existingUnit.UnitType))
                 {
                     existingUnit?.setUnitAction(unitAction);
                 }

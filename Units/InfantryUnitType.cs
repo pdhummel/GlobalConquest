@@ -1,3 +1,4 @@
+using static UnitTypeConstants;
 namespace GlobalConquest.Units;
 
 public class InfantryUnitType : UnitType
@@ -28,7 +29,7 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageFromAttacker["sub"] = 0;
         unitType.BattleDamageFromAttacker["battleship"] = 12;
         unitType.BattleDamageFromAttacker["carrier"] = 10;
-        unitType.BattleDamageFromAttacker["spy"] = 0;
+        unitType.BattleDamageFromAttacker[SPY] = 0;
         unitType.BattleDamageFromAttacker["decoy-comcen"] = 0;
         unitType.BattleDamageFromAttacker["com"] = 20;
         unitType.BattleDamageFromAttacker["ComCen"] = 20;
@@ -47,7 +48,7 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageToDefender["sub"] = 25;
         unitType.BattleDamageToDefender["battleship"] = 25;
         unitType.BattleDamageToDefender["carrier"] = 25;
-        unitType.BattleDamageToDefender["spy"] = 34;
+        unitType.BattleDamageToDefender[SPY] = 34;
         unitType.BattleDamageToDefender["decoy-comcen"] = 34;
         unitType.BattleDamageToDefender["com"] = 10;
         unitType.BattleDamageToDefender["ComCen"] = 10;
@@ -79,7 +80,7 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeFromAttacker["sub"] = 0;
         unitType.FiringRangeFromAttacker["battleship"] = 3;
         unitType.FiringRangeFromAttacker["carrier"] = 4;
-        unitType.FiringRangeFromAttacker["spy"] = 0;
+        unitType.FiringRangeFromAttacker[SPY] = 0;
         unitType.FiringRangeFromAttacker["decoy-comcen"] = 0;
         unitType.FiringRangeFromAttacker["com"] = 2;
         unitType.FiringRangeFromAttacker["ComCen"] = 2;
@@ -98,7 +99,7 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeToDefender["sub"] = 1;
         unitType.FiringRangeToDefender["battleship"] = 1;
         unitType.FiringRangeToDefender["carrier"] = 1;
-        unitType.FiringRangeToDefender["spy"] = 2;
+        unitType.FiringRangeToDefender[SPY] = 2;
         unitType.FiringRangeToDefender["decoy-comcen"] = 2;
         unitType.FiringRangeToDefender["com"] = 2;
         unitType.FiringRangeToDefender["ComCen"] = 2;
@@ -173,7 +174,7 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageFromAttacker["sub"] = 100;
         unitType.BattleDamageFromAttacker["battleship"] = 50;
         unitType.BattleDamageFromAttacker["carrier"] = 50;
-        unitType.BattleDamageFromAttacker["spy"] = 0;
+        unitType.BattleDamageFromAttacker[SPY] = 0;
         unitType.BattleDamageFromAttacker["decoy-comcen"] = 0;
         unitType.BattleDamageFromAttacker["com"] = 20;
         unitType.BattleDamageFromAttacker["ComCen"] = 20;
@@ -192,7 +193,7 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageToDefender["sub"] = 5;
         unitType.BattleDamageToDefender["battleship"] = 5;
         unitType.BattleDamageToDefender["carrier"] = 5;
-        unitType.BattleDamageToDefender["spy"] = 34;
+        unitType.BattleDamageToDefender[SPY] = 34;
         unitType.BattleDamageToDefender["decoy-comcen"] = 34;
         unitType.BattleDamageToDefender["com"] = 10;
         unitType.BattleDamageToDefender["ComCen"] = 10;
@@ -224,7 +225,7 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeFromAttacker["sub"] = 2;
         unitType.FiringRangeFromAttacker["battleship"] = 3;
         unitType.FiringRangeFromAttacker["carrier"] = 4;
-        unitType.FiringRangeFromAttacker["spy"] = 0;
+        unitType.FiringRangeFromAttacker[SPY] = 0;
         unitType.FiringRangeFromAttacker["decoy-comcen"] = 0;
         unitType.FiringRangeFromAttacker["com"] = 2;
         unitType.FiringRangeFromAttacker["ComCen"] = 2;
@@ -243,7 +244,7 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeToDefender["sub"] = 1;
         unitType.FiringRangeToDefender["battleship"] = 1;
         unitType.FiringRangeToDefender["carrier"] = 1;
-        unitType.FiringRangeToDefender["spy"] = 2;
+        unitType.FiringRangeToDefender[SPY] = 2;
         unitType.FiringRangeToDefender["decoy-comcen"] = 2;
         unitType.FiringRangeToDefender["com"] = 1;
         unitType.FiringRangeToDefender["ComCen"] = 1;
@@ -318,7 +319,7 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageFromAttacker["sub"] = 0;
         unitType.BattleDamageFromAttacker["battleship"] = 6;
         unitType.BattleDamageFromAttacker["carrier"] = 5;
-        unitType.BattleDamageFromAttacker["spy"] = 0;
+        unitType.BattleDamageFromAttacker[SPY] = 0;
         unitType.BattleDamageFromAttacker["decoy-comcen"] = 0;
         unitType.BattleDamageFromAttacker["com"] = 20;
         unitType.BattleDamageFromAttacker["ComCen"] = 20;
@@ -337,7 +338,7 @@ public class InfantryUnitType : UnitType
         unitType.BattleDamageToDefender["sub"] = 25;
         unitType.BattleDamageToDefender["battleship"] = 25;
         unitType.BattleDamageToDefender["carrier"] = 25;
-        unitType.BattleDamageToDefender["spy"] = 34;
+        unitType.BattleDamageToDefender[SPY] = 34;
         unitType.BattleDamageToDefender["decoy-comcen"] = 34;
         unitType.BattleDamageToDefender["com"] = 10;
         unitType.BattleDamageToDefender["ComCen"] = 10;
@@ -369,7 +370,7 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeFromAttacker["sub"] = 0;
         unitType.FiringRangeFromAttacker["battleship"] = 3;
         unitType.FiringRangeFromAttacker["carrier"] = 4;
-        unitType.FiringRangeFromAttacker["spy"] = 0;
+        unitType.FiringRangeFromAttacker[SPY] = 0;
         unitType.FiringRangeFromAttacker["decoy-comcen"] = 0;
         unitType.FiringRangeFromAttacker["com"] = 2;
         unitType.FiringRangeFromAttacker["ComCen"] = 2;
@@ -388,7 +389,7 @@ public class InfantryUnitType : UnitType
         unitType.FiringRangeToDefender["sub"] = 1;
         unitType.FiringRangeToDefender["battleship"] = 1;
         unitType.FiringRangeToDefender["carrier"] = 1;
-        unitType.FiringRangeToDefender["spy"] = 2;
+        unitType.FiringRangeToDefender[SPY] = 2;
         unitType.FiringRangeToDefender["decoy-comcen"] = 2;
         unitType.FiringRangeToDefender["com"] = 2;
         unitType.FiringRangeToDefender["ComCen"] = 2;

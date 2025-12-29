@@ -1,4 +1,4 @@
-using System.Text.Json;
+using static UnitTypeConstants;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
 using Microsoft.Xna.Framework;
@@ -587,7 +587,7 @@ public class Map
             {
                 string color = null;
                 Unit unit = mapHex.getUnit();
-                if (unit != null && !"spy".Equals(unit.UnitType))
+                if (unit != null && !SPY.Equals(unit.UnitType))
                 {
                     color = unit.Color;
                 }
@@ -598,7 +598,7 @@ public class Map
                     {
                         MapHex neighborHex = surroundingHexes[direction];
                         unit = neighborHex.getUnit();
-                        if (unit != null && !"spy".Equals(unit.UnitType))
+                        if (unit != null && !SPY.Equals(unit.UnitType))
                         {
                             if (color == null)
                                 color = unit.Color;
@@ -631,7 +631,7 @@ public class Map
             else
             {
                 Unit unit = mapHex.getUnit();
-                if (previousOwnerColor != null && unit != null && !"spy".Equals(unit.UnitType))
+                if (previousOwnerColor != null && unit != null && !SPY.Equals(unit.UnitType))
                 {
                     mapHex.Burb.OwnerColor = unit.Color;
                     if (!previousOwnerColor.Equals(unit.Color))

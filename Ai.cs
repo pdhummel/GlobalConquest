@@ -2,6 +2,7 @@ using GlobalConquest.Actions;
 using GlobalConquest.HexMapEngine.Structures;
 using GlobalConquest.Units;
 using SharpDX.Direct2D1;
+using static UnitTypeConstants;
 
 namespace GlobalConquest;
 
@@ -53,7 +54,7 @@ public class Ai
                 dockList.Add(mapHex);
         }
         Unit unit = myMetroHex.getUnit();
-        if (unit != null && "spy".Equals(unit.UnitType))
+        if (unit != null && SPY.Equals(unit.UnitType))
             spy = unit;
 
         List<MapHex> metroNeighbors = map.getSurroundingHexesList(myMetroHex);
@@ -294,7 +295,7 @@ public class Ai
         //     Unit unit = mapHex.getUnit();
         //     if (unit != null && unit.Color.Equals(myMetroHex.Burb.Color) &&
         //         !unit.UnitType.Equals("comcen") &&
-        //         !unit.UnitType.Equals("spy") &&
+        //         !unit.UnitType.Equals(SPY) &&
         //         !(unit.X == myMetroHex.X && unit.Y == myMetroHex.Y))
         //     {
         //         if (unit.ActionQueue.Count <= 0)
@@ -311,7 +312,7 @@ public class Ai
             Unit unit = mapHex.getUnit();
             if (unit != null && unit.Color.Equals(myMetroHex.Burb.Color) &&
                 !unit.UnitType.Equals("comcen") &&
-                !unit.UnitType.Equals("spy") &&
+                !unit.UnitType.Equals(SPY) &&
                 !unit.UnitType.Equals("carrier") &&
                 !(unit.X == myMetroHex.X && unit.Y == myMetroHex.Y))
             {
@@ -339,7 +340,7 @@ public class Ai
                 if (unit != null &&
                     unit.Color.Equals(Faction.Color) &&
                     !unit.UnitType.Equals("comcen") &&
-                    !unit.UnitType.Equals("spy"))
+                    !unit.UnitType.Equals(SPY))
                 {
                     if (unitIdToAiUnit.ContainsKey(unit.Id))
                     {
