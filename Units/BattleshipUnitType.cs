@@ -30,6 +30,7 @@ public class BattleshipUnitType : UnitType
         unitType.BattleDamageFromAttacker["battleship"] = 34;
         unitType.BattleDamageFromAttacker["carrier"] = 25;
         unitType.BattleDamageFromAttacker["spy"] = 0;
+        unitType.BattleDamageFromAttacker["decoy-comcen"] = 0;
         unitType.BattleDamageFromAttacker["com"] = 20;
         unitType.BattleDamageFromAttacker["ComCen"] = 20;
         unitType.BattleDamageFromAttacker["comcen"] = 20;
@@ -48,6 +49,7 @@ public class BattleshipUnitType : UnitType
         unitType.BattleDamageToDefender["battleship"] = 25;
         unitType.BattleDamageToDefender["carrier"] = 34;
         unitType.BattleDamageToDefender["spy"] = 34;
+        unitType.BattleDamageToDefender["decoy-comcen"] = 34;
         unitType.BattleDamageToDefender["com"] = 10;
         unitType.BattleDamageToDefender["ComCen"] = 10;
         unitType.BattleDamageToDefender["comcen"] = 10;
@@ -79,6 +81,7 @@ public class BattleshipUnitType : UnitType
         unitType.FiringRangeFromAttacker["battleship"] = 3;
         unitType.FiringRangeFromAttacker["carrier"] = 4;
         unitType.FiringRangeFromAttacker["spy"] = 0;
+        unitType.FiringRangeFromAttacker["decoy-comcen"] = 0;
         unitType.FiringRangeFromAttacker["com"] = 3;
         unitType.FiringRangeFromAttacker["ComCen"] = 3;
         unitType.FiringRangeFromAttacker["comcen"] = 3;
@@ -97,6 +100,7 @@ public class BattleshipUnitType : UnitType
         unitType.FiringRangeToDefender["battleship"] = 3;
         unitType.FiringRangeToDefender["carrier"] = 3;
         unitType.FiringRangeToDefender["spy"] = 3;
+        unitType.FiringRangeToDefender["decoy-comcen"] = 3;
         unitType.FiringRangeToDefender["com"] = 3;
         unitType.FiringRangeToDefender["ComCen"] = 3;
         unitType.FiringRangeToDefender["comcen"] = 3;
