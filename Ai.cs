@@ -717,7 +717,7 @@ public class Ai
                 bool isBurbCenter = false;
                 if (unitHex.Burb != null)
                     isBurbCenter = unitHex.Burb.IsBurbCenter();
-                if (isBurbCenter)
+                if (isBurbCenter && !SPY.Equals(aiUnit.Unit) && unitHex.Burb.OwnerColor.Equals(aiUnit.Unit.Color))
                 {
                     goal.ActualUnits.Remove(aiUnit);
                     aiUnit.Unit.ActionQueue.Clear();
