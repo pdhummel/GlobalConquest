@@ -146,7 +146,15 @@ public class GlobalConquestGame : Game
 
     protected override void LoadContent()
     {
-        setupDesktop();
+        var grid = new Grid
+        {
+            RowSpacing = 8,
+            ColumnSpacing = 8
+        };
+        setupDesktop(grid);
+        ConquestMenu conquestMenu = new ConquestMenu(this, grid);
+        conquestMenu.LoadContent();   
+
 
         camera = new OrthographicCamera(GraphicsDevice);
         miniMapCamera = new Custom2dCamera(GraphicsDevice);
@@ -183,16 +191,11 @@ public class GlobalConquestGame : Game
         loadSoundEffect("startTurnPlanning");
     }
 
-    private void setupDesktop()
+    private void setupDesktop(Grid grid)
     {
         Globals.Log("setupDesktop(): enter");
         MyraEnvironment.Game = this;
         Desktop = new Desktop();
-        var grid = new Grid
-        {
-            RowSpacing = 8,
-            ColumnSpacing = 8
-        };
 
         grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
         grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
@@ -204,9 +207,7 @@ public class GlobalConquestGame : Game
         Grid.SetRow(verticalStackPanel, 0);
         grid.Widgets.Add(verticalStackPanel);
 
-
-        ConquestMenu conquestMenu = new ConquestMenu(this, grid);
-        conquestMenu.LoadContent();        
+             
     }
 
     private void loadSoundEffect(string soundEffectEventName)
@@ -561,12 +562,21 @@ public class GlobalConquestGame : Game
         if (Desktop != null)
             try
             {
-                Desktop.Render();    
+                Desktop.Render();
             }
             catch(Exception ex)
             {
                 Globals.Log("Draw(): Exception: " + ex);
-                setupDesktop();
+                var grid = new Grid
+                {
+                    RowSpacing = 8,
+                    ColumnSpacing = 8
+                };
+                setupDesktop(grid);
+                MainGameScreen.hide();
+                MainGameScreen.grid = grid;
+                MainGameScreen.show();
+                Desktop.Render();
             }
 
         base.Draw(gameTime);

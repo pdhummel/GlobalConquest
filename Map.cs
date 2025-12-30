@@ -516,6 +516,39 @@ public class Map
         return hexes;
     }
 
+    public HashSet<MapHex> getMapHexesAtDistance(MapHex mapHex, int distance)
+    {
+        HashSet<MapHex> rangeHexes = getMapHexesInRange(mapHex, distance);
+        if (distance > 1)
+        {
+            HashSet<MapHex> rangeMinusOneHexes = getMapHexesInRange(mapHex, distance-1);
+            rangeHexes.ExceptWith(rangeMinusOneHexes);
+        }
+        HashSet<MapHex> finalRangeHexes = rangeHexes;
+        if (finalRangeHexes.Contains(mapHex))
+            finalRangeHexes.Remove(mapHex);
+        return finalRangeHexes;
+    }
+
+    public MapHex getClosestUnoccupiedHexAtDistance(MapHex sourceHex, MapHex targetHex, int distance)
+    {
+        if (sourceHex == null || targetHex == null || distance <= 1)
+            return null;
+        MapHex closestHex = null;
+        float closestCalculatedDistance = -1.0f;
+        HashSet<MapHex> hexesAtDistance = getMapHexesAtDistance(targetHex, distance);
+        foreach(MapHex mapHex in hexesAtDistance)
+        {
+            float calculatedDistance = calculateDistance(sourceHex, mapHex);
+            if (mapHex.getUnit() == null && (closestCalculatedDistance == -1.0f || calculatedDistance < closestCalculatedDistance))
+            {
+                closestHex = mapHex;
+                closestCalculatedDistance = calculatedDistance;
+            }
+        }
+        return closestHex;
+    }
+
     public HashSet<MapHex> getMapHexesInRange(MapHex mapHex, int range)
     {
         HashSet<MapHex> hexes = new HashSet<MapHex>();

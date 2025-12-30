@@ -29,4 +29,11 @@ public class Burb
         }
         return hexesInBurb;
     }
+
+    public bool IsBurbCenter()
+    {
+        if ("village".Equals(Type) || "town".Equals(Type) || "city".Equals(Type) || "metro".Equals(Type) || "capital".Equals(Type))
+            return true;
+        return false;
+    }
 }

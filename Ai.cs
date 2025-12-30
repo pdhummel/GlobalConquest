@@ -424,8 +424,14 @@ public class Ai
                     if (!unitTypeToAvailableUnits.ContainsKey(unitType))
                         unitTypeToAvailableUnits[unitType] = new HashSet<AiUnit>();
                     goal.ActualUnits.Remove(availableAiUnit);
-                    if (unit.StrengthPoints > 0)
+                    MapHex unitHex = map.Hexes[unit.Y, unit.X];
+                    bool isBurbCenter = false;
+                    if (unitHex.Burb != null)
+                        isBurbCenter = unitHex.Burb.IsBurbCenter();
+                    if (unit.StrengthPoints > 0 && !isBurbCenter)
                         unitTypeToAvailableUnits[unitType].Add(availableAiUnit);
+                    else
+                        unit.ActionQueue.Clear();
                 }
             }
             return true;
@@ -458,8 +464,9 @@ public class Ai
                     break;
                 }
             }
-            int randomGo = random.Next(0, 2);
-            if (isInPosition || randomGo > 0)
+            // randomGo=25%
+            int randomGo = random.Next(0, 4);
+            if (isInPosition || randomGo < 1)
             {
                 goal.ShouldMoveToTarget = true;
                 foreach (AiUnit builtAiUnit in goal.ActualUnits)
@@ -704,6 +711,19 @@ public class Ai
             {
                 goal.ActualUnits.Remove(aiUnit);
             }
+            if (aiUnit.Unit != null)
+            {
+                MapHex unitHex = map.Hexes[aiUnit.Unit.Y, aiUnit.Unit.X];
+                bool isBurbCenter = false;
+                if (unitHex.Burb != null)
+                    isBurbCenter = unitHex.Burb.IsBurbCenter();
+                if (isBurbCenter)
+                {
+                    goal.ActualUnits.Remove(aiUnit);
+                    aiUnit.Unit.ActionQueue.Clear();
+                    continue;
+                }
+            }
             if (AIRPLANE.Equals(aiUnit.UnitType) && aiUnit.Unit != null)
             {
                 flyMission(goal, aiUnit.Unit);
@@ -866,7 +886,7 @@ public class Ai
         aiUnit.LastMapHex = map.Hexes[aiUnit.Unit.Y, aiUnit.Unit.X];
         UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
         if (aiUnit.Unit != null && aiUnit.LastMapHex != null && previousMapHex != null &&
-            aiUnit.Unit.ActionQueue.Count > 0 &&
+            aiUnit.Unit.ActionQueue.Count > 0 && aiUnit.Unit.MoveSteps > 0 &&
             !(aiUnit.Unit.X == aiUnit.Unit.ActionQueue[aiUnit.Unit.ActionQueue.Count - 1].TargetX && aiUnit.Unit.Y == aiUnit.Unit.ActionQueue[aiUnit.Unit.ActionQueue.Count - 1].TargetY))
         {
             if (previousMapHex.X != aiUnit.LastMapHex.X || previousMapHex.Y != aiUnit.LastMapHex.Y)
@@ -1156,12 +1176,11 @@ public class Ai
 
     private MapHex findHexAroundBurb(MapHex burbHex, Unit unit, int distance)
     {
-        HashSet<MapHex> rangeMinusOneHexes = map.getMapHexesInRange(burbHex, distance - 1);
-        HashSet<MapHex> rangeHexes = map.getMapHexesInRange(burbHex, distance);
-        rangeHexes.ExceptWith(rangeMinusOneHexes);
-        HashSet<MapHex> finalRangeHexes = rangeHexes;
-        if (unit == null)
+        if (unit == null || burbHex == null)
             return null;
+
+        HashSet<MapHex> rangeHexes = map.getMapHexesAtDistance(burbHex, distance);
+        HashSet<MapHex> finalRangeHexes = rangeHexes;
 
         // Unit is already in position
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
@@ -1169,8 +1188,9 @@ public class Ai
             return null;
 
         MapHex foundMapHex = null;
-        int index = random.Next(0, finalRangeHexes.Count);
-        MapHex candidateHex = finalRangeHexes.ToList<MapHex>()[index];
+        //int index = random.Next(0, finalRangeHexes.Count);
+        //MapHex candidateHex = finalRangeHexes.ToList<MapHex>()[index];
+        MapHex candidateHex = map.getClosestUnoccupiedHexAtDistance(mapHex, burbHex, distance);
         UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
         if (candidateHex.getUnit() == null && ((!"sea".Equals(unitType.LandOrSea)) ||
             ("sea".Equals(unitType.LandOrSea) &&

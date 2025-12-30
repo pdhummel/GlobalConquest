@@ -128,11 +128,15 @@ public class MainGameScreen
         MiniMapPanel.Visible = false;
         DetailsPanel.Visible = false;
 
-        MainGameMenuPanel.RemoveFromParent();
-        MapPanel.RemoveFromParent();
-        FactionsPanel.RemoveFromParent();
-        MiniMapPanel.RemoveFromParent();
-        DetailsPanel.RemoveFromParent();
+        try
+        {
+            MainGameMenuPanel.RemoveFromParent();
+            MapPanel.RemoveFromParent();
+            FactionsPanel.RemoveFromParent();
+            MiniMapPanel.RemoveFromParent();
+            DetailsPanel.RemoveFromParent();
+        }
+        catch(Exception exIgnore) {}
         IsVisible = false;
     }
 
