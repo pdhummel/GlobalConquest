@@ -1192,7 +1192,7 @@ public class Ai
         //MapHex candidateHex = finalRangeHexes.ToList<MapHex>()[index];
         MapHex candidateHex = map.getClosestUnoccupiedHexAtDistance(mapHex, burbHex, distance);
         UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
-        if (candidateHex.getUnit() == null && ((!"sea".Equals(unitType.LandOrSea)) ||
+        if (candidateHex != null && candidateHex.getUnit() == null && ((!"sea".Equals(unitType.LandOrSea)) ||
             ("sea".Equals(unitType.LandOrSea) &&
             ("sea".Equals(candidateHex.Terrain) || "swamp".Equals(candidateHex.Terrain) || "marsh".Equals(candidateHex.Terrain)))))
         {

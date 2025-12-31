@@ -106,4 +106,24 @@ public class MapHex
         return returnString;
     }
 
+    public void copyMapHexValues(MapHex mapHex)
+    {
+        if (mapHex == null)
+            return;
+        this.Airplane = mapHex.Airplane;
+        if (this.Burb == null)
+            this.Burb = mapHex.Burb;
+        this.IsHighlighted = mapHex.IsHighlighted;
+        this.Terrain = mapHex.Terrain;
+        this.Visibility = mapHex.Visibility;
+        if (this.Units == null)
+            this.Units = mapHex.Units;
+        if (Units != null && Units.Count < 1 && mapHex.Units != null && mapHex.Units.Count > 0)
+            this.Units.Add(mapHex.Units[0]);
+        else if (Units != null && Units.Count > 0 && mapHex.Units != null && mapHex.Units.Count > 0)
+            this.Units[0] = mapHex.Units[0];
+        this.X = mapHex.X;
+        this.Y = mapHex.Y;
+    }
+
 }

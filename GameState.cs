@@ -258,4 +258,26 @@ public class GameState
         }
     }
 
+    public void copyTransferredGameState(GameState newGameState)
+    {
+        if (newGameState == null)
+            return;
+        this.CurrentPhase = newGameState.CurrentPhase;
+        this.CurrentRound = newGameState.CurrentRound;
+        this.CurrentTurn = newGameState.CurrentTurn;
+        if (this.Burbs == null)
+            this.Burbs = newGameState.Burbs;
+        this.Factions = newGameState.Factions;
+        this.GameSettings = newGameState.GameSettings;
+        this.Players = newGameState.Players;
+        this.PlayerExecutionReady = newGameState.PlayerExecutionReady;
+        this.PlayerJoined = newGameState.PlayerJoined;
+        this.PlayerPlanningReady = newGameState.PlayerPlanningReady;
+        this.SecondsRemainingUntilExecution = newGameState.SecondsRemainingUntilExecution;
+        if (this.UnitTypes == null)
+            this.UnitTypes = newGameState.UnitTypes;
+        this.VictoriousColor = newGameState.VictoriousColor;
+
+    }
+
 }

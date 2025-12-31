@@ -238,7 +238,14 @@ public class GameEvent
         }
         Game.addGamePlayEvent(this);
         //Game.scrollToPosition(MapHex.Y, MapHex.X);
-        Game.MainGameScreen.showTimedLocationPopup(EventString, secondsForPopupToAppear, MapHex);
+        try
+        {
+            Game.MainGameScreen.showTimedLocationPopup(EventString, secondsForPopupToAppear, MapHex);    
+        }
+        catch(Exception ex)
+        {
+            //Globals.Log("unitAttackedHandler(): Exception " + ex);
+        }
     }
 
     public void unitDestroyedHandler()
@@ -248,7 +255,11 @@ public class GameEvent
         Game.playSoundEffect(EventType + "1");
         Game.playSoundEffect(EventType + "2");
         Game.addGamePlayEvent(this);
-        Game.MainGameScreen.showTimedLocationPopup(EventString, secondsForPopupToAppear, MapHex);
+        try
+        {
+            Game.MainGameScreen.showTimedLocationPopup(EventString, secondsForPopupToAppear, MapHex);            
+        }
+        catch(Exception exIgnore) {}
     }
 
     public void unitMovementBlockedHandler()
@@ -309,7 +320,11 @@ public class GameEvent
         EventString = GetBurbType() + " " + GetBurbName() + " lost to " + GetEnemyColor() + " at " + GetLocation();
         Game.playSoundEffect(EventType);
         Game.addGamePlayEvent(this);
-        Game.MainGameScreen.showTimedLocationPopup(EventString, secondsForPopupToAppear, MapHex);
+        try
+        {
+            Game.MainGameScreen.showTimedLocationPopup(EventString, secondsForPopupToAppear, MapHex);    
+        }
+        catch(Exception exIgnore) {}
     }
 
     public void playerLostGameHandler()

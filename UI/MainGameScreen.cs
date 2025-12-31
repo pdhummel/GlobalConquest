@@ -313,21 +313,6 @@ public class MainGameScreen
             popupStacks[window.Top] += 1;
         else
             popupStacks[window.Top] = 1;
-        /*
-        TODO: non-fatal exception
-        Unhandled exception. System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation.
-        ---> System.IndexOutOfRangeException: Index was outside the bounds of the array.
-        at System.Collections.Generic.Dictionary`2.TryInsert(TKey key, TValue value, InsertionBehavior behavior)
-        at System.Collections.Generic.Dictionary`2.set_Item(TKey key, TValue value)
-        at GlobalConquest.UI.MainGameScreen.showTimedLocationPopup(String message, Int32 seconds, MapHex mapHex) in C:\data\MyDocuments\work\GlobalConquest\UI\MainGameScreen.cs:line 311
-        at GlobalConquest.GameEvent.unitAttackedHandler() in C:\data\MyDocuments\work\GlobalConquest\GameEvent.cs:line 257
-        at InvokeStub_GameEvent.unitAttackedHandler(Object, Object, IntPtr*)
-        at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
-        --- End of inner exception stack trace ---
-        at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
-        at System.Reflection.MethodBase.Invoke(Object obj, Object[] parameters)
-        at GlobalConquest.GameEvent.<>c__DisplayClass61_0.<handleGamePlayEvent>b__0() in C:\data\MyDocuments\work\GlobalConquest\GameEvent.cs:line 114
-        */
         locationToPopupWindow[mapHex.X + "," + mapHex.Y] = window;
         if (unit != null)
             unitIdToPopupWindow[unit.Id] = window;

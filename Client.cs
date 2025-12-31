@@ -19,8 +19,6 @@ public class Client
 
     public GlobalConquestGame? GlobalConquestGame { get; set; }
 
-    public bool isLoadContentComplete { get; set; } = false;
-
     public bool IsObserverOnly {get; set;} = false;
 
     public GameState GameState { get; set; } = new GameState();
@@ -161,13 +159,16 @@ public class Client
             GameEvent gameEvent;
             if (gameEventExecutionQueue.Count > 0)
             {
+                //Globals.Log("processGameEventQueue():" + gameEventExecutionQueue.Count);
                 gameEventExecutionQueue.TryDequeue(out gameEvent);
                 {
                 processGameEvent(gameEvent);
-                    if (currentRound != GameState.CurrentRound)
+                    if (currentRound != GameState.CurrentRound && gameEventExecutionQueue.Count < 500)
                     {
                         Thread.Sleep(GlobalConquestGame.MyJoinGameValues.GameExecutionSpeed);
                     }
+                    else if (gameEventExecutionQueue.Count > 1000)
+                        Globals.Log("processGameEventQueue(): queueSize=" + gameEventExecutionQueue.Count);
                 }
             }
             else
@@ -189,20 +190,22 @@ public class Client
         else if (gameEvent != null && "gameStateUpdate".Equals(gameEvent.EventType))
         {
             GameState? newGameState = gameEvent.GameState;
-            if (GameState.Map != null && GameState.Map.IsMapReady)
-                newGameState.Map = GameState.Map;
-            GameState = newGameState;
+            //if (GameState.Map != null && GameState.Map.IsMapReady)
+            //    newGameState.Map = GameState.Map;
+            //GameState = newGameState;
+            GameState.copyTransferredGameState(newGameState);
             handleGameOverForClient();
         }
         else if (gameEvent != null && "gameStateAndMapUpdate".Equals(gameEvent.EventType))
         {
             GameState? newGameState = gameEvent.GameState;
+            GameState.copyTransferredGameState(newGameState);
             bool isHighlighted = false;
             if (GameState.Map != null && GameState.Map.IsMapReady)
             {
                 if (gameEvent.MapHex != null)
                     isHighlighted = GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X].IsHighlighted;
-                newGameState.Map = GameState.Map;
+                //newGameState.Map = GameState.Map;
             }
 
             if (gameEvent != null && gameEvent.MapHex != null && GameState.Map != null)
@@ -217,7 +220,7 @@ public class Client
                 if (GameState != null && GameState.Map != null && GameState.Map.Hexes != null)
                     GameState.Map.Hexes[gameEvent.GameState.MapHex.Y, gameEvent.GameState.MapHex.X] = gameEvent.GameState.MapHex;
             }
-            GameState = newGameState;
+            //GameState = newGameState;
             handleGameOverForClient();
         }
 
@@ -231,6 +234,7 @@ public class Client
         }
 
     }
+
 
     private void handleGameOverForClient()
     {
@@ -258,75 +262,12 @@ public class Client
 
     private void handleGamePlayEvent(GameEvent gameEvent)
     {
-        if (gameEvent == null || ! gameEvent.IsGamePlayEvent())
-            return;
-        Globals.Log("handleGamePlayEvent(): gameEvent=" + gameEvent.EventType);
-        gameEvent.Ticks = DateTime.Now.Ticks;
-        gameEvent.Turn = GameState.CurrentTurn;
-        gameEvent.Round = GameState.CurrentRound;
-        gameEvent.handleGamePlayEvent(GlobalConquestGame);
+        GlobalConquestGame.handleGamePlayEvent(gameEvent);
     }
 
     private void updateMap(GameEvent gameEvent)
     {
-        Globals.Log("updateMap(): gameEvent mapHexBuffer=" + gameEvent.MapHexBuffer.Count);
-        if (GameState != null)
-        {
-            //if (!isLoadContentComplete)
-            //    GlobalConquestGame.MainGameScreen.showTimedMessagePopup("loading map", 5);
-            if (GameState.Map == null && GameState.GameSettings != null)
-            {
-                Globals.Log("updateMap(): new Map");
-                GameSettings gameSettings = GameState.GameSettings;
-                GameState.Map = new Map(gameSettings.Width, gameSettings.Height);
-                Map map = GameState.Map;
-                map.Hexes = new MapHex[gameSettings.Height, gameSettings.Width];
-            }
-            if (GameState.Map.Hexes == null)
-            {
-                GameState.Map.Hexes = new MapHex[GameState.GameSettings.Height, GameState.GameSettings.Width];
-            }
-
-            for (int liY = 0; liY < GameState.GameSettings.Height; liY++)
-            {
-                for (int liX = 0; liX < GameState.GameSettings.Width; liX++)
-                {
-                    if (GameState.Map.Hexes[liY, liX] == null)
-                    {
-                        //Globals.Log("OnNetworkReceive(): new MapHex");
-                        MapHex mapHex = new MapHex();
-                        mapHex.Y = liY;
-                        mapHex.X = liX;
-                        mapHex.Terrain = "sea";     // this is temporary so should not matter
-                        GameState.Map.Hexes[liY, liX] = mapHex;
-                    }
-                }
-            }
-
-            if (gameEvent.MapHex != null)
-            {
-                Globals.Log("updateMap(): sync mapHex");
-                GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X] = gameEvent.MapHex;
-            }
-            if (gameEvent.MapHexBuffer != null)
-            {
-                Globals.Log("updateMap(): sync mapHexBuffer, IsLastMapHexBufferUpdate=" + gameEvent.IsLastMapHexBufferUpdate);
-                foreach (MapHex mapHex in gameEvent.MapHexBuffer)
-                {
-                    GameState.Map.Hexes[mapHex.Y, mapHex.X] = mapHex;
-                }
-
-                if (!isLoadContentComplete && gameEvent.IsLastMapHexBufferUpdate)
-                {
-                    GameState.Map.IsMapReady = true;
-                    Globals.Log("updateMap(): Loading map content into client hexMapEngineAdapter");
-                    GlobalConquestGame?.HexMapLoadContent();                    
-                    isLoadContentComplete = true;
-                }
-                else if (isLoadContentComplete && gameEvent.IsLastMapHexBufferUpdate)
-                    GlobalConquestGame?.updateMap();
-            }
-        }
+        GlobalConquestGame.updateMap(gameEvent);
     }
 
     private void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)

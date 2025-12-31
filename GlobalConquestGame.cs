@@ -72,11 +72,15 @@ public class GlobalConquestGame : Game
     //[DllImport("user32.dll", CallingConvention = CallingConvention.Cdecl)]
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     private static extern bool ShowWindow(System.IntPtr hWnd, int nCmdShow);
-    private const int SW_HIDE = 0;
     private const int SW_SHOWMINIMIZED = 2;
-    private const int SW_MINIMIZE = 6;
-    private const int SW_SHOWMINNOACTIVE = 7;
+    public bool isLoadContentComplete { get; set; } = false;
 
+    // Flags useful for debugging
+    bool turnOffDetailsPanel;
+    bool turnOffFactionsPanel;
+    bool turnOffMainGameScreen = false;
+    bool turnOffGamePlayEvents = false;
+    bool turnOffMapUpdate = false;
 
     public GlobalConquestGame()
     {
@@ -123,6 +127,17 @@ public class GlobalConquestGame : Game
         _graphics.PreferredBackBufferHeight = 100;
         _graphics.ApplyChanges();
         JoinGameScreen.showMessage("You may minimize this window");
+    }
+
+    public void handleGamePlayEvent(GameEvent gameEvent)
+    {
+        if (gameEvent == null || ! gameEvent.IsGamePlayEvent() || turnOffGamePlayEvents)
+            return;
+        Globals.Log("handleGamePlayEvent(): gameEvent=" + gameEvent.EventType);
+        gameEvent.Ticks = DateTime.Now.Ticks;
+        gameEvent.Turn = Client.GameState.CurrentTurn;
+        gameEvent.Round = Client.GameState.CurrentRound;
+        gameEvent.handleGamePlayEvent(this);
     }
 
     public Dictionary<string, Texture2D> GetTextures()
@@ -264,7 +279,7 @@ public class GlobalConquestGame : Game
 
     protected override void Update(GameTime gameTime)
     {
-        if (Client != null && Client.isLoadContentComplete && MainGameScreen != null &&
+        if (Client != null && isLoadContentComplete && MainGameScreen != null &&
             MainGameScreen.MapPanel != null && MainGameScreen.MapPanel.Width != null && MainGameScreen.MapPanel.Height != null &&
             MainGameScreen.IsVisible)
         {
@@ -272,7 +287,7 @@ public class GlobalConquestGame : Game
         }
 
         // Add your update logic here
-        if (Client != null && Client.isLoadContentComplete)
+        if (Client != null && isLoadContentComplete)
         {
             hexMapEngineAdapter?.Process_UpdateEvent(gameTime);
         }
@@ -301,8 +316,75 @@ public class GlobalConquestGame : Game
         scrollRight();
     }
 
+    public void updateMap(GameEvent gameEvent)
+    {
+        if (turnOffMapUpdate)
+            return;
+        Globals.Log("updateMap(): gameEvent mapHexBuffer=" + gameEvent.MapHexBuffer.Count);
+        if (Client.GameState != null)
+        {
+            //if (!isLoadContentComplete)
+            //    GlobalConquestGame.MainGameScreen.showTimedMessagePopup("loading map", 5);
+            if (Client.GameState.Map == null && Client.GameState.GameSettings != null)
+            {
+                Globals.Log("updateMap(): new Map");
+                GameSettings gameSettings = Client.GameState.GameSettings;
+                Client.GameState.Map = new Map(gameSettings.Width, gameSettings.Height);
+                Map map = Client.GameState.Map;
+                map.Hexes = new MapHex[gameSettings.Height, gameSettings.Width];
+            }
+            if (Client.GameState.Map.Hexes == null)
+            {
+                Client.GameState.Map.Hexes = new MapHex[Client.GameState.GameSettings.Height, Client.GameState.GameSettings.Width];
+            }
+
+            for (int liY = 0; liY < Client.GameState.GameSettings.Height; liY++)
+            {
+                for (int liX = 0; liX < Client.GameState.GameSettings.Width; liX++)
+                {
+                    if (Client.GameState.Map.Hexes[liY, liX] == null)
+                    {
+                        //Globals.Log("OnNetworkReceive(): new MapHex");
+                        MapHex mapHex = new MapHex();
+                        mapHex.Y = liY;
+                        mapHex.X = liX;
+                        mapHex.Terrain = "sea";     // this is temporary so should not matter
+                        Client.GameState.Map.Hexes[liY, liX] = mapHex;
+                    }
+                }
+            }
+
+            if (gameEvent.MapHex != null)
+            {
+                Globals.Log("updateMap(): sync mapHex");
+                Client.GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X] = gameEvent.MapHex;
+            }
+            if (gameEvent.MapHexBuffer != null)
+            {
+                Globals.Log("updateMap(): sync mapHexBuffer, IsLastMapHexBufferUpdate=" + gameEvent.IsLastMapHexBufferUpdate);
+                foreach (MapHex mapHex in gameEvent.MapHexBuffer)
+                {
+                    //GameState.Map.Hexes[mapHex.Y, mapHex.X] = mapHex;
+                    Client.GameState.Map.Hexes[mapHex.Y, mapHex.X].copyMapHexValues(mapHex);
+                }
+
+                if (!isLoadContentComplete && gameEvent.IsLastMapHexBufferUpdate)
+                {
+                    Client.GameState.Map.IsMapReady = true;
+                    Globals.Log("updateMap(): Loading map content into client hexMapEngineAdapter");
+                    Client.GlobalConquestGame?.HexMapLoadContent();                    
+                    isLoadContentComplete = true;
+                }
+                else if (isLoadContentComplete && gameEvent.IsLastMapHexBufferUpdate)
+                    updateMap();
+            }
+        }
+    }
+
     public void updateMap()
     {
+        if (turnOffMapUpdate)
+            return;
         //Globals.Log("updateMap()");
         hexMapEngineAdapter?.updateMap();
         miniMapHexMapEngineAdapter?.updateMap();
@@ -311,9 +393,10 @@ public class GlobalConquestGame : Game
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.Black);
-
+        if (MainGameScreen != null && turnOffMainGameScreen)
+            MainGameScreen.IsVisible = false;
         // If the MainGameScreen is visible and the map is calculated.
-        if (Client != null && Client.isLoadContentComplete && MainGameScreen != null &&
+        if (Client != null && isLoadContentComplete && MainGameScreen != null &&
             MainGameScreen.MapPanel != null && MainGameScreen.MapPanel.Width != null && MainGameScreen.MapPanel.Height != null &&
             MainGameScreen.IsVisible)
         {
@@ -497,11 +580,11 @@ public class GlobalConquestGame : Game
                 DrawPathForUnit(lastSelectedUnit);
             }
 
-            if (MainGameScreen.DetailsPanel != null)
+            if (MainGameScreen.DetailsPanel != null && !turnOffDetailsPanel)
             {
                 drawDetailsPanel();
             }
-            if (MainGameScreen.FactionsPanel != null)
+            if (MainGameScreen.FactionsPanel != null && !turnOffFactionsPanel)
             {
                 MainGameScreen.drawFactionsPanel();
             }
@@ -735,7 +818,7 @@ public class GlobalConquestGame : Game
 
     public void handleLeftMouseButtonOnMiniMap()
     {
-        if (Client != null && Client.isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible)
+        if (Client != null && isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible)
         {
             var mousePosition = new Vector2(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
             // Check for a left mouse button click within the minimap's boundaries
