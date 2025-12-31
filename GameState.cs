@@ -265,8 +265,10 @@ public class GameState
         this.CurrentPhase = newGameState.CurrentPhase;
         this.CurrentRound = newGameState.CurrentRound;
         this.CurrentTurn = newGameState.CurrentTurn;
-        if (this.Burbs == null)
+        if ((this.Burbs == null || Burbs.NameToBurb.Count <= 0) && newGameState.Burbs.NameToBurb.Count > 0)
+        {
             this.Burbs = newGameState.Burbs;
+        }
         this.Factions = newGameState.Factions;
         this.GameSettings = newGameState.GameSettings;
         this.Players = newGameState.Players;
@@ -274,8 +276,10 @@ public class GameState
         this.PlayerJoined = newGameState.PlayerJoined;
         this.PlayerPlanningReady = newGameState.PlayerPlanningReady;
         this.SecondsRemainingUntilExecution = newGameState.SecondsRemainingUntilExecution;
-        if (this.UnitTypes == null)
+        if ((this.UnitTypes == null || UnitTypes.UnitTypeMap.Count <= 0) && newGameState.UnitTypes.UnitTypeMap.Count > 0)
+        {
             this.UnitTypes = newGameState.UnitTypes;
+        }
         this.VictoriousColor = newGameState.VictoriousColor;
 
     }

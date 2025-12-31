@@ -378,7 +378,11 @@ public class MainGameScreen
         //}
         if (window != null)
         {
-            window.Close();
+            try
+            {
+                window.Close();    
+            }
+            catch(Exception exIgnore) {}
         }
 
     }

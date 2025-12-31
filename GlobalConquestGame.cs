@@ -460,11 +460,11 @@ public class GlobalConquestGame : Game
                 Map map = Client.GameState.Map;
                 UnitType lastSelectedUnitType = Client.GameState.UnitTypes.UnitTypeMap[lastSelectedUnit.UnitType];
                 // TODO: figure out why Client.GameState.UnitTypes is not correctly populated.
-                if (lastSelectedUnitType.FiringRangeToDefender.Count == 0)
-                {
-                    Client.GameState.UnitTypes = new UnitTypes();
-                    lastSelectedUnitType = Client.GameState.UnitTypes.UnitTypeMap[lastSelectedUnit.UnitType];
-                }
+                //if (lastSelectedUnitType.FiringRangeToDefender.Count == 0)
+                //{
+                //    Client.GameState.UnitTypes = new UnitTypes();
+                //    lastSelectedUnitType = Client.GameState.UnitTypes.UnitTypeMap[lastSelectedUnit.UnitType];
+                //}
                 if (mouseOverVector.X >= 0 && mouseOverVector.X < map.X && 
                     mouseOverVector.Y >= 0 && mouseOverVector.Y < map.Y)
                 {

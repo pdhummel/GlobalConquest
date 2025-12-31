@@ -7,15 +7,20 @@ public class Burbs
     public Dictionary<string, Burb> HexXyToBurb { get; set; } = new Dictionary<string, Burb>();
     HashSet<string> cities = new HashSet<string>
     {
-        "New York", "Philadelphia", "Los Angelos", "San Francisco", "San Jose", "Oakland", "Columbus", "Richmond", "Hartford", "Boston", "Atlanta", "Tampa", "Miami", "Pittsburg", "Austin", "Dallas", "St Louis"
+        "New York", "Philadelphia", "Los Angeles", "San Francisco", "San Jose", "Oakland", "Columbus", 
+        "Richmond", "Hartford", "Boston", "Atlanta", "Tampa", "Miami", "Pittsburg", "Austin", "Dallas", 
+        "St Louis"
     };
     HashSet<string> towns = new HashSet<string>
     {
-        "Watsonville", "Salinas", "Monterey", "Warminster", "Mechanicsville", "Cheltenham", "Tappahannock", "Winchester", "Willow Grove", "Charleston", "State College", "Altoona", "Gilroy", "Morgan Hill", "Holister", "Castorville", "Monterey", "Carmel"
+        "Watsonville", "Salinas", "Monterey", "Warminster", "Mechanicsville", "Cheltenham", "Tappahannock", 
+        "Winchester", "Willow Grove", "Charleston", "State College", "Altoona", "Gilroy", "Morgan Hill", 
+        "Holister", "Castorville", "Monterey", "Carmel"
     };
     HashSet<string> villages = new HashSet<string>
     {
-        "Prunedale", "Stephens Church", "Aylett", "Berryville", "Westerville", "Dublin", "Glenside", "Hartsville", "Mineola", "Arlington", "Chapel Hill", "Pacific Grove", "Spreckels"
+        "Prunedale", "Stephens Church", "Aylett", "Berryville", "Westerville", "Dublin", "Glenside", "Hartsville", 
+        "Mineola", "Arlington", "Chapel Hill", "Pacific Grove", "Spreckels", "Lambertville"
     };
 
     public Burbs()
