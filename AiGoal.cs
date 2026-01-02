@@ -86,6 +86,18 @@ public class AiGoal
         return nextUnit;
     }
 
+    public AiUnit GetActualUnit(string unitType)
+    {
+        foreach (AiUnit aiUnit in ActualUnits)
+        {
+            if (unitType.Equals(aiUnit.UnitType) && aiUnit.Unit != null && aiUnit.Unit.StrengthPoints > 0)
+            {
+                return aiUnit;
+            }
+        }
+        return null;
+    }
+
     public int GetDesiredCountForUnitType(string unitType)
     {
         int count = 0;

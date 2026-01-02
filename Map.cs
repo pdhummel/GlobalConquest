@@ -142,6 +142,17 @@ public class Map
         return MetroLocations[color];
     }
 
+    public bool IsMetroHex(MapHex mapHex)
+    {
+        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        foreach (string color in colors)
+        {
+            if (mapHex.X == MetroLocations[color].X && mapHex.Y == MetroLocations[color].Y)
+                return true;
+        }
+        return false;
+    }
+
     public MapHex[,] generateMap(int height, int width)
     {
         MapHex[,] hexes = new MapHex[height, width];
@@ -411,6 +422,8 @@ public class Map
     public Dictionary<string, MapHex> getSurroundingHexes(MapHex mapHex)
     {
         Dictionary<string, MapHex> hexes = new Dictionary<string, MapHex>();
+        if (mapHex == null)
+            return hexes;
         // is nw/ne or sw/se on the same row?
         bool northEastAndWestSameRow = true;
         // 0,0->S; 1,0->N; 2,1->S; 3,1->N
@@ -742,11 +755,12 @@ public class Map
 
     private void buildNodesForShortestPath()
     {
-        buildNodesForShortestPath(false, this.allNodesGraph, this.seaNodesGraph, this.landNodesGraph);
+        buildNodesForShortestPath(false, this.allNodesGraph, this.seaNodesGraph, this.landNodesGraph, null);
     }
 
     public void buildNodesForShortestPath(bool shouldAvoidUnits, Dictionary<string, Node> graph,
-                                           Dictionary<string, Node> seaGraph, Dictionary<string, Node> landGraph)
+                                           Dictionary<string, Node> seaGraph, Dictionary<string, Node> landGraph,
+                                           MapHex destinationHex)
     {
         Globals.Log("buildNodesForShortestPath(): enter");
         int swampCount = 0;
@@ -764,7 +778,8 @@ public class Map
                 List<Edge> edges = new List<Edge>();
                 foreach (MapHex neighbor in neighbors)
                 {
-                    if (shouldAvoidUnits && neighbor.getUnit() != null)
+                    if (shouldAvoidUnits && neighbor.getUnit() != null && destinationHex != null &&
+                        !(neighbor.X == destinationHex.X && neighbor.Y == destinationHex.Y))
                         continue;
                     Node targetNode = new Node(neighbor);
                     Edge edge = new Edge(targetNode);
@@ -777,7 +792,7 @@ public class Map
                 if (mapHex.Burb != null)
                     burbCount += 1;
                 if (("sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)) &&
-                    (mapHex.Burb == null || "dock".Equals(mapHex.Burb.Type)))
+                    (mapHex.Burb == null || "dock".Equals(mapHex.Burb.Type) || "metro".Equals(mapHex.Burb.Type)))
                 {
                     Node seaNode = new Node(mapHex);
                     if (seaGraph != null)

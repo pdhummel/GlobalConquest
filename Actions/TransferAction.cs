@@ -24,14 +24,13 @@ public class TransferAction : PlayerAction
     // TODO:  When doing this type of mission, 
     // you may also click on an adjacent infantry to transport along with your plane, 
     // and both units will be moved to the chosen transfer burb.
-    public new void execute(NetPeer peer, Object serverObj)
+    public new void execute(Server server)
     {
         Globals.Log("execute()");
         if (Plane == null)
         {
             return;
         }
-        Server server = (Server)serverObj;
         GameState gameState = server.gameState;
         Map map = gameState.Map;
         if (DestinationX >= 0 && DestinationX < map.X && DestinationY >= 0 && DestinationY < map.Y)
@@ -149,6 +148,12 @@ public class TransferAction : PlayerAction
             Globals.Log("execute(): transfer action complete");
         }
 
+    }
+
+    public new void execute(NetPeer peer, Object serverObj)
+    {
+        Server server = (Server)serverObj;
+        execute(server);
     }
 
 }
