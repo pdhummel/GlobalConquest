@@ -23,10 +23,21 @@ The planning and execution phase system make it similar to tactical combat games
 
 
 ## Installation
+### Windows
 The easiest option for running Global Conquest 2025 is to download the [pre-built binary zip package](https://github.com/pdhummel/GlobalConquest/releases) to a 64 bit Windows machine. And then run `GlobalConquest.exe`.  
 You will also need to install other DotNet bits like these:
 * https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=8.0.0&arch=x64&rid=win10-x64
 * https://aka.ms/dotnet-core-applaunch?framework=Microsoft.WindowsDesktop.App&framework_version=8.0.0&arch=x64&rid=win-x64&os=win10
+
+### MacOS
+Download the [pre-built binary package](https://github.com/pdhummel/GlobalConquest/releases/download/v0.7.2/GlobalConquest-v0.7.2-macos64.zip) to a MacOS machine.  
+Then open a Terminal window (Applications|Utilities|Terminal OR from Spotlight type "terminal") to run the following commands:  
+`cd ~/Downloads`  
+`gzip -d GlobalConquest-v0.7.2.tar.gz`  
+`tar xvf GlobalConquest-v0.7.2.tar`  
+`cd GlobalConquest-v0.7.2-macos64`  
+`xattr -d com.apple.quarantine ./GlobalConquest`  
+`./GlobalConquest`  
 
 ## User Interface
 This is best supported by mouse and keyboard. However, some effort has been made to work with game controllers as well.
