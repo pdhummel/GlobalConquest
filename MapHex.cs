@@ -15,7 +15,6 @@ public class MapHex
     public Unit Airplane { get; set; }
 
     public Burb? Burb { get; set; }
-    public long Ticks { get; set; } = DateTime.Now.Ticks;
     public bool IsHighlighted {get; set;}
 
     public MapHex()

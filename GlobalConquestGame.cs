@@ -329,7 +329,7 @@ public class GlobalConquestGame : Game
             {
                 Globals.Log("updateMap(): new Map");
                 GameSettings gameSettings = Client.GameState.GameSettings;
-                Client.GameState.Map = new Map(gameSettings.Width, gameSettings.Height);
+                Client.GameState.Map = new Map(gameSettings.Height, gameSettings.Width);
                 Map map = Client.GameState.Map;
                 map.Hexes = new MapHex[gameSettings.Height, gameSettings.Width];
             }
@@ -353,7 +353,7 @@ public class GlobalConquestGame : Game
                     }
                 }
             }
-
+            //Globals.Log("updateMap(): hexes=" + Client.GameState.Map.Hexes.GetLength(0) + "," + Client.GameState.Map.Hexes.GetLength(1));
             if (gameEvent.MapHex != null)
             {
                 Globals.Log("updateMap(): sync mapHex");
@@ -420,7 +420,10 @@ public class GlobalConquestGame : Game
                 Vector2 v2 = hexMapEngineAdapter.getPixelCenter();
                 float xZoom = (float)MainGameScreen.MiniMapPanel.Width / (v2.X * 2);
                 float yZoom = (float)MainGameScreen.MiniMapPanel.Height / (v2.Y * 2);
-                miniMapCamera.Zoom = xZoom;
+                if (yZoom > xZoom)
+                    miniMapCamera.Zoom = yZoom;
+                else
+                    miniMapCamera.Zoom = xZoom;
                 //Globals.Log("zoom=" + miniMapCamera.Zoom + ", miniMap width=" + MainGameScreen.miniMapPanel.Width + ", width=" + Globals.WIDTH);
                 miniMapCamera.Position = v2;
             }

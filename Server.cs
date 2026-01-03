@@ -30,7 +30,7 @@ public class Server
         this.maxPeers = 8; // gameSettings.NumberOfHumans;
         this.key = key;
         gameState.GameSettings = gameSettings;
-        Map map = new Map(gameSettings.Height, gameSettings.Width);
+        Map map = new Map(gameSettings.Height, gameSettings.Width, gameSettings.NumberOfIslands);
         map.addBurbs(gameState.Burbs, gameState.GameSettings.NumberOfBurbs);
         map.VisibilityMode = gameSettings.Visibility;
         gameState.Map = map;
@@ -289,6 +289,7 @@ public class Server
             }
             mapHexBuffer.Clear();
         }
+        Globals.Log("sendMap(): hexes=" + map.Hexes.GetLength(0) + "," + map.Hexes.GetLength(1));
     }
 
     public void sendMapBuffer(List<MapHex> mapHexBuffer, bool isLast)

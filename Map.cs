@@ -22,18 +22,19 @@ public class Map
     public Dictionary<string, Unit> UnitIdToUnit { get; set; } = new Dictionary<string, Unit>();
     public Dictionary<string, HashSet<string>> ColorToUnitIds { get; set; } = new Dictionary<string, HashSet<string>>();
     public bool IsMapReady { get; set; } = false;
+    Random random = new Random();
 
     public Map()
     {
         positionMetros();
     }
 
-    public Map(int y, int x)
+    public Map(int y, int x, int numberOfIslands=1)
     {
         Y = y;
         X = x;
         positionMetros();
-        Hexes = generateMap(y, x);
+        Hexes = generateMap(y, x, numberOfIslands);
         buildNodesForShortestPath();
         IsMapReady = true;
         List<string> colors = ["amber", "ocher", "magenta", "cyan", "grey"];
@@ -67,7 +68,6 @@ public class Map
     {
         addFixedBurbs(burbs);
         Globals.Log("addBurbs(): desiredBurbCount=" + desiredBurbCount);
-        Random random = new Random();
         int numberOfBurbs = 0;
         int tries = 0;
         while (numberOfBurbs < desiredBurbCount && tries < (desiredBurbCount * 10))
@@ -153,7 +153,7 @@ public class Map
         return false;
     }
 
-    public MapHex[,] generateMap(int height, int width)
+    public MapHex[,] generateMap(int height, int width, int numberOfIslands)
     {
         MapHex[,] hexes = new MapHex[height, width];
         long milliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -161,14 +161,120 @@ public class Map
         {
             for (int liX = 0; liX < width; liX++)
             {
+                int x = liX;
+                int y = liY;
+                int h = height;
+                int w = width;
                 //int textureIndex = rnd.Next(1, 7);
                 float elevationNoise = OpenSimplex2S.Noise2(milliseconds, liX, liY);
                 float moistureNoise = OpenSimplex2S.Noise2(milliseconds, liX, liY);
                 //float elevationNoise = OpenSimplex2.Noise2(milliseconds, liX, liY);
                 //float moistureNoise = OpenSimplex2.Noise2(milliseconds, liX, liY);
-                //textures[liY, liX] = idToTerrain[textureIndex].TEXTURE2D_IMAGE_TILE;
                 string biome = determineBiome(elevationNoise, moistureNoise);
-                elevationNoise = shapeForIsland(biome, elevationNoise, liX, liY, width, height);
+
+                // 1 balanced
+                // 2 vertical or horizontal
+                // 3 vertical or horizontal
+                // 4 balanced
+                // 5 balanced
+                int islands = numberOfIslands;
+                string orientation = "balanced"; // balanced, horizontal, vertical
+                if (islands == 2 || islands == 3)
+                {
+                    if (X >= Y)
+                        orientation  = "horizontal";
+                    else
+                        orientation = "vertical";
+                }
+
+                if ((islands == 2 || islands == 4) && ("horizontal".Equals(orientation) || "balanced".Equals(orientation)))
+                {
+                    // 2 horizontal islands
+                    if (liX < width/2)
+                        w = width/2;
+                    else
+                    {
+                        x = liX-width/2;
+                        w = width/2;
+                    }
+                }
+
+                if ((islands == 2 || islands == 4) && ("vertical".Equals(orientation) || "balanced".Equals(orientation)))
+                {
+                    // 2 vertical islands
+                    if (liY < height/2)
+                        h = height/2;
+                    else
+                    {
+                        y = liY-height/2;
+                        h = height/2;
+                    }
+                }
+
+                if ((islands == 3) && ("vertical".Equals(orientation)))
+                {
+                    // 3 vertical islands
+                    if (liY < height/3)
+                        h = height/3;
+                    else if (liY >= height/3 && liY < height - height/3)
+                    {
+                        y = liY - height/3;
+                        h = height/3;
+                    }
+                    else
+                    {
+                        y = liY - (2 * height/3);
+                        h = height/3;
+                    }
+                }
+                if ((islands == 3) && ("horizontal".Equals(orientation)))
+                {
+                    // 3 horizontal islands
+                    if (liX < width/3)
+                        w = width/3;
+                    else if (liX >= width/3 && liX < width - width/3)
+                    {
+                        x = liX - width/3;
+                        w = width/3;
+                    }
+                    else
+                    {
+                        x = liX - (2 * width/3);
+                        w = width/3;
+                    }
+                }
+
+                if (islands == 5)
+                {
+                    if (liY < height/2)
+                        h = height/2;
+                    else
+                    {
+                        y = liY - (height/2);
+                        h = height/2;
+                    }
+
+                    if (liX < width/2)
+                        w = width/2;
+                    else
+                    {
+                        x = liX - (width/2);
+                        w = width/2;
+                    }
+
+                    if (liY >= height/3 && liY < height - height/3 &&
+                        liX >= width/3 && liX < width - width/3)
+                    {
+                        y = liY - height/3;
+                        h = height/3;
+                        x = liX - width/3;
+                        w = width/3;                        
+                    }
+                    
+                }
+
+                elevationNoise = shapeForIsland(biome, elevationNoise, x, y, w, h);
+                elevationNoise = makeSeaBorder(biome, elevationNoise, liX, liY, width, height);
                 string newBiome = determineBiome(elevationNoise, moistureNoise);
                 if (!newBiome.Equals(biome))
                 {
@@ -181,6 +287,7 @@ public class Map
                 hexes[liY, liX] = mapHex;
             }
         }
+        Globals.Log("generateMap(): hexes=" + hexes.GetLength(0) + "," + hexes.GetLength(1));
         return hexes;
     }
 
@@ -319,40 +426,81 @@ public class Map
         return "forest";
     }
 
+    private float makeSeaBorder(string biome, float elevation, int x, int y, int width, int height)
+    {
+        float newElevation = elevation;
+        int xBorder = 1;
+        int yBorder = 1;
+        if (width >= 50)
+            xBorder = 2;
+        if (height >= 50)
+            yBorder = 2;
+        if (x<=1 || y<=1 || x>=width-1-xBorder || y>=height-1-yBorder)
+        {
+            if ("sea".Equals(biome))
+                newElevation = 0.0F;
+            else if ("swamp".Equals(biome))
+                newElevation = 0.11F;
+            else
+            {
+                int seaOrSwamp = random.Next(2);
+                if (seaOrSwamp == 0)
+                    newElevation = 0.0F;
+                else
+                    newElevation = 0.11F;
+            }
+            //Globals.Log("makeSeaBorder(): mapValue=" + mapValue + ", biome=" + biome + ", elevation=" + elevation + ", x=" + x + ", y=" + y + ", xd=" + xDistance + ", yd=" + yDistance + ", distance=" + distance + ", newE=" + newElevation);
+        }
+        return newElevation;
+    }
+
     // https://www.redblobgames.com/maps/terrain-from-noise/
     private float shapeForIsland(string biome, float elevation, int x, int y, int width, int height)
     {
+        float newElevation = elevation;
         // nx = 2*x/width - 1 and ny = 2*y/height - 1
         // square bump: d = 1 - (1-nx²) * (1-ny²)
         // euclidian^2: d = min(1, (nx² + ny²) / sqrt(2))
         float nWidth = 0;
         if (x != 0)
-            nWidth = (2.0F / width) - (1.0F / x);
+            nWidth = (2.0F * x / width) - 1.0F;
         float nHeight = 0;
         if (y != 0)
-            nHeight = (2.0F / height) - (1.0F / y);
+            nHeight = (2.0F * y / height) - 1.0F;
+        float nX = nWidth;
+        float nY = nHeight;
         float mix = 0.5F;
         //float distance = 1.0F - ((1.0F - (nWidth * (x ^ 2))) * ((1.0F - (nHeight * (y ^ 2)))));
         // distance from center
         int xDistance = Math.Abs((width / 2) - x);
         int yDistance = Math.Abs((height / 2) - y);
         float distance = (float)Math.Sqrt((xDistance * xDistance) + (yDistance * yDistance));
-        float diagonal = (float)Math.Sqrt((width * width) + (height * height)) / 2;
+        float mapValue = (float)Math.Sqrt((width * width) + (height * height)) / 2;
+        float euclidianDistance = (float)Math.Sqrt((nX * nX) + (nY * nY)) / 2;
+        float squareBumpDistance = 1 - (1 - (nX*nX)) * (1 - (nY*nY));
+        mapValue = 1.0f;
+        distance = squareBumpDistance;
+    
         // Lerp(a, b, t) is defined as a + (b — a) * t.
         // e = lerp(e, 1-d, mix)
         // float newElevation = elevation + (1.0F - distance - elevation) * mix;
-        float newElevation = elevation;
-        if (distance < (diagonal * .2F) &&
+
+        // 20% of the hexes don't change
+        int leaveAlone = random.Next(5);
+        if (leaveAlone == 0)
+            return newElevation;
+
+        if (distance < (mapValue * .2F) &&
             (biome.Equals("sea") || biome.Equals("swamp")))
         {
             newElevation = elevation + 01.0F;
         }
-        else if (distance < (diagonal * .3F) &&
+        else if (distance < (mapValue * .3F) &&
             (biome.Equals("sea") || biome.Equals("swamp")))
         {
             newElevation = elevation + 0.75F;
         }
-        else if ((distance > (diagonal * .8F) ||
+        else if ((distance > (mapValue * .8F) ||
                 xDistance >= width / 2 - 1 || yDistance >= height / 2 - 1) &&
                 !(biome.Equals("sea") || biome.Equals("swamp")))
         {
@@ -360,7 +508,7 @@ public class Map
             newElevation = .09F;
             //Globals.Log("shapeForIsland(): diagonal=" + diagonal + ", biome=" + biome + ", elevation=" + elevation + ", x=" + x + ", y=" + y + ", xd=" + xDistance + ", yd=" + yDistance + ", distance=" + distance + ", newE=" + newElevation);
         }
-        else if ((distance > (diagonal * .7F) ||
+        else if ((distance > (mapValue * .7F) ||
                 xDistance >= width / 2 - 1 || yDistance >= height / 2 - 1) &&
                 !(biome.Equals("sea") || biome.Equals("swamp")))
         {
@@ -372,7 +520,7 @@ public class Map
                 (!(biome.Equals("sea") || biome.Equals("swamp"))))
         {
             newElevation = .11F;
-            Globals.Log("shapeForIsland(): diagonal=" + diagonal + ", biome=" + biome + ", elevation=" + elevation + ", x=" + x + ", y=" + y + ", xd=" + xDistance + ", yd=" + yDistance + ", distance=" + distance + ", newE=" + newElevation);
+            //Globals.Log("shapeForIsland(): mapValue=" + mapValue + ", biome=" + biome + ", elevation=" + elevation + ", x=" + x + ", y=" + y + ", xd=" + xDistance + ", yd=" + yDistance + ", distance=" + distance + ", newE=" + newElevation);
 
         }
         if (newElevation < 0)

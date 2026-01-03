@@ -281,13 +281,20 @@ class HexMapEngineAdapter
         HexTileMapLoad loHexTileMapLoad = new HexMapEngine.Classes.HexTileMapLoad(hexHeight, hexWidth);
         Global.MYRAUI_DEFAULT_SPRITE_FONT = loHexTileMapLoad.Load_MyraUIDefaultSpriteFont(game);
         Texture2D[,] textures = new Texture2D[hexHeight, hexWidth];
+        //Globals.Log("updateMap(): hexes=" + gcGame.Client.GameState.Map.Hexes.GetLength(0) + "," + gcGame.Client.GameState.Map.Hexes.GetLength(1));
         for (int liY = 0; liY < hexHeight; liY++)
         {
             for (int liX = 0; liX < hexWidth; liX++)
             {
-                string biome = gcGame.Client.GameState.Map.Hexes[liY, liX].Terrain;
-                if (terrain.ContainsKey(biome))
-                    textures[liY, liX] = terrain[biome].TEXTURE2D_IMAGE_TILE;
+                //Globals.Log("updateMap(): x=" + liX + ", y=" + liY + 
+                //            ", h=" + gcGame.Client.GameState.Map.Hexes.GetLength(0) + 
+                //            ", w=" + gcGame.Client.GameState.Map.Hexes.GetLength(1));
+                if (liY < gcGame.Client.GameState.Map.Hexes.GetLength(0) && liX < gcGame.Client.GameState.Map.Hexes.GetLength(1))
+                {
+                    string biome = gcGame.Client.GameState.Map.Hexes[liY, liX].Terrain;
+                    if (terrain.ContainsKey(biome))
+                        textures[liY, liX] = terrain[biome].TEXTURE2D_IMAGE_TILE;
+                }
             }
         }
         HexTile[,] hexTiles = loHexTileMapLoad.Load_MapHexTileArray(textures);
@@ -792,6 +799,11 @@ class HexMapEngineAdapter
             for (int liX = 0; liX < (HexMapEngine.Structures.Global.ACTUAL_MAP_WIDTH_IN_TILES); liX++)
             {
                 loHexTile = (HexMapEngine.Structures.HexTile)HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[liY, liX];
+                //Globals.Log("Draw_tileMap(): x=" + liX + ", y=" + liY + 
+                //            ", h=" + hexes.GetLength(0) + 
+                //            ", w=" + hexes.GetLength(1));
+                if (liY >= hexes.GetLength(0) || liX >= hexes.GetLength(1))
+                    continue;
                 MapHex mapHex = hexes[liY, liX];
 
                 if (loHexTile.TILE_COUNT > 0)

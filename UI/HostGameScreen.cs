@@ -40,6 +40,9 @@ public class HostGameScreen
     Label mapWidthLabel = new Label();
     TextBox mapHeightTextBox = new TextBox();
     TextBox mapWidthTextBox = new TextBox();
+    Label numberOfIslandsLabel = new Label();
+    TextBox numberOfIslandsTextBox = new TextBox();
+
     Button okButton;
     Button cancelButton;
     JoinGameScreen joinGameScreen;
@@ -137,7 +140,7 @@ public class HostGameScreen
         mapHeightLabel.Text = "height:";
         //mapHeightLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
         mapHeightTextBox.Id = "mapHeightTextBox";
-        mapHeightTextBox.Text = "25";
+        mapHeightTextBox.Text = "50";
         mapHeightTextBox.Width = 50;
         mapHeightTextBox.Border = new SolidBrush("#808000FF");
         mapHeightTextBox.BorderThickness = new Thickness(2);
@@ -146,10 +149,19 @@ public class HostGameScreen
         mapWidthLabel.Text = "width:";
         mapWidthLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
         mapWidthTextBox.Id = "mapWidthTextBox";
-        mapWidthTextBox.Text = "25";
+        mapWidthTextBox.Text = "50";
         mapWidthTextBox.Width = 50;
         mapWidthTextBox.Border = new SolidBrush("#808000FF");
         mapWidthTextBox.BorderThickness = new Thickness(2);
+
+        numberOfIslandsLabel.Id = "numberOfIslandsLabel";
+        numberOfIslandsLabel.Text = "islands (1-5):";
+        numberOfIslandsLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
+        numberOfIslandsTextBox.Id = "numberOfIslandsTextBox";
+        numberOfIslandsTextBox.Text = "1";
+        numberOfIslandsTextBox.Width = 50;
+        numberOfIslandsTextBox.Border = new SolidBrush("#808000FF");
+        numberOfIslandsTextBox.BorderThickness = new Thickness(2);
 
         numberOfBurbsLabel.Id = "numberOfBurbsLabel";
         numberOfBurbsLabel.Text = "desired # burbs:";
@@ -285,6 +297,7 @@ public class HostGameScreen
         addPanelRow(verticalStackPanel, humanPlayersLabel, humanPlayersTextBox);
         addPanelRow(verticalStackPanel, mapHeightLabel, mapHeightTextBox);
         addPanelRow(verticalStackPanel, mapWidthLabel, mapWidthTextBox);
+        addPanelRow(verticalStackPanel, numberOfIslandsLabel, numberOfIslandsTextBox);
         addPanelRow(verticalStackPanel, numberOfBurbsLabel, numberOfBurbsTextBox);
         addPanelRow(verticalStackPanel, startingMoneyLabel, startingMoneyTextBox);
         addPanelRow(verticalStackPanel, numberOfTurnsLabel, numberOfTurnsTextBox);
@@ -336,6 +349,8 @@ public class HostGameScreen
         mapHeightTextBox.Visible = false;
         mapWidthLabel.Visible = false;
         mapWidthTextBox.Visible = false;
+        numberOfIslandsLabel.Visible = false;
+        numberOfIslandsTextBox.Visible = false;
         numberOfBurbsLabel.Visible = false;
         numberOfBurbsTextBox.Visible = false;
         startingMoneyLabel.Visible = false;
@@ -370,6 +385,8 @@ public class HostGameScreen
         mapHeightTextBox.RemoveFromParent();
         mapWidthLabel.RemoveFromParent();
         mapWidthTextBox.RemoveFromParent();
+        numberOfIslandsLabel.RemoveFromParent();
+        numberOfIslandsTextBox.RemoveFromParent();
         numberOfBurbsLabel.RemoveFromParent();
         numberOfBurbsTextBox.RemoveFromParent();
         startingMoneyLabel.RemoveFromParent();
@@ -410,6 +427,7 @@ public class HostGameScreen
             gameSettings.NumberOfHumans = validateTextBoxInteger(humanPlayersLabel.Text, humanPlayersTextBox, 1, 4);;
             gameSettings.Height = validateTextBoxInteger(mapHeightLabel.Text, mapHeightTextBox, 25, 100);
             gameSettings.Width = validateTextBoxInteger(mapWidthLabel.Text, mapWidthTextBox, 25, 100);
+            gameSettings.NumberOfIslands = validateTextBoxInteger(numberOfIslandsLabel.Text, numberOfIslandsTextBox, 1, 5);
             gameSettings.NumberOfBurbs = validateTextBoxInteger(numberOfBurbsLabel.Text, numberOfBurbsTextBox, 0, 99);
             gameSettings.StartingMoney = validateTextBoxInteger(startingMoneyLabel.Text, startingMoneyTextBox, 0, 999);
             gameSettings.NumberOfTurnsForGame = validateTextBoxInteger(numberOfTurnsLabel.Text, numberOfTurnsTextBox, -1, 999);

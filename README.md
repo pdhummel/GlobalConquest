@@ -73,14 +73,16 @@ This is best supported by mouse and keyboard. However, some effort has been made
 - [x] Request: Add visual and audio indicators for execution countdown. (v0.6.5)
 - [x] Request: Add visual aid to help identify events that are occurring. (v0.6.5)
 - [x] Bug: Game controller cannot navigate nested menus -- i.e., File, View. (v0.7.1)
-- [ ] Bug: Captured city still has enemy plane.
+- [x] Bug: Captured city still has enemy plane.
 - [ ] Bug: Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
 - [ ] Request: Option to make airplane missions planned and not immediate.
 - [ ] Request: Suggest/adjust city density and burb level based on map size.
 - [ ] Request: Add decoy comcen unit.
+- [ ] Request: Add randomness to damage caused by attack.
 
 ## Technical Notes
-The game is being developed on the DotNet framework and leverages the game library, MonoGame, https://monogame.net/. Furthermore Myra, https://github.com/rds1983/Myra, is used to create a Windows Forms like experience.
+The game is being developed on the DotNet framework and leverages the game library, MonoGame, https://monogame.net/. Furthermore Myra, https://github.com/rds1983/Myra, is used to create a Windows Forms like experience and 
+LiteNetLib, https://github.com/RevenantX/LiteNetLib/, for P2P networking.  
 
 ### Map Generation
 Much of the Hex Map generation code was borrowed from blackfalconsoftware:

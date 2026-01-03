@@ -24,6 +24,7 @@ public class GameSettings
     public bool HasNatives { get; set; } = false;
     public bool CanLoseComCen {get; set;}
     public bool IsAdvancedEconomics {get;set;}
+    public int NumberOfIslands {get; set;} = 1;
 
     public GameSettings()
     {
