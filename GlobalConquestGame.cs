@@ -15,6 +15,7 @@ using Point = Microsoft.Xna.Framework.Point;
 using Microsoft.Xna.Framework.Audio;
 using GlobalConquest.HexMapEngine.Structures;
 using static UnitTypeConstants;
+using static Microsoft.Xna.Framework.Graphics.Texture2D;
 namespace GlobalConquest;
 
 public class GlobalConquestGame : Game
@@ -74,10 +75,14 @@ public class GlobalConquestGame : Game
     private static extern bool ShowWindow(System.IntPtr hWnd, int nCmdShow);
     private const int SW_SHOWMINIMIZED = 2;
     public bool isLoadContentComplete { get; set; } = false;
+    bool shouldDrawMiniMap = false;
+    //Color[] renderedMiniMapData;
+    byte[] renderedMiniMapData;
 
     // Flags useful for debugging
-    bool turnOffDetailsPanel;
-    bool turnOffFactionsPanel;
+    bool turnOffDetailsPanel = false;
+    bool turnOffFactionsPanel = false;
+    bool turnOffMiniMapPanel = false;
     bool turnOffMainGameScreen = false;
     bool turnOffGamePlayEvents = false;
     bool turnOffMapUpdate = false;
@@ -261,16 +266,19 @@ public class GlobalConquestGame : Game
             hexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
             hexMapEngineAdapter.LoadContent();
             miniMapHexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
-            miniMapHexMapEngineAdapter.LoadContent();
-            if (MainGameScreen != null && MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
-            {
-                miniMapRenderTarget2D = new RenderTarget2D(
-                    GraphicsDevice,
-                    (int)MainGameScreen.MiniMapPanel.Width,
-                    (int)MainGameScreen.MiniMapPanel.Height,
-                    false,
-                    SurfaceFormat.Color,
-                    DepthFormat.None);
+            if (!turnOffMiniMapPanel)
+            { 
+                miniMapHexMapEngineAdapter.LoadContent();
+                if (MainGameScreen != null && MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
+                {
+                    miniMapRenderTarget2D = new RenderTarget2D(
+                        GraphicsDevice,
+                        (int)MainGameScreen.MiniMapPanel.Width,
+                        (int)MainGameScreen.MiniMapPanel.Height,
+                        false,
+                        SurfaceFormat.Color,
+                        DepthFormat.None);
+                }
             }
             updateMap();
         }
@@ -316,18 +324,18 @@ public class GlobalConquestGame : Game
         scrollRight();
     }
 
-    public void updateMap(GameEvent gameEvent)
+    public void clientUpdateMap(GameEvent gameEvent)
     {
         if (turnOffMapUpdate)
             return;
-        Globals.Log("updateMap(): gameEvent mapHexBuffer=" + gameEvent.MapHexBuffer.Count);
+        Globals.Log("clientUpdateMap(): gameEvent mapHexBuffer=" + gameEvent.MapHexBuffer.Count);
         if (Client.GameState != null)
         {
             //if (!isLoadContentComplete)
             //    GlobalConquestGame.MainGameScreen.showTimedMessagePopup("loading map", 5);
             if (Client.GameState.Map == null && Client.GameState.GameSettings != null)
             {
-                Globals.Log("updateMap(): new Map");
+                Globals.Log("clientUpdateMap(): new Map");
                 GameSettings gameSettings = Client.GameState.GameSettings;
                 Client.GameState.Map = new Map(gameSettings.Height, gameSettings.Width);
                 Map map = Client.GameState.Map;
@@ -353,15 +361,15 @@ public class GlobalConquestGame : Game
                     }
                 }
             }
-            //Globals.Log("updateMap(): hexes=" + Client.GameState.Map.Hexes.GetLength(0) + "," + Client.GameState.Map.Hexes.GetLength(1));
+            //Globals.Log("clientUpdateMap(): hexes=" + Client.GameState.Map.Hexes.GetLength(0) + "," + Client.GameState.Map.Hexes.GetLength(1));
             if (gameEvent.MapHex != null)
             {
-                Globals.Log("updateMap(): sync mapHex");
+                Globals.Log("clientUpdateMap(): sync mapHex");
                 Client.GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X] = gameEvent.MapHex;
             }
             if (gameEvent.MapHexBuffer != null)
             {
-                Globals.Log("updateMap(): sync mapHexBuffer, IsLastMapHexBufferUpdate=" + gameEvent.IsLastMapHexBufferUpdate);
+                Globals.Log("clientUpdateMap(): sync mapHexBuffer, IsLastMapHexBufferUpdate=" + gameEvent.IsLastMapHexBufferUpdate);
                 foreach (MapHex mapHex in gameEvent.MapHexBuffer)
                 {
                     //GameState.Map.Hexes[mapHex.Y, mapHex.X] = mapHex;
@@ -371,7 +379,7 @@ public class GlobalConquestGame : Game
                 if (!isLoadContentComplete && gameEvent.IsLastMapHexBufferUpdate)
                 {
                     Client.GameState.Map.IsMapReady = true;
-                    Globals.Log("updateMap(): Loading map content into client hexMapEngineAdapter");
+                    Globals.Log("clientUpdateMap(): Loading map content into client hexMapEngineAdapter");
                     Client.GlobalConquestGame?.HexMapLoadContent();                    
                     isLoadContentComplete = true;
                 }
@@ -385,9 +393,13 @@ public class GlobalConquestGame : Game
     {
         if (turnOffMapUpdate)
             return;
-        //Globals.Log("updateMap()");
+        Globals.Log("updateMap()");
         hexMapEngineAdapter?.updateMap();
-        miniMapHexMapEngineAdapter?.updateMap();
+        if (!turnOffMiniMapPanel)
+        {
+            miniMapHexMapEngineAdapter?.updateMap();
+            shouldDrawMiniMap = true;
+        }
     }
 
     protected override void Draw(GameTime gameTime)
@@ -400,43 +412,47 @@ public class GlobalConquestGame : Game
             MainGameScreen.MapPanel != null && MainGameScreen.MapPanel.Width != null && MainGameScreen.MapPanel.Height != null &&
             MainGameScreen.IsVisible)
         {
-            Vector2 currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
-            Rectangle viewportRectangle = new Rectangle(
-                (int)currentPosition.X,
-                (int)currentPosition.Y,
-                (int)MainGameScreen.MapPanel.Width,
-                (int)MainGameScreen.MapPanel.Height
-            );
             //Globals.Log("currentX=" + currentPosition.X + ", currentY=" + currentPosition.Y + ", viewWidth=" + viewportRectangle.Width + ", viewHeight=" + viewportRectangle.Height);
 
             // Setup the miniMap
-            if (MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
+            if (!turnOffMiniMapPanel && 
+                MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
             {
-                miniMapRectangle = new Rectangle(MainGameScreen.MiniMapPanel.Left, MainGameScreen.MiniMapPanel.Top,
-                    (int)MainGameScreen.MiniMapPanel.Width, (int)MainGameScreen.MiniMapPanel.Height);
-                // Create the minimap on the render target
-                GraphicsDevice.SetRenderTarget(miniMapRenderTarget2D);
-                GraphicsDevice.Clear(Color.Black);
-                Vector2 v2 = hexMapEngineAdapter.getPixelCenter();
-                float xZoom = (float)MainGameScreen.MiniMapPanel.Width / (v2.X * 2);
-                float yZoom = (float)MainGameScreen.MiniMapPanel.Height / (v2.Y * 2);
-                if (yZoom > xZoom)
-                    miniMapCamera.Zoom = yZoom;
-                else
-                    miniMapCamera.Zoom = xZoom;
-                //Globals.Log("zoom=" + miniMapCamera.Zoom + ", miniMap width=" + MainGameScreen.miniMapPanel.Width + ", width=" + Globals.WIDTH);
-                miniMapCamera.Position = v2;
+                if (1==1 || miniMapRectangle == null || shouldDrawMiniMap ||
+                    miniMapRectangle.Left != MainGameScreen.MiniMapPanel.Left || 
+                    miniMapRectangle.Top != MainGameScreen.MiniMapPanel.Top ||
+                    miniMapRectangle.Width != MainGameScreen.MiniMapPanel.Width ||
+                    miniMapRectangle.Height != MainGameScreen.MiniMapPanel.Height)
+                {
+                    miniMapRectangle = new Rectangle(MainGameScreen.MiniMapPanel.Left, MainGameScreen.MiniMapPanel.Top,
+                        (int)MainGameScreen.MiniMapPanel.Width, (int)MainGameScreen.MiniMapPanel.Height);
+                    // Create the minimap on the render target
+                    GraphicsDevice.SetRenderTarget(miniMapRenderTarget2D);
+                //}
+                //if (shouldDrawMiniMap ||
+                //    miniMapRectangle.Left != MainGameScreen.MiniMapPanel.Left || 
+                //    miniMapRectangle.Top != MainGameScreen.MiniMapPanel.Top ||
+                //    miniMapRectangle.Width != MainGameScreen.MiniMapPanel.Width ||
+                //    miniMapRectangle.Height != MainGameScreen.MiniMapPanel.Height)
+                //{
+                    GraphicsDevice.Clear(Color.Black);
+                    Vector2 v2 = hexMapEngineAdapter.getPixelCenter();
+                    float xZoom = (float)MainGameScreen.MiniMapPanel.Width / (v2.X * 2);
+                    float yZoom = (float)MainGameScreen.MiniMapPanel.Height / (v2.Y * 2);
+                    if (yZoom > xZoom)
+                        miniMapCamera.Zoom = yZoom;
+                    else
+                        miniMapCamera.Zoom = xZoom;
+                    //Globals.Log("zoom=" + miniMapCamera.Zoom + ", miniMap width=" + MainGameScreen.miniMapPanel.Width + ", width=" + Globals.WIDTH);
+                    miniMapCamera.Position = v2;
+                    shouldDrawMiniMap = true;
+                }
             }
 
-
-            Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
-            Globals.spriteBatch.Tag = "miniMap";
-            // Draw on the miniMap
-            miniMapHexMapEngineAdapter?.Process_DrawEvent(gameTime, -1, -1);
-            // This shows what is visible on the map as a box on the miniMap
-            Globals.spriteBatch?.Draw(viewPortBox, viewportRectangle, null, Color.White * 0.25f);
-            Globals.spriteBatch.Tag = "";
-            Globals.spriteBatch?.End();
+            if (!turnOffMiniMapPanel)
+            {
+                drawMiniMap(gameTime);
+            }
             GraphicsDevice.SetRenderTarget(null);
 
             // Create the map on the mapPanel and place the minimap on the miniMapPanel
@@ -445,139 +461,7 @@ public class GlobalConquestGame : Game
             int maxPixelsX = (int)this.MainGameScreen.MapPanel.Width - 72;
             int maxPixelsY = (int)this.MainGameScreen.MapPanel.Height - 72;
             hexMapEngineAdapter?.Process_DrawEvent(gameTime, maxPixelsX, maxPixelsY);
-            if (MoveMode && lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
-            {
-                Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
-                MainGameScreen.HideContextMenu();
-                DrawLine(hexPixelVector);
-            }
-            else if (PursueMode && lastSelectedUnit != null)
-            {
-                Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
-                MainGameScreen.HideContextMenu();
-                DrawLine(hexPixelVector);
-            }
-            else if (TargetUnitMode && lastSelectedUnit != null)
-            {
-                Color color = Color.Black;
-                Map map = Client.GameState.Map;
-                UnitType lastSelectedUnitType = Client.GameState.UnitTypes.UnitTypeMap[lastSelectedUnit.UnitType];
-                // TODO: figure out why Client.GameState.UnitTypes is not correctly populated.
-                //if (lastSelectedUnitType.FiringRangeToDefender.Count == 0)
-                //{
-                //    Client.GameState.UnitTypes = new UnitTypes();
-                //    lastSelectedUnitType = Client.GameState.UnitTypes.UnitTypeMap[lastSelectedUnit.UnitType];
-                //}
-                if (mouseOverVector.X >= 0 && mouseOverVector.X < map.X && 
-                    mouseOverVector.Y >= 0 && mouseOverVector.Y < map.Y)
-                {
-                    MapHex unitHex = map.Hexes[lastSelectedUnit.Y, lastSelectedUnit.X];
-                    MapHex candidateTargetHex = map.Hexes[(int)mouseOverVector.Y, (int)mouseOverVector.X];
-                    float distance = map.calculateDistance(unitHex, candidateTargetHex);
-                    Unit candidateTarget = candidateTargetHex.getUnit();
-                    if (candidateTarget != null && !candidateTarget.Color.Equals(lastSelectedUnit.Color) && 
-                        lastSelectedUnitType.FiringRangeToDefender.ContainsKey(candidateTarget.UnitType))
-                    {
-                        if (candidateTarget != null && !lastSelectedUnit.Color.Equals(candidateTarget.Color) &&
-                            Math.Round(distance) <= lastSelectedUnitType.FiringRangeToDefender[candidateTarget.UnitType])
-                        {
-                            //Globals.Log("Draw(): candidateTarget=" + candidateTarget.UnitType + 
-                            //  ", lastSelectedUnit=" + lastSelectedUnit.UnitType + 
-                            //  ", distance=" + distance);
-                            color = Color.Yellow;
-                        }
-                    }
-                    else
-                    {
-                        if (candidateTarget != null)
-                        {
-                            //Globals.Log("Draw(): candidateTarget=" + candidateTarget.UnitType + 
-                            //  ", lastSelectedUnit=" + lastSelectedUnit.UnitType + 
-                            //  ", distance=" + distance);
-                            //if (!lastSelectedUnitType.FiringRangeToDefender.ContainsKey(candidateTarget.UnitType))
-                            //    Globals.Log("Draw(): missing FiringRangeToDefender=" + candidateTarget.UnitType + " " + 
-                            //    lastSelectedUnitType.FiringRangeToDefender.Count);
-                        }
-                    }
-                }
-                Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedUnit.X, lastSelectedUnit.Y));
-                MainGameScreen.HideContextMenu();
-                DrawLine(hexPixelVector, color);
-                IsTargetSelectionNeeded = true;
-            }
-            else if (ParaDropMode && ParaTrooper == null && lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
-            {
-                Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
-                // This should have been set by the ContextMenu code.
-                Unit plane = lastSelectedPlane;
-                if (plane == null)
-                {
-                    PlaneUnitType planeUnitType = new PlaneUnitType();
-                    plane = planeUnitType.getPlane(lastSelectedHex, null);
-                }
-                if (plane != null)
-                {
-                    MainGameScreen.HideContextMenu();
-                    int paraTrooperRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * 2;
-                    Globals.spriteBatch.DrawCircle(hexPixelVector, paraTrooperRadius, 32, Color.Red);
-                }
-                //if (!IsTargetSelectionNeeded)
-                //{
-                //    IsTargetSelectionNeeded = true;
-                //    Globals.Log("Draw(): lastSelectedPlane=" + lastSelectedPlane + 
-                //        ", IsTargetSelectionNeeded=" + IsTargetSelectionNeeded + ", IsAirplaneMode=" + IsAirplaneMissionMode());
-                //}
-            }
-            else if ((ReconMode  || AirstrikeMode || TransferMode || BombMode || 
-                      KamikazeMode || DogfightMode) && lastSelectedHex != null &&
-                      lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
-            {
-                Vector2 pixelHexVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
-                // This should have been set by the ContextMenu code.
-                Unit plane = lastSelectedPlane;
-                if (plane == null)
-                {
-                    PlaneUnitType planeUnitType = new PlaneUnitType();
-                    plane = planeUnitType.getPlane(lastSelectedHex, null);
-                }
-                if (plane != null)
-                {
-                    MainGameScreen.HideContextMenu();
-                    PlaneUnitType planeType = new PlaneUnitType();
-                    int shortRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.shortRangeHexes;
-                    Globals.spriteBatch.DrawCircle(pixelHexVector, shortRadius, 32, Color.Red);
-                    int mediumRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.mediumRangeHexes;
-                    int longRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.longRangeHexes;
-                    Globals.spriteBatch.DrawCircle(pixelHexVector, mediumRadius, 32, Color.Red);
-                    if (TransferMode)
-                    {
-                        Globals.spriteBatch.DrawCircle(pixelHexVector, longRadius, 32, Color.Red);
-                    }
-                    if (!IsTargetSelectionNeeded)
-                    {
-                        IsTargetSelectionNeeded = true;
-                        Globals.Log("Draw(): lastSelectedPlane=" + lastSelectedPlane + 
-                            ", IsTargetSelectionNeeded=" + IsTargetSelectionNeeded + ", IsAirplaneMode=" + IsAirplaneMissionMode());
-                    }
-                }
-            }
-            else if (ParaDropMode && ParaTrooper != null && lastSelectedPlane != null)
-            {
-                Vector2 pixelHexVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedPlane.X, lastSelectedPlane.Y));
-                MainGameScreen.HideContextMenu();
-                PlaneUnitType planeType = new PlaneUnitType();
-                int shortRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.shortRangeHexes;
-                Globals.spriteBatch.DrawCircle(pixelHexVector, shortRadius, 32, Color.Red);
-                int mediumRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.mediumRangeHexes;
-                Globals.spriteBatch.DrawCircle(pixelHexVector, mediumRadius, 32, Color.Red);
-                if (!IsTargetSelectionNeeded)
-                {
-                    IsTargetSelectionNeeded = true;
-                    Globals.Log("Draw(): lastSelectedPlane=" + lastSelectedPlane + 
-                        ", IsTargetSelectionNeeded=" + IsTargetSelectionNeeded + ", IsAirplaneMode=" + IsAirplaneMissionMode());
-                }
-            }
-
+            drawForContextMenuModes();
             if (lastSelectedUnit != null)
             {
                 DrawPathForUnit(lastSelectedUnit);
@@ -594,12 +478,15 @@ public class GlobalConquestGame : Game
             Globals.spriteBatch?.End();
             GraphicsDevice.SetRenderTarget(null);
 
-            SpriteBatch miniMapSpriteBatch = new SpriteBatch(GraphicsDevice);
-            miniMapSpriteBatch.Begin();
-            if (miniMapRenderTarget2D != null)
-                miniMapSpriteBatch.Draw(miniMapRenderTarget2D, miniMapRectangle, Color.White);
-            miniMapSpriteBatch.End();
-            GraphicsDevice.SetRenderTarget(null);
+            if (!turnOffMiniMapPanel)
+            {
+                SpriteBatch miniMapSpriteBatch = new SpriteBatch(GraphicsDevice);
+                miniMapSpriteBatch.Begin();
+                if (miniMapRenderTarget2D != null)
+                    miniMapSpriteBatch.Draw(miniMapRenderTarget2D, miniMapRectangle, Color.White);
+                miniMapSpriteBatch.End();
+                GraphicsDevice.SetRenderTarget(null);
+            }
         }
 
         // Draw menus and screens.
@@ -659,13 +546,211 @@ public class GlobalConquestGame : Game
                     ColumnSpacing = 8
                 };
                 setupDesktop(grid);
-                MainGameScreen.hide();
-                MainGameScreen.grid = grid;
-                MainGameScreen.show();
+                if (MainGameScreen != null)
+                {
+                    MainGameScreen.hide();
+                    MainGameScreen.grid = grid;
+                    MainGameScreen.show();
+                }
                 Desktop.Render();
             }
 
         base.Draw(gameTime);
+    }
+
+    private void drawMiniMap(GameTime gameTime)
+    {
+        Vector2 currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
+        Rectangle viewportRectangle = new Rectangle(
+            (int)currentPosition.X,
+            (int)currentPosition.Y,
+            (int)MainGameScreen.MapPanel.Width,
+            (int)MainGameScreen.MapPanel.Height
+        );
+
+        Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
+        Globals.spriteBatch.Tag = "miniMap";
+        // Draw on the miniMap
+        if (shouldDrawMiniMap)
+        {
+            //GraphicsDevice.SetRenderTarget(miniMapRenderTarget2D);
+            //Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
+            miniMapHexMapEngineAdapter?.Process_DrawEvent(gameTime, -1, -1);
+
+            MemoryStream memoryStream = new MemoryStream();
+            miniMapRenderTarget2D.SaveAsPng(memoryStream, 
+                        (int)miniMapRenderTarget2D.Width, (int)miniMapRenderTarget2D.Height);
+            renderedMiniMapData = memoryStream.ToArray();
+            Globals.Log("drawMiniMap(): renderedMiniMapBytes=" + renderedMiniMapData.Length);
+            shouldDrawMiniMap = false;
+            //Globals.spriteBatch.End();
+            //GraphicsDevice.SetRenderTarget(null);
+        }
+        else if (1==0 && renderedMiniMapData != null)
+        {
+            //Rectangle rectangle = new Rectangle(MainGameScreen.MiniMapPanel.Left, MainGameScreen.MiniMapPanel.Top, 
+            //                      (int)MainGameScreen.MiniMapPanel.Width, (int)MainGameScreen.MiniMapPanel.Height);
+            //miniMapRenderTarget2D.SetData<Color>(renderedMiniMapData);
+            Vector2 v2Position = new Vector2(MainGameScreen.MiniMapPanel.Left, MainGameScreen.MiniMapPanel.Top);
+            //miniMapRenderTarget2D
+            //Globals.spriteBatch?.Draw(miniMapRenderTarget2D, viewportRectangle, Color.Black);
+            //Globals.spriteBatch?.Draw(miniMapRenderTarget2D, viewportRectangle, Color.Black);
+            //Globals.Log("drawMiniMap(): restoring from memoryStream");
+            MemoryStream memoryStream = new MemoryStream(renderedMiniMapData);
+            Texture2D loadedTexture = Texture2D.FromStream(GraphicsDevice, memoryStream);
+            RenderTarget2D restoredRenderTarget = new RenderTarget2D(GraphicsDevice, loadedTexture.Width, loadedTexture.Height);
+            GraphicsDevice.SetRenderTarget(restoredRenderTarget);
+            Globals.spriteBatch.Begin();
+            Globals.spriteBatch.Draw(loadedTexture, v2Position, Color.White);
+            Globals.spriteBatch.End();
+            GraphicsDevice.SetRenderTarget(null);
+            //miniMapRenderTarget2D.Reload(memoryStream);
+        }
+
+        // This shows what is visible on the map as a box on the miniMap
+        // GraphicsDevice.SetRenderTarget(miniMapRenderTarget2D);
+        //Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
+        //Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
+        Globals.spriteBatch?.Draw(viewPortBox, viewportRectangle, null, Color.White * 0.25f);
+        Globals.spriteBatch.Tag = "";
+        Globals.spriteBatch?.End();
+        GraphicsDevice.SetRenderTarget(null);
+    }
+
+    private void drawForContextMenuModes()
+    {
+        if (MoveMode && lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
+        {
+            Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
+            MainGameScreen.HideContextMenu();
+            DrawLine(hexPixelVector);
+        }
+        else if (PursueMode && lastSelectedUnit != null)
+        {
+            Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
+            MainGameScreen.HideContextMenu();
+            DrawLine(hexPixelVector);
+        }
+        else if (TargetUnitMode && lastSelectedUnit != null)
+        {
+            Color color = Color.Black;
+            Map map = Client.GameState.Map;
+            UnitType lastSelectedUnitType = Client.GameState.UnitTypes.UnitTypeMap[lastSelectedUnit.UnitType];
+            // TODO: figure out why Client.GameState.UnitTypes is not correctly populated.
+            //if (lastSelectedUnitType.FiringRangeToDefender.Count == 0)
+            //{
+            //    Client.GameState.UnitTypes = new UnitTypes();
+            //    lastSelectedUnitType = Client.GameState.UnitTypes.UnitTypeMap[lastSelectedUnit.UnitType];
+            //}
+            if (mouseOverVector.X >= 0 && mouseOverVector.X < map.X && 
+                mouseOverVector.Y >= 0 && mouseOverVector.Y < map.Y)
+            {
+                MapHex unitHex = map.Hexes[lastSelectedUnit.Y, lastSelectedUnit.X];
+                MapHex candidateTargetHex = map.Hexes[(int)mouseOverVector.Y, (int)mouseOverVector.X];
+                float distance = map.calculateDistance(unitHex, candidateTargetHex);
+                Unit candidateTarget = candidateTargetHex.getUnit();
+                if (candidateTarget != null && !candidateTarget.Color.Equals(lastSelectedUnit.Color) && 
+                    lastSelectedUnitType.FiringRangeToDefender.ContainsKey(candidateTarget.UnitType))
+                {
+                    if (candidateTarget != null && !lastSelectedUnit.Color.Equals(candidateTarget.Color) &&
+                        Math.Round(distance) <= lastSelectedUnitType.FiringRangeToDefender[candidateTarget.UnitType])
+                    {
+                        //Globals.Log("Draw(): candidateTarget=" + candidateTarget.UnitType + 
+                        //  ", lastSelectedUnit=" + lastSelectedUnit.UnitType + 
+                        //  ", distance=" + distance);
+                        color = Color.Yellow;
+                    }
+                }
+                else
+                {
+                    if (candidateTarget != null)
+                    {
+                        //Globals.Log("Draw(): candidateTarget=" + candidateTarget.UnitType + 
+                        //  ", lastSelectedUnit=" + lastSelectedUnit.UnitType + 
+                        //  ", distance=" + distance);
+                        //if (!lastSelectedUnitType.FiringRangeToDefender.ContainsKey(candidateTarget.UnitType))
+                        //    Globals.Log("Draw(): missing FiringRangeToDefender=" + candidateTarget.UnitType + " " + 
+                        //    lastSelectedUnitType.FiringRangeToDefender.Count);
+                    }
+                }
+            }
+            Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedUnit.X, lastSelectedUnit.Y));
+            MainGameScreen.HideContextMenu();
+            DrawLine(hexPixelVector, color);
+            IsTargetSelectionNeeded = true;
+        }
+        else if (ParaDropMode && ParaTrooper == null && lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
+        {
+            Vector2 hexPixelVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
+            // This should have been set by the ContextMenu code.
+            Unit plane = lastSelectedPlane;
+            if (plane == null)
+            {
+                PlaneUnitType planeUnitType = new PlaneUnitType();
+                plane = planeUnitType.getPlane(lastSelectedHex, null);
+            }
+            if (plane != null)
+            {
+                MainGameScreen.HideContextMenu();
+                int paraTrooperRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * 2;
+                Globals.spriteBatch.DrawCircle(hexPixelVector, paraTrooperRadius, 32, Color.Red);
+            }
+            //if (!IsTargetSelectionNeeded)
+            //{
+            //    IsTargetSelectionNeeded = true;
+            //    Globals.Log("Draw(): lastSelectedPlane=" + lastSelectedPlane + 
+            //        ", IsTargetSelectionNeeded=" + IsTargetSelectionNeeded + ", IsAirplaneMode=" + IsAirplaneMissionMode());
+            //}
+        }
+        else if ((ReconMode  || AirstrikeMode || TransferMode || BombMode || 
+                    KamikazeMode || DogfightMode) && lastSelectedHex != null &&
+                    lastSelectedHex.X != -1 && lastSelectedHex.Y != -1)
+        {
+            Vector2 pixelHexVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedHex.X, lastSelectedHex.Y));
+            // This should have been set by the ContextMenu code.
+            Unit plane = lastSelectedPlane;
+            if (plane == null)
+            {
+                PlaneUnitType planeUnitType = new PlaneUnitType();
+                plane = planeUnitType.getPlane(lastSelectedHex, null);
+            }
+            if (plane != null)
+            {
+                MainGameScreen.HideContextMenu();
+                PlaneUnitType planeType = new PlaneUnitType();
+                int shortRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.shortRangeHexes;
+                Globals.spriteBatch.DrawCircle(pixelHexVector, shortRadius, 32, Color.Red);
+                int mediumRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.mediumRangeHexes;
+                int longRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.longRangeHexes;
+                Globals.spriteBatch.DrawCircle(pixelHexVector, mediumRadius, 32, Color.Red);
+                if (TransferMode)
+                {
+                    Globals.spriteBatch.DrawCircle(pixelHexVector, longRadius, 32, Color.Red);
+                }
+                if (!IsTargetSelectionNeeded)
+                {
+                    IsTargetSelectionNeeded = true;
+                    Globals.Log("Draw(): lastSelectedPlane=" + lastSelectedPlane + 
+                        ", IsTargetSelectionNeeded=" + IsTargetSelectionNeeded + ", IsAirplaneMode=" + IsAirplaneMissionMode());
+                }
+            }
+        }
+        else if (ParaDropMode && ParaTrooper != null && lastSelectedPlane != null)
+        {
+            Vector2 pixelHexVector = hexMapEngineAdapter.ConvertHexCenterToVisiblePixel(new Vector2(lastSelectedPlane.X, lastSelectedPlane.Y));
+            MainGameScreen.HideContextMenu();
+            PlaneUnitType planeType = new PlaneUnitType();
+            int shortRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.shortRangeHexes;
+            Globals.spriteBatch.DrawCircle(pixelHexVector, shortRadius, 32, Color.Red);
+            int mediumRadius = Global.ACTUAL_TILE_HEIGHT_IN_PIXELS * planeType.mediumRangeHexes;
+            Globals.spriteBatch.DrawCircle(pixelHexVector, mediumRadius, 32, Color.Red);
+            if (!IsTargetSelectionNeeded)
+            {
+                IsTargetSelectionNeeded = true;
+                Globals.Log("Draw(): lastSelectedPlane=" + lastSelectedPlane + 
+                    ", IsTargetSelectionNeeded=" + IsTargetSelectionNeeded + ", IsAirplaneMode=" + IsAirplaneMissionMode());
+            }
+        }        
     }
 
     public void DrawPathForUnit(Unit unit)
@@ -821,7 +906,8 @@ public class GlobalConquestGame : Game
 
     public void handleLeftMouseButtonOnMiniMap()
     {
-        if (Client != null && isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible)
+        if (!turnOffMiniMapPanel && 
+            Client != null && isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible)
         {
             var mousePosition = new Vector2(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
             // Check for a left mouse button click within the minimap's boundaries
@@ -847,9 +933,9 @@ public class GlobalConquestGame : Game
                     worldPosition.Y -= (int)MainGameScreen.MapPanel.Height / 2;
                     Vector2 currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
                     MainGameScreen.HideContextMenu();
-                    hexMapEngineAdapter.scrollToPosition((int)worldPosition.Y, (int)currentPosition.X);
+                    scrollToPosition((int)worldPosition.Y, (int)currentPosition.X);
                     currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
-                    hexMapEngineAdapter.scrollToPosition((int)currentPosition.Y, (int)worldPosition.X);
+                    scrollToPosition((int)currentPosition.Y, (int)worldPosition.X);
                 }
             }
         }
