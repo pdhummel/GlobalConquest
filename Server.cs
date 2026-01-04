@@ -255,7 +255,7 @@ public class Server
         Globals.Log("sendMap(): peer=" + peer);
         List<MapHex> mapHexBuffer = new List<MapHex>();
         Map map = gameState.Map;
-        int bufferSize = 50;
+        int bufferSize = 100;
         for (int y = 0; y < map.Y; y++)
         {
             for (int x = 0; x < map.X; x++)

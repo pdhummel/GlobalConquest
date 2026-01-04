@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 using GlobalConquest.Units;
 using System.Text.Json;
 using System.IO.Compression;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 namespace GlobalConquest;
 
 public class GameLogic
@@ -38,7 +40,9 @@ public class GameLogic
         }
         server.sendGameState();
 
+        Globals.Log("doExecutionPhase(): AI planning starting");
         aiPlanTurn();
+        Globals.Log("doExecutionPhase(): AI planning complete");
 
         infantryUnitsXy.Clear();
         movingUnitsXy.Clear();
@@ -264,13 +268,6 @@ public class GameLogic
 
         gameState.CurrentRound = 0;
         server.gameState.CurrentPhase = "plan";
-        Globals.Log("endTurn(): Saving state for restore point.");
-        saveGameState(server);
-        Globals.Log("endTurn(): Bump game turn.");
-        server.gameState.CurrentTurn += 1;
-        // This is useful to make sure that clients are updated about things like TurnsUnavailable.
-        Globals.Log("endTurn(): Syncing map for clients.");
-        server.syncAllMapHexes();
 
         int humans = 0;
         List<string> colors = ["amber", "ocher", "magenta", "cyan"];
@@ -281,6 +278,21 @@ public class GameLogic
             if (faction.Player != null && faction.Player.IsHuman)
                 humans += 1;
         }
+
+        Globals.Log("endTurn(): Saving state for restore point.");
+        if (humans > 0)
+        {
+            //Thread saveGameStateThread = new Thread(() => saveGameState(server, server.gameState.CurrentTurn));
+            //saveGameStateThread.IsBackground = true;
+            //saveGameStateThread.Start();
+            saveGameState(server, server.gameState.CurrentTurn);
+        }
+        Globals.Log("endTurn(): Bump game turn.");
+        server.gameState.CurrentTurn += 1;
+        // This is useful to make sure that clients are updated about things like TurnsUnavailable.
+        Globals.Log("endTurn(): Syncing map for clients.");
+        server.syncAllMapHexes();
+
         Globals.Log("endTurn(): Put players into pending status before planning for next turn.");
         foreach (string key in gameState.PlayerPlanningReady.Keys)
         {
@@ -1478,7 +1490,8 @@ public class GameLogic
         Globals.Log("waitForExecution(): exit");
     }
 
-    private void saveGameState(Server server)
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private void saveGameState(Server server, int currentTurn)
     {
         // "Personal" usually maps to "Documents" or "Home"
         //string homeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal); 
@@ -1527,7 +1540,7 @@ public class GameLogic
         }
 
         // Save the gameState and map hexes to the gcDataDirectory
-        string file = "GameState-" + gameState.Version + "-" + gameState.CurrentTurn + ".json";
+        string file = "GameState-" + gameState.Version + "-" + currentTurn + ".json";
         string filePath = Path.Combine(gcDataDirectory, file);
         File.WriteAllText(filePath, jsonString);
         for (int y = 0; y < gameState.Map.Y; y++)
@@ -1536,7 +1549,7 @@ public class GameLogic
             {
                 MapHex mapHex = gameState.Map.Hexes[y, x];
                 jsonString = JsonSerializer.Serialize(mapHex);
-                file = "MapHex-" + gameState.Version + "-" + gameState.CurrentTurn + "-" + x + "." + y + ".json";
+                file = "MapHex-" + gameState.Version + "-" + currentTurn + "-" + x + "." + y + ".json";
                 filePath = Path.Combine(gcDataDirectory, file);
                 File.WriteAllText(filePath, jsonString);
 
@@ -1690,7 +1703,9 @@ public class GameLogic
         string filePath = file;
         string jsonString = File.ReadAllText(filePath);
         GameState? newGameState = JsonSerializer.Deserialize<GameState>(jsonString);
-
+        newGameState.Map = null;
+        string executionMode = newGameState.GameSettings.ExecutionMode;
+        newGameState.GameSettings.ExecutionMode = "Quorum";
         // Create the map object in the new game state.
         if (newGameState.Map == null)
         {
@@ -1698,6 +1713,7 @@ public class GameLogic
             newGameState.Map.X = newGameState.GameSettings.Width;
             newGameState.Map.Y = newGameState.GameSettings.Height;
             newGameState.Map.VisibilityMode = newGameState.GameSettings.Visibility;
+            newGameState.Map.Hexes = null;
         }
         // Recreate the map from the map hex files.
         searchPattern = "MapHex-*.json";
@@ -1728,8 +1744,8 @@ public class GameLogic
             faction.Status = "pending";
         }
         newGameState.Map.restoreMap(newGameState.Burbs);
+        newGameState.GameSettings.ExecutionMode = executionMode;
         server.gameState = newGameState;
-
         server.gameState.CurrentPhase = "plan";
         // Theoretically, this should be empty as there are no clients.
         foreach (string clientIdentifier in server.gameState.PlayerPlanningReady.Keys)

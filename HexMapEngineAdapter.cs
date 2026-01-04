@@ -275,9 +275,9 @@ class HexMapEngineAdapter
 
     public void updateMap()
     {
-        Globals.Log("updateMap(): enter");
         if (Global.MAP_HEX_TILE_ARRAY != null && Global.MAP_HEX_TILE_ARRAY.Length > 0)
             return;
+        Globals.Log("updateMap(): enter");
         HexTileMapLoad loHexTileMapLoad = new HexMapEngine.Classes.HexTileMapLoad(hexHeight, hexWidth);
         Global.MYRAUI_DEFAULT_SPRITE_FONT = loHexTileMapLoad.Load_MyraUIDefaultSpriteFont(game);
         Texture2D[,] textures = new Texture2D[hexHeight, hexWidth];

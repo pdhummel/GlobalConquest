@@ -267,7 +267,7 @@ public class Client
 
     private void updateMap(GameEvent gameEvent)
     {
-        GlobalConquestGame.updateMap(gameEvent);
+        GlobalConquestGame.clientUpdateMap(gameEvent);
     }
 
     private void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)

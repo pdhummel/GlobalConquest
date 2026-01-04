@@ -114,6 +114,9 @@ public class Map
 
     public void addFixedBurbs(Burbs burbs)
     {
+        positionMetros();
+        Globals.Log("addFixedBurbs(): height=" + Hexes.GetLength(0) + ", width=" + Hexes.GetLength(1));
+        Globals.Log("addFixedBurbs(): " + MetroLocationPoints["magenta"].X + "," + MetroLocationPoints["magenta"].Y);
         burbs.addBurb("Amber Array", "metro", this, Hexes[MetroLocationPoints["amber"].Y, MetroLocationPoints["amber"].X], "amber");
         burbs.addBurb("Magenta Mob", "metro", this, Hexes[MetroLocationPoints["magenta"].Y, MetroLocationPoints["magenta"].X], "magenta");
         burbs.addBurb("Ocher Order", "metro", this, Hexes[MetroLocationPoints["ocher"].Y, MetroLocationPoints["ocher"].X], "ocher");
@@ -190,7 +193,7 @@ public class Map
                 if ((islands == 2 || islands == 4) && ("horizontal".Equals(orientation) || "balanced".Equals(orientation)))
                 {
                     // 2 horizontal islands
-                    if (liX < width/2)
+                    if (liX <= width/2)
                         w = width/2;
                     else
                     {
@@ -202,7 +205,7 @@ public class Map
                 if ((islands == 2 || islands == 4) && ("vertical".Equals(orientation) || "balanced".Equals(orientation)))
                 {
                     // 2 vertical islands
-                    if (liY < height/2)
+                    if (liY <= height/2)
                         h = height/2;
                     else
                     {
@@ -246,7 +249,7 @@ public class Map
 
                 if (islands == 5)
                 {
-                    if (liY < height/2)
+                    if (liY <= height/2)
                         h = height/2;
                     else
                     {
@@ -254,7 +257,7 @@ public class Map
                         h = height/2;
                     }
 
-                    if (liX < width/2)
+                    if (liX <= width/2)
                         w = width/2;
                     else
                     {
@@ -274,7 +277,7 @@ public class Map
                 }
 
                 elevationNoise = shapeForIsland(biome, elevationNoise, x, y, w, h);
-                elevationNoise = makeSeaBorder(biome, elevationNoise, liX, liY, width, height);
+                elevationNoise = makeSeaBorder(biome, elevationNoise, liX, liY, width, height, islands);
                 string newBiome = determineBiome(elevationNoise, moistureNoise);
                 if (!newBiome.Equals(biome))
                 {
@@ -426,16 +429,17 @@ public class Map
         return "forest";
     }
 
-    private float makeSeaBorder(string biome, float elevation, int x, int y, int width, int height)
+    private float makeSeaBorder(string biome, float elevation, int x, int y, int width, int height, 
+                                int islands)
     {
         float newElevation = elevation;
         int xBorder = 1;
         int yBorder = 1;
-        if (width >= 50)
+        if (width >= 50 || islands > 1)
             xBorder = 2;
-        if (height >= 50)
+        if (height >= 50 || islands > 1)
             yBorder = 2;
-        if (x<=1 || y<=1 || x>=width-1-xBorder || y>=height-1-yBorder)
+        if (x<=xBorder || y<=yBorder || x>=width-1-xBorder || y>=height-1-yBorder)
         {
             if ("sea".Equals(biome))
                 newElevation = 0.0F;
@@ -1013,6 +1017,11 @@ public class Map
             for (int x = 0; x < X; x++)
             {
                 MapHex mapHex = Hexes[y, x];
+                if (mapHex == null)
+                {
+                    Globals.Log("restoreMap(): map is corrupted at " + x + "," + y);
+                    continue;
+                }
                 Unit unit = mapHex.getUnit();
                 if (unit != null)
                 {

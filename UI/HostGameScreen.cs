@@ -140,7 +140,7 @@ public class HostGameScreen
         mapHeightLabel.Text = "height:";
         //mapHeightLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
         mapHeightTextBox.Id = "mapHeightTextBox";
-        mapHeightTextBox.Text = "50";
+        mapHeightTextBox.Text = "25";
         mapHeightTextBox.Width = 50;
         mapHeightTextBox.Border = new SolidBrush("#808000FF");
         mapHeightTextBox.BorderThickness = new Thickness(2);
@@ -149,7 +149,7 @@ public class HostGameScreen
         mapWidthLabel.Text = "width:";
         mapWidthLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
         mapWidthTextBox.Id = "mapWidthTextBox";
-        mapWidthTextBox.Text = "50";
+        mapWidthTextBox.Text = "25";
         mapWidthTextBox.Width = 50;
         mapWidthTextBox.Border = new SolidBrush("#808000FF");
         mapWidthTextBox.BorderThickness = new Thickness(2);
