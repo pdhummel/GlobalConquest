@@ -76,7 +76,7 @@ public class GlobalConquestGame : Game
     private const int SW_SHOWMINIMIZED = 2;
     public bool isLoadContentComplete { get; set; } = false;
     bool shouldDrawMiniMap = false;
-    //Color[] renderedMiniMapData;
+    MemoryStream renderedMemoryMapStream;
     byte[] renderedMiniMapData;
 
     // Flags useful for debugging
@@ -415,11 +415,12 @@ public class GlobalConquestGame : Game
             //Globals.Log("currentX=" + currentPosition.X + ", currentY=" + currentPosition.Y + ", viewWidth=" + viewportRectangle.Width + ", viewHeight=" + viewportRectangle.Height);
 
             // Setup the miniMap
+            bool shouldDrawMiniMapHexes = false;
             if (!turnOffMiniMapPanel && 
                 MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
             {
-                if (1==1 || miniMapRectangle == null || shouldDrawMiniMap ||
-                    miniMapRectangle.Left != MainGameScreen.MiniMapPanel.Left || 
+                if (1==1 || miniMapRectangle == null || this.shouldDrawMiniMap ||
+                    miniMapRectangle.Left != MainGameScreen.MiniMapPanel.Left ||
                     miniMapRectangle.Top != MainGameScreen.MiniMapPanel.Top ||
                     miniMapRectangle.Width != MainGameScreen.MiniMapPanel.Width ||
                     miniMapRectangle.Height != MainGameScreen.MiniMapPanel.Height)
@@ -428,13 +429,13 @@ public class GlobalConquestGame : Game
                         (int)MainGameScreen.MiniMapPanel.Width, (int)MainGameScreen.MiniMapPanel.Height);
                     // Create the minimap on the render target
                     GraphicsDevice.SetRenderTarget(miniMapRenderTarget2D);
-                //}
-                //if (shouldDrawMiniMap ||
-                //    miniMapRectangle.Left != MainGameScreen.MiniMapPanel.Left || 
-                //    miniMapRectangle.Top != MainGameScreen.MiniMapPanel.Top ||
-                //    miniMapRectangle.Width != MainGameScreen.MiniMapPanel.Width ||
-                //    miniMapRectangle.Height != MainGameScreen.MiniMapPanel.Height)
-                //{
+                }
+                if (shouldDrawMiniMapHexes || this.shouldDrawMiniMap ||
+                    miniMapRectangle.Left != MainGameScreen.MiniMapPanel.Left ||
+                    miniMapRectangle.Top != MainGameScreen.MiniMapPanel.Top ||
+                    miniMapRectangle.Width != MainGameScreen.MiniMapPanel.Width ||
+                    miniMapRectangle.Height != MainGameScreen.MiniMapPanel.Height)
+                {
                     GraphicsDevice.Clear(Color.Black);
                     Vector2 v2 = hexMapEngineAdapter.getPixelCenter();
                     float xZoom = (float)MainGameScreen.MiniMapPanel.Width / (v2.X * 2);
@@ -445,7 +446,7 @@ public class GlobalConquestGame : Game
                         miniMapCamera.Zoom = xZoom;
                     //Globals.Log("zoom=" + miniMapCamera.Zoom + ", miniMap width=" + MainGameScreen.miniMapPanel.Width + ", width=" + Globals.WIDTH);
                     miniMapCamera.Position = v2;
-                    shouldDrawMiniMap = true;
+                    this.shouldDrawMiniMap = true;
                 }
             }
 
@@ -568,49 +569,51 @@ public class GlobalConquestGame : Game
             (int)MainGameScreen.MapPanel.Height
         );
 
-        Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
+        RenderTarget2D restoredRenderTarget = null;
+        //Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
         Globals.spriteBatch.Tag = "miniMap";
         // Draw on the miniMap
         if (shouldDrawMiniMap)
         {
             //GraphicsDevice.SetRenderTarget(miniMapRenderTarget2D);
-            //Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
+            Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
             miniMapHexMapEngineAdapter?.Process_DrawEvent(gameTime, -1, -1);
-
-            MemoryStream memoryStream = new MemoryStream();
-            miniMapRenderTarget2D.SaveAsPng(memoryStream, 
+            Globals.spriteBatch.End();
+            GraphicsDevice.SetRenderTarget(null);
+            
+            MemoryStream renderedMemoryMapStream = new MemoryStream();
+            miniMapRenderTarget2D.SaveAsPng(renderedMemoryMapStream, 
                         (int)miniMapRenderTarget2D.Width, (int)miniMapRenderTarget2D.Height);
-            renderedMiniMapData = memoryStream.ToArray();
+                        //(int)MainGameScreen.MiniMapPanel.Width, (int)MainGameScreen.MiniMapPanel.Height);
+            renderedMiniMapData = renderedMemoryMapStream.ToArray();
             Globals.Log("drawMiniMap(): renderedMiniMapBytes=" + renderedMiniMapData.Length);
             shouldDrawMiniMap = false;
-            //Globals.spriteBatch.End();
-            //GraphicsDevice.SetRenderTarget(null);
+            //Texture2D loadedTexture = Texture2D.FromStream(GraphicsDevice, memoryStream);
+            //Globals.spriteBatch.Draw(loadedTexture, viewportRectangle, Color.White);
         }
-        else if (1==0 && renderedMiniMapData != null)
+        else if (renderedMiniMapData != null)
         {
-            //Rectangle rectangle = new Rectangle(MainGameScreen.MiniMapPanel.Left, MainGameScreen.MiniMapPanel.Top, 
-            //                      (int)MainGameScreen.MiniMapPanel.Width, (int)MainGameScreen.MiniMapPanel.Height);
-            //miniMapRenderTarget2D.SetData<Color>(renderedMiniMapData);
-            Vector2 v2Position = new Vector2(MainGameScreen.MiniMapPanel.Left, MainGameScreen.MiniMapPanel.Top);
-            //miniMapRenderTarget2D
-            //Globals.spriteBatch?.Draw(miniMapRenderTarget2D, viewportRectangle, Color.Black);
-            //Globals.spriteBatch?.Draw(miniMapRenderTarget2D, viewportRectangle, Color.Black);
+            Rectangle miniMapRectangle = new Rectangle(MainGameScreen.MiniMapPanel.Left, MainGameScreen.MiniMapPanel.Top, 
+                                  (int)MainGameScreen.MiniMapPanel.Width, (int)MainGameScreen.MiniMapPanel.Height);
+            Rectangle mainMapRectangle = new Rectangle(MainGameScreen.MapPanel.Left, MainGameScreen.MapPanel.Top, 
+                                  (int)MainGameScreen.MapPanel.Width, (int)MainGameScreen.MapPanel.Height);
             //Globals.Log("drawMiniMap(): restoring from memoryStream");
             MemoryStream memoryStream = new MemoryStream(renderedMiniMapData);
             Texture2D loadedTexture = Texture2D.FromStream(GraphicsDevice, memoryStream);
-            RenderTarget2D restoredRenderTarget = new RenderTarget2D(GraphicsDevice, loadedTexture.Width, loadedTexture.Height);
-            GraphicsDevice.SetRenderTarget(restoredRenderTarget);
-            Globals.spriteBatch.Begin();
-            Globals.spriteBatch.Draw(loadedTexture, v2Position, Color.White);
+
+            Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());         
+            Globals.spriteBatch.Draw(loadedTexture, mainMapRectangle, Color.White);
             Globals.spriteBatch.End();
-            GraphicsDevice.SetRenderTarget(null);
+            //GraphicsDevice.SetRenderTarget(null);
             //miniMapRenderTarget2D.Reload(memoryStream);
         }
 
         // This shows what is visible on the map as a box on the miniMap
-        // GraphicsDevice.SetRenderTarget(miniMapRenderTarget2D);
-        //Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
-        //Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
+        if (restoredRenderTarget != null)
+            GraphicsDevice.SetRenderTarget(restoredRenderTarget);
+        else
+            GraphicsDevice.SetRenderTarget(miniMapRenderTarget2D);
+        Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
         Globals.spriteBatch?.Draw(viewPortBox, viewportRectangle, null, Color.White * 0.25f);
         Globals.spriteBatch.Tag = "";
         Globals.spriteBatch?.End();
