@@ -286,8 +286,8 @@ class HexMapEngineAdapter
         {
             for (int liX = 0; liX < hexWidth; liX++)
             {
-                //Globals.Log("updateMap(): x=" + liX + ", y=" + liY + 
-                //            ", h=" + gcGame.Client.GameState.Map.Hexes.GetLength(0) + 
+                //Globals.Log("updateMap(): x=" + liX + ", y=" + liY +
+                //            ", h=" + gcGame.Client.GameState.Map.Hexes.GetLength(0) +
                 //            ", w=" + gcGame.Client.GameState.Map.Hexes.GetLength(1));
                 if (liY < gcGame.Client.GameState.Map.Hexes.GetLength(0) && liX < gcGame.Client.GameState.Map.Hexes.GetLength(1))
                 {
@@ -511,10 +511,10 @@ class HexMapEngineAdapter
 
         if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
         {
-                pixelVector.X += 20 - currentPixelPosition.X;
-                pixelVector.Y += 19 - currentPixelPosition.Y;
-                //pixelVector.X += 10 - currentPixelPosition.X;
-                //pixelVector.Y += 9 - currentPixelPosition.Y;
+            pixelVector.X += 20 - currentPixelPosition.X;
+            pixelVector.Y += 19 - currentPixelPosition.Y;
+            //pixelVector.X += 10 - currentPixelPosition.X;
+            //pixelVector.Y += 9 - currentPixelPosition.Y;
 
         }
         else
@@ -690,7 +690,7 @@ class HexMapEngineAdapter
     public Vector2 ConvertHexCenterToVisiblePixel(Vector2 hexVector)
     {
         if (coHexTileMap == null)
-            return new Vector2(-1 , -1);
+            return new Vector2(-1, -1);
         Vector2 pixelVector = coHexTileMap.hexToPixel(hexVector);
         Vector2 currentPixelPosition = getCurrentPixelPosition();
         return new Vector2(pixelVector.X + 36 - currentPixelPosition.X, pixelVector.Y + 36 - currentPixelPosition.Y);
@@ -799,9 +799,10 @@ class HexMapEngineAdapter
             for (int liX = 0; liX < (HexMapEngine.Structures.Global.ACTUAL_MAP_WIDTH_IN_TILES); liX++)
             {
                 loHexTile = (HexMapEngine.Structures.HexTile)HexMapEngine.Structures.Global.MAP_HEX_TILE_ARRAY[liY, liX];
-                //Globals.Log("Draw_tileMap(): x=" + liX + ", y=" + liY + 
-                //            ", h=" + hexes.GetLength(0) + 
+                //Globals.Log("Draw_tileMap(): x=" + liX + ", y=" + liY +
+                //            ", h=" + hexes.GetLength(0) +
                 //            ", w=" + hexes.GetLength(1));
+
                 if (liY >= hexes.GetLength(0) || liX >= hexes.GetLength(1))
                     continue;
                 MapHex mapHex = hexes[liY, liX];
@@ -815,7 +816,8 @@ class HexMapEngineAdapter
                     int tmpCalculatedMapTileY = (int)((float)liCalculatedMapTileY * Global.Y_ZOOM_FACTOR);
 
                     if ((Global.X_MAX_PIXELS < 0 || tmpCalculatedMapTileX < Global.X_MAX_PIXELS) &&
-                        (Global.Y_MAX_PIXELS < 0 || tmpCalculatedMapTileY < Global.Y_MAX_PIXELS) && tmpCalculatedMapTileY >= Global.Y_VIEW_OFFSET_PIXELS)
+                        (Global.Y_MAX_PIXELS < 0 || tmpCalculatedMapTileY < Global.Y_MAX_PIXELS) &&
+                         tmpCalculatedMapTileY >= Global.Y_VIEW_OFFSET_PIXELS)
                     {
                         loHexTile.PixelX = liCalculatedMapTileX;
                         loHexTile.PixelY = liCalculatedMapTileY;

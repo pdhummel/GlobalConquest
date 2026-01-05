@@ -424,7 +424,7 @@ public class HostGameScreen
         try
         {
             gameSettings.Port = validateTextBoxInteger(portLabel.Text, portTextBox, 1024, 49151);
-            gameSettings.NumberOfHumans = validateTextBoxInteger(humanPlayersLabel.Text, humanPlayersTextBox, 1, 4);;
+            gameSettings.NumberOfHumans = validateTextBoxInteger(humanPlayersLabel.Text, humanPlayersTextBox, 1, 4); ;
             gameSettings.Height = validateTextBoxInteger(mapHeightLabel.Text, mapHeightTextBox, 25, 100);
             gameSettings.Width = validateTextBoxInteger(mapWidthLabel.Text, mapWidthTextBox, 25, 100);
             gameSettings.NumberOfIslands = validateTextBoxInteger(numberOfIslandsLabel.Text, numberOfIslandsTextBox, 1, 5);
@@ -433,7 +433,7 @@ public class HostGameScreen
             gameSettings.NumberOfTurnsForGame = validateTextBoxInteger(numberOfTurnsLabel.Text, numberOfTurnsTextBox, -1, 999);
             gameSettings.TimedSeconds = validateTextBoxInteger(timedSecondsLabel.Text, timedSecondsTextBox, 1, 300);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             isValid = false;
         }
@@ -464,14 +464,14 @@ public class HostGameScreen
             {
                 joinGameScreen.show();
             }
-        }    
+        }
     }
 
     private int validateTextBoxInteger(string fieldName, TextBox textBox, int min, int max)
     {
         int number = 0;
         bool isValid = true;
-        try 
+        try
         {
             number = (Int32.Parse(textBox.Text));
             if (number < min || number > max)
@@ -480,7 +480,7 @@ public class HostGameScreen
                 showMessage(fieldName + " must have a value between " + min + " and " + max + ".");
             }
         }
-        catch(Exception e) 
+        catch (Exception e)
         {
             isValid = false;
             showMessage("Could not parse " + fieldName + ".");
