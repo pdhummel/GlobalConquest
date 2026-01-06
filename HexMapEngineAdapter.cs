@@ -252,6 +252,11 @@ class HexMapEngineAdapter
         Texture2D ocherPlane = game.Content.Load<Texture2D>("ocher-plane-black-30px");
         units["ocher-plane"] = ocherPlane;
 
+        textures["ocher-order"] = game.Content.Load<Texture2D>("gc-ocher-order");
+        textures["amber-array"] = game.Content.Load<Texture2D>("gc-amber-array");
+        textures["cyan-circle"] = game.Content.Load<Texture2D>("gc-cyan-circle");
+        textures["magenta-mob"] = game.Content.Load<Texture2D>("gc-magenta-mob");
+
         Texture2D hexHighlight = game.Content.Load<Texture2D>("YellowHexagonOutline_72x72");
         textures["mapHexHighlight"] = hexHighlight;
 

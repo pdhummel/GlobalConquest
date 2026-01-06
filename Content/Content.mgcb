@@ -511,6 +511,18 @@
 /processorParam:TextureFormat=Color
 /build:forest-flat-hex-72x72.png
 
+#begin gc-amber-array.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:gc-amber-array.png
+
 #begin GC-cropped-intro_000.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -522,6 +534,42 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:GC-cropped-intro_000.png
+
+#begin gc-cyan-circle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:gc-cyan-circle.png
+
+#begin gc-magenta-mob.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:gc-magenta-mob.png
+
+#begin gc-ocher-order.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:gc-ocher-order.png
 
 #begin gcDetailsPanel.spritefont
 /importer:FontDescriptionImporter

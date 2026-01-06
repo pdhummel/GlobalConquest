@@ -154,6 +154,15 @@ public class GlobalConquestGame : Game
         return textures;
     }
 
+    public Texture2D GetTexture(string textureName)
+    {
+        Texture2D texture = null;
+        Dictionary<string, Texture2D> textures = hexMapEngineAdapter.textures;
+        if (textures != null && textures.ContainsKey(textureName))
+            texture = textures[textureName];
+        return texture;
+    }
+
     private void GlobalConquestGame_VisibleChanged(object? sender, EventArgs e)
     {
     }
@@ -629,23 +638,23 @@ public class GlobalConquestGame : Game
             if (yPixels >= xPixels)
             {
                 scaleFactor = yScaleFactor;
-                xOrigin =  ((int)MainGameScreen.MiniMapPanel.Width - (int)(xPixels / scaleFactor))/2;
+                xOrigin = ((int)MainGameScreen.MiniMapPanel.Width - (int)(xPixels / scaleFactor)) / 2;
             }
             else
             {
                 scaleFactor = xScaleFactor;
-                yOrigin =  ((int)MainGameScreen.MiniMapPanel.Height - (int)(yPixels / scaleFactor))/2;
+                yOrigin = ((int)MainGameScreen.MiniMapPanel.Height - (int)(yPixels / scaleFactor)) / 2;
             }
-            //Globals.Log("drawMiniMap(): xOrigin=" + xOrigin + 
-            //    ", yOrigin=" + yOrigin + 
-            //    ", scaleFactor=" + scaleFactor + 
-            //    ", xScaleFactor=" + xScaleFactor + 
-            //    ", yScaleFactor=" + yScaleFactor + 
-            //    ", width=" + MainGameScreen.MiniMapPanel.Width + 
-            //    ", height=" + MainGameScreen.MiniMapPanel.Height + 
+            //Globals.Log("drawMiniMap(): xOrigin=" + xOrigin +
+            //    ", yOrigin=" + yOrigin +
+            //    ", scaleFactor=" + scaleFactor +
+            //    ", xScaleFactor=" + xScaleFactor +
+            //    ", yScaleFactor=" + yScaleFactor +
+            //    ", width=" + MainGameScreen.MiniMapPanel.Width +
+            //    ", height=" + MainGameScreen.MiniMapPanel.Height +
             //    ", xPixels=" + xPixels + ", yPixels=" + yPixels);
 
-            Vector2 v2Scale = new Vector2(scaleFactor, scaleFactor);            
+            Vector2 v2Scale = new Vector2(scaleFactor, scaleFactor);
 
             Vector2 v2MiniMap = Vector2.Zero;
 
@@ -685,9 +694,9 @@ public class GlobalConquestGame : Game
         SpriteBatch miniMapSpriteBatch = new SpriteBatch(GraphicsDevice);
         miniMapSpriteBatch.Begin();
         //miniMapSpriteBatch.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
-        //Rectangle miniMapPlacementRectangle = new Rectangle(MainGameScreen.MiniMapPanel.Left, 
+        //Rectangle miniMapPlacementRectangle = new Rectangle(MainGameScreen.MiniMapPanel.Left,
         //    MainGameScreen.MiniMapPanel.Top, miniMapRenderTarget2D.Width, miniMapRenderTarget2D.Height);
-        //Rectangle miniMapPlacementRectangle = new Rectangle(100, 
+        //Rectangle miniMapPlacementRectangle = new Rectangle(100,
         //    100, miniMapRenderTarget2D.Width, miniMapRenderTarget2D.Height);
         Rectangle miniMapPlacementRectangle = miniMapRectangle;
         if (miniMapRenderTarget2D != null)
