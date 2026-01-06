@@ -714,18 +714,24 @@ public class Map
         return closestHex;
     }
 
-    public HashSet<MapHex> getMapHexesInRange(MapHex mapHex, int range)
+    public HashSet<MapHex> getMapHexesInRange(MapHex mapHex, int range, bool useOriginalLogic=true, bool shouldLog=false)
     {
         HashSet<MapHex> hexes = new HashSet<MapHex>();
+        if (range > 5)
+            useOriginalLogic = false;
         Dictionary<int, HashSet<MapHex>> checkedHexes = new Dictionary<int, HashSet<MapHex>>();
-        return getMapHexesInRange(hexes, checkedHexes, mapHex, range);
+        hexes = getMapHexesInRange(hexes, checkedHexes, mapHex, range, useOriginalLogic);
+        if (shouldLog)
+            Globals.Log("getMapHexesInRange(): count=" + hexes.Count);
+        return hexes;
     }
 
-    public HashSet<MapHex> getMapHexesInRange(HashSet<MapHex> hexes, Dictionary<int, HashSet<MapHex>> checkedHexes, MapHex mapHex, int range)
+    public HashSet<MapHex> getMapHexesInRange(HashSet<MapHex> hexes, Dictionary<int, HashSet<MapHex>> checkedHexes, 
+           MapHex mapHex, int range, bool useOriginalLogic)
     {
         //Globals.Log("getMapHexesInRange(): mapHex=" + mapHex.X + "," + mapHex.Y + ", range=" + range + ", count=" + hexes.Count);
 
-        if (range > 0)
+        if (range > 0 && useOriginalLogic)
         {
             if (!checkedHexes.ContainsKey(range))
             {
@@ -739,12 +745,39 @@ public class Map
                 //Globals.Log("getMapHexesInRange(): surroundingHex=" + nextHex.X + "," + nextHex.Y);
                 if (!checkedHexes[range].Contains(nextHex))
                 {
-                    HashSet<MapHex> newHexes = getMapHexesInRange(hexes, checkedHexes, nextHex, range - 1);
+                    HashSet<MapHex> newHexes = getMapHexesInRange(hexes, checkedHexes, nextHex, range - 1, useOriginalLogic);
                     hexes.Add(nextHex);
                 }
             }
             checkedHexes[range].Add(mapHex);
             hexes.Add(mapHex);
+        }
+
+        // TODO: This is less precise than the above but much quicker.
+        else if (range > 0)
+        {
+            int x = mapHex.X;
+            int y = mapHex.Y;
+            int minX = x - range;
+            int maxX = x + range;
+            int minY = y - range;
+            int maxY = y + range;
+            if (minX < 0)
+                minX = 0;
+            if (maxX > X)
+                maxX = X;
+            if (minY < 0)
+                minY = 0;
+            if (maxY > Y)
+                maxY = Y;
+
+            for (int liY = minY; liY < maxY; liY++)
+            {
+                for (int liX = minX; liX < maxX; liX++)
+                {
+                    hexes.Add(Hexes[liY, liX]);
+                }
+            }
         }
         else if (range == 0)
             hexes.Add(mapHex);

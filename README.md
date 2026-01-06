@@ -197,7 +197,7 @@ The game is being designed with known differences from the original.
 - [x] Sub sneakiness
 - [x] Spies visible only to other spies.
 - [x] Spy sabotage burbs.
-- [ ] Spies steal burb secrets.
+- [x] Spies steal burb secrets.
 - [ ] Spies steal ComCen secrets.
 - [ ] Build decoy ComCen/units.
 

@@ -106,7 +106,6 @@ public class GameState
             List<string> directions = ["northWest", "northEast", "southWest", "southEast"];
             placeUnit(metroHex, directions, comcen);
             Map.placeNewUnit(spy, metroHex);
-            //Map.placeNewUnit(plane1, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
 
@@ -115,15 +114,16 @@ public class GameState
             {
                 for (int i=0; i< 100; i++)
                 {
-                    int x = rand.Next(0, 25);
-                    int y = rand.Next(0, 25);
+                    int x = rand.Next(5, 20);
+                    int y = rand.Next(5, 20);
                     MapHex mapHex = Map.Hexes[y, x];
                     if (mapHex.getUnit() == null)
                     {
                         infantry = new Unit();
                         infantry.UnitType = INFANTRY;
                         infantry.Color = color;
-                        infantry.setOmniVisibility();
+                        //infantry.setOmniVisibility();
+                        infantry.setBaseVisibility();
                         placeUnit(mapHex, infantry);
                     }    
                 }

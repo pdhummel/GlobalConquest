@@ -393,8 +393,14 @@ class HexMapEngineAdapter
                 Unit unit = mapHex.getUnit();
                 if (unit != null && unit.StrengthPoints > 0)
                 {
+                    Globals.Log("DrawUnits(): " + (unit.TemporarySpyVisibility.ContainsKey(player.FactionColor) ? unit.TemporarySpyVisibility[player.FactionColor] : false));
                     string unitTypeId = unit.Color + "-" + unit.UnitType;
-                    if (isObserver || (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor]))
+                    if (isObserver || 
+                        (unit.Visibility.ContainsKey(player.FactionColor) && 
+                        unit.Visibility[player.FactionColor]) || 
+                        (unit.TemporarySpyVisibility.ContainsKey(player.FactionColor) && 
+                        unit.TemporarySpyVisibility[player.FactionColor])
+                       )
                     {
                         if (unit.ParentUnitId == null || gcGame.IsShowAirplanes)
                             drawUnitAtHex(liY, liX, unitTypeId, null);
@@ -412,7 +418,9 @@ class HexMapEngineAdapter
                 {
                     string unitTypeId = plane.Color + "-" + plane.UnitType;
                     // TODO: figure out plane visibility settings
-                    if (isObserver || (mapHex.Visibility.ContainsKey(player.FactionColor) && mapHex.Visibility[player.FactionColor]))
+                    if (isObserver || 
+                        (mapHex.Visibility.ContainsKey(player.FactionColor) && 
+                         mapHex.Visibility[player.FactionColor]))
                     {
                         if (plane != null && gcGame.IsShowAirplanes)
                         {
@@ -872,7 +880,10 @@ class HexMapEngineAdapter
                 if (unit != null && unit.StrengthPoints > 0)
                 {
                     string unitTypeId = unit.Color + "-" + unit.UnitType;
-                    if (isObserver || (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor]))
+                    if (isObserver || 
+                       (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor]) ||
+                        (unit.TemporarySpyVisibility.ContainsKey(player.FactionColor) && 
+                        unit.TemporarySpyVisibility[player.FactionColor]))
                     {
                         if (unit.ParentUnitId == null || gcGame.IsShowAirplanes)
                             drawUnitAtHex(liY, liX, unitTypeId, unitRectangle);
@@ -890,7 +901,10 @@ class HexMapEngineAdapter
                 {
                     string unitTypeId = plane.Color + "-" + plane.UnitType;
                     // TODO: figure out plane visibility settings
-                    if (isObserver || (mapHex.Visibility.ContainsKey(player.FactionColor) && mapHex.Visibility[player.FactionColor]))
+                    if (isObserver || 
+                        (mapHex.Visibility.ContainsKey(player.FactionColor) && mapHex.Visibility[player.FactionColor]) ||
+                        (unit.TemporarySpyVisibility.ContainsKey(player.FactionColor) && 
+                        unit.TemporarySpyVisibility[player.FactionColor]))
                     {
                         if (plane != null && gcGame.IsShowAirplanes)
                         {

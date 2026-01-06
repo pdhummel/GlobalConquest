@@ -65,6 +65,9 @@ public class Unit
 
 
     public Dictionary<string, bool> Visibility { get; set; } = new Dictionary<string, bool>();
+
+    public Dictionary<string, bool> TemporarySpyVisibility { get; set; } = new Dictionary<string, bool>();
+
     public Dictionary<string, bool> VisibleToSpies { get; set; } = new Dictionary<string, bool>();
     public Dictionary<string, int> RoundsToBeSeen { get; set; } = new Dictionary<string, int>();
 

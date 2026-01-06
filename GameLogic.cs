@@ -31,6 +31,25 @@ public class GameLogic
         GameState gameState = server.gameState;
         gameState.CurrentPhase = "execution";
 
+        // TODO: Need to refactor getMapHexesInRange and this test code is useful testing it.
+        // Map map = server.gameState.Map;
+        // Globals.Log("doExecutionPhase(): test 0");
+        // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 0, true, true);
+        // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 0, false, true);
+        // Globals.Log("doExecutionPhase(): test 1");
+        // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 1, true, true);
+        // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 1, false, true);
+        // Globals.Log("doExecutionPhase(): test 2");
+        // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 2, true, true);
+        // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 2, false, true);
+        // Globals.Log("doExecutionPhase(): test 3");
+        // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 3, true, true);
+        // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 3, false, true);
+        // Globals.Log("doExecutionPhase(): test 4");
+        // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 4, true, true);
+        // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 4, false, true);
+
+
         Globals.Log("doExecutionPhase(): set factions executing");
         List<string> colors = ["amber", "ocher", "magenta", "cyan"];
         foreach (string color in colors)
@@ -363,7 +382,7 @@ public class GameLogic
                 continue;
             unit.IsAttacked = false;
             if (!("Omniscient".Equals(gameState.GameSettings.Visibility)))
-                decrementVisibility(unit);
+                reduceUnitVisibility(unit);
             scanUnits(server, unit);
             scanTerrain(server, unit);
             sufferAttrition(server, unit);
@@ -371,17 +390,20 @@ public class GameLogic
             checkForCombat(server, unit);
             addStepsForUnit(server, unit);
             moveUnit(server, unit);
+            checkUnitLocation(server, unit);
             digInInfantry(server, unit);
             server.sendGameStateAndMapHex(unit.X, unit.Y);
         }
         Globals.Log("processRound(): done round=" + round);
     }
 
-    private void decrementVisibility(Unit unit)
+    private void reduceUnitVisibility(Unit unit)
     {
         List<string> colors = ["amber", "magenta", "cyan", "ocher"];
         foreach (string color in colors)
         {
+            if (server.gameState.CurrentRound == 0)
+                unit.TemporarySpyVisibility[color] = false;
             if (!unit.RoundsToBeSeen.ContainsKey(color))
                 unit.RoundsToBeSeen[color] = 0;
             unit.RoundsToBeSeen[color] -= 1;
@@ -1053,6 +1075,39 @@ public class GameLogic
                 server.sendGameStateAndMapHex(fromX, fromY);
                 movesMade += 1;
             }
+        }
+    }
+
+    private void checkUnitLocation(Server server, Unit unit)
+    {
+        if (unit == null || unit.StrengthPoints <= 0)
+            return;
+        int spiedBurbUnitCount = 0;
+        MapHex unitHex = server.gameState.Map.Hexes[unit.Y, unit.X];
+        if (SPY.Equals(unit.UnitType) && server.gameState.CurrentRound == server.gameState.GameSettings.NumberOfRoundsPerTurn-1)
+        {
+            //  If a spy ends its turn in an enemy burb, 
+            // all enemy units within 25 spaces will be visible and the status of units 
+            // being made in the enemy burb will be accessible.
+            if (unitHex.Burb != null && !unitHex.Burb.OwnerColor.Equals(unit.Color))
+            {
+                HashSet<MapHex> spiedHexes = server.gameState.Map.getMapHexesInRange(unitHex, 25, false, true);
+                foreach (MapHex mapHex in spiedHexes)
+                {
+                    Unit spiedUnit = mapHex.getUnit();
+                    if (spiedUnit != null && !spiedUnit.Color.Equals(unit.Color) && spiedUnit.Color.Equals(unitHex.Burb.OwnerColor))
+                    {
+                        spiedUnit.TemporarySpyVisibility[unit.Color] = true;
+                        spiedBurbUnitCount += 1;
+                    }
+                }
+                Globals.Log("checkUnitLocation(): spiedHexes=" + spiedHexes.Count);
+            }
+            Globals.Log("checkUnitLocation(): spiedBurbUnitCount=" + spiedBurbUnitCount + " for " + unit.Color);
+
+             // If a spy ends its turn next to an enemy Comcen, 
+             // info on all enemy units and burbs is available. 
+
         }
     }
 
