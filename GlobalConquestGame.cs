@@ -636,15 +636,15 @@ public class GlobalConquestGame : Game
                 scaleFactor = xScaleFactor;
                 yOrigin =  ((int)MainGameScreen.MiniMapPanel.Height - (int)(yPixels / scaleFactor))/2;
             }
-            Globals.Log("drawMiniMap(): xOrigin=" + xOrigin + 
-                ", yOrigin=" + yOrigin + 
-                ", scaleFactor=" + scaleFactor + 
-                ", xScaleFactor=" + xScaleFactor + 
-                ", yScaleFactor=" + yScaleFactor + 
-                ", width=" + MainGameScreen.MiniMapPanel.Width + 
-                ", height=" + MainGameScreen.MiniMapPanel.Height + 
-                ", xPixels=" + xPixels + ", yPixels=" + yPixels);
-            //scaleFactor = 1;
+            //Globals.Log("drawMiniMap(): xOrigin=" + xOrigin + 
+            //    ", yOrigin=" + yOrigin + 
+            //    ", scaleFactor=" + scaleFactor + 
+            //    ", xScaleFactor=" + xScaleFactor + 
+            //    ", yScaleFactor=" + yScaleFactor + 
+            //    ", width=" + MainGameScreen.MiniMapPanel.Width + 
+            //    ", height=" + MainGameScreen.MiniMapPanel.Height + 
+            //    ", xPixels=" + xPixels + ", yPixels=" + yPixels);
+
             Vector2 v2Scale = new Vector2(scaleFactor, scaleFactor);            
 
             Vector2 v2MiniMap = Vector2.Zero;
