@@ -14,6 +14,7 @@ using Panel = Myra.Graphics2D.UI.Panel;
 using Label = Myra.Graphics2D.UI.Label;
 using Color = Microsoft.Xna.Framework.Color;
 using System.IO;
+using Myra.Graphics2D.UI.Styles;
 
 namespace GlobalConquest.UI;
 
@@ -50,11 +51,16 @@ public class FactionsPanelView
         ocherPanel.Widgets.Clear();
         magentaPanel.Widgets.Clear();
         cyanPanel.Widgets.Clear();
+
         drawMessagesForColor(amberPanel, "amber");
         drawMessagesForColor(ocherPanel, "ocher");
         drawMessagesForColor(magentaPanel, "magenta");
         drawMessagesForColor(cyanPanel, "cyan");
 
+        addFactionIcon(amberPanel, "amber-array");
+        addFactionIcon(ocherPanel, "ocher-order");
+        addFactionIcon(magentaPanel, "magenta-mob");
+        addFactionIcon(cyanPanel, "cyan-circle");
     }
 
     private void drawFactionPanel(VerticalStackPanel panel, Color color, int row, int col)
@@ -65,6 +71,40 @@ public class FactionsPanelView
         Grid.SetColumn(panel, col);
         Grid.SetRow(panel, row);
         grid.Widgets.Add(panel);
+
+    }
+
+    private void addFactionIcon(VerticalStackPanel panel, string textureName)
+    {
+        Image image = new Image();
+        Texture2D texture = gcGame.GetTexture(textureName);
+        var textureRegion = new TextureRegion(texture);
+        //image.Scale = new Vector2(0.75f, 0.75f);
+        image.Renderable = textureRegion;
+
+        Grid iconGrid = new Grid();
+        panel.Widgets.Add(iconGrid);
+        Grid.SetRow(image, 0);
+        Grid.SetColumn(image, 1);
+        iconGrid.Widgets.Add(image);
+
+        Label label = new Label();
+        label.Text = " ";
+        Grid.SetRow(label, 0);
+        Grid.SetColumn(label, 0);
+        iconGrid.Widgets.Add(label);
+
+
+        /*
+        panel.Background = new NinePatchRegion(texture, new Rectangle(0, 0, 117, 82),
+                                                new Thickness
+                                                {
+                                                    Left = 1,
+                                                    Right = 1,
+                                                    Top = 1,
+                                                    Bottom = 1
+                                                });
+        */
     }
 
     private void drawMessagesForColor(VerticalStackPanel panel, string color)
