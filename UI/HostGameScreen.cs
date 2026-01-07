@@ -448,6 +448,8 @@ public class HostGameScreen
             gameSettings.CanLoseComCen = true;
         else
             gameSettings.CanLoseComCen = false;
+        if (standaloneServerCheckButton.IsChecked)
+            gameSettings.IsStandaloneServer = true;
 
         if (isValid)
         {

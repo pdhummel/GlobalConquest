@@ -121,6 +121,8 @@ public class MapHex
             this.Units.Add(mapHex.Units[0]);
         else if (Units != null && Units.Count > 0 && mapHex.Units != null && mapHex.Units.Count > 0)
             this.Units[0] = mapHex.Units[0];
+        else if (Units != null && mapHex.Units != null && mapHex.Units.Count <= 0)
+            this.Units.Clear();
         this.X = mapHex.X;
         this.Y = mapHex.Y;
     }

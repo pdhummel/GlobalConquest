@@ -404,7 +404,8 @@ public class GameLogic
             moveUnit(server, unit);
             checkUnitLocation(server, unit);
             digInInfantry(server, unit);
-            server.sendGameStateAndMapHex(unit.X, unit.Y);
+            // This was commented-out to help with performance issues.
+            // server.sendGameStateAndMapHex(unit.X, unit.Y);
         }
         Globals.Log("processRound(): done round=" + round);
     }
@@ -554,7 +555,6 @@ public class GameLogic
                 }
                 if (!previousVisibility)
                 {
-                    //server.sendGameStateAndMapHex(hexUnit.Color, hex.X, hex.Y);
                     server.sendGameStateAndMapHex(unit.Color, hex.X, hex.Y);
                 }
             }
@@ -587,7 +587,6 @@ public class GameLogic
             {
                 hex.Visibility[unit.Color] = true;
                 server.sendGameStateAndMapHex(unit.Color, hex.X, hex.Y);
-                //server.sendGameStateAndMapHex(hex.X, hex.Y);
             }
         }
     }
@@ -838,11 +837,8 @@ public class GameLogic
             if (unitToAttack.StrengthPoints > 0 && unitToAttack.StrengthPoints <= 20)
                 unitToAttack.IsBlitzing = false;
 
-            //server.sendGameStateAndMapHex(unitToAttack.Color, unit.X, unit.Y);
             server.sendGameStateAndMapHex(unit.X, unit.Y);
             server.sendGameStateAndMapHex(unitToAttack.X, unitToAttack.Y);
-            //server.sendGameStateAndMapHex(unit.Color, unitToAttack.X, unitToAttack.Y);
-
 
             // Head-Count scoring point calcs for fighting
             if (!"grey".Equals(unitToAttack.Color))

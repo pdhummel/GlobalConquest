@@ -24,6 +24,7 @@ public class Server
     private bool initialSync = false;
     public GameLogic? GameLogic { get; set; }
     Random random = new Random();
+    int lastQueueSize = 0;
 
     public void StartAsHost(GameSettings gameSettings, string key)
     {
@@ -99,12 +100,6 @@ public class Server
         GameLogic.startGame(this);
 
         int sleepTime = 1000;
-        // 25x25=625, 50x50=2500, 100x100=10000
-        int hexes = gameState.GameSettings.Height * gameState.GameSettings.Width;
-        if (hexes > 1000)
-            sleepTime = 100;
-        if (hexes > 2000)
-            sleepTime = 10;
         Globals.Log("ServerLoop(): Server polling");
         // This is the server's polling loop, which runs continuously on its own thread.
         while (isRunning)
@@ -117,6 +112,7 @@ public class Server
                 initialSync = true;
                 sendGamePlayEvent(new GameEvent("joinedGame"));
             }
+
             Thread.Sleep(sleepTime); // Adjust sleep time to control CPU usage.
         }
     }
@@ -384,7 +380,7 @@ public class Server
     {
         int value = random.Next(0, 60);
         if (value == 0)
-            outputQueueCount(peer);
+            checkQueueCount(peer);
         NetDataWriter writer = new NetDataWriter();
         if (server != null)
         {
@@ -394,21 +390,28 @@ public class Server
         }
     }
 
-    private void outputQueueCount()
+    private void checkQueueCount()
     {
         if (server.ConnectedPeerList.Count > 0)
         {
             int peerIndex = random.Next(0, server.ConnectedPeerList.Count);
             NetPeer peer = server.ConnectedPeerList[peerIndex];
-            outputQueueCount(peer);
+            checkQueueCount(peer);
         }
     }
 
-    private void outputQueueCount(NetPeer peer)
+    private void checkQueueCount(NetPeer peer)
     {
         byte channelId = 0;
         bool isOrdered = true;
         int queueCount = peer.GetPacketsCountInReliableQueue(channelId, isOrdered);
+        Console.WriteLine($"sendJsonString(): Packets in queue: {queueCount}");
+        // Throttle server processing until the network message queue is caught up a little.
+        while (queueCount > 50000)
+        {
+            Thread.Sleep(1000);
+            queueCount = peer.GetPacketsCountInReliableQueue(channelId, isOrdered);
+        }
         Console.WriteLine($"sendJsonString(): Packets in queue: {queueCount}");
     }
 

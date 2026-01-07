@@ -726,6 +726,7 @@ public class Map
         return hexes;
     }
 
+    // TODO: refactor this method
     public HashSet<MapHex> getMapHexesInRange(HashSet<MapHex> hexes, Dictionary<int, HashSet<MapHex>> checkedHexes, 
            MapHex mapHex, int range, bool useOriginalLogic)
     {

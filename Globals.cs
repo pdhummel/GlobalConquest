@@ -9,7 +9,7 @@ namespace GlobalConquest
         public static Texture2D? pixel;
         public static int WIDTH = 1024, HEIGHT = 768;
         // Check server side timings
-        //static List<string> logTextMatches = ["outputDataStructureUse()", "sendJsonString()"];
+        //static List<string> logTextMatches = ["outputDataStructureUse()", "sendJsonString()", "processGameEventQueue()"];
         // Useful for debugging just the AI planning
         //static List<string> logTextMatches = ["Ai ", "AiGoal"];
         static List<string> logTextMatches = new List<string>();
