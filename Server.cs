@@ -405,14 +405,14 @@ public class Server
         byte channelId = 0;
         bool isOrdered = true;
         int queueCount = peer.GetPacketsCountInReliableQueue(channelId, isOrdered);
-        Console.WriteLine($"sendJsonString(): Packets in queue: {queueCount}");
+        Globals.Log("sendJsonString(): Packets in queue: " + queueCount);
         // Throttle server processing until the network message queue is caught up a little.
         while (queueCount > 50000)
         {
             Thread.Sleep(1000);
             queueCount = peer.GetPacketsCountInReliableQueue(channelId, isOrdered);
         }
-        Console.WriteLine($"sendJsonString(): Packets in queue: {queueCount}");
+        Globals.Log("sendJsonString(): Packets in queue: " + queueCount);
     }
 
     private void StopServer()

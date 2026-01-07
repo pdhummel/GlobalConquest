@@ -720,7 +720,7 @@ public class Map
         if (range > 5)
             useOriginalLogic = false;
         Dictionary<int, HashSet<MapHex>> checkedHexes = new Dictionary<int, HashSet<MapHex>>();
-        hexes = getMapHexesInRange(hexes, checkedHexes, mapHex, range, useOriginalLogic);
+        hexes = getMapHexesInRange(hexes, checkedHexes, mapHex, range, useOriginalLogic, shouldLog);
         if (shouldLog)
             Globals.Log("getMapHexesInRange(): count=" + hexes.Count);
         return hexes;
@@ -728,7 +728,7 @@ public class Map
 
     // TODO: refactor this method
     public HashSet<MapHex> getMapHexesInRange(HashSet<MapHex> hexes, Dictionary<int, HashSet<MapHex>> checkedHexes, 
-           MapHex mapHex, int range, bool useOriginalLogic)
+           MapHex mapHex, int range, bool useOriginalLogic, bool shouldLog)
     {
         //Globals.Log("getMapHexesInRange(): mapHex=" + mapHex.X + "," + mapHex.Y + ", range=" + range + ", count=" + hexes.Count);
 
@@ -746,7 +746,7 @@ public class Map
                 //Globals.Log("getMapHexesInRange(): surroundingHex=" + nextHex.X + "," + nextHex.Y);
                 if (!checkedHexes[range].Contains(nextHex))
                 {
-                    HashSet<MapHex> newHexes = getMapHexesInRange(hexes, checkedHexes, nextHex, range - 1, useOriginalLogic);
+                    HashSet<MapHex> newHexes = getMapHexesInRange(hexes, checkedHexes, nextHex, range - 1, useOriginalLogic, shouldLog);
                     hexes.Add(nextHex);
                 }
             }
@@ -757,6 +757,7 @@ public class Map
         // TODO: This is less precise than the above but much quicker.
         else if (range > 0)
         {
+            hexes.Add(mapHex);
             int x = mapHex.X;
             int y = mapHex.Y;
             int minX = x - range;
@@ -776,7 +777,15 @@ public class Map
             {
                 for (int liX = minX; liX < maxX; liX++)
                 {
-                    hexes.Add(Hexes[liY, liX]);
+                    float distance = -1;
+                    //if (liX == minX || liX >= maxX-2 || liY == minY || liY >= maxY-2)
+                    //    distance = Math.Abs(calculateDistance(mapHex, Hexes[liY, liX]));
+                    if (Math.Round(distance) <= range)
+                    {
+                        //if (shouldLog && distance != -1)
+                        //    Globals.Log("getMapHexesInRange(): from " + mapHex.X + "," + mapHex.Y + " to " + liX + "," + liY + ": " + distance);
+                        hexes.Add(Hexes[liY, liX]);
+                    }
                 }
             }
         }
@@ -889,6 +898,8 @@ public class Map
         }
     }
 
+    // TODO: This is not precise, as "hex math" does not match the coord system we are using.
+    // A row snakes up and down so the vertical distance to a hex in a row changes.
     public float calculateDistance(MapHex mapHex1, MapHex mapHex2)
     {
         float distance = (float)Math.Sqrt((Math.Pow(mapHex1.X - mapHex2.X, 2) + Math.Pow(mapHex1.Y - mapHex2.Y, 2)));

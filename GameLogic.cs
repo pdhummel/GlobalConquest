@@ -88,6 +88,10 @@ public class GameLogic
             for (int liX = 0; liX < gameState.Map.X; liX++)
             {
                 MapHex mapHex = gameState.Map.Hexes[liY, liX];
+                foreach (string color in colors)
+                {
+                    mapHex.TemporarySpyVisibility[color] = false;
+                }
                 updatePlane(mapHex, null);
                 Unit unit = mapHex.getUnit();
                 if (unit != null)
@@ -405,7 +409,7 @@ public class GameLogic
             checkUnitLocation(server, unit);
             digInInfantry(server, unit);
             // This was commented-out to help with performance issues.
-            // server.sendGameStateAndMapHex(unit.X, unit.Y);
+            //server.sendGameStateAndMapHex(unit.X, unit.Y);
         }
         Globals.Log("processRound(): done round=" + round);
     }
@@ -1090,8 +1094,10 @@ public class GameLogic
     {
         if (unit == null || unit.StrengthPoints <= 0)
             return;
-        int spiedBurbUnitCount = 0;
-        MapHex unitHex = server.gameState.Map.Hexes[unit.Y, unit.X];
+        int spiedUnitCount = 0;
+        int spiedBurbCount = 0;
+        Map map = server.gameState.Map;
+        MapHex unitHex = map.Hexes[unit.Y, unit.X];
         if (SPY.Equals(unit.UnitType) && server.gameState.CurrentRound == server.gameState.GameSettings.NumberOfRoundsPerTurn - 1)
         {
             //  If a spy ends its turn in an enemy burb,
@@ -1106,16 +1112,49 @@ public class GameLogic
                     if (spiedUnit != null && !spiedUnit.Color.Equals(unit.Color) && spiedUnit.Color.Equals(unitHex.Burb.OwnerColor))
                     {
                         spiedUnit.TemporarySpyVisibility[unit.Color] = true;
-                        spiedBurbUnitCount += 1;
+                        spiedUnitCount += 1;
                     }
                 }
                 Globals.Log("checkUnitLocation(): spiedHexes=" + spiedHexes.Count);
             }
-            Globals.Log("checkUnitLocation(): spiedBurbUnitCount=" + spiedBurbUnitCount + " for " + unit.Color);
 
             // If a spy ends its turn next to an enemy Comcen,
             // info on all enemy units and burbs is available.
-
+            Unit enemyComCen = null;
+            foreach (MapHex neighborHex in map.getSurroundingHexesList(unitHex))
+            {
+                Unit neighborUnit = neighborHex.getUnit();
+                if (neighborUnit != null && COMMAND_CENTER.Equals(neighborUnit.UnitType) && !neighborUnit.Color.Equals(unit.Color))
+                {
+                    enemyComCen = neighborUnit;
+                    break;
+                }
+            }
+            if (enemyComCen != null)
+            {
+                Globals.Log("checkUnitLocation(): " + enemyComCen.Color + " ComCen found next to spy for " + unit.Color);
+                for (int liY=0; liY < map.Y; liY++)
+                {
+                    for (int liX=0; liX < map.X; liX++)
+                    {
+                        MapHex mapHex = map.Hexes[liY, liX];
+                        Unit spiedUnit = mapHex.getUnit();
+                        if (spiedUnit != null && !spiedUnit.Color.Equals(unit.Color) && 
+                            spiedUnit.Color.Equals(enemyComCen.Color))
+                        {
+                            spiedUnit.TemporarySpyVisibility[unit.Color] = true;
+                            spiedUnitCount += 1;
+                        }
+                        if (mapHex.Burb != null && !mapHex.Burb.OwnerColor.Equals(unit.Color) && mapHex.Burb.OwnerColor.Equals(enemyComCen.Color))
+                        {
+                            mapHex.TemporarySpyVisibility[unit.Color] = true;
+                            spiedBurbCount += 1;
+                        }
+                    }
+                }
+            }
+            Globals.Log("checkUnitLocation(): spiedUnitCount=" + spiedUnitCount + " for " + unit.Color);
+            Globals.Log("checkUnitLocation(): spiedBurbCount=" + spiedBurbCount + " for " + unit.Color);
         }
     }
 

@@ -198,7 +198,7 @@ The game is being designed with known differences from the original.
 - [x] Spies visible only to other spies.
 - [x] Spy sabotage burbs.
 - [x] Spies steal burb secrets.
-- [ ] Spies steal ComCen secrets.
+- [x] Spies steal ComCen secrets.
 - [ ] Build decoy ComCen/units.
 
 

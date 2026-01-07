@@ -10,6 +10,7 @@ public class MapHex
     public int X { get; set; }
 
     public Dictionary<string, bool> Visibility { get; set; } = new Dictionary<string, bool>();
+    public Dictionary<string, bool> TemporarySpyVisibility { get; set; } = new Dictionary<string, bool>();
 
     public List<Unit> Units { get; set; } = new List<Unit>();
     public Unit Airplane { get; set; }
@@ -79,11 +80,7 @@ public class MapHex
         {
             return Terrain == other.Terrain &&
                 Y == other.Y &&
-                X == other.X &&
-                Visibility["amber"] == other.Visibility["amber"] &&
-                Visibility["cyan"] == other.Visibility["cyan"] &&
-                Visibility["magenta"] == other.Visibility["magenta"] &&
-                Visibility["ocher"] == other.Visibility["ocher"];
+                X == other.X;
         }
         //Globals.Log("MapHex.Equals(): false");
         return false;
@@ -115,6 +112,7 @@ public class MapHex
         this.IsHighlighted = mapHex.IsHighlighted;
         this.Terrain = mapHex.Terrain;
         this.Visibility = mapHex.Visibility;
+        this.TemporarySpyVisibility = mapHex.TemporarySpyVisibility;
         if (this.Units == null)
             this.Units = mapHex.Units;
         if (Units != null && Units.Count < 1 && mapHex.Units != null && mapHex.Units.Count > 0)

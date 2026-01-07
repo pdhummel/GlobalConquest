@@ -941,8 +941,17 @@ class HexMapEngineAdapter
 
         Vector2 destination = new Vector2(piCalculatedMapTileX, piCalculatedMapTileY);
         bool visibility = false;
+        MapHex mapHex = map.Hexes[poHexTile.ROW_ID, poHexTile.COLUMN_ID];
         if (player != null)
-            visibility = map.Hexes[poHexTile.ROW_ID, poHexTile.COLUMN_ID].Visibility[player.FactionColor];
+        {
+            if (mapHex.Visibility.ContainsKey(player.FactionColor))
+                visibility = mapHex.Visibility[player.FactionColor];
+            if (!visibility)
+            {
+                if (mapHex.TemporarySpyVisibility.ContainsKey(player.FactionColor))
+                    visibility = mapHex.TemporarySpyVisibility[player.FactionColor];
+            }
+        }
         if (coSpriteBatch == null || !terrain.ContainsKey("unknown"))
             return;
         if (!isObserver && !visibility)
@@ -1016,7 +1025,18 @@ class HexMapEngineAdapter
         }
 
         Map map = gcGame.Client.GameState.Map;
-        if (!isObserver && player != null && !map.Hexes[row, column].Visibility[player.FactionColor])
+        MapHex mapHex = map.Hexes[row, column];
+        bool visibility = false;
+        if (player != null)
+        {
+            if (mapHex.Visibility.ContainsKey(player.FactionColor))
+                visibility = mapHex.Visibility[player.FactionColor];
+            if (!visibility && mapHex.TemporarySpyVisibility.ContainsKey(player.FactionColor))
+            {
+                visibility = mapHex.TemporarySpyVisibility[player.FactionColor];
+            }
+        }
+        if (!isObserver && !visibility)
         {
             if (terrain.ContainsKey("unknown"))
                 coSpriteBatch.Draw(
