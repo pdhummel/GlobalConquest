@@ -30,7 +30,7 @@ public class GameLogic
         Globals.Log("doExecutionPhase(): attackedUnitsXy=" + attackedUnitsXy.Count);
         Globals.Log("doExecutionPhase(): attackingUnitsXy=" + attackingUnitsXy.Count);
         Map map = server.gameState.Map;
-        map.outputDataStructureUse();
+        //map.outputDataStructureUse();
 
     }
 
@@ -221,10 +221,10 @@ public class GameLogic
             {
                 try
                 {
-                    faction.Ai.outputDataStructureUse();
+                    //faction.Ai.outputDataStructureUse();
                     faction.Ai.planTurn();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Globals.Log("doExecutionPhase(): Exception from Ai planTurn: " + ex);
                     // TODO: remove throw as Ai planTurn is best effort.
@@ -253,7 +253,7 @@ public class GameLogic
                     break;
                 }
             }
-            
+
             int income = gameState.Burbs.IncomeMap[burb.Type];
             // TODO: change sabotage logic once unit production is in place.
             //Globals.Log("endTurn(): burb=" + burb.Name);
@@ -282,7 +282,7 @@ public class GameLogic
                 Globals.Log("endTurn(): added " + income + " income to " + burb.OwnerColor);
             }
         }
-    } 
+    }
 
     public void endTurn(Server server)
     {
@@ -369,7 +369,7 @@ public class GameLogic
                 if (plane != null && plane.TurnsUnavailable <= 0)
                 {
                     scanUnits(server, plane);
-                    scanTerrain(server, plane);                    
+                    scanTerrain(server, plane);
                 }
             }
         }
@@ -471,7 +471,7 @@ public class GameLogic
         // Also other units need to re-scan for visibility.
         if (unit.IsSneaking)
         {
-            if (! "Omniscient".Equals(server.gameState.GameSettings.Visibility))
+            if (!"Omniscient".Equals(server.gameState.GameSettings.Visibility))
                 unit.setBaseVisibility();
             return;
         }
@@ -541,7 +541,7 @@ public class GameLogic
                 // (e.g., 6 for carriers and Comcens, 5 for battleships)
                 // but for a shorter period of time
                 // (only 2 rounds, which is considerably shorter than the 8 rounds for all other units).
-                
+
                 // TODO: They can't be spotted by planes, spies or any other unit until they attack.
                 bool previousVisibility = false;
                 if (hexUnit.Visibility.ContainsKey(unit.Color))
@@ -680,7 +680,7 @@ public class GameLogic
                     UnitType targetUnitType = unitTypes.UnitTypeMap[lastTargetUnit.UnitType];
                     int firingRangeFromAttacker = targetUnitType.FiringRangeFromAttacker[unit.UnitType];
                     int firingRangeToDefender = attackerUnitType.FiringRangeToDefender[lastTargetUnit.UnitType];
-                    if (lastTargetUnit.StrengthPoints > 0 && lastTargetUnit.Visibility[unit.Color] && 
+                    if (lastTargetUnit.StrengthPoints > 0 && lastTargetUnit.Visibility[unit.Color] &&
                         scanRange <= firingRangeFromAttacker && scanRange <= firingRangeToDefender && hexesToScan.Contains(targetMapHex))
                     {
                         unitToAttack = lastTargetUnit;
@@ -864,7 +864,7 @@ public class GameLogic
         }
     }
 
-    private void killUnit(Unit unit, MapHex mapHex=null)
+    private void killUnit(Unit unit, MapHex mapHex = null)
     {
         if (unit == null)
             return;
@@ -950,7 +950,7 @@ public class GameLogic
                     }
 
                     // Start unloading
-                    if ("sea".Equals(unitType.LandOrSea) && (unitType.Name.Contains(TRANSPORT)) && 
+                    if ("sea".Equals(unitType.LandOrSea) && (unitType.Name.Contains(TRANSPORT)) &&
                        !unit.IsUnloading && !unit.IsLoading &&
                        ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
                     {
@@ -967,7 +967,7 @@ public class GameLogic
                     }
 
                     // Start loading
-                    if ("land".Equals(unitType.LandOrSea) && 
+                    if ("land".Equals(unitType.LandOrSea) &&
                        !unit.IsLoading && !unit.IsUnloading &&
                        (INFANTRY.Equals(unitType.Name) || DUG_IN_INFANTRY.Equals(unitType.Name) || ARMOR.Equals(unitType.Name) || ARMOR.Equals(unitType.Name)) &&
                        "sea".Equals(nextMapHex.Terrain))
@@ -1096,10 +1096,10 @@ public class GameLogic
             return;
         int spiedBurbUnitCount = 0;
         MapHex unitHex = server.gameState.Map.Hexes[unit.Y, unit.X];
-        if (SPY.Equals(unit.UnitType) && server.gameState.CurrentRound == server.gameState.GameSettings.NumberOfRoundsPerTurn-1)
+        if (SPY.Equals(unit.UnitType) && server.gameState.CurrentRound == server.gameState.GameSettings.NumberOfRoundsPerTurn - 1)
         {
-            //  If a spy ends its turn in an enemy burb, 
-            // all enemy units within 25 spaces will be visible and the status of units 
+            //  If a spy ends its turn in an enemy burb,
+            // all enemy units within 25 spaces will be visible and the status of units
             // being made in the enemy burb will be accessible.
             if (unitHex.Burb != null && !unitHex.Burb.OwnerColor.Equals(unit.Color))
             {
@@ -1117,8 +1117,8 @@ public class GameLogic
             }
             Globals.Log("checkUnitLocation(): spiedBurbUnitCount=" + spiedBurbUnitCount + " for " + unit.Color);
 
-             // If a spy ends its turn next to an enemy Comcen, 
-             // info on all enemy units and burbs is available. 
+            // If a spy ends its turn next to an enemy Comcen,
+            // info on all enemy units and burbs is available.
 
         }
     }
@@ -1147,7 +1147,7 @@ public class GameLogic
             {
                 unit.UnitType = INFANTRY;
             }
-            
+
         }
     }
 
@@ -1390,7 +1390,7 @@ public class GameLogic
     // Plus the sum of the balance of all your burbs,
     // plus the sum of income per turn of all your burbs and resources,
     // plus the "scrap value" of all your units (one tenth their cost).
-    private int calculateIncomeScore(Server server, Faction faction, List<Unit> units, int moneyFactor=2)
+    private int calculateIncomeScore(Server server, Faction faction, List<Unit> units, int moneyFactor = 2)
     {
         GameState gameState = server.gameState;
         int score = 0;
@@ -1439,7 +1439,7 @@ public class GameLogic
     public void checkPlayersReadyForTimedPlanning()
     {
         Globals.Log("checkPlayersReadyForTimedPlanning(): enter");
-        
+
         lock (syncLock)
         {
             GameState gameState = server.gameState;
@@ -1537,7 +1537,7 @@ public class GameLogic
             else
                 gameState.SecondsRemainingUntilExecution = 0;
             server.sendGameState();
-            
+
         }
         foreach (string key in gameState.PlayerExecutionReady.Keys)
         {
@@ -1561,7 +1561,7 @@ public class GameLogic
     private void saveGameState(Server server, int currentTurn)
     {
         // "Personal" usually maps to "Documents" or "Home"
-        //string homeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal); 
+        //string homeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
         // Environment.UserName;
         // Environment.SpecialFolder.ApplicationData
         // Environment.SpecialFolder.LocalApplicationData

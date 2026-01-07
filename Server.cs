@@ -23,6 +23,7 @@ public class Server
     public GameState gameState { get; set; } = new();
     private bool initialSync = false;
     public GameLogic? GameLogic { get; set; }
+    Random random = new Random();
 
     public void StartAsHost(GameSettings gameSettings, string key)
     {
@@ -98,11 +99,16 @@ public class Server
         GameLogic.startGame(this);
 
         int sleepTime = 1000;
+        // 25x25=625, 50x50=2500, 100x100=10000
+        int hexes = gameState.GameSettings.Height * gameState.GameSettings.Width;
+        if (hexes > 1000)
+            sleepTime = 100;
+        if (hexes > 2000)
+            sleepTime = 10;
         Globals.Log("ServerLoop(): Server polling");
         // This is the server's polling loop, which runs continuously on its own thread.
         while (isRunning)
         {
-
             server?.PollEvents();
             if (!initialSync && gameState.PlayerJoined.Count >= gameState.GameSettings.NumberOfHumans)
             {
@@ -142,15 +148,15 @@ public class Server
             {
                 if (i <= server.ConnectedPeerList.Count)
                 {
-                    try 
+                    try
                     {
                         NetPeer peer = server.ConnectedPeerList[i];
                         sendGameState(peer);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
-                        Globals.Log("sendGameState(): Exception:" + ex + 
-                        ", Count=" + server.ConnectedPeerList.Count + ", i=" + i);    
+                        Globals.Log("sendGameState(): Exception:" + ex +
+                        ", Count=" + server.ConnectedPeerList.Count + ", i=" + i);
                     }
                 }
                 else
@@ -178,10 +184,10 @@ public class Server
                         NetPeer peer = server.ConnectedPeerList[i];
                         sendGameStateAndMapHex(peer, x, y);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
-                        Globals.Log("sendGameStateAndMapHex(): Exception:" + ex + 
-                        ", Count=" + server.ConnectedPeerList.Count + ", i=" + i);    
+                        Globals.Log("sendGameStateAndMapHex(): Exception:" + ex +
+                        ", Count=" + server.ConnectedPeerList.Count + ", i=" + i);
                     }
                 }
                 else
@@ -242,7 +248,8 @@ public class Server
         Globals.Log("sendMap(): peer=" + peer);
         List<MapHex> mapHexBuffer = new List<MapHex>();
         Map map = gameState.Map;
-        int bufferSize = 100;
+        // 250 ok, 300 not ok
+        int bufferSize = 200;
         for (int y = 0; y < map.Y; y++)
         {
             for (int x = 0; x < map.X; x++)
@@ -292,10 +299,10 @@ public class Server
                     NetPeer peer = server.ConnectedPeerList[i];
                     sendMapBuffer(peer, mapHexBuffer, isLast);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    Globals.Log("sendMapBuffer(): Exception:" + ex + 
-                    ", Count=" + server.ConnectedPeerList.Count + ", i=" + i);    
+                    Globals.Log("sendMapBuffer(): Exception:" + ex +
+                    ", Count=" + server.ConnectedPeerList.Count + ", i=" + i);
                 }
             }
             else
@@ -331,10 +338,10 @@ public class Server
                         NetPeer peer = server.ConnectedPeerList[i];
                         sendGamePlayEvent(peer, gameEvent);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
-                        Globals.Log("sendGamePlayEvent(): Exception:" + ex + 
-                        ", Count=" + server.ConnectedPeerList.Count + ", i=" + i);    
+                        Globals.Log("sendGamePlayEvent(): Exception:" + ex +
+                        ", Count=" + server.ConnectedPeerList.Count + ", i=" + i);
                     }
                 }
                 else
@@ -364,7 +371,7 @@ public class Server
             {
                 //Globals.Log("sendGamePlayEvent(): NetPeer not found for " + color);
             }
-        }        
+        }
     }
 
     public void sendGamePlayEvent(NetPeer peer, GameEvent gameEvent)
@@ -375,11 +382,9 @@ public class Server
 
     public void sendJsonString(NetPeer peer, String jsonString)
     {
-        byte channelId = 0;
-        bool isOrdered = true;
-        int queueCount = peer.GetPacketsCountInReliableQueue(channelId, isOrdered);
-        Console.WriteLine($"sendJsonString(): Packets in queue: {queueCount}");
-
+        int value = random.Next(0, 60);
+        if (value == 0)
+            outputQueueCount(peer);
         NetDataWriter writer = new NetDataWriter();
         if (server != null)
         {
@@ -389,6 +394,23 @@ public class Server
         }
     }
 
+    private void outputQueueCount()
+    {
+        if (server.ConnectedPeerList.Count > 0)
+        {
+            int peerIndex = random.Next(0, server.ConnectedPeerList.Count);
+            NetPeer peer = server.ConnectedPeerList[peerIndex];
+            outputQueueCount(peer);
+        }
+    }
+
+    private void outputQueueCount(NetPeer peer)
+    {
+        byte channelId = 0;
+        bool isOrdered = true;
+        int queueCount = peer.GetPacketsCountInReliableQueue(channelId, isOrdered);
+        Console.WriteLine($"sendJsonString(): Packets in queue: {queueCount}");
+    }
 
     private void StopServer()
     {
