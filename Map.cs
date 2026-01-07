@@ -1072,4 +1072,12 @@ public class Map
         }
     }
 
+    public void outputDataStructureUse()
+    {
+        Globals.Log("outputDataStructureUse(): allNodesGraph=" + allNodesGraph.Count);
+        Globals.Log("outputDataStructureUse(): seaNodesGraph=" + seaNodesGraph.Count);
+        Globals.Log("outputDataStructureUse(): landNodesGraph=" + landNodesGraph.Count);
+
+    }
+
 }

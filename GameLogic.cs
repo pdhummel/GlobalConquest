@@ -23,6 +23,16 @@ public class GameLogic
     {
     }
 
+    public void outputDataStructureUse()
+    {
+        Globals.Log("doExecutionPhase(): infantryUnitsXy=" + infantryUnitsXy.Count);
+        Globals.Log("doExecutionPhase(): movingUnitsXy=" + movingUnitsXy.Count);
+        Globals.Log("doExecutionPhase(): attackedUnitsXy=" + attackedUnitsXy.Count);
+        Globals.Log("doExecutionPhase(): attackingUnitsXy=" + attackingUnitsXy.Count);
+        Map map = server.gameState.Map;
+        map.outputDataStructureUse();
+
+    }
 
     public void doExecutionPhase()
     {
@@ -49,6 +59,7 @@ public class GameLogic
         // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 4, true, true);
         // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 4, false, true);
 
+        outputDataStructureUse();
 
         Globals.Log("doExecutionPhase(): set factions executing");
         List<string> colors = ["amber", "ocher", "magenta", "cyan"];
@@ -210,6 +221,7 @@ public class GameLogic
             {
                 try
                 {
+                    faction.Ai.outputDataStructureUse();
                     faction.Ai.planTurn();
                 }
                 catch(Exception ex)

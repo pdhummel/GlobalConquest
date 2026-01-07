@@ -1931,4 +1931,31 @@ public class Ai
         }
 
     }
+
+
+    public void outputDataStructureUse()
+    {
+        Globals.Log("outputDataStructureUse(): " + Faction.Color +  ": dockList=" + dockList.Count);
+        Globals.Log("outputDataStructureUse(): " + Faction.Color +  ": goals=" + goals.Count);
+        Globals.Log("outputDataStructureUse(): " + Faction.Color +  ": conquestGoals=" + conquestGoals.Count);
+        Globals.Log("outputDataStructureUse(): " + Faction.Color +  ": exploreGoals=" + exploreGoals.Count);
+        Globals.Log("outputDataStructureUse(): " + Faction.Color +  ": targetXyToGoal=" + targetXyToGoal.Count);
+        Globals.Log("outputDataStructureUse(): " + Faction.Color +  ": unitIdToAiUnit=" + unitIdToAiUnit.Count);
+
+        Globals.Log("outputDataStructureUse(): unitTypeToAvailableUnits=" + unitTypeToAvailableUnits.Count);
+        int totalAvailableUnits = 0;
+        foreach (string key in unitTypeToAvailableUnits.Keys)
+        {
+            totalAvailableUnits += unitTypeToAvailableUnits[key].Count;
+        }
+        Globals.Log("outputDataStructureUse(): " + Faction.Color +  ": totalAvailableUnits=" + totalAvailableUnits);
+
+        int goalUnits = 0;
+        foreach (AiGoal aiGoal in goals)
+        {
+            goalUnits += aiGoal.countDataStructureUse();            
+        }
+        Globals.Log("outputDataStructureUse(): " + Faction.Color +  ": goalUnits=" + goalUnits);
+    }
+
 }

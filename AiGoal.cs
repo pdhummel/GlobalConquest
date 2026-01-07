@@ -127,4 +127,9 @@ public class AiGoal
             stringValue += ", difficulty=" + DifficultyScore;
         return stringValue;
     }
+
+    public int countDataStructureUse()
+    {
+        return DesiredUnits.Count + ActualUnits.Count;
+    }
 }

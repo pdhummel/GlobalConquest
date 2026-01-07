@@ -194,24 +194,17 @@ public class Server
 
     public void sendGameStateAndMapHex(NetPeer peer, int x, int y)
     {
-        NetDataWriter writer = new NetDataWriter();
-        if (server != null)
-        {
-            GameEvent gameEvent = new GameEvent();
-            gameEvent.EventType = "gameStateAndMapUpdate";
-            gameEvent.GameState = gameState;
-            gameEvent.MapHex = gameState.Map.Hexes[y, x];
-            gameState.MapHex = gameState.Map.Hexes[y, x];
-            string jsonString = JsonSerializer.Serialize(gameEvent);
-            writer.Put(jsonString);
-            peer.Send(writer, DeliveryMethod.ReliableOrdered);
-            writer.Reset();
-        }
+        GameEvent gameEvent = new GameEvent();
+        gameEvent.EventType = "gameStateAndMapUpdate";
+        gameEvent.GameState = gameState;
+        gameEvent.MapHex = gameState.Map.Hexes[y, x];
+        gameState.MapHex = gameState.Map.Hexes[y, x];
+        string jsonString = JsonSerializer.Serialize(gameEvent);
+        sendJsonString(peer, jsonString);
     }
 
     public void sendGameStateAndMapHex(string color, int x, int y)
     {
-        NetDataWriter writer = new NetDataWriter();
         if (server != null)
         {
             if (gameState.Players.colorToPlayer.ContainsKey(color))
@@ -236,18 +229,12 @@ public class Server
 
     public void sendGameState(NetPeer peer)
     {
-        NetDataWriter writer = new NetDataWriter();
-        if (server != null)
-        {
-            GameEvent gameEvent = new GameEvent();
-            gameEvent.EventType = "gameStateUpdate";
-            gameEvent.GameState = gameState;
-            gameState.MapHex = null;
-            string jsonString = JsonSerializer.Serialize(gameEvent);
-            writer.Put(jsonString);
-            peer.Send(writer, DeliveryMethod.ReliableOrdered);
-            writer.Reset();
-        }
+        GameEvent gameEvent = new GameEvent();
+        gameEvent.EventType = "gameStateUpdate";
+        gameEvent.GameState = gameState;
+        gameState.MapHex = null;
+        string jsonString = JsonSerializer.Serialize(gameEvent);
+        sendJsonString(peer, jsonString);
     }
 
     public void sendMap(NetPeer? peer)
@@ -321,19 +308,13 @@ public class Server
     public void sendMapBuffer(NetPeer peer, List<MapHex> mapHexBuffer, bool isLast)
     {
         Globals.Log("sendMapBuffer(): peer=" + peer + ", mapHexBuffer=" + mapHexBuffer.Count);
-        NetDataWriter writer = new NetDataWriter();
-        if (server != null)
-        {
-            GameEvent gameEvent = new GameEvent();
-            gameEvent.EventType = "mapUpdate";
-            gameEvent.MapHexBuffer = mapHexBuffer;
-            gameEvent.GameState = null;
-            gameEvent.IsLastMapHexBufferUpdate = isLast;
-            string jsonString = JsonSerializer.Serialize(gameEvent);
-            writer.Put(jsonString);
-            peer.Send(writer, DeliveryMethod.ReliableOrdered);
-            writer.Reset();
-        }
+        GameEvent gameEvent = new GameEvent();
+        gameEvent.EventType = "mapUpdate";
+        gameEvent.MapHexBuffer = mapHexBuffer;
+        gameEvent.GameState = null;
+        gameEvent.IsLastMapHexBufferUpdate = isLast;
+        string jsonString = JsonSerializer.Serialize(gameEvent);
+        sendJsonString(peer, jsonString);
     }
 
     public void sendGamePlayEvent(GameEvent gameEvent)
@@ -368,7 +349,6 @@ public class Server
 
     public void sendGamePlayEvent(string color, GameEvent gameEvent)
     {
-        NetDataWriter writer = new NetDataWriter();
         if (server != null)
         {
             if (gameState.Players.colorToPlayer.ContainsKey(color))
@@ -389,10 +369,20 @@ public class Server
 
     public void sendGamePlayEvent(NetPeer peer, GameEvent gameEvent)
     {
+        string jsonString = JsonSerializer.Serialize(gameEvent);
+        sendJsonString(peer, jsonString);
+    }
+
+    public void sendJsonString(NetPeer peer, String jsonString)
+    {
+        byte channelId = 0;
+        bool isOrdered = true;
+        int queueCount = peer.GetPacketsCountInReliableQueue(channelId, isOrdered);
+        Console.WriteLine($"sendJsonString(): Packets in queue: {queueCount}");
+
         NetDataWriter writer = new NetDataWriter();
         if (server != null)
         {
-            string jsonString = JsonSerializer.Serialize(gameEvent);
             writer.Put(jsonString);
             peer.Send(writer, DeliveryMethod.ReliableOrdered);
             writer.Reset();
