@@ -221,6 +221,7 @@ public class BurbWindow
             RowSpacing = 8,
         };
         window.Content = grid;
+        int costValue = 0;
         Dictionary<int, int> costByRow = new Dictionary<int, int>();
         List<int> airUnitRows = new List<int>();
         List<int> landUnitRows = new List<int>();
@@ -234,41 +235,24 @@ public class BurbWindow
         addLabelToGrid(grid, rowIndex, 0, "Burb Balance:");
         addLabelToGrid(grid, rowIndex++, 1, "" + burb.Money);
         rowIndex += 1;
-        costByRow[rowIndex] = 25;
-        landUnitRows.Add(rowIndex);
-        unitTypeByRow[rowIndex] = INFANTRY;
-        addLabelToGrid(grid, rowIndex, 0, "Infantry");
-        addLabelToGrid(grid, rowIndex++, 1, "25");
-        costByRow[rowIndex] = 35;
-        landUnitRows.Add(rowIndex);
-        unitTypeByRow[rowIndex] = ARMOR;
-        addLabelToGrid(grid, rowIndex, 0, ARMOR);
-        addLabelToGrid(grid, rowIndex++, 1, "35");
-        costByRow[rowIndex] = 25;
-        seaUnitRows.Add(rowIndex);
-        unitTypeByRow[rowIndex] = SUBMARINE;
-        addLabelToGrid(grid, rowIndex, 0, SUBMARINE);
-        addLabelToGrid(grid, rowIndex++, 1, "25");
-        costByRow[rowIndex] = 35;
-        seaUnitRows.Add(rowIndex);
-        unitTypeByRow[rowIndex] = BATTLESHIP;
-        addLabelToGrid(grid, rowIndex, 0, BATTLESHIP);
-        addLabelToGrid(grid, rowIndex++, 1, "35");
-        costByRow[rowIndex] = 45;
-        seaUnitRows.Add(rowIndex);
-        unitTypeByRow[rowIndex] = AIRCRAFT_CARRIER;
-        addLabelToGrid(grid, rowIndex, 0, AIRCRAFT_CARRIER);
-        addLabelToGrid(grid, rowIndex++, 1, "45");
-        costByRow[rowIndex] = 85;
-        landUnitRows.Add(rowIndex);
-        unitTypeByRow[rowIndex] = SPY;
-        addLabelToGrid(grid, rowIndex, 0, SPY);
-        addLabelToGrid(grid, rowIndex++, 1, "85");
-        costByRow[rowIndex] = 35;
-        airUnitRows.Add(rowIndex);
-        unitTypeByRow[rowIndex] = AIRPLANE;
-        addLabelToGrid(grid, rowIndex, 0, AIRPLANE);
-        addLabelToGrid(grid, rowIndex++, 1, "35");
+        
+        rowIndex = addUnitRow(INFANTRY,  unitTypeByRow, 
+                   costByRow, rowIndex, mainGameScreen, grid, landUnitRows);
+        costByRow[rowIndex] = gameState.UnitTypes.UnitTypeMap[INFANTRY].Cost;
+        rowIndex = addUnitRow(ARMOR,  unitTypeByRow, 
+                   costByRow, rowIndex, mainGameScreen, grid, landUnitRows);
+        rowIndex = addUnitRow(SUBMARINE,  unitTypeByRow, 
+                   costByRow, rowIndex, mainGameScreen, grid, seaUnitRows);
+        rowIndex = addUnitRow(BATTLESHIP,  unitTypeByRow, 
+                   costByRow, rowIndex, mainGameScreen, grid, seaUnitRows);
+        rowIndex = addUnitRow(AIRCRAFT_CARRIER,  unitTypeByRow, 
+                   costByRow, rowIndex, mainGameScreen, grid, seaUnitRows);
+        rowIndex = addUnitRow(SPY,  unitTypeByRow, 
+                   costByRow, rowIndex, mainGameScreen, grid, landUnitRows);
+        rowIndex = addUnitRow(DECOY_COMMAND_CENTER,  unitTypeByRow, 
+                   costByRow, rowIndex, mainGameScreen, grid, landUnitRows);
+        rowIndex = addUnitRow(AIRPLANE,  unitTypeByRow, 
+                   costByRow, rowIndex, mainGameScreen, grid, airUnitRows);
 
         List<int> rows = [];
         foreach (int row in landUnitRows)
@@ -299,6 +283,21 @@ public class BurbWindow
         window.AcceptsKeyboardFocus = true;
         window.SetKeyboardFocus();
 
+    }
+
+    private int addUnitRow(string unitType,  Dictionary<int, string> unitTypeByRow, 
+        Dictionary<int, int> costByRow, int rowIndex, 
+        MainGameScreen mainGameScreen, Grid grid, List<int> rowNumbers)
+    {
+        GameState gameState = mainGameScreen.gcGame.Client.GameState;
+
+        costByRow[rowIndex] = gameState.UnitTypes.UnitTypeMap[unitType].Cost;
+        int costValue = costByRow[rowIndex];
+        rowNumbers.Add(rowIndex);
+        unitTypeByRow[rowIndex] = unitType;
+        addLabelToGrid(grid, rowIndex, 0, unitType);
+        addLabelToGrid(grid, rowIndex++, 1, "" + costValue);
+        return rowIndex;
     }
 
     private void addPurchaseBuildButton(Window window, Grid grid, int row, MainGameScreen mainGameScreen, 
@@ -334,7 +333,8 @@ public class BurbWindow
         }
     }
 
-    private void purchaseUnit(MainGameScreen mainGameScreen, string unitTypeName, MapHex mapHex, string direction)
+    private void purchaseUnit(MainGameScreen mainGameScreen, 
+        string unitTypeName, MapHex mapHex, string direction)
     {
         GameState gameState = mainGameScreen.gcGame.Client.GameState;
         UnitType unitType = gameState.UnitTypes.UnitTypeMap[unitTypeName];

@@ -199,7 +199,7 @@ The game is being designed with known differences from the original.
 - [x] Spy sabotage burbs.
 - [x] Spies steal burb secrets.
 - [x] Spies steal ComCen secrets.
-- [ ] Build decoy ComCen/units.
+- [x] Build decoy ComCen/units.
 
 
 ### Milestone 8

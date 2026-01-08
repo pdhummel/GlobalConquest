@@ -286,6 +286,10 @@ public class GameState
         {
             this.UnitTypes = newGameState.UnitTypes;
         }
+        else
+        {
+            this.UnitTypes = new UnitTypes();
+        }
         this.VictoriousColor = newGameState.VictoriousColor;
 
     }
