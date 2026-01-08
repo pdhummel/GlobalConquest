@@ -79,6 +79,18 @@
 /processorParam:TextureFormat=Color
 /build:amber-comcen-48x48.png
 
+#begin amber-decoy-comcen-48x48.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:amber-decoy-comcen-48x48.png
+
 #begin amber-infantry-48x48.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -300,6 +312,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:cyan-comcen-48x48.png
+
+#begin cyan-decoy-comcen-48x48.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:cyan-decoy-comcen-48x48.png
 
 #begin cyan-infantry-48x48.png
 /importer:TextureImporter
@@ -662,6 +686,18 @@
 /processorParam:TextureFormat=Color
 /build:magenta-comcen-48x48.png
 
+#begin magenta-decoy-comcen-48x48.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:magenta-decoy-comcen-48x48.png
+
 #begin magenta-infantry-48x48.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -980,6 +1016,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:ocher-comcen-48x48.png
+
+#begin ocher-decoy-comcen-48x48.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:ocher-decoy-comcen-48x48.png
 
 #begin ocher-infantry-48x48.png
 /importer:TextureImporter

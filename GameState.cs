@@ -31,7 +31,7 @@ public class GameState
     public int SecondsRemainingUntilExecution {get; set;}
 
     // if any of the data elements in the entities change above, then this version should be bumped.
-    public string Version { get; set; } = "v0.7.3";
+    public string Version { get; set; } = "v0.7.4";
     private Random rand = new System.Random();
 
 
@@ -112,6 +112,12 @@ public class GameState
             // Test with some large quantity of units
             if (1 == 0)
             {
+                Unit decoyComcen = new Unit();
+                decoyComcen.UnitType = DECOY_COMMAND_CENTER;
+                decoyComcen.Color = color;
+                decoyComcen.setBaseVisibility();
+                placeUnit(Map.Hexes[5,5], directions, decoyComcen);
+
                 for (int i=0; i< 100; i++)
                 {
                     int x = rand.Next(5, 20);

@@ -238,6 +238,11 @@ class HexMapEngineAdapter
         Texture2D cyanSpy = game.Content.Load<Texture2D>("cyan-spy-48x48");
         units["cyan-spy"] = cyanSpy;
 
+        units["amber-decoy-comcen"] = game.Content.Load<Texture2D>("amber-decoy-comcen-48x48");
+        units["cyan-decoy-comcen"] = game.Content.Load<Texture2D>("cyan-decoy-comcen-48x48");
+        units["magenta-decoy-comcen"] = game.Content.Load<Texture2D>("magenta-decoy-comcen-48x48");
+        units["ocher-decoy-comcen"] = game.Content.Load<Texture2D>("ocher-decoy-comcen-48x48");
+
         // magenta-plane-white-30px
         // magenta-plane-black-30px
         // magenta-plane-transparent-30px
@@ -256,6 +261,7 @@ class HexMapEngineAdapter
         textures["amber-array"] = game.Content.Load<Texture2D>("gc-amber-array");
         textures["cyan-circle"] = game.Content.Load<Texture2D>("gc-cyan-circle");
         textures["magenta-mob"] = game.Content.Load<Texture2D>("gc-magenta-mob");
+
 
         Texture2D hexHighlight = game.Content.Load<Texture2D>("YellowHexagonOutline_72x72");
         textures["mapHexHighlight"] = hexHighlight;
@@ -347,90 +353,6 @@ class HexMapEngineAdapter
         Draw_TileMap(csScrollDirection, ciRowPosition, ciColumnPosition);
         //DrawCities();
         //DrawUnits();
-    }
-
-    public void DrawCities()
-    {
-        MapHex[,] hexes = gcGame.Client.GameState.Map.Hexes;
-        Player player = identifySelf();
-        for (int liY = 0; liY < hexHeight; liY++)
-        {
-            for (int liX = 0; liX < hexWidth; liX++)
-            {
-                Burb? burb = hexes[liY, liX].Burb;
-                if (burb != null && !"suburb".Equals(burb.Type) && !"dock".Equals(burb.Type))
-                {
-                    string burbId = burb.Type;
-                    if ("metro".Equals(burb.Type))
-                        burbId = burb.Color + "-" + burb.Type;
-                    drawBurbAtHex(liY, liX, burbId, burb, null, player);
-                }
-            }
-        }
-        for (int liY = 0; liY < hexHeight; liY++)
-        {
-            for (int liX = 0; liX < hexWidth; liX++)
-            {
-                Burb? burb = hexes[liY, liX].Burb;
-                if (burb != null && burb.DirectionFromParent != null)
-                {
-                    drawBurbAtHex(liY, liX, "", burb, null, player);
-                }
-            }
-        }
-    }
-
-    public void DrawUnits()
-    {
-        MapHex[,] hexes = gcGame.Client.GameState.Map.Hexes;
-        bool isObserver = gcGame.Client.IsObserverOnly;
-        for (int liY = 0; liY < hexHeight; liY++)
-        {
-            for (int liX = 0; liX < hexWidth; liX++)
-            {
-                MapHex mapHex = hexes[liY, liX];
-                Player player = identifySelf();
-                Unit unit = mapHex.getUnit();
-                if (unit != null && unit.StrengthPoints > 0)
-                {
-                    Globals.Log("DrawUnits(): " + (unit.TemporarySpyVisibility.ContainsKey(player.FactionColor) ? unit.TemporarySpyVisibility[player.FactionColor] : false));
-                    string unitTypeId = unit.Color + "-" + unit.UnitType;
-                    if (isObserver || 
-                        (unit.Visibility.ContainsKey(player.FactionColor) && 
-                        unit.Visibility[player.FactionColor]) || 
-                        (unit.TemporarySpyVisibility.ContainsKey(player.FactionColor) && 
-                        unit.TemporarySpyVisibility[player.FactionColor])
-                       )
-                    {
-                        if (unit.ParentUnitId == null || gcGame.IsShowAirplanes)
-                            drawUnitAtHex(liY, liX, unitTypeId, null);
-                        if (unit.Airplane != null && gcGame.IsShowAirplanes)
-                        {
-                            //Globals.Log("DrawUnits(): plane found on unit");
-                            drawUnitAtHex(liY, liX, unit.Color + "-plane", null);
-                        }
-                    }
-                    //if (unit.IsAttacked)
-                    //    drawFlame(liY, liX);
-                }
-                Unit plane = mapHex.Airplane;
-                if (plane != null && plane.StrengthPoints > 0)
-                {
-                    string unitTypeId = plane.Color + "-" + plane.UnitType;
-                    // TODO: figure out plane visibility settings
-                    if (isObserver || 
-                        (mapHex.Visibility.ContainsKey(player.FactionColor) && 
-                         mapHex.Visibility[player.FactionColor]))
-                    {
-                        if (plane != null && gcGame.IsShowAirplanes)
-                        {
-                            //Globals.Log("DrawUnits(): plane found on hex");
-                            drawUnitAtHex(liY, liX, unitTypeId, null);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private void drawUnitAtHex(int row, int column, string unitTypeId, Rectangle? sourceRectangle)
@@ -798,13 +720,12 @@ class HexMapEngineAdapter
 
         int liTileOffsetX = (int)coHexTileMap.cameraWrapper.CAMERA_VECTOR2_LOCATION.X;
         int liTileOffsetY = (int)coHexTileMap.cameraWrapper.CAMERA_VECTOR2_LOCATION.Y;
-
+        Rectangle unitRectangle = new Rectangle(0, 0, 48, 48);
+        Rectangle planeRectangle = new Rectangle(0, 0, 30, 30);
 
         MapHex[,] hexes = gcGame.Client.GameState.Map.Hexes;
         bool isObserver = gcGame.Client.IsObserverOnly;
         Rectangle sourceRectangle = new Rectangle(0, 0, HexMapEngine.Structures.Global.ACTUAL_TILE_WIDTH_IN_PIXELS, HexMapEngine.Structures.Global.ACTUAL_TILE_HEIGHT_IN_PIXELS);
-        Rectangle unitRectangle = new Rectangle(0, 0, 48, 48);
-        Rectangle planeRectangle = new Rectangle(0, 0, 30, 30);
         Player player = identifySelf();
 
         for (int liY = 0; liY < (HexMapEngine.Structures.Global.ACTUAL_MAP_HEIGHT_IN_TILES); liY++)
@@ -860,64 +781,83 @@ class HexMapEngineAdapter
 
                 }
 
-                // DrawCities()
-                Burb? burb = hexes[liY, liX].Burb;
-                if (burb != null && !"suburb".Equals(burb.Type) && !"dock".Equals(burb.Type))
-                {
-                    string burbId = burb.Type;
-                    if ("metro".Equals(burb.Type))
-                        burbId = burb.Color + "-" + burb.Type;
-                    drawBurbAtHex(liY, liX, burbId, burb, sourceRectangle, player);
-                }
-                if (burb != null && burb.DirectionFromParent != null)
-                {
-                    drawBurbAtHex(liY, liX, "", burb, sourceRectangle, player);
-                }
+                DrawBurbAtMapHex(mapHex, player, sourceRectangle);
 
-
-                // DrawUnits
-                Unit unit = mapHex.getUnit();
-                if (unit != null && unit.StrengthPoints > 0)
-                {
-                    string unitTypeId = unit.Color + "-" + unit.UnitType;
-                    if (isObserver || 
-                       (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor]) ||
-                        (unit.TemporarySpyVisibility.ContainsKey(player.FactionColor) && 
-                        unit.TemporarySpyVisibility[player.FactionColor]))
-                    {
-                        if (unit.ParentUnitId == null || gcGame.IsShowAirplanes)
-                            drawUnitAtHex(liY, liX, unitTypeId, unitRectangle);
-                        if (unit.Airplane != null && gcGame.IsShowAirplanes)
-                        {
-                            //Globals.Log("DrawUnits(): plane found on unit");
-                            drawUnitAtHex(liY, liX, unit.Color + "-plane", planeRectangle);
-                        }
-                    }
-                    //if (unit.IsAttacked)
-                    //    drawFlame(liY, liX);
-                }
-                Unit plane = mapHex.Airplane;
-                if (plane != null && plane.StrengthPoints > 0)
-                {
-                    string unitTypeId = plane.Color + "-" + plane.UnitType;
-                    // TODO: figure out plane visibility settings
-                    if (isObserver || 
-                        (mapHex.Visibility.ContainsKey(player.FactionColor) && mapHex.Visibility[player.FactionColor]) ||
-                        (unit.TemporarySpyVisibility.ContainsKey(player.FactionColor) && 
-                        unit.TemporarySpyVisibility[player.FactionColor]))
-                    {
-                        if (plane != null && gcGame.IsShowAirplanes)
-                        {
-                            //Globals.Log("DrawUnits(): plane found on hex");
-                            drawUnitAtHex(liY, liX, unitTypeId, planeRectangle);
-                        }
-                    }
-                }
-
-
+                DrawUnitAtMapHex(mapHex, isObserver, player, unitRectangle, planeRectangle);
             }
         }
 
+    }
+
+    private void DrawBurbAtMapHex(MapHex mapHex, Player player, Rectangle sourceRectangle)
+    {
+        if (mapHex == null)
+            return;
+        int liY = mapHex.Y;
+        int liX = mapHex.X;
+        Burb? burb = mapHex.Burb;
+        if (burb != null && !"suburb".Equals(burb.Type) && !"dock".Equals(burb.Type))
+        {
+            string burbId = burb.Type;
+            if ("metro".Equals(burb.Type))
+                burbId = burb.Color + "-" + burb.Type;
+            drawBurbAtHex(liY, liX, burbId, burb, sourceRectangle, player);
+        }
+        if (burb != null && burb.DirectionFromParent != null)
+        {
+            drawBurbAtHex(liY, liX, "", burb, sourceRectangle, player);
+        }
+    }
+
+    private void DrawUnitAtMapHex(MapHex mapHex, bool isObserver, Player player, Rectangle unitRectangle, Rectangle planeRectangle)
+    {
+        if (mapHex == null)
+            return;
+        Unit unit = mapHex.getUnit();
+        int liY = mapHex.Y;
+        int liX = mapHex.X;
+        if (unit != null && unit.StrengthPoints > 0)
+        {
+            string unitTypeId = unit.Color + "-" + unit.UnitType;
+            if (DECOY_COMMAND_CENTER.Equals(unit.UnitType) && !player.FactionColor.Equals(unit.Color))
+            {
+                unitTypeId = unit.Color + "-" + COMMAND_CENTER;
+            }
+            if (isObserver || 
+                (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor]) ||
+                (unit.TemporarySpyVisibility.ContainsKey(player.FactionColor) && 
+                unit.TemporarySpyVisibility[player.FactionColor]))
+            {
+                if (unit.ParentUnitId == null || !gcGame.IsShowAirplanes)
+                {
+                    drawUnitAtHex(liY, liX, unitTypeId, unitRectangle);
+                }
+                if (unit.Airplane != null && gcGame.IsShowAirplanes)
+                {
+                    //Globals.Log("DrawUnits(): plane found on unit");
+                    drawUnitAtHex(liY, liX, unit.Color + "-plane", planeRectangle);
+                }
+            }
+            //if (unit.IsAttacked)
+            //    drawFlame(liY, liX);
+        }
+        Unit plane = mapHex.Airplane;
+        if (plane != null && plane.StrengthPoints > 0)
+        {
+            string unitTypeId = plane.Color + "-" + plane.UnitType;
+            // TODO: figure out plane visibility settings
+            if (isObserver || 
+                (mapHex.Visibility.ContainsKey(player.FactionColor) && mapHex.Visibility[player.FactionColor]) ||
+                (unit.TemporarySpyVisibility.ContainsKey(player.FactionColor) && 
+                unit.TemporarySpyVisibility[player.FactionColor]))
+            {
+                if (plane != null && gcGame.IsShowAirplanes)
+                {
+                    //Globals.Log("DrawUnits(): plane found on hex");
+                    drawUnitAtHex(liY, liX, unitTypeId, planeRectangle);
+                }
+            }
+        }        
     }
 
     private void Draw_HexTile(HexMapEngine.Structures.HexTile poHexTile,
