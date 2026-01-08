@@ -368,6 +368,8 @@ public class GlobalConquestGame : Game
                         mapHex.Terrain = "sea";     // this is temporary so should not matter
                         Client.GameState.Map.Hexes[liY, liX] = mapHex;
                     }
+                    else
+                        Client.GameState.Map.Hexes[liY, liX].IsHighlighted = false;
                 }
             }
             //Globals.Log("clientUpdateMap(): hexes=" + Client.GameState.Map.Hexes.GetLength(0) + "," + Client.GameState.Map.Hexes.GetLength(1));
@@ -383,6 +385,7 @@ public class GlobalConquestGame : Game
                 {
                     //GameState.Map.Hexes[mapHex.Y, mapHex.X] = mapHex;
                     Client.GameState.Map.Hexes[mapHex.Y, mapHex.X].copyMapHexValues(mapHex);
+                    Client.GameState.Map.Hexes[mapHex.Y, mapHex.X].IsHighlighted = false;
                 }
 
                 if (!isLoadContentComplete && gameEvent.IsLastMapHexBufferUpdate)

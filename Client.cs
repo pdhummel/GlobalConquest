@@ -203,8 +203,10 @@ public class Client
             bool isHighlighted = false;
             if (GameState.Map != null && GameState.Map.IsMapReady)
             {
-                if (gameEvent.MapHex != null)
+                if (gameEvent.MapHex != null) // && !"plan".Equals(GameState.CurrentPhase))
                     isHighlighted = GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X].IsHighlighted;
+                //else
+                //    GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X].IsHighlighted = false;
                 //newGameState.Map = GameState.Map;
             }
 
