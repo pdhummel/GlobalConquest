@@ -13,7 +13,7 @@ public class MapHex
     public Dictionary<string, bool> Visibility { get; set; } = new Dictionary<string, bool>();
     public Dictionary<string, bool> TemporarySpyVisibility { get; set; } = new Dictionary<string, bool>();
 
-    public List<Unit> Units { get; set; } = new List<Unit>();
+    public Unit Unit { get; set; }
     public Unit Airplane { get; set; }
 
     public Burb? Burb { get; set; }
@@ -37,28 +37,12 @@ public class MapHex
 
     public Unit getUnit()
     {
-        Unit tmpUnit = new Unit();
-        if (Units.Count > 0 && Units[0] != null)
-        {
-            if (Units[0].GetType().Equals(tmpUnit.GetType()))
-                return (Unit)Units[0];
-
-            Unit unit =
-                JsonSerializer.Deserialize<Unit>(Units[0].ToString());
-            return unit;
-        }
-        else
-        {
-            return null;
-        }
+        return this.Unit;
     }
 
     public void setUnit(Unit unit)
     {
-        if (Units.Count > 0)
-            Units[0] = unit;
-        else
-            Units.Add(unit);
+        this.Unit = unit;
     }
 
     public Unit getAnyAirplaneAtHex()
@@ -114,14 +98,7 @@ public class MapHex
         this.Terrain = mapHex.Terrain;
         this.Visibility = mapHex.Visibility;
         this.TemporarySpyVisibility = mapHex.TemporarySpyVisibility;
-        if (this.Units == null)
-            this.Units = mapHex.Units;
-        if (Units != null && Units.Count < 1 && mapHex.Units != null && mapHex.Units.Count > 0)
-            this.Units.Add(mapHex.Units[0]);
-        else if (Units != null && Units.Count > 0 && mapHex.Units != null && mapHex.Units.Count > 0)
-            this.Units[0] = mapHex.Units[0];
-        else if (Units != null && mapHex.Units != null && mapHex.Units.Count <= 0)
-            this.Units.Clear();
+        this.Unit = mapHex.Unit;
         this.X = mapHex.X;
         this.Y = mapHex.Y;
     }

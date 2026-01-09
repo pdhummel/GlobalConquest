@@ -245,8 +245,8 @@ public class Server
         Globals.Log("sendMap(): peer=" + peer);
         List<MapHex> mapHexBuffer = new List<MapHex>();
         Map map = gameState.Map;
-        // 250 ok, 300 not ok
-        int bufferSize = 200;
+        // 200 - Server sendMapBuffer(): Exception:System.OverflowException: Arithmetic operation resulted in an overflow.
+        int bufferSize = 175;
         for (int y = 0; y < map.Y; y++)
         {
             for (int x = 0; x < map.X; x++)

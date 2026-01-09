@@ -351,11 +351,11 @@ public class Map
         {
             MapHex targetMapHex = Hexes[destinationY, destinationX];
             MapHex sourceMapHex = Hexes[unit.Y, unit.X];
-            if (sourceMapHex.Units.Count > 0)
+            if (sourceMapHex.Unit != null)
             {
                 targetMapHex.setUnit(unit);
-                if (Hexes[unit.Y, unit.X].Units.Count > 0)
-                    Hexes[unit.Y, unit.X].Units.RemoveAt(0);
+                if (Hexes[unit.Y, unit.X].Unit != null)
+                    Hexes[unit.Y, unit.X].Unit = null;
                 hasUnitMoved = true;
             }
             unit.X = destinationX;

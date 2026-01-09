@@ -872,10 +872,10 @@ public class GameLogic
         unit.lastTargetUnitVector = new Vector2(-1, -1);
         unit.Airplane = null;
 
-        if (deadUnitMapHex.Units.Count > 0)
-            deadUnitMapHex.Units.RemoveAt(0);
-        if (mapHex != null && mapHex.Units.Count > 0)
-            mapHex.Units.RemoveAt(0);
+        if (deadUnitMapHex.Unit != null)
+            deadUnitMapHex.Unit = null;
+        if (mapHex != null && mapHex.Unit != null)
+            mapHex.Unit = null;
     }
 
     private string makeXyString(int x, int y)
