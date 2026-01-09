@@ -63,8 +63,8 @@ public class GameLogic
         outputDataStructureUse();
 
         Globals.Log("doExecutionPhase(): set factions executing");
-        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
-        foreach (string color in colors)
+
+        foreach (string color in FACTION_COLORS)
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
             faction.Status = "executing";
@@ -89,7 +89,7 @@ public class GameLogic
             for (int liX = 0; liX < gameState.Map.X; liX++)
             {
                 MapHex mapHex = gameState.Map.Hexes[liY, liX];
-                foreach (string color in colors)
+                foreach (string color in FACTION_COLORS)
                 {
                     mapHex.TemporarySpyVisibility[color] = false;
                 }
@@ -210,8 +210,7 @@ public class GameLogic
         Globals.Log("doExecutionPhase(): Ai plan turn");
         Server? server = this.server;
         GameState gameState = server.gameState;
-        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
-        foreach (string color in colors)
+        foreach (string color in FACTION_COLORS)
         {
             bool isFactionAi = true;
             Faction faction = gameState.Factions.ColorToFaction[color];
@@ -306,8 +305,7 @@ public class GameLogic
         server.gameState.CurrentPhase = "plan";
 
         int humans = 0;
-        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
-        foreach (string color in colors)
+        foreach (string color in FACTION_COLORS)
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
             faction.Status = "pending";
@@ -378,8 +376,7 @@ public class GameLogic
                 }
             }
         }
-        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
-        foreach (string color in colors)
+        foreach (string color in FACTION_COLORS)
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
             faction.Money = gameState.GameSettings.StartingMoney;
@@ -417,8 +414,7 @@ public class GameLogic
 
     private void reduceUnitVisibility(Unit unit)
     {
-        List<string> colors = [AMBER, MAGENTA, CYAN, OCHER];
-        foreach (string color in colors)
+        foreach (string color in FACTION_COLORS)
         {
             if (server.gameState.CurrentRound == 0)
                 unit.TemporarySpyVisibility[color] = false;
@@ -1289,14 +1285,13 @@ public class GameLogic
         bool gameOver = false;
         string victoriousColor = NATIVE_COLOR;
         string candidate = null;
-        List<string> colors = [AMBER, MAGENTA, CYAN, OCHER];
 
         // number of turns has passed
         if (server.gameState.GameSettings.NumberOfTurnsForGame > 0 && server.gameState.CurrentTurn + 1 >= server.gameState.GameSettings.NumberOfTurnsForGame)
         {
             string maxColor = NATIVE_COLOR;
             int maxPointValue = 0;
-            foreach (string color in colors)
+            foreach (string color in FACTION_COLORS)
             {
                 Faction faction = gameState.Factions.ColorToFaction[color];
                 if (faction.CombinedScore > maxPointValue)
@@ -1310,7 +1305,7 @@ public class GameLogic
         }
 
         // Only 1 CommandCenter is left.
-        foreach (string color in colors)
+        foreach (string color in FACTION_COLORS)
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
             if (faction.HasComCen)
@@ -1332,7 +1327,7 @@ public class GameLogic
 
         // Someone took all Metros and the capital.
         Dictionary<string, int> metroOwnerCount = new Dictionary<string, int>();
-        foreach (string color in colors)
+        foreach (string color in FACTION_COLORS)
         {
             if (!metroOwnerCount.ContainsKey(color))
             {
@@ -1342,7 +1337,7 @@ public class GameLogic
                 metroOwnerCount[gameState.Map.getMetroHex(color).Burb.OwnerColor] = 1;
             metroOwnerCount[gameState.Map.getMetroHex(color).Burb.OwnerColor] += 1;
         }
-        foreach (string color in colors)
+        foreach (string color in FACTION_COLORS)
         {
             if (metroOwnerCount[color] >= 4)
             {
@@ -1364,7 +1359,7 @@ public class GameLogic
             server.sendGamePlayEvent(victoriousColor, gameEvent);
             gameEvent.EventType = "enemyPlayerWonGame";
             gameEvent.EnemyColor = victoriousColor;
-            foreach (string color in colors)
+            foreach (string color in FACTION_COLORS)
             {
                 if (!color.Equals(victoriousColor))
                 {
@@ -1382,8 +1377,7 @@ public class GameLogic
     {
         GameState gameState = server.gameState;
         GameSettings gameSettings = gameState.GameSettings;
-        List<string> colors = [AMBER, MAGENTA, CYAN, OCHER];
-        foreach (string color in colors)
+        foreach (string color in FACTION_COLORS)
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
             if ("Head-Count".Equals(gameSettings.ScoringOption))
@@ -1766,12 +1760,11 @@ public class GameLogic
         Directory.Delete(tempDirectory, true);
 
         newGameState.UnitTypes.defineUnitTypes();
-        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
         newGameState.Map.restoreMap(newGameState.Burbs);
         server.gameState = newGameState;
 
         server.gameState.CurrentPhase = "plan";
-        foreach (string color in colors)
+        foreach (string color in FACTION_COLORS)
         {
             Faction faction = server.gameState.Factions.ColorToFaction[color];
             faction.Ai = new Ai();
@@ -1835,8 +1828,7 @@ public class GameLogic
         }
 
         newGameState.UnitTypes.defineUnitTypes();
-        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
-        foreach (string color in colors)
+        foreach (string color in FACTION_COLORS)
         {
             if (newGameState.Players.colorToPlayer.ContainsKey(color))
             {

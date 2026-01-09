@@ -31,8 +31,8 @@ public static class GameConstants
     public const string OCHER = "ocher";
     public const string CYAN = "cyan";
     public const string MAGENTA = "magenta";
-    //public const List<string> FACTION_COLORS = [AMBER, CYAN, MAGENTA, OCHER];
-    //public const List<string> ALL_COLORS = [NATIVE_COLOR, AMBER, CYAN, MAGENTA, OCHER];
+    public static readonly List<string> FACTION_COLORS = [AMBER, CYAN, MAGENTA, OCHER];
+    public static readonly List<string> NATIVE_AND_FACTION_COLORS = [NATIVE_COLOR, AMBER, CYAN, MAGENTA, OCHER];
 
     
 

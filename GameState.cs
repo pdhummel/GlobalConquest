@@ -51,8 +51,7 @@ public class GameState
 
     public void placeInitialUnits()
     {
-        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
-        foreach (string color in colors)
+        foreach (string color in FACTION_COLORS)
         {
             placeInitialUnits(color);
         }

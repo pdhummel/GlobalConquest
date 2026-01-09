@@ -38,8 +38,7 @@ public class Map
         Hexes = generateMap(y, x, numberOfIslands);
         buildNodesForShortestPath();
         IsMapReady = true;
-        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN, NATIVE_COLOR];
-        foreach (string color in colors)
+        foreach (string color in NATIVE_AND_FACTION_COLORS)
         {
             ColorToUnitIds[color] = new HashSet<string>();
         }
@@ -148,8 +147,7 @@ public class Map
 
     public bool IsMetroHex(MapHex mapHex)
     {
-        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
-        foreach (string color in colors)
+        foreach (string color in FACTION_COLORS)
         {
             if (mapHex.X == MetroLocations[color].X && mapHex.Y == MetroLocations[color].Y)
                 return true;
@@ -1050,8 +1048,7 @@ public class Map
 
     public void restoreMap(Burbs burbs)
     {
-        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN, NATIVE_COLOR];
-        foreach (string color in colors)
+        foreach (string color in NATIVE_AND_FACTION_COLORS)
         {
             ColorToUnitIds[color] = new HashSet<string>();
         }
