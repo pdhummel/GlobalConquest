@@ -1,6 +1,7 @@
 using static UnitTypeConstants;
 using System.Text.Json;
 using GlobalConquest.Units;
+using static GameConstants;
 namespace GlobalConquest;
 
 public class MapHex

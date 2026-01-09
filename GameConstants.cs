@@ -24,6 +24,7 @@ public static class GameConstants
     public const string FACTION_CYAN_CIRCLE = "Cyan Circle";
     public const string FACTION_MAGENTA_MOB = "Magenta Mob";
     public const string FACTION_OCHER_ORDER = "Ocher Order";
+    public const string FACTION_NATIVES = "Natives";
 
     public const string NATIVE_COLOR = "grey";
     public const string AMBER = "amber";

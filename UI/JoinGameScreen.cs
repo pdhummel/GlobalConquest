@@ -1,5 +1,6 @@
 using System.Windows;
 using GlobalConquest.Actions;
+using static GameConstants;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Myra;

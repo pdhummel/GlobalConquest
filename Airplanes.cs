@@ -1,3 +1,4 @@
+using static GameConstants;
 public class Airplanes
 {
 

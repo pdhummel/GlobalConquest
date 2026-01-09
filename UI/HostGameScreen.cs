@@ -263,7 +263,7 @@ public class HostGameScreen
         timedSecondsTextBox.Text = "60";
         timedSecondsTextBox.Width = 50;
 
-        nativesLabel.Text = "Natives";
+        nativesLabel.Text = FACTION_NATIVES;
         nativesCheckButton.IsChecked = true;
         nativesCheckButton.VerticalAlignment = VerticalAlignment.Center;
 

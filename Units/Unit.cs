@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using static GameConstants;
 using GlobalConquest.Actions;
 using Microsoft.Xna.Framework;
 

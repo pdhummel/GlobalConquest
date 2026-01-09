@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Collections.Concurrent;
 using GlobalConquest.Units;
 using GlobalConquest.Actions;
+using static GameConstants;
 using Microsoft.Xna.Framework;
 
 namespace GlobalConquest;
