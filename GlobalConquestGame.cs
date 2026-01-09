@@ -1535,12 +1535,13 @@ public class GlobalConquestGame : Game
         {
             //Globals.Log("identifySelf(): could not find player");
             player = new Player();
+            HashSet<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
             foreach (string key in Client.GameState.Players.colorToPlayer.Keys)
             {
                 //Globals.Log("identifySelf(): color " + key + " already assigned.");
                 colors.Remove(key);
             }
-            foreach (string color in FACTION_COLORS)
+            foreach (string color in colors)
             {
                 Faction faction = Client.GameState.Factions.ColorToFaction[color];
                 if ("disconnected".Equals(faction.Status))

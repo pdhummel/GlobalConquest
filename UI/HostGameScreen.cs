@@ -199,7 +199,7 @@ public class HostGameScreen
         visibilityComboView.BorderThickness = new Thickness(2);
 
         Label omniLabel = new Label();
-        omniLabel.Text = "Omniscient";
+        omniLabel.Text = VISIBILITY_OMNISCIENT;
         Label chqLabel = new Label();
         chqLabel.Text = "Command HQ";
         Label fogLabel = new Label();
@@ -234,9 +234,9 @@ public class HostGameScreen
         Label timedGraceLabel = new Label();
         timedGraceLabel.Text = "Grace*";
         Label timedLabel = new Label();
-        timedLabel.Text = "Timed*";
+        timedLabel.Text = EXECUTION_TIMED;
         Label quorumLabel = new Label();
-        quorumLabel.Text = "Quorum";
+        quorumLabel.Text = EXECUTION_QUORUM;
         Label infiniteLabel = new Label();
         infiniteLabel.Text = "Infinite";
         executionComboView.Widgets.Add(quorumLabel);

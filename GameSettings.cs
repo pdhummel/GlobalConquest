@@ -1,3 +1,4 @@
+using static GameConstants;
 namespace GlobalConquest;
 
 public class GameSettings
@@ -17,7 +18,7 @@ public class GameSettings
 
     public string Visibility { get; set; } = "Fog of War";
 
-    public string ExecutionMode { get; set; } = "Quorum";
+    public string ExecutionMode { get; set; } = EXECUTION_QUORUM;
     public int TimedSeconds { get; set; } = 180;
     public int StartingMoney { get; set; } = 0;
     public string ScoringOption { get; set; } = "Combined"; // Income, Capital, Head-Count, Combined

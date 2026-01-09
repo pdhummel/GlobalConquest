@@ -1,6 +1,7 @@
 using GlobalConquest;
 using GlobalConquest.Units;
 using static UnitTypeConstants;
+using static GameConstants;
 
 public class AiGoal
 {
@@ -123,7 +124,7 @@ public class AiGoal
     {
         // Use string interpolation for a clean, readable format
         string stringValue = GoalName();
-        if ("conquer".Equals(Type))
+        if (AI_GOAL_CONQUER.Equals(Type))
             stringValue += ", difficulty=" + DifficultyScore;
         return stringValue;
     }

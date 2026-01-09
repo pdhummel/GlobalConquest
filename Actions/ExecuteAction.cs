@@ -1,6 +1,6 @@
 using System.Text.Json;
 using LiteNetLib;
-
+using static GameConstants;
 namespace GlobalConquest.Actions;
 
 public class ExecuteAction : PlayerAction
@@ -53,7 +53,7 @@ public class ExecuteAction : PlayerAction
 
 
         bool startExecution = false;
-        if ("Quorum".Equals(gameState.GameSettings.ExecutionMode))
+        if (EXECUTION_QUORUM.Equals(gameState.GameSettings.ExecutionMode))
         {
             int readyCount = 0;
             foreach (string key in gameState.PlayerExecutionReady.Keys)

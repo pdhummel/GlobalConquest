@@ -395,7 +395,7 @@ public class GameLogic
             if (unit.StrengthPoints <= 0)
                 continue;
             unit.IsAttacked = false;
-            if (!("Omniscient".Equals(gameState.GameSettings.Visibility)))
+            if (!(VISIBILITY_OMNISCIENT.Equals(gameState.GameSettings.Visibility)))
                 reduceUnitVisibility(unit);
             scanUnits(server, unit);
             scanTerrain(server, unit);
@@ -473,7 +473,7 @@ public class GameLogic
         // Also other units need to re-scan for visibility.
         if (unit.IsSneaking)
         {
-            if (!"Omniscient".Equals(server.gameState.GameSettings.Visibility))
+            if (!VISIBILITY_OMNISCIENT.Equals(server.gameState.GameSettings.Visibility))
                 unit.setBaseVisibility();
             return;
         }
@@ -1473,7 +1473,7 @@ public class GameLogic
         lock (syncLock)
         {
             GameState gameState = server.gameState;
-            if ("Timed*".Equals(gameState.GameSettings.ExecutionMode))
+            if (EXECUTION_TIMED.Equals(gameState.GameSettings.ExecutionMode))
             {
                 Globals.Log("checkPlayersReadyForTimedPlanning(): Checking whether to start timer");
                 int readyCount = 0;
@@ -1801,7 +1801,7 @@ public class GameLogic
         GameState? newGameState = JsonSerializer.Deserialize<GameState>(jsonString);
         newGameState.Map = null;
         string executionMode = newGameState.GameSettings.ExecutionMode;
-        newGameState.GameSettings.ExecutionMode = "Quorum";
+        newGameState.GameSettings.ExecutionMode = EXECUTION_QUORUM;
         // Create the map object in the new game state.
         if (newGameState.Map == null)
         {

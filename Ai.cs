@@ -157,14 +157,14 @@ public class Ai
             int index = random.Next(0, goals.Count);
             randomGoal = goals[index];
             // If we pick a conquest goal, switch to the next best goal or best goal.
-            if ("conquer".Equals(randomGoal.Type))
+            if (AI_GOAL_CONQUER.Equals(randomGoal.Type))
             {
                 if (nextBestConquestGoal != null)
                     randomGoal = nextBestConquestGoal;
                 else if (bestConquestGoal != null)
                     randomGoal = bestConquestGoal;
             }
-            else if ("explore".Equals(randomGoal.Type))
+            else if (AI_GOAL_EXPLORE.Equals(randomGoal.Type))
             {
                 index = random.Next(0, exploreGoals.Count);
                 randomGoal = exploreGoals[index];
@@ -208,7 +208,7 @@ public class Ai
         conquestGoals.Clear();
         foreach (AiGoal goal in goals)
         {
-            if ("conquer".Equals(goal.Type) && !goal.IsComplete)
+            if (AI_GOAL_CONQUER.Equals(goal.Type) && !goal.IsComplete)
             {
                 conquestGoals.Add(goal);
                 float goalDistance = map.calculateDistance(myMetroHex, goal.TargetMapHex);
@@ -411,7 +411,7 @@ public class Ai
             return false;
 
         // goal is complete
-        if ("conquer".Equals(goal.Type) && goal.TargetMapHex.Burb != null && goal.TargetMapHex.Burb.OwnerColor.Equals(Faction.Color))
+        if (AI_GOAL_CONQUER.Equals(goal.Type) && goal.TargetMapHex.Burb != null && goal.TargetMapHex.Burb.OwnerColor.Equals(Faction.Color))
         {
             Globals.Log("Ai.evaluateGoal(): goal complete: " + goal);
             if (targetXyToGoal.ContainsKey(goal.TargetMapHex.X + "," + goal.TargetMapHex.Y))
@@ -455,7 +455,7 @@ public class Ai
         }
 
         // Expand DesiredUnits if enemy count increases.
-        if ("conquer".Equals(goal.Type))
+        if (AI_GOAL_CONQUER.Equals(goal.Type))
         {
             if (IsBurbCoastal(goal.TargetMapHex))
             {
@@ -468,7 +468,7 @@ public class Ai
         }
         AiUnit aiUnit = goal.getNextUnitToBuild(IsLog);
 
-        // if ("build-carrier".Equals(goal.Type) && (aiUnit == null || (AIRPLANE.Equals(aiUnit.UnitType) && myMetroHex.Airplane != null)))
+        // if (AI_GOAL_BUILD_CARRIER.Equals(goal.Type) && (aiUnit == null || (AIRPLANE.Equals(aiUnit.UnitType) && myMetroHex.Airplane != null)))
         // {
         //     AiUnit aiCarrier = goal.GetActualUnit(AIRCRAFT_CARRIER);
         //     if (aiCarrier == null || aiCarrier.Unit == null)
@@ -509,7 +509,7 @@ public class Ai
         // }
 
         // Build is complete for goal b/c there is nothing needed from above.
-        if (aiUnit == null && "conquer".Equals(goal.Type))
+        if (aiUnit == null && AI_GOAL_CONQUER.Equals(goal.Type))
         {
             Globals.Log("Ai.evaluateGoal(): build ready for : " + goal);
             bool isInPosition = true;
@@ -568,7 +568,7 @@ public class Ai
             return null;
         UnitType unitType = gameState.UnitTypes.UnitTypeMap[aiUnit.UnitType];
         Unit newUnit = null;
-        if ("defend".Equals(goal.Type) && aiUnit.InitialPosition != null && aiUnit.InitialPosition.X == myMetroHex.X && aiUnit.InitialPosition.Y == myMetroHex.Y)
+        if (AI_GOAL_DEFEND.Equals(goal.Type) && aiUnit.InitialPosition != null && aiUnit.InitialPosition.X == myMetroHex.X && aiUnit.InitialPosition.Y == myMetroHex.Y)
         {
             // I think this block is only used to place an infantry in the center.
             if (TERRAIN_SEA.Equals(unitType.LandOrSea))
@@ -578,7 +578,7 @@ public class Ai
             if (newUnit != null)
                 Globals.Log("Ai.buildUnits(): " + newUnit.Id + " built to defend " + Faction.Color + " metro");
         }
-        else if ("defend".Equals(goal.Type) && aiUnit.InitialPosition != null && aiUnit.InitialPosition.X == goal.TargetMapHex.X && aiUnit.InitialPosition.Y == goal.TargetMapHex.Y)
+        else if (AI_GOAL_DEFEND.Equals(goal.Type) && aiUnit.InitialPosition != null && aiUnit.InitialPosition.X == goal.TargetMapHex.X && aiUnit.InitialPosition.Y == goal.TargetMapHex.Y)
         {
             // Initially captured burbs will not have any offensive capbilities.
             if (TERRAIN_SEA.Equals(unitType.LandOrSea))
@@ -588,7 +588,7 @@ public class Ai
             if (newUnit != null)
                 Globals.Log("Ai.buildUnits(): Burb-InitialPosition " + newUnit.Id + " built for " + goal);
         }
-        else if ("defend".Equals(goal.Type) && aiUnit.InitialPosition != null)
+        else if (AI_GOAL_DEFEND.Equals(goal.Type) && aiUnit.InitialPosition != null)
         {
             // Initially captured burbs will not have any offensive capbilities.
             newUnit = purchaseUnitAtBurbDock(aiUnit.InitialPosition, aiUnit.UnitType);
@@ -598,7 +598,7 @@ public class Ai
                 moveUnit(unitType, newUnit, aiUnit.InitialPosition);
             }
         }
-        else if ("defend".Equals(goal.Type) && aiUnit.InitialPosition == null && aiUnit.DistanceFromTarget > 1)
+        else if (AI_GOAL_DEFEND.Equals(goal.Type) && aiUnit.InitialPosition == null && aiUnit.DistanceFromTarget > 1)
         {
             Unit availableUnit = getUnitFromAvailableUnits(aiUnit.UnitType);
             if (availableUnit != null && availableUnit.StrengthPoints > 0)
@@ -616,7 +616,7 @@ public class Ai
                 moveUnit(unitType, newUnit, foundMapHex);
             }
         }
-        else if ("build-plane".Equals(goal.Type))
+        else if (AI_GOAL_BUILD_PLANE.Equals(goal.Type))
         {
             if (myMetroHex.Airplane == null)
             {
@@ -625,7 +625,7 @@ public class Ai
             }
         }
 
-        // else if ("build-carrier".Equals(goal.Type) && aiUnit.InitialPosition == null && aiUnit.DistanceFromTarget > 1)
+        // else if (AI_GOAL_BUILD_CARRIER.Equals(goal.Type) && aiUnit.InitialPosition == null && aiUnit.DistanceFromTarget > 1)
         // {
         //     newUnit = purchaseUnitAtMetroDock(aiUnit.UnitType);
 
@@ -636,7 +636,7 @@ public class Ai
         //         moveUnit(unitType, newUnit, foundMapHex);
         //     }
         // }
-        // else if ("build-carrier".Equals(goal.Type) && AIRPLANE.Equals(aiUnit.UnitType))
+        // else if (AI_GOAL_BUILD_CARRIER.Equals(goal.Type) && AIRPLANE.Equals(aiUnit.UnitType))
         // {
         //     if (myMetroHex.Airplane == null)
         //     {
@@ -645,7 +645,7 @@ public class Ai
         //     }
         // }
                 
-        else if ("conquer".Equals(goal.Type) && aiUnit.InitialPosition != null)
+        else if (AI_GOAL_CONQUER.Equals(goal.Type) && aiUnit.InitialPosition != null)
         {
             Unit availableUnit = getUnitFromAvailableUnits(aiUnit.UnitType);
             if (availableUnit != null && availableUnit.StrengthPoints > 0)
@@ -662,7 +662,7 @@ public class Ai
                 moveUnit(unitType, newUnit, aiUnit.InitialPosition);
             }
         }
-        else if ("conquer".Equals(goal.Type) && aiUnit.InitialPosition == null && aiUnit.DistanceFromTarget > 1)
+        else if (AI_GOAL_CONQUER.Equals(goal.Type) && aiUnit.InitialPosition == null && aiUnit.DistanceFromTarget > 1)
         {
             Unit availableUnit = getUnitFromAvailableUnits(aiUnit.UnitType);
             if (availableUnit != null && availableUnit.StrengthPoints > 0)
@@ -680,7 +680,7 @@ public class Ai
                 moveUnit(unitType, newUnit, foundMapHex);
             }
         }
-        else if ("explore".Equals(goal.Type))
+        else if (AI_GOAL_EXPLORE.Equals(goal.Type))
         {
             Unit availableUnit = getUnitFromAvailableUnits(aiUnit.UnitType);
             if (availableUnit != null && availableUnit.StrengthPoints > 0)
@@ -781,7 +781,7 @@ public class Ai
     {
         int count = 0;
         // Brute force assault on burb.
-        if ("conquer".Equals(goal.Type) && goal.TargetMapHex != null && goal.ShouldMoveToTarget && !goal.IsComplete)
+        if (AI_GOAL_CONQUER.Equals(goal.Type) && goal.TargetMapHex != null && goal.ShouldMoveToTarget && !goal.IsComplete)
         {
             HashSet<MapHex> nearbyHexes = map.getMapHexesInRange(goal.TargetMapHex, 4);
             foreach (MapHex nearbyHex in nearbyHexes)
@@ -868,7 +868,7 @@ public class Ai
 
             // TODO: figure out if there is only 1 enemy which has less than 40 strength -- 2 infantry
             //                                                     less than 30 strength -- 1 infantry
-            if ("conquer".Equals(goal.Type) && (goal.ShouldMoveToTarget || goal.Enemies == 0))
+            if (AI_GOAL_CONQUER.Equals(goal.Type) && (goal.ShouldMoveToTarget || goal.Enemies == 0))
             {
                 if (!TERRAIN_SEA.Equals(unitType.LandOrSea))
                 {
@@ -896,7 +896,7 @@ public class Ai
                 Globals.Log("Ai.moveUnits(): InitialPosition " + aiUnit.Unit.Id + " to " + aiUnit.InitialPosition.X + "," + aiUnit.InitialPosition.Y);
                 if (!TERRAIN_SEA.Equals(unitType.LandOrSea))
                 {
-                    if ("conquer".Equals(goal.Type) || TRANSPORT_INFANTRY.Equals(unitType.Name))
+                    if (AI_GOAL_CONQUER.Equals(goal.Type) || TRANSPORT_INFANTRY.Equals(unitType.Name))
                         aiUnit.Unit.IsSneaking = true;
                     moveUnit(unitType, aiUnit.Unit, aiUnit.InitialPosition);
                 }
@@ -918,13 +918,13 @@ public class Ai
             {
                 if (IsUnitInPosition(goal, aiUnit))
                 {
-                    if ("conquer".Equals(goal.Type) && AIRCRAFT_CARRIER.Equals(unitType.Name))
+                    if (AI_GOAL_CONQUER.Equals(goal.Type) && AIRCRAFT_CARRIER.Equals(unitType.Name))
                     {
                         aiUnit.Unit.IsSneaking = false;
                     }
                     continue;
                 }
-                //if ("conquer".Equals(goal.Type) && AIRCRAFT_CARRIER.Equals(unitType.Name) && aiUnit.Unit.StrengthPoints < 100)
+                //if (AI_GOAL_CONQUER.Equals(goal.Type) && AIRCRAFT_CARRIER.Equals(unitType.Name) && aiUnit.Unit.StrengthPoints < 100)
                 //{
                 //    aiUnit.Unit.IsSneaking = false;
                 //}
@@ -933,12 +933,12 @@ public class Ai
                 {
                     Globals.Log("Ai.moveUnits(): DistanceFromTarget=" + aiUnit.DistanceFromTarget + ", " +
                         aiUnit.Unit.Id + " to " + foundMapHex.X + "," + foundMapHex.Y);
-                    //if ("conquer".Equals(goal.Type) &&
+                    //if (AI_GOAL_CONQUER.Equals(goal.Type) &&
                     //    (AIRCRAFT_CARRIER.Equals(unitType.Name) && aiUnit.Unit.StrengthPoints == 100))
                     //{
                     //    aiUnit.Unit.IsSneaking = true;
                     //}
-                    if ("conquer".Equals(goal.Type) && (!TERRAIN_SEA.Equals(unitType.LandOrSea) ||
+                    if (AI_GOAL_CONQUER.Equals(goal.Type) && (!TERRAIN_SEA.Equals(unitType.LandOrSea) ||
                         TRANSPORT_INFANTRY.Equals(unitType.Name)))
                     {
                         aiUnit.Unit.IsSneaking = true;
@@ -974,7 +974,7 @@ public class Ai
             {
                 AiGoal goal = targetXyToGoal[goalTargetXy];
                 // If it is a defend goal, being lazy is fine.
-                if ("defend".Equals(goal.Type))
+                if (AI_GOAL_DEFEND.Equals(goal.Type))
                     return false;
                 if (goal.IsComplete)
                     partOfOpenGoal = false;
@@ -1375,7 +1375,7 @@ public class Ai
             unit.Color = Faction.Color;
             unit.X = burbHex.X;
             unit.Y = burbHex.Y;
-            if ("Omniscient".Equals(gameSettings.Visibility))
+            if (VISIBILITY_OMNISCIENT.Equals(gameSettings.Visibility))
                 unit.setOmniVisibility();
             else
                 unit.setBaseVisibility();
@@ -1389,7 +1389,7 @@ public class Ai
             unit.Color = Faction.Color;
             unit.X = burbHex.X;
             unit.Y = burbHex.Y;
-            if ("Omniscient".Equals(gameSettings.Visibility))
+            if (VISIBILITY_OMNISCIENT.Equals(gameSettings.Visibility))
                 unit.setOmniVisibility();
             else
                 unit.setBaseVisibility();
@@ -1422,7 +1422,7 @@ public class Ai
                     unit.Color = Faction.Color;
                     unit.X = dockHex.X;
                     unit.Y = dockHex.Y;
-                    if ("Omniscient".Equals(gameSettings.Visibility))
+                    if (VISIBILITY_OMNISCIENT.Equals(gameSettings.Visibility))
                         unit.setOmniVisibility();
                     else
                         unit.setBaseVisibility();
@@ -1452,7 +1452,7 @@ public class Ai
                     unit.Color = Faction.Color;
                     unit.X = suburbHex.X;
                     unit.Y = suburbHex.Y;
-                    if ("Omniscient".Equals(gameSettings.Visibility))
+                    if (VISIBILITY_OMNISCIENT.Equals(gameSettings.Visibility))
                         unit.setOmniVisibility();
                     else
                         unit.setBaseVisibility();
@@ -1467,7 +1467,7 @@ public class Ai
                     unit.Color = Faction.Color;
                     unit.X = suburbHex.X;
                     unit.Y = suburbHex.Y;
-                    if ("Omniscient".Equals(gameSettings.Visibility))
+                    if (VISIBILITY_OMNISCIENT.Equals(gameSettings.Visibility))
                         unit.setOmniVisibility();
                     else
                         unit.setBaseVisibility();
@@ -1569,7 +1569,7 @@ public class Ai
         exploreMetro.UseRandomMovement = true;
         createExploreCapitalGoal();
         AiGoal topLevelExploreGoal = new AiGoal();
-        topLevelExploreGoal.Type = "explore";
+        topLevelExploreGoal.Type = AI_GOAL_EXPLORE;
         goals.Add(topLevelExploreGoal);
         //createBuildCarrierGoal();
         createBuildMetroPlaneGoal();
@@ -1580,7 +1580,7 @@ public class Ai
     private void createDefaultGoal()
     {
         defaultGoal = new AiGoal();
-        defaultGoal.Type = "defend";
+        defaultGoal.Type = AI_GOAL_DEFEND;
         defaultGoal.TargetMapHex = myMetroHex;
         defaultGoal.IsOngoingGoal = true;
         goals.Add(defaultGoal);
@@ -1590,7 +1590,7 @@ public class Ai
     {
         AiGoal goal = new AiGoal();
         goal.IsOngoingGoal = true;
-        goal.Type = "build-plane";
+        goal.Type = AI_GOAL_BUILD_PLANE;
         goal.TargetMapHex = myMetroHex;
         AiUnit plane = new AiUnit();
         plane.GoalTargetXy = myMetroHex.X + "," + myMetroHex.Y;
@@ -1603,7 +1603,7 @@ public class Ai
     private void createBuildCarrierGoal()
     {
         AiGoal goal = new AiGoal();
-        goal.Type = "build-carrier";
+        goal.Type = AI_GOAL_BUILD_CARRIER;
         goal.TargetMapHex = myMetroHex;
         AiUnit carrier = new AiUnit();
         carrier.GoalTargetXy = myMetroHex.X + "," + myMetroHex.Y;
@@ -1621,7 +1621,7 @@ public class Ai
     private void createDefendMetroGoal()
     {
         AiGoal defendMetro = new AiGoal();
-        defendMetro.Type = "defend";
+        defendMetro.Type = AI_GOAL_DEFEND;
         defendMetro.TargetMapHex = myMetroHex;
         defendMetro.IsOngoingGoal = true;
         // 3 subs, 1 carrier, 1 battleship, 1 infantry
@@ -1667,7 +1667,7 @@ public class Ai
     private AiGoal createExploreMetroGoal(MapHex metro)
     {
         AiGoal exploreMetro = new AiGoal();
-        exploreMetro.Type = "explore";
+        exploreMetro.Type = AI_GOAL_EXPLORE;
         exploreMetro.TargetMapHex = metro;
         exploreMetro.IsOngoingGoal = true;
         // 1 sub, 1 infantry
@@ -1688,7 +1688,7 @@ public class Ai
     private void createExploreCapitalGoal()
     {
         AiGoal exploreGoal = new AiGoal();
-        exploreGoal.Type = "explore";
+        exploreGoal.Type = AI_GOAL_EXPLORE;
         exploreGoal.UseRandomMovement = true;
         exploreGoal.TargetMapHex = Server.gameState.Map.getCapitalHex();
         AiUnit infantry = new AiUnit();
@@ -1702,7 +1702,7 @@ public class Ai
     private void createDefendBurbGoal(MapHex burbHex)
     {
         AiGoal defendGoal = new AiGoal();
-        defendGoal.Type = "defend";
+        defendGoal.Type = AI_GOAL_DEFEND;
         defendGoal.IsOngoingGoal = true;
         defendGoal.TargetMapHex = burbHex;
         AiUnit infantry = new AiUnit();
@@ -1782,7 +1782,7 @@ public class Ai
         if (targetXyToGoal.ContainsKey(burbHex.X + "," + burbHex.Y))
             return;
         AiGoal attackGoal = new AiGoal();
-        attackGoal.Type = "conquer";
+        attackGoal.Type = AI_GOAL_CONQUER;
         attackGoal.TargetMapHex = burbHex;
         attackGoal.ShouldMoveToTarget = false;
         attackGoal.IsOngoingGoal = false;
@@ -1837,7 +1837,7 @@ public class Ai
         if (targetXyToGoal.ContainsKey(burbHex.X + "," + burbHex.Y))
             return;
         AiGoal attackGoal = new AiGoal();
-        attackGoal.Type = "conquer";
+        attackGoal.Type = AI_GOAL_CONQUER;
         attackGoal.TargetMapHex = burbHex;
         attackGoal.ShouldMoveToTarget = false;
         attackGoal.IsOngoingGoal = false;

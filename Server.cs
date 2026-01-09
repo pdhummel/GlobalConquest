@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text.Json;
 using GlobalConquest.Units;
 using GlobalConquest.Actions;
+using static GameConstants;
 
 namespace GlobalConquest;
 
@@ -124,7 +125,7 @@ public class Server
         {
             for (int liX = 0; liX < gameState.Map.X; liX++)
             {
-                if ("Omniscient".Equals(gameState.GameSettings.Visibility) || "Command HQ".Equals(gameState.GameSettings.Visibility))
+                if (VISIBILITY_OMNISCIENT.Equals(gameState.GameSettings.Visibility) || "Command HQ".Equals(gameState.GameSettings.Visibility))
                 {
                     gameState.Map.Hexes[liY, liX].makeVisibleToAll();
                 }

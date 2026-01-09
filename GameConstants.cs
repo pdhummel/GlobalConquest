@@ -34,11 +34,41 @@ public static class GameConstants
     public static readonly List<string> FACTION_COLORS = [AMBER, CYAN, MAGENTA, OCHER];
     public static readonly List<string> NATIVE_AND_FACTION_COLORS = [NATIVE_COLOR, AMBER, CYAN, MAGENTA, OCHER];
 
-    
+    public const string AI_GOAL_CONQUER = "conquer";
+    public const string AI_GOAL_DEFEND = "defend";
+    public const string AI_GOAL_EXPLORE = "explore";
+    public const string AI_GOAL_BUILD_PLANE = "build-plane";
+    public const string AI_GOAL_BUILD_CARRIER = "build-carrier";
 
+    public const string VISIBILITY_OMNISCIENT = "Omniscient";
+    public const string VISIBILITY_COMMAND_HQ = "Command HQ";
 
+    public const string EXECUTION_QUORUM = "Quorum";
+    public const string EXECUTION_TIMED = "Timed*";
 
-
+    // TODO:
+    public const string EXECUTION_GRACE = "Grace*";
+    public const string EXECUTION_IMMEDIATE = "Immediate";
+    public const string EVENT_TYPE_MAP_UPDATE = "mapUpdate";
+    public const string EVENT_TYPE_GAME_STATE_UPDATE = "gameStateUpdate";
+    public const string EVENT_TYPE_GAME_STATE_AND_MAP_UPDATE = "gameStateAndMapUpdate";
+    public const string FACTION_STATUS_DISCONNECTED = "disconnected";
+    public const string FACTION_STATUS_PLANNING = "planning";
+    public const string GAME_PHASE_PLAN = "plan";
+    public const string TAG_MINI_MAP = "miniMap";
+    public const string MAP_ORIENTATION_HORIZONTAL = "horizontal";
+    public const string MAP_ORIENTATION_VERTICAL = "vertical";
+    public const string MAP_ORIENTATION_BALANCED = "balanced";
+    public const string VICTORY_HEAD_COUNT = "Head-Count";
+    public const string VICTORY_INCOME = "Income";
+    public const string VICTORY_COMBINED = "Combined";
+    public const string DIRECTION_NORTH = "north";
+    public const string DIRECTION_SOUTH = "south";
+    public const string DIRECTION_CENTER = "center";
+    public const string DIRECTION_NORTH_EAST = "northEast";
+    public const string DIRECTION_NORTH_WEST = "northWest";
+    public const string DIRECTION_SOUTH_EAST = "southEast";
+    public const string DIRECTION_SOUTH_WEST = "southWest";
 }
 
 

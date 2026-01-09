@@ -88,7 +88,7 @@ public class GameState
         plane1.UnitType = AIRPLANE;
         plane1.Color = color;
 
-        if ("Omniscient".Equals(GameSettings.Visibility))
+        if (VISIBILITY_OMNISCIENT.Equals(GameSettings.Visibility))
         {
             comcen.setOmniVisibility();
             plane1.setOmniVisibility();
@@ -193,7 +193,7 @@ public class GameState
         Unit unit = new Unit();
         unit.Color = NATIVE_COLOR;
         unit.UnitType = INFANTRY;
-        if ("Omniscient".Equals(GameSettings.Visibility))
+        if (VISIBILITY_OMNISCIENT.Equals(GameSettings.Visibility))
         {
             unit.setOmniVisibility();
         }
