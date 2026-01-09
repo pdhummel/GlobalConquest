@@ -1,6 +1,7 @@
 using static UnitTypeConstants;
 using System.Text.Json.Serialization;
 using GlobalConquest.Units;
+using static GameConstants;
 namespace GlobalConquest;
 
 public class GameState
@@ -214,7 +215,7 @@ public class GameState
             // towns    100% with a native
             // cities   center + random surrounding natives
             // capital  natives in center and all surrounding spaces
-            if ("village".Equals(burb.Type))
+            if (BURB_VILLAGE.Equals(burb.Type))
             {
                 bool hasUnit = rand.NextDouble() >= 0.5;
                 if (hasUnit)
@@ -224,12 +225,12 @@ public class GameState
                 }
 
             }
-            else if ("town".Equals(burb.Type))
+            else if (BURB_TOWN.Equals(burb.Type))
             {
                 Unit unit = createNativeInfantry(mapHex);
                 placeUnit(mapHex, unit);
             }
-            else if ("city".Equals(burb.Type))
+            else if (BURB_CITY.Equals(burb.Type))
             {
                 Unit unit = createNativeInfantry(mapHex);
                 placeUnit(mapHex, unit);
@@ -240,13 +241,13 @@ public class GameState
                     if (neighbor.Burb != null && hasUnit)
                     {
                         Unit neighborUnit = createNativeInfantry(mapHex);
-                        if ("dock".Equals(neighbor.Burb.Type))
+                        if (BURB_DOCK.Equals(neighbor.Burb.Type))
                             neighborUnit.UnitType = TRANSPORT_INFANTRY;
                         placeUnit(neighbor, neighborUnit);
                     }
                 }
             }
-            else if ("capital".Equals(burb.Type))
+            else if (BURB_CAPITAL.Equals(burb.Type))
             {
                 Unit unit = createNativeInfantry(mapHex);
                 placeUnit(mapHex, unit);
@@ -254,7 +255,7 @@ public class GameState
                 foreach (MapHex neighbor in neighbors)
                 {
                     Unit neighborUnit = createNativeInfantry(mapHex);
-                    if (neighbor.Burb != null && "dock".Equals(neighbor.Burb.Type))
+                    if (neighbor.Burb != null && BURB_DOCK.Equals(neighbor.Burb.Type))
                     {
                         neighborUnit.UnitType = TRANSPORT_INFANTRY;
                     }

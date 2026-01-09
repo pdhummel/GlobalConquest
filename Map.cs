@@ -96,14 +96,14 @@ public class Map
             }
             if (!burbConflictFound)
             {
-                string type = "village";
+                string type = BURB_VILLAGE;
                 int typeRange = random.Next(0, 100);
                 if (typeRange < 50)      // 50%
-                    type = "village";
+                    type = BURB_VILLAGE;
                 else if (typeRange < 80) // 30%
-                    type = "town";
+                    type = BURB_TOWN;
                 else
-                    type = "city";       // 20%
+                    type = BURB_CITY;       // 20%
                 Burb burb = burbs.addBurb(random, type, this, mapHex);
                 Globals.Log("addBurbs(): added burb " + burb.Name + " at " + mapHex.X + "," + mapHex.Y);
                 numberOfBurbs += 1;
@@ -118,11 +118,11 @@ public class Map
         positionMetros();
         Globals.Log("addFixedBurbs(): height=" + Hexes.GetLength(0) + ", width=" + Hexes.GetLength(1));
         Globals.Log("addFixedBurbs(): " + MetroLocationPoints["magenta"].X + "," + MetroLocationPoints["magenta"].Y);
-        burbs.addBurb("Amber Array", "metro", this, Hexes[MetroLocationPoints["amber"].Y, MetroLocationPoints["amber"].X], "amber");
-        burbs.addBurb("Magenta Mob", "metro", this, Hexes[MetroLocationPoints["magenta"].Y, MetroLocationPoints["magenta"].X], "magenta");
-        burbs.addBurb("Ocher Order", "metro", this, Hexes[MetroLocationPoints["ocher"].Y, MetroLocationPoints["ocher"].X], "ocher");
-        burbs.addBurb("Cyan Circle", "metro", this, Hexes[MetroLocationPoints["cyan"].Y, MetroLocationPoints["cyan"].X], "cyan");
-        burbs.addBurb("Washington", "capital", this, Hexes[Y / 2, X / 2]);
+        burbs.addBurb("Amber Array", BURB_METROPLEX, this, Hexes[MetroLocationPoints["amber"].Y, MetroLocationPoints["amber"].X], "amber");
+        burbs.addBurb("Magenta Mob", BURB_METROPLEX, this, Hexes[MetroLocationPoints["magenta"].Y, MetroLocationPoints["magenta"].X], "magenta");
+        burbs.addBurb("Ocher Order", BURB_METROPLEX, this, Hexes[MetroLocationPoints["ocher"].Y, MetroLocationPoints["ocher"].X], "ocher");
+        burbs.addBurb("Cyan Circle", BURB_METROPLEX, this, Hexes[MetroLocationPoints["cyan"].Y, MetroLocationPoints["cyan"].X], "cyan");
+        burbs.addBurb("Washington", BURB_CAPITAL, this, Hexes[Y / 2, X / 2]);
         LeftMetro["amber"] = MetroLocations["ocher"];
         RightMetro["amber"] = MetroLocations["magenta"];
         DiagonalMetro["amber"] = MetroLocations["cyan"];
@@ -323,7 +323,7 @@ public class Map
             {
                 MapHex mapHex = Hexes[y, x];
                 mapHex.setUnit(unit);
-                if (mapHex.Burb != null && mapHex.Burb.Type.Equals("dock"))
+                if (mapHex.Burb != null && mapHex.Burb.Type.Equals(BURB_DOCK))
                 {
                     if (unit.UnitType.Equals(INFANTRY))
                         unit.UnitType = TRANSPORT_INFANTRY;
@@ -816,16 +816,16 @@ public class Map
             string previousOwnerColor = mapHex.Burb.OwnerColor;
             string newOwnerColor = mapHex.Burb.OwnerColor;
             List<string> directions = [];
-            if ("dock".Equals(mapHex.Burb.Type) || "suburb".Equals(mapHex.Burb.Type))
+            if (BURB_DOCK.Equals(mapHex.Burb.Type) || BURB_SUBURB.Equals(mapHex.Burb.Type))
                 return;
-            if ("Capital".Equals(mapHex.Burb.Type) || "Metro".Equals(mapHex.Burb.Type) || "City".Equals(mapHex.Burb.Type) ||
-                "capital".Equals(mapHex.Burb.Type) || "metro".Equals(mapHex.Burb.Type) || "city".Equals(mapHex.Burb.Type))
+            if (BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type) ||
+                BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type))
                 directions = ["north", "south", "northWest", "southWest", "northEast", "southEast"];
-            else if ("town".Equals(mapHex.Burb.Type))
+            else if (BURB_TOWN.Equals(mapHex.Burb.Type))
                 directions = ["north", "south"];
-            if ("Capital".Equals(mapHex.Burb.Type) || "Metro".Equals(mapHex.Burb.Type) || "City".Equals(mapHex.Burb.Type) ||
-                "capital".Equals(mapHex.Burb.Type) || "metro".Equals(mapHex.Burb.Type) || "city".Equals(mapHex.Burb.Type) ||
-                "town".Equals(mapHex.Burb.Type))
+            if (BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type) ||
+                BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type) ||
+                BURB_TOWN.Equals(mapHex.Burb.Type))
             {
                 string color = null;
                 Unit unit = mapHex.getUnit();
@@ -990,7 +990,7 @@ public class Map
                 if (mapHex.Burb != null)
                     burbCount += 1;
                 if ((TERRAIN_SEA.Equals(mapHex.Terrain) || TERRAIN_SWAMP.Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)) &&
-                    (mapHex.Burb == null || "dock".Equals(mapHex.Burb.Type) || "metro".Equals(mapHex.Burb.Type)))
+                    (mapHex.Burb == null || BURB_DOCK.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type)))
                 {
                     Node seaNode = new Node(mapHex);
                     if (seaGraph != null)
@@ -1003,7 +1003,7 @@ public class Map
 
                         Node targetNode = new Node(neighbor);
                         if ((TERRAIN_SEA.Equals(neighbor.Terrain) || TERRAIN_SWAMP.Equals(neighbor.Terrain) || "marsh".Equals(neighbor.Terrain)) &&
-                            (neighbor.Burb == null || "dock".Equals(neighbor.Burb.Type)))
+                            (neighbor.Burb == null || BURB_DOCK.Equals(neighbor.Burb.Type)))
                         {
                             Edge edge = new Edge(targetNode);
                             seaEdges.Add(edge);
@@ -1076,7 +1076,7 @@ public class Map
                 }
 
                 Burb burb = mapHex.Burb;
-                if (burb != null  && burb.Name != null && !"suburb".Equals(burb.Type) && !"dock".Equals(burb.Type))
+                if (burb != null  && burb.Name != null && !BURB_SUBURB.Equals(burb.Type) && !BURB_DOCK.Equals(burb.Type))
                 {
                     burbs.NameToBurb[burb.Name] = burb;
                 }

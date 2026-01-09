@@ -1,4 +1,5 @@
 using GlobalConquest;
+using static GameConstants;
 using GlobalConquest.Units;
 using GlobalConquest.Actions;
 
@@ -105,13 +106,13 @@ public class DetailsPanelView
                "" :
                burbName == null ? "" + lastSelectedBurb.Type :
                lastSelectedBurb.Type + " " + burbName +  " (" + lastSelectedBurb.OwnerColor + ")";
-            if (!"dock".Equals(lastSelectedBurb.Type) && !"suburb".Equals(lastSelectedBurb.Type))
+            if (!BURB_DOCK.Equals(lastSelectedBurb.Type) && !BURB_SUBURB.Equals(lastSelectedBurb.Type))
             {
                 string textureKey = lastSelectedBurb.Type;
-                if ("metro".Equals(lastSelectedBurb.Type))
+                if (BURB_METROPLEX.Equals(lastSelectedBurb.Type))
                     textureKey = lastSelectedBurb.Color + "-metro";
-                else if ("capital".Equals(lastSelectedBurb.Type))
-                    textureKey = "capital";
+                else if (BURB_CAPITAL.Equals(lastSelectedBurb.Type))
+                    textureKey = BURB_CAPITAL;
                 Image image = new Image();
                 Texture2D texture = gcGame.GetTextures()[textureKey];
                 var textureRegion = new TextureRegion(texture);

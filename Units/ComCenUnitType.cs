@@ -111,13 +111,13 @@ public class ComCenUnitType : UnitType
         // only applies to infantry
         unitType.CanDigInByTerrainYorN["ocean"] = "N";
         unitType.CanDigInByTerrainYorN[TERRAIN_SEA] = "N";
-        unitType.CanDigInByTerrainYorN["dock"] = "N";
+        unitType.CanDigInByTerrainYorN[BURB_DOCK] = "N";
         unitType.CanDigInByTerrainYorN["burb"] = "N";
-        unitType.CanDigInByTerrainYorN["village"] = "N";
-        unitType.CanDigInByTerrainYorN["town"] = "N";
-        unitType.CanDigInByTerrainYorN["city"] = "N";
-        unitType.CanDigInByTerrainYorN["capital"] = "N";
-        unitType.CanDigInByTerrainYorN["metro"] = "N";
+        unitType.CanDigInByTerrainYorN[BURB_VILLAGE] = "N";
+        unitType.CanDigInByTerrainYorN[BURB_TOWN] = "N";
+        unitType.CanDigInByTerrainYorN[BURB_CITY] = "N";
+        unitType.CanDigInByTerrainYorN[BURB_CAPITAL] = "N";
+        unitType.CanDigInByTerrainYorN[BURB_METROPLEX] = "N";
         unitType.CanDigInByTerrainYorN["resource"] = "N";
         unitType.CanDigInByTerrainYorN["plain"] = "N";
         unitType.CanDigInByTerrainYorN[TERRAIN_GRASS] = "N";
@@ -128,22 +128,22 @@ public class ComCenUnitType : UnitType
 
         // same for all unit types
         unitType.RepairRateByFacility["resource"] = 2;
-        unitType.RepairRateByFacility["village"] = 4;
-        unitType.RepairRateByFacility["town"] = 6;
-        unitType.RepairRateByFacility["city"] = 8;
-        unitType.RepairRateByFacility["metro"] = 10;
-        unitType.RepairRateByFacility["capital"] = 10;
+        unitType.RepairRateByFacility[BURB_VILLAGE] = 4;
+        unitType.RepairRateByFacility[BURB_TOWN] = 6;
+        unitType.RepairRateByFacility[BURB_CITY] = 8;
+        unitType.RepairRateByFacility[BURB_METROPLEX] = 10;
+        unitType.RepairRateByFacility[BURB_CAPITAL] = 10;
 
         // same for all unit types
         unitType.StepsUsedByTerrain["ocean"] = 10;
         unitType.StepsUsedByTerrain[TERRAIN_SEA] = 10;
-        unitType.StepsUsedByTerrain["dock"] = 10;
+        unitType.StepsUsedByTerrain[BURB_DOCK] = 10;
         unitType.StepsUsedByTerrain["burb"] = 10;
-        unitType.StepsUsedByTerrain["village"] = 10;
-        unitType.StepsUsedByTerrain["town"] = 10;
-        unitType.StepsUsedByTerrain["city"] = 10;
-        unitType.StepsUsedByTerrain["capital"] = 10;
-        unitType.StepsUsedByTerrain["metro"] = 10;
+        unitType.StepsUsedByTerrain[BURB_VILLAGE] = 10;
+        unitType.StepsUsedByTerrain[BURB_TOWN] = 10;
+        unitType.StepsUsedByTerrain[BURB_CITY] = 10;
+        unitType.StepsUsedByTerrain[BURB_CAPITAL] = 10;
+        unitType.StepsUsedByTerrain[BURB_METROPLEX] = 10;
         unitType.StepsUsedByTerrain["resource"] = 10;
         unitType.StepsUsedByTerrain["plain"] = 10;
         unitType.StepsUsedByTerrain[TERRAIN_GRASS] = 10;
@@ -257,13 +257,13 @@ public class ComCenUnitType : UnitType
         // only applies to infantry
         unitType.CanDigInByTerrainYorN["ocean"] = "N";
         unitType.CanDigInByTerrainYorN[TERRAIN_SEA] = "N";
-        unitType.CanDigInByTerrainYorN["dock"] = "N";
+        unitType.CanDigInByTerrainYorN[BURB_DOCK] = "N";
         unitType.CanDigInByTerrainYorN["burb"] = "N";
-        unitType.CanDigInByTerrainYorN["village"] = "N";
-        unitType.CanDigInByTerrainYorN["town"] = "N";
-        unitType.CanDigInByTerrainYorN["city"] = "N";
-        unitType.CanDigInByTerrainYorN["capital"] = "N";
-        unitType.CanDigInByTerrainYorN["metro"] = "N";
+        unitType.CanDigInByTerrainYorN[BURB_VILLAGE] = "N";
+        unitType.CanDigInByTerrainYorN[BURB_TOWN] = "N";
+        unitType.CanDigInByTerrainYorN[BURB_CITY] = "N";
+        unitType.CanDigInByTerrainYorN[BURB_CAPITAL] = "N";
+        unitType.CanDigInByTerrainYorN[BURB_METROPLEX] = "N";
         unitType.CanDigInByTerrainYorN["resource"] = "N";
         unitType.CanDigInByTerrainYorN["plain"] = "N";
         unitType.CanDigInByTerrainYorN[TERRAIN_GRASS] = "N";
@@ -274,22 +274,22 @@ public class ComCenUnitType : UnitType
 
         // same for all unit types
         unitType.RepairRateByFacility["resource"] = 2;
-        unitType.RepairRateByFacility["village"] = 4;
-        unitType.RepairRateByFacility["town"] = 6;
-        unitType.RepairRateByFacility["city"] = 8;
-        unitType.RepairRateByFacility["metro"] = 10;
-        unitType.RepairRateByFacility["capital"] = 10;
+        unitType.RepairRateByFacility[BURB_VILLAGE] = 4;
+        unitType.RepairRateByFacility[BURB_TOWN] = 6;
+        unitType.RepairRateByFacility[BURB_CITY] = 8;
+        unitType.RepairRateByFacility[BURB_METROPLEX] = 10;
+        unitType.RepairRateByFacility[BURB_CAPITAL] = 10;
 
         // same for all unit types
         unitType.StepsUsedByTerrain["ocean"] = 10;
         unitType.StepsUsedByTerrain[TERRAIN_SEA] = 10;
-        unitType.StepsUsedByTerrain["dock"] = 10;
+        unitType.StepsUsedByTerrain[BURB_DOCK] = 10;
         unitType.StepsUsedByTerrain["burb"] = 10;
-        unitType.StepsUsedByTerrain["village"] = 10;
-        unitType.StepsUsedByTerrain["town"] = 10;
-        unitType.StepsUsedByTerrain["city"] = 10;
-        unitType.StepsUsedByTerrain["capital"] = 10;
-        unitType.StepsUsedByTerrain["metro"] = 10;
+        unitType.StepsUsedByTerrain[BURB_VILLAGE] = 10;
+        unitType.StepsUsedByTerrain[BURB_TOWN] = 10;
+        unitType.StepsUsedByTerrain[BURB_CITY] = 10;
+        unitType.StepsUsedByTerrain[BURB_CAPITAL] = 10;
+        unitType.StepsUsedByTerrain[BURB_METROPLEX] = 10;
         unitType.StepsUsedByTerrain["resource"] = 10;
         unitType.StepsUsedByTerrain["plain"] = 10;
         unitType.StepsUsedByTerrain[TERRAIN_GRASS] = 10;

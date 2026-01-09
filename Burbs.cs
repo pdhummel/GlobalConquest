@@ -26,31 +26,31 @@ public class Burbs
 
     public Burbs()
     {
-        IncomeMap["village"] = 3;
-        IncomeMap["town"] = 5;
-        IncomeMap["city"] = 8;
-        IncomeMap["metro"] = 10;
-        IncomeMap["capital"] = 10;
-        IncomeMap["suburb"] = 0;
-        IncomeMap["dock"] = 0;
+        IncomeMap[BURB_VILLAGE] = 3;
+        IncomeMap[BURB_TOWN] = 5;
+        IncomeMap[BURB_CITY] = 8;
+        IncomeMap[BURB_METROPLEX] = 10;
+        IncomeMap[BURB_CAPITAL] = 10;
+        IncomeMap[BURB_SUBURB] = 0;
+        IncomeMap[BURB_DOCK] = 0;
 
-        PointMap["village"] = 20;
-        PointMap["town"] = 30;
-        PointMap["city"] = 40;
-        PointMap["metro"] = 50;
-        PointMap["capital"] = 250;  // Combined Scoring = 250; Capital Scoring == 2500
-        PointMap["suburb"] = 0;
-        PointMap["dock"] = 0;
+        PointMap[BURB_VILLAGE] = 20;
+        PointMap[BURB_TOWN] = 30;
+        PointMap[BURB_CITY] = 40;
+        PointMap[BURB_METROPLEX] = 50;
+        PointMap[BURB_CAPITAL] = 250;  // Combined Scoring = 250; Capital Scoring == 2500
+        PointMap[BURB_SUBURB] = 0;
+        PointMap[BURB_DOCK] = 0;
     }
 
     public Burb addBurb(Random random, string type, Map map, MapHex mapHex)
     {
         HashSet<string> names = new HashSet<string>();
-        if ("village".Equals(type))
+        if (BURB_VILLAGE.Equals(type))
             names = villages;
-        if ("town".Equals(type))
+        if (BURB_TOWN.Equals(type))
             names = towns;
-        if ("city".Equals(type))
+        if (BURB_CITY.Equals(type))
             names = cities;
         int randomNumber = random.Next(0, 1000);
         int nameIndex = random.Next(0, names.Count);
@@ -85,7 +85,7 @@ public class Burbs
         mapHex.Burb = burb;
         HexXyToBurb[mapHex.X + "," + mapHex.Y] = burb;
         NameToBurb[name] = burb;
-        if ("metro".Equals(type))
+        if (BURB_METROPLEX.Equals(type))
         {
             map.MetroLocations[color] = mapHex;
             mapHex.makeVisibleToAll();
@@ -93,16 +93,16 @@ public class Burbs
 
         List<string> directions = [];
         Dictionary<string, MapHex> surroundingHexes = map.getSurroundingHexes(mapHex);
-        if ("metro".Equals(type) || "capital".Equals(type) || "city".Equals(type))
+        if (BURB_METROPLEX.Equals(type) || BURB_CAPITAL.Equals(type) || BURB_CITY.Equals(type))
             directions = ["north", "south", "northWest", "northEast", "southWest", "southEast"];
             //directions = ["northWest", "northEast", "southWest", "southEast"];
-        else if ("town".Equals(type))
+        else if (BURB_TOWN.Equals(type))
             directions = ["north", "south"];
             //directions = [];
 
-        if ("metro".Equals(type))
+        if (BURB_METROPLEX.Equals(type))
             mapHex.Terrain = TERRAIN_SWAMP;
-        if ("metro".Equals(type) || "capital".Equals(type) || "city".Equals(type) || "town".Equals(type))
+        if (BURB_METROPLEX.Equals(type) || BURB_CAPITAL.Equals(type) || BURB_CITY.Equals(type) || BURB_TOWN.Equals(type))
         {
             foreach (string direction in directions)
             {
@@ -112,11 +112,11 @@ public class Burbs
                     Burb suburb = new Burb();
                     if (TERRAIN_SEA.Equals(suburbHex.Terrain) || "ocean".Equals(suburbHex.Terrain) || TERRAIN_SWAMP.Equals(suburbHex.Terrain) || "marsh".Equals(suburbHex.Terrain))
                     {
-                        suburb.Type = "dock";
+                        suburb.Type = BURB_DOCK;
                     }
                     else
                     {
-                        suburb.Type = "suburb";
+                        suburb.Type = BURB_SUBURB;
                     }
                     suburb.ParentBurbName = mapHex.Burb.Name;
                     suburb.X = suburbHex.X;

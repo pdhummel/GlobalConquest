@@ -1,6 +1,7 @@
 using GlobalConquest;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
+using static GameConstants;
 using Microsoft.Xna.Framework;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
@@ -140,7 +141,7 @@ public class ChangeGameSettingsWindow
         Label combinationScoringLabel = new Label();
         combinationScoringLabel.Text = "Combined";
         Label capitalScoringLabel = new Label();
-        capitalScoringLabel.Text = "Capital";
+        capitalScoringLabel.Text = BURB_CAPITAL;
         Label incomeScoringLabel = new Label();
         incomeScoringLabel.Text = "Income";
         Label headCountScoringLabel = new Label();

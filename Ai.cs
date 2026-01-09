@@ -53,7 +53,7 @@ public class Ai
         diagonalMetroHex = map.DiagonalMetro[Faction.Color];
         foreach (MapHex mapHex in metroSurroundingHexesList)
         {
-            if (mapHex.Burb != null && "dock".Equals(mapHex.Burb.Type))
+            if (mapHex.Burb != null && BURB_DOCK.Equals(mapHex.Burb.Type))
                 dockList.Add(mapHex);
         }
         Unit unit = myMetroHex.getUnit();
@@ -800,9 +800,9 @@ public class Ai
                 else if (unit.Color.Equals(Faction.Color) && TERRAIN_SEA.Equals(unitType.LandOrSea) && !TRANSPORT_INFANTRY.Equals(unit.UnitType))
                 {
                     int distance = 3;
-                    if ("metro".Equals(goal.TargetMapHex.Burb.Type) && BATTLESHIP.Equals(unit.UnitType))
+                    if (BURB_METROPLEX.Equals(goal.TargetMapHex.Burb.Type) && BATTLESHIP.Equals(unit.UnitType))
                         distance = 2;
-                    else if ("metro".Equals(goal.TargetMapHex.Burb.Type) && AIRCRAFT_CARRIER.Equals(unit.UnitType))
+                    else if (BURB_METROPLEX.Equals(goal.TargetMapHex.Burb.Type) && AIRCRAFT_CARRIER.Equals(unit.UnitType))
                         distance = 3;
                     MapHex nearbySeaHex = findHexAroundBurb(goal.TargetMapHex, unit, distance);
                     if (nearbySeaHex != null)
@@ -881,9 +881,9 @@ public class Ai
                     int distance = 3;
                     Unit unit = aiUnit.Unit;
                     aiUnit.Unit.IsSneaking = false;
-                    if ("metro".Equals(goal.TargetMapHex.Burb.Type) && BATTLESHIP.Equals(unit.UnitType))
+                    if (BURB_METROPLEX.Equals(goal.TargetMapHex.Burb.Type) && BATTLESHIP.Equals(unit.UnitType))
                         distance = 2;
-                    else if ("metro".Equals(goal.TargetMapHex.Burb.Type) && AIRCRAFT_CARRIER.Equals(unit.UnitType))
+                    else if (BURB_METROPLEX.Equals(goal.TargetMapHex.Burb.Type) && AIRCRAFT_CARRIER.Equals(unit.UnitType))
                         distance = 3;
                     MapHex nearbyHex = findHexAroundBurb(goal.TargetMapHex, aiUnit, distance);
                     if (nearbyHex != null)
@@ -1415,7 +1415,7 @@ public class Ai
         {
             foreach (MapHex dockHex in map.getSurroundingHexesList(burbHex))
             {
-                if (dockHex.Burb != null && ("dock".Equals(dockHex.Burb.Type) || TERRAIN_SEA.Equals(dockHex.Terrain)) && dockHex.getUnit() == null && Faction.Money >= unitType.Cost)
+                if (dockHex.Burb != null && (BURB_DOCK.Equals(dockHex.Burb.Type) || TERRAIN_SEA.Equals(dockHex.Terrain)) && dockHex.getUnit() == null && Faction.Money >= unitType.Cost)
                 {
                     unit = new Unit();
                     unit.UnitType = unitTypeString;
@@ -1445,7 +1445,7 @@ public class Ai
         {
             foreach (MapHex suburbHex in map.getSurroundingHexesList(burbHex))
             {
-                if (AIRPLANE.Equals(unitTypeString) && suburbHex.Burb != null && ("suburb".Equals(suburbHex.Burb.Type)) && suburbHex.Airplane == null)
+                if (AIRPLANE.Equals(unitTypeString) && suburbHex.Burb != null && (BURB_SUBURB.Equals(suburbHex.Burb.Type)) && suburbHex.Airplane == null)
                 {
                     unit = new Unit();
                     unit.UnitType = unitTypeString;
@@ -1460,7 +1460,7 @@ public class Ai
                     Faction.Money -= unitType.Cost;
 
                 }
-                else if (suburbHex.Burb != null && ("suburb".Equals(suburbHex.Burb.Type)) && suburbHex.getUnit() == null)
+                else if (suburbHex.Burb != null && (BURB_SUBURB.Equals(suburbHex.Burb.Type)) && suburbHex.getUnit() == null)
                 {
                     unit = new Unit();
                     unit.UnitType = unitTypeString;
@@ -1716,16 +1716,16 @@ public class Ai
         plane.UnitType = AIRPLANE;
         defendGoal.DesiredUnits.Add(plane);
         Globals.Log("createDefendBurbGoal(): " + burbHex.Burb.Type);
-        if ("village".Equals(burbHex.Burb.Type))
+        if (BURB_VILLAGE.Equals(burbHex.Burb.Type))
         {
         }
-        else if ("town".Equals(burbHex.Burb.Type) || "city".Equals(burbHex.Burb.Type) || "metro".Equals(burbHex.Burb.Type) || "capital".Equals(burbHex.Burb.Type))
+        else if (BURB_TOWN.Equals(burbHex.Burb.Type) || BURB_CITY.Equals(burbHex.Burb.Type) || BURB_METROPLEX.Equals(burbHex.Burb.Type) || BURB_CAPITAL.Equals(burbHex.Burb.Type))
         {
             List<MapHex> neighbors = map.getSurroundingHexesList(burbHex);
             bool hasDock = false;
             foreach (MapHex mapHex in neighbors)
             {
-                if (mapHex.Burb != null && "dock".Equals(mapHex.Burb.Type))
+                if (mapHex.Burb != null && BURB_DOCK.Equals(mapHex.Burb.Type))
                 {
                     hasDock = true;
                     break;
@@ -1738,7 +1738,7 @@ public class Ai
                 sub1.DistanceFromTarget = 3;
                 sub1.UnitType = SUBMARINE;
                 defendGoal.DesiredUnits.Add(sub1);
-                if (!"town".Equals(burbHex.Burb.Type))
+                if (!BURB_TOWN.Equals(burbHex.Burb.Type))
                 {
                     AiUnit sub2 = new AiUnit();
                     sub2.GoalTargetXy = defendGoal.TargetMapHex.X + "," + defendGoal.TargetMapHex.Y;
@@ -1768,7 +1768,7 @@ public class Ai
         List<MapHex> neighbors = map.getSurroundingHexesList(burbHex);
         foreach (MapHex neighbor in neighbors)
         {
-            if (TERRAIN_SEA.Equals(neighbor.Terrain) || (neighbor.Burb != null && "dock".Equals(neighbor.Burb.Type)))
+            if (TERRAIN_SEA.Equals(neighbor.Terrain) || (neighbor.Burb != null && BURB_DOCK.Equals(neighbor.Burb.Type)))
             {
                 isCoastal = true;
                 break;
@@ -1824,7 +1824,7 @@ public class Ai
             AiUnit infantry = new AiUnit();
             infantry.GoalTargetXy = attackGoal.TargetMapHex.X + "," + attackGoal.TargetMapHex.Y;
             infantry.UnitType = INFANTRY;
-            if ("village".Equals(burbHex.Burb.Type) || "town".Equals(burbHex.Burb.Type))
+            if (BURB_VILLAGE.Equals(burbHex.Burb.Type) || BURB_TOWN.Equals(burbHex.Burb.Type))
                 infantry.DistanceFromTarget = 3;
             else
                 infantry.DistanceFromTarget = 4;
@@ -1910,7 +1910,7 @@ public class Ai
                     AiUnit battleship = new AiUnit();
                     battleship.GoalTargetXy = attackGoal.TargetMapHex.X + "," + attackGoal.TargetMapHex.Y;
                     battleship.UnitType = BATTLESHIP;
-                    if ("village".Equals(burbHex.Burb.Type) || "town".Equals(burbHex.Burb.Type))
+                    if (BURB_VILLAGE.Equals(burbHex.Burb.Type) || BURB_TOWN.Equals(burbHex.Burb.Type))
                         battleship.DistanceFromTarget = 3;
                     else
                         battleship.DistanceFromTarget = 3;
@@ -1924,7 +1924,7 @@ public class Ai
             AiUnit infantry = new AiUnit();
             infantry.GoalTargetXy = attackGoal.TargetMapHex.X + "," + attackGoal.TargetMapHex.Y;
             infantry.UnitType = INFANTRY;
-            if ("village".Equals(burbHex.Burb.Type) || "town".Equals(burbHex.Burb.Type))
+            if (BURB_VILLAGE.Equals(burbHex.Burb.Type) || BURB_TOWN.Equals(burbHex.Burb.Type))
                 infantry.DistanceFromTarget = 3;
             else
                 infantry.DistanceFromTarget = 4;

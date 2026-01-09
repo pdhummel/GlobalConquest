@@ -1394,9 +1394,9 @@ public class GameLogic
             {
                 faction.CombinedScore = calculateIncomeScore(server, faction, units);
             }
-            else if ("Capital".Equals(gameSettings.ScoringOption))
+            else if (BURB_CAPITAL.Equals(gameSettings.ScoringOption))
             {
-                gameState.Burbs.PointMap["capital"] = 2500;
+                gameState.Burbs.PointMap[BURB_CAPITAL] = 2500;
                 faction.CombinedScore = calculateCapitalScore(server, faction);
             }
             else if ("Combined".Equals(gameSettings.ScoringOption))

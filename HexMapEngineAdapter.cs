@@ -98,17 +98,17 @@ class HexMapEngineAdapter
         burbs["cyan-metro"] = cyanMetro;
         textures["cyan-metro"] = cyanMetro;
         Texture2D capitalTile = game.Content.Load<Texture2D>("capital-72x72");
-        burbs["capital"] = capitalTile;
-        textures["capital"] = capitalTile;
+        burbs[BURB_CAPITAL] = capitalTile;
+        textures[BURB_CAPITAL] = capitalTile;
         Texture2D cityTile = game.Content.Load<Texture2D>("city-hex-72x72");
-        burbs["city"] = cityTile;
-        textures["city"] = cityTile;
+        burbs[BURB_CITY] = cityTile;
+        textures[BURB_CITY] = cityTile;
         Texture2D townTile = game.Content.Load<Texture2D>("town-hex-72x72");
-        burbs["town"] = townTile;
-        textures["town"] = townTile;
+        burbs[BURB_TOWN] = townTile;
+        textures[BURB_TOWN] = townTile;
         Texture2D villageTile = game.Content.Load<Texture2D>("village-hex-72x72");
-        burbs["village"] = villageTile;
-        textures["village"] = villageTile;
+        burbs[BURB_VILLAGE] = villageTile;
+        textures[BURB_VILLAGE] = villageTile;
 
 
         Texture2D flameTexture = game.Content.Load<Texture2D>("flame-30px");
@@ -797,10 +797,10 @@ class HexMapEngineAdapter
         int liY = mapHex.Y;
         int liX = mapHex.X;
         Burb? burb = mapHex.Burb;
-        if (burb != null && !"suburb".Equals(burb.Type) && !"dock".Equals(burb.Type))
+        if (burb != null && !BURB_SUBURB.Equals(burb.Type) && !BURB_DOCK.Equals(burb.Type))
         {
             string burbId = burb.Type;
-            if ("metro".Equals(burb.Type))
+            if (BURB_METROPLEX.Equals(burb.Type))
                 burbId = burb.Color + "-" + burb.Type;
             drawBurbAtHex(liY, liX, burbId, burb, sourceRectangle, player);
         }
@@ -1004,9 +1004,9 @@ class HexMapEngineAdapter
         {
             Burb parentBurb = gcGame.Client.GameState.Burbs.NameToBurb[burb.ParentBurbName];
             string texture = burb.DirectionFromParent;
-            if ("metro".Equals(parentBurb.Type))
+            if (BURB_METROPLEX.Equals(parentBurb.Type))
                 texture = burb.DirectionFromParent + "-tab-" + parentBurb.Color;
-            if ("capital".Equals(parentBurb.Type))
+            if (BURB_CAPITAL.Equals(parentBurb.Type))
                 texture = burb.DirectionFromParent + "-tab-capital";
             if (textures.ContainsKey(texture))
                 coSpriteBatch.Draw(

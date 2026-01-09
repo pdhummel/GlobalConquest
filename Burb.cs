@@ -33,7 +33,7 @@ public class Burb
 
     public bool IsBurbCenter()
     {
-        if ("village".Equals(Type) || "town".Equals(Type) || "city".Equals(Type) || "metro".Equals(Type) || "capital".Equals(Type))
+        if (BURB_VILLAGE.Equals(Type) || BURB_TOWN.Equals(Type) || BURB_CITY.Equals(Type) || BURB_METROPLEX.Equals(Type) || BURB_CAPITAL.Equals(Type))
             return true;
         return false;
     }

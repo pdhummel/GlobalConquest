@@ -1,4 +1,5 @@
 using static UnitTypeConstants;
+using static GameConstants;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
 using Myra.Graphics2D;
@@ -81,11 +82,11 @@ public class BurbWindow
         if (player.FactionColor.Equals(burb.OwnerColor) && faction.Money > 0)
         {
             // plane
-            if (row == 9 && ("town".Equals(burb.Type) || "village".Equals(burb.Type)) && mapHex.Airplane != null)
+            if (row == 9 && (BURB_TOWN.Equals(burb.Type) || BURB_VILLAGE.Equals(burb.Type)) && mapHex.Airplane != null)
             {
                 return; // no space to build planes
             }
-            else if (("town".Equals(burb.Type) || "village".Equals(burb.Type)) && 
+            else if ((BURB_TOWN.Equals(burb.Type) || BURB_VILLAGE.Equals(burb.Type)) && 
                      !(mapHex.getUnit() == null || mapHex.Airplane == null))
             {
                 return; // no space to build
@@ -172,11 +173,11 @@ public class BurbWindow
         }
 
         List<string> directions = [];
-        if ("city".Equals(burb.Type) || "capital".Equals(burb.Type) || "metro".Equals(burb.Type))
+        if (BURB_CITY.Equals(burb.Type) || BURB_CAPITAL.Equals(burb.Type) || BURB_METROPLEX.Equals(burb.Type))
             directions = ["north", "northEast", "southEast", "south", "southWest", "northWest"];
-        else if ("town".Equals(burb.Type))
+        else if (BURB_TOWN.Equals(burb.Type))
             directions = ["north", "south"];
-        if ("town".Equals(burb.Type) || "city".Equals(burb.Type) || "capital".Equals(burb.Type) || "metro".Equals(burb.Type))
+        if (BURB_TOWN.Equals(burb.Type) || BURB_CITY.Equals(burb.Type) || BURB_CAPITAL.Equals(burb.Type) || BURB_METROPLEX.Equals(burb.Type))
         {
             Dictionary<string, MapHex> neighbors = map.getSurroundingHexes(mapHex);
             foreach (string direction in directions)
@@ -186,13 +187,13 @@ public class BurbWindow
                     MapHex neighbor = neighbors[direction];
                     if (neighbor.getUnit() == null)
                     {
-                        if ("dock".Equals(neighbor.Burb.Type))
+                        if (BURB_DOCK.Equals(neighbor.Burb.Type))
                         {
                             dockDirections.Add(direction);
                             openSpaceDirections.Add(direction);
                         }
 
-                        if ("suburb".Equals(neighbor.Burb.Type))
+                        if (BURB_SUBURB.Equals(neighbor.Burb.Type))
                         {
                             landDirections.Add(direction);
                             openSpaceDirections.Add(direction);
@@ -200,7 +201,7 @@ public class BurbWindow
                     }
                     if (neighbor.Airplane == null)
                     {
-                        if ("suburb".Equals(neighbor.Burb.Type))
+                        if (BURB_SUBURB.Equals(neighbor.Burb.Type))
                         {
                             airDirections.Add(direction);
                         }
@@ -354,9 +355,9 @@ public class BurbWindow
         action.Unit = new Unit();
         action.Unit.Owner = faction;
         action.Unit.Color = faction.Color;
-        if (INFANTRY.Equals(unitTypeName) && "dock".Equals(targetHex.Burb.Type))
+        if (INFANTRY.Equals(unitTypeName) && BURB_DOCK.Equals(targetHex.Burb.Type))
             unitTypeName = TRANSPORT_INFANTRY;
-        if ((ARMOR.Equals(unitTypeName) || ARMOR.Equals(unitTypeName)) && "dock".Equals(targetHex.Burb.Type))
+        if ((ARMOR.Equals(unitTypeName) || ARMOR.Equals(unitTypeName)) && BURB_DOCK.Equals(targetHex.Burb.Type))
             unitTypeName = TRANSPORT_ARMOR;
         action.Unit.UnitType = unitTypeName;
         action.Unit.X = targetHex.X;

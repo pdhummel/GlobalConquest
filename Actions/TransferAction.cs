@@ -2,6 +2,7 @@ using System.Text.Json;
 using GlobalConquest.Units;
 using LiteNetLib;
 using static UnitTypeConstants;
+using static GameConstants;
 namespace GlobalConquest.Actions;
 
 public class TransferAction : PlayerAction
@@ -63,7 +64,7 @@ public class TransferAction : PlayerAction
                 useTargetUnit = true;
             }
             else if (targetMapHex.Burb != null && targetMapHex.Burb.OwnerColor.Equals(Plane.Color) &&
-                     !"dock".Equals(targetMapHex.Burb.Type) &&
+                     !BURB_DOCK.Equals(targetMapHex.Burb.Type) &&
                      targetMapHex.Airplane == null)
             {
                 useTargetHex = true;

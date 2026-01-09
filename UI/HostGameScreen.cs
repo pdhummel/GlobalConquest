@@ -17,6 +17,7 @@ using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
 using Panel = Myra.Graphics2D.UI.Panel;
 using ComboBoxStyle = Myra.Graphics2D.UI.Styles.ComboBoxStyle;
 using Microsoft.Xna.Framework.Audio;
+using static GameConstants;
 
 namespace GlobalConquest.UI;
 
@@ -247,7 +248,7 @@ public class HostGameScreen
         Label combinationScoringLabel = new Label();
         combinationScoringLabel.Text = "Combined";
         Label capitalScoringLabel = new Label();
-        capitalScoringLabel.Text = "Capital";
+        capitalScoringLabel.Text = BURB_CAPITAL;
         Label incomeScoringLabel = new Label();
         incomeScoringLabel.Text = "Income";
         Label headCountScoringLabel = new Label();

@@ -1,6 +1,7 @@
 using GlobalConquest;
 using GlobalConquest.Units;
 using GlobalConquest.Actions;
+using static GameConstants;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -126,7 +127,7 @@ public class FactionsPanelView
             score = faction.IncomeScore;
         else if ("Head-Count".Equals(gameState.GameSettings.ScoringOption))
             score = faction.HeadCountScore;
-        else if ("Capital".Equals(gameState.GameSettings.ScoringOption))
+        else if (BURB_CAPITAL.Equals(gameState.GameSettings.ScoringOption))
             score = faction.CapitalScore;
 
         Label playerLabel = new Label();
