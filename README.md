@@ -77,7 +77,7 @@ This is best supported by mouse and keyboard. However, some effort has been made
 - [ ] Bug: Burbs with airplanes are masked by ComCen w/airplanes on the same hex.
 - [ ] Request: Option to make airplane missions planned and not immediate.
 - [ ] Request: Suggest/adjust city density and burb level based on map size.
-- [ ] Request: Add decoy comcen unit.
+- [x] Request: Add decoy comcen unit. (v0.7.4)
 - [ ] Request: Add randomness to damage caused by attack.
 
 ## Technical Notes
@@ -111,7 +111,6 @@ The game is being designed with known differences from the original.
 * The use of a hex-based map instead of a square-based grid.
 * Unknown areas appear differently from sea tiles. The original conflated sea tiles and the unknown.
 * Will be playable on a modern operating system over the internet.
-* Consider making airplane missions resolve during the execution phase instead of during real time.
 * Avoid player elimination.
 
 ## Roadmap
@@ -201,8 +200,14 @@ The game is being designed with known differences from the original.
 - [x] Spies steal ComCen secrets.
 - [x] Build decoy ComCen/units.
 
-
 ### Milestone 8
+- [ ] Treaties
+  - [ ] Cease Fire 
+  - [ ] Alliance
+  - [ ] Teammates
+- [ ] Choose game unit palette
+
+### Milestone 9
 - [ ] Complex Economics
   - [ ] Central treasury vs. city purse.
   - [ ] Unit production automation by city.
@@ -210,9 +215,6 @@ The game is being designed with known differences from the original.
   - [ ] Unit Context Menu - home
   - [ ] Add oil and mineral resources.
   - [ ] Exploit resources.
-
-### Milestone 9
-- [ ] Treaties
 
 ### Milestone 10
 - [ ] Event Cards

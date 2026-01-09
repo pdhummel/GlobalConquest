@@ -865,10 +865,17 @@ class HexMapEngineAdapter
                                 int piCalculatedMapTileY,
                                 Rectangle sourceRectangle, Player player)
     {
+        if (coSpriteBatch == null)
+            return;
         bool isObserver = gcGame.Client.IsObserverOnly;
-        Texture2D loTexture2DTile;
+        Texture2D loTexture2DTile = null;
         Map map = gcGame.Client.GameState.Map;
+        if (terrain == null)
+            return;
 
+        MapHex mapHex = null;
+        if (map != null && map.Hexes != null)
+            mapHex = map.Hexes[poHexTile.ROW_ID, poHexTile.COLUMN_ID];
         if (poHexTile.texture2D != null)
         {
             loTexture2DTile = poHexTile.texture2D;
@@ -876,13 +883,13 @@ class HexMapEngineAdapter
         else
         {
             //loTexture2DTile = Get_TileTextureFromArrayListById(poHexTile.BASE_HEX_TEXTURE_ID);
-            loTexture2DTile = terrain[map.Hexes[piCalculatedMapTileY, piCalculatedMapTileX].Terrain].TEXTURE2D_IMAGE_TILE;
+            if (mapHex != null && mapHex.Terrain != null)
+                loTexture2DTile = terrain[mapHex.Terrain].TEXTURE2D_IMAGE_TILE;
         }
 
         Vector2 destination = new Vector2(piCalculatedMapTileX, piCalculatedMapTileY);
         bool visibility = false;
-        MapHex mapHex = map.Hexes[poHexTile.ROW_ID, poHexTile.COLUMN_ID];
-        if (player != null)
+        if (player != null && mapHex != null)
         {
             if (mapHex.Visibility.ContainsKey(player.FactionColor))
                 visibility = mapHex.Visibility[player.FactionColor];
@@ -892,9 +899,7 @@ class HexMapEngineAdapter
                     visibility = mapHex.TemporarySpyVisibility[player.FactionColor];
             }
         }
-        if (coSpriteBatch == null || !terrain.ContainsKey("unknown"))
-            return;
-        if (!isObserver && !visibility)
+        if ((!isObserver && !visibility) || loTexture2DTile == null)
         {
             if (terrain.ContainsKey("unknown"))
                 coSpriteBatch.Draw(
@@ -910,6 +915,7 @@ class HexMapEngineAdapter
                                 );
             return;
         }
+
         coSpriteBatch.Draw(
                             loTexture2DTile,
                             destination,
