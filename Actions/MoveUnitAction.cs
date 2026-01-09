@@ -1,4 +1,5 @@
 using static UnitTypeConstants;
+using static GameConstants;
 using System.Text.Json;
 using GlobalConquest.Units;
 using LiteNetLib;
@@ -60,8 +61,8 @@ public class MoveUnitAction : PlayerAction
                 {
                     existingUnit?.setUnitAction(unitAction);
                 }
-                else if (("sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)) &&
-                    ("sea".Equals(destination.Terrain) || "swamp".Equals(destination.Terrain) || "marsh".Equals(destination.Terrain)))
+                else if ((TERRAIN_SEA.Equals(mapHex.Terrain) || TERRAIN_SWAMP.Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)) &&
+                    (TERRAIN_SEA.Equals(destination.Terrain) || TERRAIN_SWAMP.Equals(destination.Terrain) || "marsh".Equals(destination.Terrain)))
                 {
                     List<UnitAction> path = gameState.Map.determineSeaPath(mapHex, destination);
                     if (path != null && path.Count > 0)
@@ -76,7 +77,7 @@ public class MoveUnitAction : PlayerAction
                         existingUnit?.setUnitAction(unitAction);
                     }
                 }
-                else if ((!"sea".Equals(mapHex.Terrain)) && (!"sea".Equals(destination.Terrain)))
+                else if ((!TERRAIN_SEA.Equals(mapHex.Terrain)) && (!TERRAIN_SEA.Equals(destination.Terrain)))
                 {
                     List<UnitAction> path = gameState.Map.determineLandPath(mapHex, destination);
                     if (path != null && path.Count > 0)

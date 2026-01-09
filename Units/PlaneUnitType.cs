@@ -1,4 +1,5 @@
 using static UnitTypeConstants;
+using static GameConstants;
 namespace GlobalConquest.Units;
 
 public class PlaneUnitType : UnitType
@@ -423,7 +424,7 @@ public class PlaneUnitType : UnitType
 
 
         // can't become dug-in infantry in swamp
-        unitType.AttritionByTerrain["swamp"] = 0;
+        unitType.AttritionByTerrain[TERRAIN_SWAMP] = 0;
 
         // column
         unitType.BattleDamageFromAttacker[INFANTRY] = 0;
@@ -470,7 +471,7 @@ public class PlaneUnitType : UnitType
         unitType.Cost = 35;
 
         unitType.DamageReductionForDefenderByTerrain["burb"] = 0;
-        unitType.DamageReductionForDefenderByTerrain["mountain"] = 0;
+        unitType.DamageReductionForDefenderByTerrain[TERRAIN_MOUNTAIN] = 0;
 
         // Airplanes automatically scan for units and terrain within 12 spaces.
         // Recon missions uncover any terrain within a radius of 8 spaces 
@@ -519,7 +520,7 @@ public class PlaneUnitType : UnitType
 
         // only applies to infantry
         unitType.CanDigInByTerrainYorN["ocean"] = "N";
-        unitType.CanDigInByTerrainYorN["sea"] = "N";
+        unitType.CanDigInByTerrainYorN[TERRAIN_SEA] = "N";
         unitType.CanDigInByTerrainYorN["dock"] = "N";
         unitType.CanDigInByTerrainYorN["burb"] = "N";
         unitType.CanDigInByTerrainYorN["village"] = "N";
@@ -529,10 +530,10 @@ public class PlaneUnitType : UnitType
         unitType.CanDigInByTerrainYorN["metro"] = "N";
         unitType.CanDigInByTerrainYorN["resource"] = "N";
         unitType.CanDigInByTerrainYorN["plain"] = "N";
-        unitType.CanDigInByTerrainYorN["grass"] = "N";
-        unitType.CanDigInByTerrainYorN["forest"] = "N";
-        unitType.CanDigInByTerrainYorN["mountain"] = "N";
-        unitType.CanDigInByTerrainYorN["swamp"] = "N";
+        unitType.CanDigInByTerrainYorN[TERRAIN_GRASS] = "N";
+        unitType.CanDigInByTerrainYorN[TERRAIN_FOREST] = "N";
+        unitType.CanDigInByTerrainYorN[TERRAIN_MOUNTAIN] = "N";
+        unitType.CanDigInByTerrainYorN[TERRAIN_SWAMP] = "N";
         unitType.CanDigInByTerrainYorN["marsh"] = "N";
 
         // not used by planes
@@ -545,7 +546,7 @@ public class PlaneUnitType : UnitType
 
         // not used by planes
         unitType.StepsUsedByTerrain["ocean"] = 0;
-        unitType.StepsUsedByTerrain["sea"] = 0;
+        unitType.StepsUsedByTerrain[TERRAIN_SEA] = 0;
         unitType.StepsUsedByTerrain["dock"] = 0;
         unitType.StepsUsedByTerrain["burb"] = 0;
         unitType.StepsUsedByTerrain["village"] = 0;
@@ -555,10 +556,10 @@ public class PlaneUnitType : UnitType
         unitType.StepsUsedByTerrain["metro"] = 0;
         unitType.StepsUsedByTerrain["resource"] = 0;
         unitType.StepsUsedByTerrain["plain"] = 0;
-        unitType.StepsUsedByTerrain["grass"] = 0;
-        unitType.StepsUsedByTerrain["forest"] = 0;
-        unitType.StepsUsedByTerrain["mountain"] = 0;
-        unitType.StepsUsedByTerrain["swamp"] = 0;
+        unitType.StepsUsedByTerrain[TERRAIN_GRASS] = 0;
+        unitType.StepsUsedByTerrain[TERRAIN_FOREST] = 0;
+        unitType.StepsUsedByTerrain[TERRAIN_MOUNTAIN] = 0;
+        unitType.StepsUsedByTerrain[TERRAIN_SWAMP] = 0;
         unitType.StepsUsedByTerrain["marsh"] = 0;
 
         return unitType;

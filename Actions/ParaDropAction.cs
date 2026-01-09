@@ -1,4 +1,5 @@
 using static UnitTypeConstants;
+using static GameConstants;
 using System.Text.Json;
 using GlobalConquest.Units;
 using LiteNetLib;
@@ -66,7 +67,7 @@ public class ParaDropAction : PlayerAction
 
             // Destination should be an unoccupied land hex.
             MapHex targetMapHex = map.Hexes[DestinationY, DestinationX];
-            if (targetMapHex.getUnit() != null || "sea".Equals(targetMapHex.Terrain))
+            if (targetMapHex.getUnit() != null || TERRAIN_SEA.Equals(targetMapHex.Terrain))
             {
                 Globals.Log("execute(): destination must be an unoccupied land hex.");
                 return;

@@ -1,3 +1,4 @@
+using static GameConstants;
 namespace GlobalConquest;
 public class Burbs
 {
@@ -100,7 +101,7 @@ public class Burbs
             //directions = [];
 
         if ("metro".Equals(type))
-            mapHex.Terrain = "swamp";
+            mapHex.Terrain = TERRAIN_SWAMP;
         if ("metro".Equals(type) || "capital".Equals(type) || "city".Equals(type) || "town".Equals(type))
         {
             foreach (string direction in directions)
@@ -109,7 +110,7 @@ public class Burbs
                 {
                     MapHex suburbHex = surroundingHexes[direction];
                     Burb suburb = new Burb();
-                    if ("sea".Equals(suburbHex.Terrain) || "ocean".Equals(suburbHex.Terrain) || "swamp".Equals(suburbHex.Terrain) || "marsh".Equals(suburbHex.Terrain))
+                    if (TERRAIN_SEA.Equals(suburbHex.Terrain) || "ocean".Equals(suburbHex.Terrain) || TERRAIN_SWAMP.Equals(suburbHex.Terrain) || "marsh".Equals(suburbHex.Terrain))
                     {
                         suburb.Type = "dock";
                     }

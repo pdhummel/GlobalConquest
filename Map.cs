@@ -1,6 +1,7 @@
 using static UnitTypeConstants;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
+using static GameConstants;
 using Microsoft.Xna.Framework;
 namespace GlobalConquest;
 
@@ -76,8 +77,8 @@ public class Map
             int y = random.Next(0, Y);
             MapHex mapHex = Hexes[y, x];
             bool burbConflictFound = false;
-            if (mapHex.Burb == null && (mapHex.Terrain.Equals("grass") || mapHex.Terrain.Equals("mountain") || 
-                                        mapHex.Terrain.Equals("forest")) )
+            if (mapHex.Burb == null && (mapHex.Terrain.Equals(TERRAIN_GRASS) || mapHex.Terrain.Equals(TERRAIN_MOUNTAIN) || 
+                                        mapHex.Terrain.Equals(TERRAIN_FOREST)) )
             {
                 HashSet<MapHex> neighborHexes = getMapHexesInRange(mapHex, 5);
                 foreach (MapHex hex in neighborHexes)
@@ -371,16 +372,16 @@ public class Map
         // these thresholds will need tuning to match your generator
         if (elevation < 0.1F)
         {
-            return "sea";
+            return TERRAIN_SEA;
         }
         if (elevation < 0.12F)
         {
-            return "swamp";
+            return TERRAIN_SWAMP;
         }
 
         if (elevation > 0.85F)
         {
-            return "mountain";
+            return TERRAIN_MOUNTAIN;
         }
 
         if (elevation > 0.6F)
@@ -388,13 +389,13 @@ public class Map
             if (moisture < 0.02F)
             {
                 //return "desert";
-                return "grass";
+                return TERRAIN_GRASS;
             }
             if (moisture < 0.66F)
             {
-                return "grass";
+                return TERRAIN_GRASS;
             }
-            return "forest";
+            return TERRAIN_FOREST;
         }
 
         if (elevation > 0.3F)
@@ -405,13 +406,13 @@ public class Map
             //}
             if (moisture < 0.50F)
             {
-                return "grass";
+                return TERRAIN_GRASS;
             }
             if (moisture < 0.83F)
             {
-                return "forest";
+                return TERRAIN_FOREST;
             }
-            return "forest";
+            return TERRAIN_FOREST;
         }
 
         //if (moisture < 0.05F)
@@ -420,13 +421,13 @@ public class Map
         //}
         if (moisture < 0.33F)
         {
-            return "grass";
+            return TERRAIN_GRASS;
         }
         if (moisture < 0.66F)
         {
-            return "forest";
+            return TERRAIN_FOREST;
         }
-        return "forest";
+        return TERRAIN_FOREST;
     }
 
     private float makeSeaBorder(string biome, float elevation, int x, int y, int width, int height, 
@@ -441,9 +442,9 @@ public class Map
             yBorder = 2;
         if (x<=xBorder || y<=yBorder || x>=width-1-xBorder || y>=height-1-yBorder)
         {
-            if ("sea".Equals(biome))
+            if (TERRAIN_SEA.Equals(biome))
                 newElevation = 0.0F;
-            else if ("swamp".Equals(biome))
+            else if (TERRAIN_SWAMP.Equals(biome))
                 newElevation = 0.11F;
             else
             {
@@ -495,18 +496,18 @@ public class Map
             return newElevation;
 
         if (distance < (mapValue * .2F) &&
-            (biome.Equals("sea") || biome.Equals("swamp")))
+            (biome.Equals(TERRAIN_SEA) || biome.Equals(TERRAIN_SWAMP)))
         {
             newElevation = elevation + 01.0F;
         }
         else if (distance < (mapValue * .3F) &&
-            (biome.Equals("sea") || biome.Equals("swamp")))
+            (biome.Equals(TERRAIN_SEA) || biome.Equals(TERRAIN_SWAMP)))
         {
             newElevation = elevation + 0.75F;
         }
         else if ((distance > (mapValue * .8F) ||
                 xDistance >= width / 2 - 1 || yDistance >= height / 2 - 1) &&
-                !(biome.Equals("sea") || biome.Equals("swamp")))
+                !(biome.Equals(TERRAIN_SEA) || biome.Equals(TERRAIN_SWAMP)))
         {
             //newElevation = elevation - 0.75F;
             newElevation = .09F;
@@ -514,14 +515,14 @@ public class Map
         }
         else if ((distance > (mapValue * .7F) ||
                 xDistance >= width / 2 - 1 || yDistance >= height / 2 - 1) &&
-                !(biome.Equals("sea") || biome.Equals("swamp")))
+                !(biome.Equals(TERRAIN_SEA) || biome.Equals(TERRAIN_SWAMP)))
         {
             newElevation = elevation - 0.75F;
             //newElevation = .09F;
             //Globals.Log("shapeForIsland(): diagonal=" + diagonal + ", biome=" + biome + ", elevation=" + elevation + ", x=" + x + ", y=" + y + ", xd=" + xDistance + ", yd=" + yDistance + ", distance=" + distance + ", newE=" + newElevation);
         }
         else if ((xDistance >= width / 2 - 1 || yDistance >= height / 2 - 1) &&
-                (!(biome.Equals("sea") || biome.Equals("swamp"))))
+                (!(biome.Equals(TERRAIN_SEA) || biome.Equals(TERRAIN_SWAMP))))
         {
             newElevation = .11F;
             //Globals.Log("shapeForIsland(): mapValue=" + mapValue + ", biome=" + biome + ", elevation=" + elevation + ", x=" + x + ", y=" + y + ", xd=" + xDistance + ", yd=" + yDistance + ", distance=" + distance + ", newE=" + newElevation);
@@ -984,11 +985,11 @@ public class Map
                 }
                 node.Edges = edges;
 
-                if ("swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain))
+                if (TERRAIN_SWAMP.Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain))
                     swampCount += 1;
                 if (mapHex.Burb != null)
                     burbCount += 1;
-                if (("sea".Equals(mapHex.Terrain) || "swamp".Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)) &&
+                if ((TERRAIN_SEA.Equals(mapHex.Terrain) || TERRAIN_SWAMP.Equals(mapHex.Terrain) || "marsh".Equals(mapHex.Terrain)) &&
                     (mapHex.Burb == null || "dock".Equals(mapHex.Burb.Type) || "metro".Equals(mapHex.Burb.Type)))
                 {
                     Node seaNode = new Node(mapHex);
@@ -1001,7 +1002,7 @@ public class Map
                             continue;
 
                         Node targetNode = new Node(neighbor);
-                        if (("sea".Equals(neighbor.Terrain) || "swamp".Equals(neighbor.Terrain) || "marsh".Equals(neighbor.Terrain)) &&
+                        if ((TERRAIN_SEA.Equals(neighbor.Terrain) || TERRAIN_SWAMP.Equals(neighbor.Terrain) || "marsh".Equals(neighbor.Terrain)) &&
                             (neighbor.Burb == null || "dock".Equals(neighbor.Burb.Type)))
                         {
                             Edge edge = new Edge(targetNode);
@@ -1011,7 +1012,7 @@ public class Map
                     seaNode.Edges = seaEdges;
                 }
 
-                if ((!"sea".Equals(mapHex.Terrain)))
+                if ((!TERRAIN_SEA.Equals(mapHex.Terrain)))
                 {
                     Node landNode = new Node(mapHex);
                     if (landGraph != null)
@@ -1023,7 +1024,7 @@ public class Map
                             continue;
 
                         Node targetNode = new Node(neighbor);
-                        if ((!"sea".Equals(neighbor.Terrain)) && (neighbor.Burb == null))
+                        if ((!TERRAIN_SEA.Equals(neighbor.Terrain)) && (neighbor.Burb == null))
                         {
                             Edge edge = new Edge(targetNode);
                             landEdges.Add(edge);

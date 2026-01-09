@@ -3,6 +3,7 @@ using GlobalConquest.HexMapEngine.Structures;
 using GlobalConquest.Units;
 using SharpDX.Direct2D1;
 using static UnitTypeConstants;
+using static GameConstants;
 
 namespace GlobalConquest;
 
@@ -570,7 +571,7 @@ public class Ai
         if ("defend".Equals(goal.Type) && aiUnit.InitialPosition != null && aiUnit.InitialPosition.X == myMetroHex.X && aiUnit.InitialPosition.Y == myMetroHex.Y)
         {
             // I think this block is only used to place an infantry in the center.
-            if ("sea".Equals(unitType.LandOrSea))
+            if (TERRAIN_SEA.Equals(unitType.LandOrSea))
                 newUnit = purchaseUnitAtMetroDock(aiUnit.UnitType);
             else
                 newUnit = purchaseUnitAtMetro(aiUnit.UnitType);
@@ -580,7 +581,7 @@ public class Ai
         else if ("defend".Equals(goal.Type) && aiUnit.InitialPosition != null && aiUnit.InitialPosition.X == goal.TargetMapHex.X && aiUnit.InitialPosition.Y == goal.TargetMapHex.Y)
         {
             // Initially captured burbs will not have any offensive capbilities.
-            if ("sea".Equals(unitType.LandOrSea))
+            if (TERRAIN_SEA.Equals(unitType.LandOrSea))
                 newUnit = purchaseUnitAtBurbDock(aiUnit.InitialPosition, aiUnit.UnitType);
             else
                 newUnit = purchaseUnitAtBurb(aiUnit.InitialPosition, aiUnit.UnitType);
@@ -796,7 +797,7 @@ public class Ai
                     count += 1;
                     Globals.Log("Ai.moveUnits(): request assault by " + unit.Id + " for " + goal);
                 }
-                else if (unit.Color.Equals(Faction.Color) && "sea".Equals(unitType.LandOrSea) && !TRANSPORT_INFANTRY.Equals(unit.UnitType))
+                else if (unit.Color.Equals(Faction.Color) && TERRAIN_SEA.Equals(unitType.LandOrSea) && !TRANSPORT_INFANTRY.Equals(unit.UnitType))
                 {
                     int distance = 3;
                     if ("metro".Equals(goal.TargetMapHex.Burb.Type) && BATTLESHIP.Equals(unit.UnitType))
@@ -869,7 +870,7 @@ public class Ai
             //                                                     less than 30 strength -- 1 infantry
             if ("conquer".Equals(goal.Type) && (goal.ShouldMoveToTarget || goal.Enemies == 0))
             {
-                if (!"sea".Equals(unitType.LandOrSea))
+                if (!TERRAIN_SEA.Equals(unitType.LandOrSea))
                 {
                     Globals.Log("Ai.moveUnits(): ShouldMoveToTarget " + aiUnit.Unit.Id + " to " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
                     aiUnit.Unit.IsSneaking = false;
@@ -893,7 +894,7 @@ public class Ai
             else if (aiUnit.InitialPosition != null)
             {
                 Globals.Log("Ai.moveUnits(): InitialPosition " + aiUnit.Unit.Id + " to " + aiUnit.InitialPosition.X + "," + aiUnit.InitialPosition.Y);
-                if (!"sea".Equals(unitType.LandOrSea))
+                if (!TERRAIN_SEA.Equals(unitType.LandOrSea))
                 {
                     if ("conquer".Equals(goal.Type) || TRANSPORT_INFANTRY.Equals(unitType.Name))
                         aiUnit.Unit.IsSneaking = true;
@@ -901,13 +902,13 @@ public class Ai
                 }
                 else
                 {
-                    if ("sea".Equals(aiUnit.InitialPosition.Terrain) || "swamp".Equals(aiUnit.InitialPosition.Terrain) || "marsh".Equals(aiUnit.InitialPosition.Terrain))
+                    if (TERRAIN_SEA.Equals(aiUnit.InitialPosition.Terrain) || TERRAIN_SWAMP.Equals(aiUnit.InitialPosition.Terrain) || "marsh".Equals(aiUnit.InitialPosition.Terrain))
                         moveUnit(unitType, aiUnit.Unit, aiUnit.InitialPosition);
                     else
                     {
                         int distance = 2;
                         MapHex nearbyHex = findHexAroundBurb(aiUnit.InitialPosition, aiUnit, distance);
-                        if (nearbyHex != null && ("sea".Equals(nearbyHex.Terrain) || "swamp".Equals(nearbyHex.Terrain) || "marsh".Equals(nearbyHex.Terrain)))
+                        if (nearbyHex != null && (TERRAIN_SEA.Equals(nearbyHex.Terrain) || TERRAIN_SWAMP.Equals(nearbyHex.Terrain) || "marsh".Equals(nearbyHex.Terrain)))
                             moveUnit(unitType, aiUnit.Unit, nearbyHex);
                     }
                 }
@@ -937,7 +938,7 @@ public class Ai
                     //{
                     //    aiUnit.Unit.IsSneaking = true;
                     //}
-                    if ("conquer".Equals(goal.Type) && (!"sea".Equals(unitType.LandOrSea) ||
+                    if ("conquer".Equals(goal.Type) && (!TERRAIN_SEA.Equals(unitType.LandOrSea) ||
                         TRANSPORT_INFANTRY.Equals(unitType.Name)))
                     {
                         aiUnit.Unit.IsSneaking = true;
@@ -1129,7 +1130,7 @@ public class Ai
             return;
         Globals.Log("moveUnit(): enter: " + unit.Id + " to " + toHex.X + "," + toHex.Y);
         MapHex fromHex = map.Hexes[unit.Y, unit.X];
-        if ("sea".Equals(unitType.LandOrSea) && !TRANSPORT_INFANTRY.Equals(unit.UnitType))
+        if (TERRAIN_SEA.Equals(unitType.LandOrSea) && !TRANSPORT_INFANTRY.Equals(unit.UnitType))
         {
             Globals.Log("moveUnit(): trying to find path by sea for " + unit.Id + " to " + toHex.X + "," + toHex.Y);
             gameState.Map.buildNodesForShortestPath(true, null, seaGraph, null, toHex);
@@ -1145,9 +1146,9 @@ public class Ai
                 Globals.Log("moveUnit(): " + unit.Id + " from " + unit.X + "," + unit.Y + " to " + toHex.X + "," + toHex.Y + ", paths=" + path.Count);
             }
         }
-        else if ((!"sea".Equals(unitType.LandOrSea)) &&
-                ("grass".Equals(fromHex.Terrain) || "forest".Equals(fromHex.Terrain) || "mountain".Equals(fromHex.Terrain) || "swamp".Equals(fromHex.Terrain)) &&
-                ("grass".Equals(toHex.Terrain) || "forest".Equals(toHex.Terrain) || "mountain".Equals(toHex.Terrain) || "swamp".Equals(toHex.Terrain)))
+        else if ((!TERRAIN_SEA.Equals(unitType.LandOrSea)) &&
+                (TERRAIN_GRASS.Equals(fromHex.Terrain) || TERRAIN_FOREST.Equals(fromHex.Terrain) || TERRAIN_MOUNTAIN.Equals(fromHex.Terrain) || TERRAIN_SWAMP.Equals(fromHex.Terrain)) &&
+                (TERRAIN_GRASS.Equals(toHex.Terrain) || TERRAIN_FOREST.Equals(toHex.Terrain) || TERRAIN_MOUNTAIN.Equals(toHex.Terrain) || TERRAIN_SWAMP.Equals(toHex.Terrain)))
         {
             Globals.Log("moveUnit(): trying to find path by land for " + unit.Id + " to " + toHex.X + "," + toHex.Y);
             gameState.Map.buildNodesForShortestPath(true, null, null, landGraph, toHex);
@@ -1324,9 +1325,9 @@ public class Ai
         //MapHex candidateHex = finalRangeHexes.ToList<MapHex>()[index];
         MapHex candidateHex = map.getClosestUnoccupiedHexAtDistance(mapHex, burbHex, distance);
         UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
-        if (candidateHex != null && candidateHex.getUnit() == null && ((!"sea".Equals(unitType.LandOrSea)) ||
-            ("sea".Equals(unitType.LandOrSea) &&
-            ("sea".Equals(candidateHex.Terrain) || "swamp".Equals(candidateHex.Terrain) || "marsh".Equals(candidateHex.Terrain)))))
+        if (candidateHex != null && candidateHex.getUnit() == null && ((!TERRAIN_SEA.Equals(unitType.LandOrSea)) ||
+            (TERRAIN_SEA.Equals(unitType.LandOrSea) &&
+            (TERRAIN_SEA.Equals(candidateHex.Terrain) || TERRAIN_SWAMP.Equals(candidateHex.Terrain) || "marsh".Equals(candidateHex.Terrain)))))
         {
             foundMapHex = candidateHex;
         }
@@ -1334,9 +1335,9 @@ public class Ai
         {
             foreach (MapHex searchMapHex in finalRangeHexes)
             {
-                if (searchMapHex.getUnit() == null && ((!"sea".Equals(unitType.LandOrSea)) ||
-                    ("sea".Equals(unitType.LandOrSea) &&
-                    ("sea".Equals(searchMapHex.Terrain) || "swamp".Equals(searchMapHex.Terrain) || "marsh".Equals(searchMapHex.Terrain)))))
+                if (searchMapHex.getUnit() == null && ((!TERRAIN_SEA.Equals(unitType.LandOrSea)) ||
+                    (TERRAIN_SEA.Equals(unitType.LandOrSea) &&
+                    (TERRAIN_SEA.Equals(searchMapHex.Terrain) || TERRAIN_SWAMP.Equals(searchMapHex.Terrain) || "marsh".Equals(searchMapHex.Terrain)))))
                 {
                     foundMapHex = searchMapHex;
                     break;
@@ -1414,7 +1415,7 @@ public class Ai
         {
             foreach (MapHex dockHex in map.getSurroundingHexesList(burbHex))
             {
-                if (dockHex.Burb != null && ("dock".Equals(dockHex.Burb.Type) || "sea".Equals(dockHex.Terrain)) && dockHex.getUnit() == null && Faction.Money >= unitType.Cost)
+                if (dockHex.Burb != null && ("dock".Equals(dockHex.Burb.Type) || TERRAIN_SEA.Equals(dockHex.Terrain)) && dockHex.getUnit() == null && Faction.Money >= unitType.Cost)
                 {
                     unit = new Unit();
                     unit.UnitType = unitTypeString;
@@ -1496,7 +1497,7 @@ public class Ai
             MapHex targetHex = null;
             int randomNumber = random.Next(0, 4);
             // Sea units can't go to the capital
-            if ("sea".Equals(unitType.LandOrSea) && randomNumber == 0 && !unitType.Name.Contains(TRANSPORT))
+            if (TERRAIN_SEA.Equals(unitType.LandOrSea) && randomNumber == 0 && !unitType.Name.Contains(TRANSPORT))
                 randomNumber = 3;
             if (randomNumber == 0)
                 targetHex = Server.gameState.Map.getCapitalHex();
@@ -1525,7 +1526,7 @@ public class Ai
         if (unit != null && unit.StrengthPoints > 0)
         {
             UnitType unitType = gameState.UnitTypes.UnitTypeMap[unit.UnitType];
-            if ("sea".Equals(unitType.LandOrSea))
+            if (TERRAIN_SEA.Equals(unitType.LandOrSea))
                 return false;
             MapHex unitHex = map.Hexes[unit.Y, unit.X];
             foreach (string burbKey in gameState.Burbs.HexXyToBurb.Keys)
@@ -1767,7 +1768,7 @@ public class Ai
         List<MapHex> neighbors = map.getSurroundingHexesList(burbHex);
         foreach (MapHex neighbor in neighbors)
         {
-            if ("sea".Equals(neighbor.Terrain) || (neighbor.Burb != null && "dock".Equals(neighbor.Burb.Type)))
+            if (TERRAIN_SEA.Equals(neighbor.Terrain) || (neighbor.Burb != null && "dock".Equals(neighbor.Burb.Type)))
             {
                 isCoastal = true;
                 break;

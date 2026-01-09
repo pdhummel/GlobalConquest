@@ -1,4 +1,5 @@
 using static UnitTypeConstants;
+using static GameConstants;
 namespace GlobalConquest.Units;
 
 public class InfantryUnitType : UnitType
@@ -13,9 +14,9 @@ public class InfantryUnitType : UnitType
     {
         UnitType unitType = new UnitType();
         unitType.Name = INFANTRY;
-        unitType.LandOrSea = "land";
+        unitType.LandOrSea = TERRAIN_LAND;
 
-        unitType.AttritionByTerrain["swamp"] = 3;
+        unitType.AttritionByTerrain[TERRAIN_SWAMP] = 3;
 
         // column
         unitType.BattleDamageFromAttacker[INFANTRY] = 20;
@@ -62,7 +63,7 @@ public class InfantryUnitType : UnitType
         unitType.Cost = 25;
 
         unitType.DamageReductionForDefenderByTerrain["burb"] = 1 / 3;
-        unitType.DamageReductionForDefenderByTerrain["mountain"] = 1 / 4;
+        unitType.DamageReductionForDefenderByTerrain[TERRAIN_MOUNTAIN] = 1 / 4;
 
         unitType.DiscoveryRange = 3;
         unitType.ScanningRange = 5;
@@ -108,7 +109,7 @@ public class InfantryUnitType : UnitType
 
         // only applies to infantry
         unitType.CanDigInByTerrainYorN["ocean"] = "N";
-        unitType.CanDigInByTerrainYorN["sea"] = "N";
+        unitType.CanDigInByTerrainYorN[TERRAIN_SEA] = "N";
         unitType.CanDigInByTerrainYorN["dock"] = "Y";
         unitType.CanDigInByTerrainYorN["burb"] = "Y";
         unitType.CanDigInByTerrainYorN["village"] = "Y";
@@ -118,10 +119,10 @@ public class InfantryUnitType : UnitType
         unitType.CanDigInByTerrainYorN["metro"] = "Y";
         unitType.CanDigInByTerrainYorN["resource"] = "Y";
         unitType.CanDigInByTerrainYorN["plain"] = "Y";
-        unitType.CanDigInByTerrainYorN["grass"] = "Y";
-        unitType.CanDigInByTerrainYorN["forest"] = "Y";
-        unitType.CanDigInByTerrainYorN["mountain"] = "Y";
-        unitType.CanDigInByTerrainYorN["swamp"] = "N";
+        unitType.CanDigInByTerrainYorN[TERRAIN_GRASS] = "Y";
+        unitType.CanDigInByTerrainYorN[TERRAIN_FOREST] = "Y";
+        unitType.CanDigInByTerrainYorN[TERRAIN_MOUNTAIN] = "Y";
+        unitType.CanDigInByTerrainYorN[TERRAIN_SWAMP] = "N";
         unitType.CanDigInByTerrainYorN["marsh"] = "N";
 
         // same for all unit types
@@ -134,7 +135,7 @@ public class InfantryUnitType : UnitType
 
         // same for all unit types
         unitType.StepsUsedByTerrain["ocean"] = 10;
-        unitType.StepsUsedByTerrain["sea"] = 10;
+        unitType.StepsUsedByTerrain[TERRAIN_SEA] = 10;
         unitType.StepsUsedByTerrain["dock"] = 10;
         unitType.StepsUsedByTerrain["burb"] = 10;
         unitType.StepsUsedByTerrain["village"] = 10;
@@ -144,10 +145,10 @@ public class InfantryUnitType : UnitType
         unitType.StepsUsedByTerrain["metro"] = 10;
         unitType.StepsUsedByTerrain["resource"] = 10;
         unitType.StepsUsedByTerrain["plain"] = 10;
-        unitType.StepsUsedByTerrain["grass"] = 10;
-        unitType.StepsUsedByTerrain["forest"] = 15;
-        unitType.StepsUsedByTerrain["mountain"] = 20;
-        unitType.StepsUsedByTerrain["swamp"] = 30;
+        unitType.StepsUsedByTerrain[TERRAIN_GRASS] = 10;
+        unitType.StepsUsedByTerrain[TERRAIN_FOREST] = 15;
+        unitType.StepsUsedByTerrain[TERRAIN_MOUNTAIN] = 20;
+        unitType.StepsUsedByTerrain[TERRAIN_SWAMP] = 30;
         unitType.StepsUsedByTerrain["marsh"] = 30;
 
         return unitType;
@@ -157,10 +158,10 @@ public class InfantryUnitType : UnitType
     {
         UnitType unitType = new UnitType();
         unitType.Name = TRANSPORT_INFANTRY;
-        unitType.LandOrSea = "sea";
+        unitType.LandOrSea = TERRAIN_SEA;
 
-        unitType.AttritionByTerrain["forest"] = 0;
-        unitType.AttritionByTerrain["mountain"] = 0;
+        unitType.AttritionByTerrain[TERRAIN_FOREST] = 0;
+        unitType.AttritionByTerrain[TERRAIN_MOUNTAIN] = 0;
 
         // column
         unitType.BattleDamageFromAttacker[INFANTRY] = 25;
@@ -207,7 +208,7 @@ public class InfantryUnitType : UnitType
         unitType.Cost = 25;
 
         unitType.DamageReductionForDefenderByTerrain["burb"] = 0;
-        unitType.DamageReductionForDefenderByTerrain["mountain"] = 0;
+        unitType.DamageReductionForDefenderByTerrain[TERRAIN_MOUNTAIN] = 0;
 
         unitType.DiscoveryRange = 2;
         unitType.ScanningRange = 3;
@@ -253,7 +254,7 @@ public class InfantryUnitType : UnitType
 
         // Only applies to infantry
         unitType.CanDigInByTerrainYorN["ocean"] = "N";
-        unitType.CanDigInByTerrainYorN["sea"] = "N";
+        unitType.CanDigInByTerrainYorN[TERRAIN_SEA] = "N";
         unitType.CanDigInByTerrainYorN["dock"] = "N";
         unitType.CanDigInByTerrainYorN["burb"] = "N";
         unitType.CanDigInByTerrainYorN["village"] = "N";
@@ -263,10 +264,10 @@ public class InfantryUnitType : UnitType
         unitType.CanDigInByTerrainYorN["metro"] = "N";
         unitType.CanDigInByTerrainYorN["resource"] = "N";
         unitType.CanDigInByTerrainYorN["plain"] = "N";
-        unitType.CanDigInByTerrainYorN["grass"] = "N";
-        unitType.CanDigInByTerrainYorN["forest"] = "N";
-        unitType.CanDigInByTerrainYorN["mountain"] = "N";
-        unitType.CanDigInByTerrainYorN["swamp"] = "N";
+        unitType.CanDigInByTerrainYorN[TERRAIN_GRASS] = "N";
+        unitType.CanDigInByTerrainYorN[TERRAIN_FOREST] = "N";
+        unitType.CanDigInByTerrainYorN[TERRAIN_MOUNTAIN] = "N";
+        unitType.CanDigInByTerrainYorN[TERRAIN_SWAMP] = "N";
         unitType.CanDigInByTerrainYorN["marsh"] = "N";
 
         // same for all unit types
@@ -279,7 +280,7 @@ public class InfantryUnitType : UnitType
 
         // same for all unit types
         unitType.StepsUsedByTerrain["ocean"] = 10;
-        unitType.StepsUsedByTerrain["sea"] = 10;
+        unitType.StepsUsedByTerrain[TERRAIN_SEA] = 10;
         unitType.StepsUsedByTerrain["dock"] = 10;
         unitType.StepsUsedByTerrain["burb"] = 10;
         unitType.StepsUsedByTerrain["village"] = 10;
@@ -289,10 +290,10 @@ public class InfantryUnitType : UnitType
         unitType.StepsUsedByTerrain["metro"] = 10;
         unitType.StepsUsedByTerrain["resource"] = 10;
         unitType.StepsUsedByTerrain["plain"] = 10;
-        unitType.StepsUsedByTerrain["grass"] = 10;
-        unitType.StepsUsedByTerrain["forest"] = 15;
-        unitType.StepsUsedByTerrain["mountain"] = 20;
-        unitType.StepsUsedByTerrain["swamp"] = 30;
+        unitType.StepsUsedByTerrain[TERRAIN_GRASS] = 10;
+        unitType.StepsUsedByTerrain[TERRAIN_FOREST] = 15;
+        unitType.StepsUsedByTerrain[TERRAIN_MOUNTAIN] = 20;
+        unitType.StepsUsedByTerrain[TERRAIN_SWAMP] = 30;
         unitType.StepsUsedByTerrain["marsh"] = 30;
 
         return unitType;
@@ -302,10 +303,10 @@ public class InfantryUnitType : UnitType
     {
         UnitType unitType = new UnitType();
         unitType.Name = DUG_IN_INFANTRY;
-        unitType.LandOrSea = "land";
+        unitType.LandOrSea = TERRAIN_LAND;
 
         // can't become dug-in infantry in swamp
-        unitType.AttritionByTerrain["swamp"] = 3;
+        unitType.AttritionByTerrain[TERRAIN_SWAMP] = 3;
 
         // column
         unitType.BattleDamageFromAttacker[INFANTRY] = 15;
@@ -352,7 +353,7 @@ public class InfantryUnitType : UnitType
         unitType.Cost = 25;
 
         unitType.DamageReductionForDefenderByTerrain["burb"] = 1 / 3;
-        unitType.DamageReductionForDefenderByTerrain["mountain"] = 1 / 4;
+        unitType.DamageReductionForDefenderByTerrain[TERRAIN_MOUNTAIN] = 1 / 4;
 
         unitType.DiscoveryRange = 3;
         unitType.ScanningRange = 5;
@@ -398,7 +399,7 @@ public class InfantryUnitType : UnitType
 
         // only applies to infantry
         unitType.CanDigInByTerrainYorN["ocean"] = "N";
-        unitType.CanDigInByTerrainYorN["sea"] = "N";
+        unitType.CanDigInByTerrainYorN[TERRAIN_SEA] = "N";
         unitType.CanDigInByTerrainYorN["dock"] = "Y";
         unitType.CanDigInByTerrainYorN["burb"] = "Y";
         unitType.CanDigInByTerrainYorN["village"] = "Y";
@@ -408,10 +409,10 @@ public class InfantryUnitType : UnitType
         unitType.CanDigInByTerrainYorN["metro"] = "Y";
         unitType.CanDigInByTerrainYorN["resource"] = "Y";
         unitType.CanDigInByTerrainYorN["plain"] = "Y";
-        unitType.CanDigInByTerrainYorN["grass"] = "Y";
-        unitType.CanDigInByTerrainYorN["forest"] = "Y";
-        unitType.CanDigInByTerrainYorN["mountain"] = "Y";
-        unitType.CanDigInByTerrainYorN["swamp"] = "N";
+        unitType.CanDigInByTerrainYorN[TERRAIN_GRASS] = "Y";
+        unitType.CanDigInByTerrainYorN[TERRAIN_FOREST] = "Y";
+        unitType.CanDigInByTerrainYorN[TERRAIN_MOUNTAIN] = "Y";
+        unitType.CanDigInByTerrainYorN[TERRAIN_SWAMP] = "N";
         unitType.CanDigInByTerrainYorN["marsh"] = "N";
 
         // same for all unit types
@@ -424,7 +425,7 @@ public class InfantryUnitType : UnitType
 
         // same for all unit types
         unitType.StepsUsedByTerrain["ocean"] = 10;
-        unitType.StepsUsedByTerrain["sea"] = 10;
+        unitType.StepsUsedByTerrain[TERRAIN_SEA] = 10;
         unitType.StepsUsedByTerrain["dock"] = 10;
         unitType.StepsUsedByTerrain["burb"] = 10;
         unitType.StepsUsedByTerrain["village"] = 10;
@@ -434,10 +435,10 @@ public class InfantryUnitType : UnitType
         unitType.StepsUsedByTerrain["metro"] = 10;
         unitType.StepsUsedByTerrain["resource"] = 10;
         unitType.StepsUsedByTerrain["plain"] = 10;
-        unitType.StepsUsedByTerrain["grass"] = 10;
-        unitType.StepsUsedByTerrain["forest"] = 15;
-        unitType.StepsUsedByTerrain["mountain"] = 20;
-        unitType.StepsUsedByTerrain["swamp"] = 30;
+        unitType.StepsUsedByTerrain[TERRAIN_GRASS] = 10;
+        unitType.StepsUsedByTerrain[TERRAIN_FOREST] = 15;
+        unitType.StepsUsedByTerrain[TERRAIN_MOUNTAIN] = 20;
+        unitType.StepsUsedByTerrain[TERRAIN_SWAMP] = 30;
         unitType.StepsUsedByTerrain["marsh"] = 30;
 
         return unitType;

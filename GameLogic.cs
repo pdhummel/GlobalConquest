@@ -1,4 +1,5 @@
 using static UnitTypeConstants;
+using static GameConstants;
 using GlobalConquest.Actions;
 using Microsoft.Xna.Framework;
 using GlobalConquest.Units;
@@ -950,9 +951,9 @@ public class GameLogic
                     }
 
                     // Start unloading
-                    if ("sea".Equals(unitType.LandOrSea) && (unitType.Name.Contains(TRANSPORT)) &&
+                    if (TERRAIN_SEA.Equals(unitType.LandOrSea) && (unitType.Name.Contains(TRANSPORT)) &&
                        !unit.IsUnloading && !unit.IsLoading &&
-                       ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
+                       (TERRAIN_GRASS.Equals(nextMapHex.Terrain) || TERRAIN_MOUNTAIN.Equals(nextMapHex.Terrain) || TERRAIN_FOREST.Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
                     {
                         // When going from transport to land (unloading), it will take eight rounds.
                         // TODO: If the beach square has a friendly dug-in infantry unit squatting in it,
@@ -967,10 +968,10 @@ public class GameLogic
                     }
 
                     // Start loading
-                    if ("land".Equals(unitType.LandOrSea) &&
+                    if (TERRAIN_LAND.Equals(unitType.LandOrSea) &&
                        !unit.IsLoading && !unit.IsUnloading &&
                        (INFANTRY.Equals(unitType.Name) || DUG_IN_INFANTRY.Equals(unitType.Name) || ARMOR.Equals(unitType.Name) || ARMOR.Equals(unitType.Name)) &&
-                       "sea".Equals(nextMapHex.Terrain))
+                       TERRAIN_SEA.Equals(nextMapHex.Terrain))
                     {
                         Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " is loading into a transport.");
                         unit.IsLoading = true;
@@ -1019,8 +1020,8 @@ public class GameLogic
                         }
                     }
 
-                    if ("sea".Equals(unitType.LandOrSea) && (!unitType.Name.Contains(TRANSPORT)) &&
-                       ("grass".Equals(nextMapHex.Terrain) || "mountain".Equals(nextMapHex.Terrain) || "forest".Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
+                    if (TERRAIN_SEA.Equals(unitType.LandOrSea) && (!unitType.Name.Contains(TRANSPORT)) &&
+                       (TERRAIN_GRASS.Equals(nextMapHex.Terrain) || TERRAIN_MOUNTAIN.Equals(nextMapHex.Terrain) || TERRAIN_FOREST.Equals(nextMapHex.Terrain) || "desert".Equals(nextMapHex.Terrain)))
                     {
                         Globals.Log("moveUnit(): " + unit.Id + " at " + unit.X + "," + unit.Y + " cannot move on land.");
                         checkForTransport(unit, mapHex);
@@ -1161,7 +1162,7 @@ public class GameLogic
 
     private void checkForTransport(Unit unit, MapHex mapHex)
     {
-        if ("sea".Equals(mapHex.Terrain))
+        if (TERRAIN_SEA.Equals(mapHex.Terrain))
         {
             if (ARMOR.Equals(unit.UnitType) || ARMOR.Equals(unit.UnitType))
             {
@@ -1172,7 +1173,7 @@ public class GameLogic
                 unit.UnitType = TRANSPORT_INFANTRY;
             }
         }
-        if ("grass".Equals(mapHex.Terrain) || "mountain".Equals(mapHex.Terrain) || "forest".Equals(mapHex.Terrain) || "desert".Equals(mapHex.Terrain))
+        if (TERRAIN_GRASS.Equals(mapHex.Terrain) || TERRAIN_MOUNTAIN.Equals(mapHex.Terrain) || TERRAIN_FOREST.Equals(mapHex.Terrain) || "desert".Equals(mapHex.Terrain))
         {
             if (TRANSPORT_ARMOR.Equals(unit.UnitType))
             {

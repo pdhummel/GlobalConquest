@@ -1,4 +1,5 @@
 using static UnitTypeConstants;
+using static GameConstants;
 using System.Text.Json;
 using GlobalConquest.Units;
 using LiteNetLib;
@@ -87,11 +88,11 @@ public class KamikazeAction : PlayerAction
                     {
                         damage = ((targetUnit.StrengthPoints / 2) / factor);
                     }
-                    else if (DUG_IN_INFANTRY.Equals(type) || (COMMAND_CENTER.Equals(type) && !"sea".Equals(targetMapHex.Terrain)) )
+                    else if (DUG_IN_INFANTRY.Equals(type) || (COMMAND_CENTER.Equals(type) && !TERRAIN_SEA.Equals(targetMapHex.Terrain)) )
                     {
                         damage = ((targetUnit.StrengthPoints / 3) / factor);
                     }
-                    else if (BATTLESHIP.Equals(type) || AIRCRAFT_CARRIER.Equals(type) || (COMMAND_CENTER.Equals(type) && "sea".Equals(targetMapHex.Terrain)))
+                    else if (BATTLESHIP.Equals(type) || AIRCRAFT_CARRIER.Equals(type) || (COMMAND_CENTER.Equals(type) && TERRAIN_SEA.Equals(targetMapHex.Terrain)))
                     {
                         damage = (25 / factor);
                     }

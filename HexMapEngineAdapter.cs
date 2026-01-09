@@ -8,6 +8,7 @@ using Vector2 = Microsoft.Xna.Framework.Vector2;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
 using static UnitTypeConstants;
+using static GameConstants;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Color = Microsoft.Xna.Framework.Color;
 
@@ -76,12 +77,12 @@ class HexMapEngineAdapter
         Global.ACTUAL_MAP_WIDTH_IN_TILES = hexWidth;
         Global.ACTUAL_MAP_HEIGHT_IN_TILES = hexHeight;
 
-        createHexTexture2D(0, "unknown", "unknown-flat-hex-72x72");
-        createHexTexture2D(1, "sea", "sea-flat-hex-72x72");
-        createHexTexture2D(2, "grass", "grass-flat-hex-72x72");
-        createHexTexture2D(3, "mountain", "mountain-flat-hex-72x72");
-        createHexTexture2D(4, "swamp", "swamp-flat-hex-72x72");
-        createHexTexture2D(5, "forest", "forest-flat-hex-72x72");
+        createHexTexture2D(0, TERRAIN_UNKNOWN, "unknown-flat-hex-72x72");
+        createHexTexture2D(1, TERRAIN_SEA, "sea-flat-hex-72x72");
+        createHexTexture2D(2, TERRAIN_GRASS, "grass-flat-hex-72x72");
+        createHexTexture2D(3, TERRAIN_MOUNTAIN, "mountain-flat-hex-72x72");
+        createHexTexture2D(4, TERRAIN_SWAMP, "swamp-flat-hex-72x72");
+        createHexTexture2D(5, TERRAIN_FOREST, "forest-flat-hex-72x72");
         createHexTexture2D(6, "desert", "desert-flat-hex-72x72");
 
         Texture2D magentaMetro = game.Content.Load<Texture2D>("magenta-metro-72x72");
@@ -901,9 +902,9 @@ class HexMapEngineAdapter
         }
         if ((!isObserver && !visibility) || loTexture2DTile == null)
         {
-            if (terrain.ContainsKey("unknown"))
+            if (terrain.ContainsKey(TERRAIN_UNKNOWN))
                 coSpriteBatch.Draw(
-                                terrain["unknown"].TEXTURE2D_IMAGE_TILE,
+                                terrain[TERRAIN_UNKNOWN].TEXTURE2D_IMAGE_TILE,
                                 destination,
                                 sourceRectangle,
                                 Color.White,
@@ -984,9 +985,9 @@ class HexMapEngineAdapter
         }
         if (!isObserver && !visibility)
         {
-            if (terrain.ContainsKey("unknown"))
+            if (terrain.ContainsKey(TERRAIN_UNKNOWN))
                 coSpriteBatch.Draw(
-                                terrain["unknown"].TEXTURE2D_IMAGE_TILE,
+                                terrain[TERRAIN_UNKNOWN].TEXTURE2D_IMAGE_TILE,
                                 pixelVector,
                                 null,
                                 Color.White,

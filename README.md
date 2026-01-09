@@ -205,6 +205,7 @@ The game is being designed with known differences from the original.
   - [ ] Cease Fire 
   - [ ] Alliance
   - [ ] Teammates
+  - [ ] Changes to Factions Panel for Treaties
 - [ ] Choose game unit palette
 
 ### Milestone 9

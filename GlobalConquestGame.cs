@@ -15,6 +15,7 @@ using Point = Microsoft.Xna.Framework.Point;
 using Microsoft.Xna.Framework.Audio;
 using GlobalConquest.HexMapEngine.Structures;
 using static UnitTypeConstants;
+using static GameConstants;
 using static Microsoft.Xna.Framework.Graphics.Texture2D;
 namespace GlobalConquest;
 
@@ -365,7 +366,7 @@ public class GlobalConquestGame : Game
                         MapHex mapHex = new MapHex();
                         mapHex.Y = liY;
                         mapHex.X = liX;
-                        mapHex.Terrain = "sea";     // this is temporary so should not matter
+                        mapHex.Terrain = TERRAIN_SEA;     // this is temporary so should not matter
                         Client.GameState.Map.Hexes[liY, liX] = mapHex;
                     }
                     else
