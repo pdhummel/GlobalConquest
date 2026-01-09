@@ -101,16 +101,16 @@ public class Unit
 
     public void setBaseVisibility()
     {
-        Visibility["amber"] = false;
-        Visibility["magenta"] = false;
-        Visibility["ocher"] = false;
-        Visibility["cyan"] = false;
-        Visibility["grey"] = false;
-        RoundsToBeSeen["amber"] = 0;
-        RoundsToBeSeen["magenta"] = 0;
-        RoundsToBeSeen["ocher"] = 0;
-        RoundsToBeSeen["cyan"] = 0;
-        RoundsToBeSeen["grey"] = 0;
+        Visibility[AMBER] = false;
+        Visibility[MAGENTA] = false;
+        Visibility[OCHER] = false;
+        Visibility[CYAN] = false;
+        Visibility[NATIVE_COLOR] = false;
+        RoundsToBeSeen[AMBER] = 0;
+        RoundsToBeSeen[MAGENTA] = 0;
+        RoundsToBeSeen[OCHER] = 0;
+        RoundsToBeSeen[CYAN] = 0;
+        RoundsToBeSeen[NATIVE_COLOR] = 0;
 
         if (Color != null)
         {
@@ -120,11 +120,11 @@ public class Unit
 
     public void setOmniVisibility()
     {
-        Visibility["amber"] = true;
-        Visibility["magenta"] = true;
-        Visibility["ocher"] = true;
-        Visibility["cyan"] = true;
-        Visibility["grey"] = true;
+        Visibility[AMBER] = true;
+        Visibility[MAGENTA] = true;
+        Visibility[OCHER] = true;
+        Visibility[CYAN] = true;
+        Visibility[NATIVE_COLOR] = true;
     }
 
     public UnitAction getNextAction()
@@ -263,10 +263,10 @@ public class Unit
                 Color == other.Color &&
                 Y == other.Y &&
                 X == other.X &&
-                Visibility["amber"] == other.Visibility["amber"] &&
-                Visibility["cyan"] == other.Visibility["cyan"] &&
-                Visibility["magenta"] == other.Visibility["magenta"] &&
-                Visibility["ocher"] == other.Visibility["ocher"];
+                Visibility[AMBER] == other.Visibility[AMBER] &&
+                Visibility[CYAN] == other.Visibility[CYAN] &&
+                Visibility[MAGENTA] == other.Visibility[MAGENTA] &&
+                Visibility[OCHER] == other.Visibility[OCHER];
         }
         //Globals.Log("Unit.Equals(): false");
         return false;

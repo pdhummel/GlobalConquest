@@ -8,11 +8,11 @@ public class Factions
 
     public Factions()
     {
-        AddFaction("Amber Array", "amber");
-        AddFaction("Ochre Order", "ocher");
-        AddFaction("Magenta Mob", "magenta");
-        AddFaction("Cyan Circle", "cyan");
-        AddFaction("Native", "grey");
+        AddFaction(FACTION_AMBER_ARRAY, AMBER);
+        AddFaction(FACTION_OCHER_ORDER, OCHER);
+        AddFaction(FACTION_MAGENTA_MOB, MAGENTA);
+        AddFaction(FACTION_CYAN_CIRCLE, CYAN);
+        AddFaction("Native", NATIVE_COLOR);
     }
 
     private void AddFaction(String name, string color)

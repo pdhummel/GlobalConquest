@@ -20,18 +20,18 @@ public class MapHex
 
     public MapHex()
     {
-        Visibility["amber"] = false;
-        Visibility["magenta"] = false;
-        Visibility["ocher"] = false;
-        Visibility["cyan"] = false;
+        Visibility[AMBER] = false;
+        Visibility[MAGENTA] = false;
+        Visibility[OCHER] = false;
+        Visibility[CYAN] = false;
     }
 
     public void makeVisibleToAll()
     {
-        Visibility["amber"] = true;
-        Visibility["magenta"] = true;
-        Visibility["ocher"] = true;
-        Visibility["cyan"] = true;
+        Visibility[AMBER] = true;
+        Visibility[MAGENTA] = true;
+        Visibility[OCHER] = true;
+        Visibility[CYAN] = true;
     }
 
     public Unit getUnit()

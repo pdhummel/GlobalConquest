@@ -26,7 +26,7 @@ public class GameState
     public UnitTypes UnitTypes { get; set; }
     public Burbs Burbs { get; set; }
 
-    public string VictoriousColor { get; set; } = "grey";
+    public string VictoriousColor { get; set; } = NATIVE_COLOR;
     public long Ticks { get; set; } = 0;
 
     public int SecondsRemainingUntilExecution {get; set;}
@@ -51,7 +51,7 @@ public class GameState
 
     public void placeInitialUnits()
     {
-        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
         foreach (string color in colors)
         {
             placeInitialUnits(color);
@@ -101,9 +101,9 @@ public class GameState
             plane1.setBaseVisibility();
             spy.setBaseVisibility();
         }
-        if (color.Equals("amber"))
+        if (color.Equals(AMBER))
         {
-            MapHex metroHex = Map.getMetroHex("amber");
+            MapHex metroHex = Map.getMetroHex(AMBER);
             List<string> directions = ["northWest", "northEast", "southWest", "southEast"];
             placeUnit(metroHex, directions, comcen);
             Map.placeNewUnit(spy, metroHex);
@@ -136,27 +136,27 @@ public class GameState
                 }
             }
         }
-        else if (color.Equals("ocher"))
+        else if (color.Equals(OCHER))
         {
-            MapHex metroHex = Map.getMetroHex("ocher");
+            MapHex metroHex = Map.getMetroHex(OCHER);
             List<string> directions = ["northEast", "northWest", "southWest", "southEast"];
             placeUnit(metroHex, directions, comcen);
             Map.placeNewUnit(spy, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
-        else if (color.Equals("cyan"))
+        else if (color.Equals(CYAN))
         {
-            MapHex metroHex = Map.getMetroHex("cyan");
+            MapHex metroHex = Map.getMetroHex(CYAN);
             List<string> directions = ["southEast", "northWest", "southWest", "northEast"];
             placeUnit(metroHex, directions, comcen);
             Map.placeNewUnit(spy, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
             faction.HasComCen = true;
         }
-        else if (color.Equals("magenta"))
+        else if (color.Equals(MAGENTA))
         {
-            MapHex metroHex = Map.getMetroHex("magenta");
+            MapHex metroHex = Map.getMetroHex(MAGENTA);
             List<string> directions = ["southWest", "northWest", "southEast", "northEast"];
             placeUnit(metroHex, directions, comcen);
             Map.placeNewUnit(spy, metroHex);
@@ -192,7 +192,7 @@ public class GameState
     private Unit createNativeInfantry(MapHex mapHex)
     {
         Unit unit = new Unit();
-        unit.Color = "grey";
+        unit.Color = NATIVE_COLOR;
         unit.UnitType = INFANTRY;
         if ("Omniscient".Equals(GameSettings.Visibility))
         {

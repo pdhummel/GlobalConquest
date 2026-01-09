@@ -1423,7 +1423,7 @@ public class GlobalConquestGame : Game
         Map map = Client.GameState.Map;
         Player player = identifySelf();
         Globals.Log("scrollToMetro(): player=" + player);
-        if (player != null && player.FactionColor != null && !"grey".Equals(player.FactionColor))
+        if (player != null && player.FactionColor != null && !NATIVE_COLOR.Equals(player.FactionColor))
         {
             if (map != null && map.MetroLocationPoints != null && map.MetroLocationPoints.ContainsKey(player.FactionColor))
             {
@@ -1535,7 +1535,7 @@ public class GlobalConquestGame : Game
         {
             //Globals.Log("identifySelf(): could not find player");
             player = new Player();
-            HashSet<string> colors = ["amber", "ocher", "magenta", "cyan"];
+            HashSet<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
             foreach (string key in Client.GameState.Players.colorToPlayer.Keys)
             {
                 //Globals.Log("identifySelf(): color " + key + " already assigned.");
@@ -1558,7 +1558,7 @@ public class GlobalConquestGame : Game
             }
             if (player.FactionColor == null)
             {
-                player.FactionColor = "grey";
+                player.FactionColor = NATIVE_COLOR;
                 Globals.Log("identifySelf(): color assigned=grey");
             }
 

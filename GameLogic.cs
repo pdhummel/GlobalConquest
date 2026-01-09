@@ -63,7 +63,7 @@ public class GameLogic
         outputDataStructureUse();
 
         Globals.Log("doExecutionPhase(): set factions executing");
-        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
         foreach (string color in colors)
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
@@ -210,7 +210,7 @@ public class GameLogic
         Globals.Log("doExecutionPhase(): Ai plan turn");
         Server? server = this.server;
         GameState gameState = server.gameState;
-        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
         foreach (string color in colors)
         {
             bool isFactionAi = true;
@@ -221,7 +221,7 @@ public class GameLogic
                 if (player.IsHuman)
                     isFactionAi = false;
             }
-            //if (isFactionAi && color.Equals("ocher"))
+            //if (isFactionAi && color.Equals(OCHER))
             if (isFactionAi)
             {
                 try
@@ -262,7 +262,7 @@ public class GameLogic
             int income = gameState.Burbs.IncomeMap[burb.Type];
             // TODO: change sabotage logic once unit production is in place.
             //Globals.Log("endTurn(): burb=" + burb.Name);
-            if (burb.OwnerColor != null && !"grey".Equals(burb.OwnerColor))
+            if (burb.OwnerColor != null && !NATIVE_COLOR.Equals(burb.OwnerColor))
             {
                 if (isSabotaged)
                 {
@@ -306,7 +306,7 @@ public class GameLogic
         server.gameState.CurrentPhase = "plan";
 
         int humans = 0;
-        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
         foreach (string color in colors)
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
@@ -378,7 +378,7 @@ public class GameLogic
                 }
             }
         }
-        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
         foreach (string color in colors)
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
@@ -417,7 +417,7 @@ public class GameLogic
 
     private void reduceUnitVisibility(Unit unit)
     {
-        List<string> colors = ["amber", "magenta", "cyan", "ocher"];
+        List<string> colors = [AMBER, MAGENTA, CYAN, OCHER];
         foreach (string color in colors)
         {
             if (server.gameState.CurrentRound == 0)
@@ -688,14 +688,14 @@ public class GameLogic
                         scanRange <= firingRangeFromAttacker && scanRange <= firingRangeToDefender && hexesToScan.Contains(targetMapHex))
                     {
                         unitToAttack = lastTargetUnit;
-                        if (!"grey".Equals(unit.Color))
+                        if (!NATIVE_COLOR.Equals(unit.Color))
                             Globals.Log("checkForCombat(): " + unit.Id + " wants to continue to attack " + unitToAttack.Id);
                     }
                 }
 
                 if (unitToAttack == null)
                 {
-                    if (!"grey".Equals(unit.Color) && scanRange == 4)
+                    if (!NATIVE_COLOR.Equals(unit.Color) && scanRange == 4)
                         Globals.Log("checkForCombat(): no previous unit to attack found for " + unit.Id);
                     foreach (MapHex hex in hexesToScan.Except(previouslyScannedHexes))
                     {
@@ -846,13 +846,13 @@ public class GameLogic
             server.sendGameStateAndMapHex(unitToAttack.X, unitToAttack.Y);
 
             // Head-Count scoring point calcs for fighting
-            if (!"grey".Equals(unitToAttack.Color))
+            if (!NATIVE_COLOR.Equals(unitToAttack.Color))
             {
                 Faction faction = server.gameState.Factions.ColorToFaction[unit.Color];
                 UnitType unitTypeAttacked = server.gameState.UnitTypes.UnitTypeMap[unitToAttack.UnitType];
                 faction.HeadCountScore += unitTypeAttacked.PointsPerHit;
             }
-            if (!"grey".Equals(unit.Color) && !"grey".Equals(unitToAttack.Color))
+            if (!NATIVE_COLOR.Equals(unit.Color) && !NATIVE_COLOR.Equals(unitToAttack.Color))
             {
                 Faction faction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
                 UnitType unitTypeAttacked = server.gameState.UnitTypes.UnitTypeMap[unitToAttack.UnitType];
@@ -1287,14 +1287,14 @@ public class GameLogic
         GameState gameState = server.gameState;
         int commandCenters = 0;
         bool gameOver = false;
-        string victoriousColor = "grey";
+        string victoriousColor = NATIVE_COLOR;
         string candidate = null;
-        List<string> colors = ["amber", "magenta", "cyan", "ocher"];
+        List<string> colors = [AMBER, MAGENTA, CYAN, OCHER];
 
         // number of turns has passed
         if (server.gameState.GameSettings.NumberOfTurnsForGame > 0 && server.gameState.CurrentTurn + 1 >= server.gameState.GameSettings.NumberOfTurnsForGame)
         {
-            string maxColor = "grey";
+            string maxColor = NATIVE_COLOR;
             int maxPointValue = 0;
             foreach (string color in colors)
             {
@@ -1382,7 +1382,7 @@ public class GameLogic
     {
         GameState gameState = server.gameState;
         GameSettings gameSettings = gameState.GameSettings;
-        List<string> colors = ["amber", "magenta", "cyan", "ocher"];
+        List<string> colors = [AMBER, MAGENTA, CYAN, OCHER];
         foreach (string color in colors)
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
@@ -1766,7 +1766,7 @@ public class GameLogic
         Directory.Delete(tempDirectory, true);
 
         newGameState.UnitTypes.defineUnitTypes();
-        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
         newGameState.Map.restoreMap(newGameState.Burbs);
         server.gameState = newGameState;
 
@@ -1835,7 +1835,7 @@ public class GameLogic
         }
 
         newGameState.UnitTypes.defineUnitTypes();
-        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
         foreach (string color in colors)
         {
             if (newGameState.Players.colorToPlayer.ContainsKey(color))

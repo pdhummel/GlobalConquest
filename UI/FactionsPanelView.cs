@@ -53,10 +53,10 @@ public class FactionsPanelView
         magentaPanel.Widgets.Clear();
         cyanPanel.Widgets.Clear();
 
-        drawMessagesForColor(amberPanel, "amber");
-        drawMessagesForColor(ocherPanel, "ocher");
-        drawMessagesForColor(magentaPanel, "magenta");
-        drawMessagesForColor(cyanPanel, "cyan");
+        drawMessagesForColor(amberPanel, AMBER);
+        drawMessagesForColor(ocherPanel, OCHER);
+        drawMessagesForColor(magentaPanel, MAGENTA);
+        drawMessagesForColor(cyanPanel, CYAN);
 
         addFactionIcon(amberPanel, "amber-array");
         addFactionIcon(ocherPanel, "ocher-order");

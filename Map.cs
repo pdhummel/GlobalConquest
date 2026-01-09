@@ -38,7 +38,7 @@ public class Map
         Hexes = generateMap(y, x, numberOfIslands);
         buildNodesForShortestPath();
         IsMapReady = true;
-        List<string> colors = ["amber", "ocher", "magenta", "cyan", "grey"];
+        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN, NATIVE_COLOR];
         foreach (string color in colors)
         {
             ColorToUnitIds[color] = new HashSet<string>();
@@ -50,18 +50,18 @@ public class Map
         bool isEven = false;
         if (X % 2 == 0)
             isEven = true;
-        MetroLocationPoints["amber"] = new Point(1, 0);
-        MetroLocationPoints["magenta"] = new Point(1, Y-2);
+        MetroLocationPoints[AMBER] = new Point(1, 0);
+        MetroLocationPoints[MAGENTA] = new Point(1, Y-2);
 
         if (isEven)
         {
-            MetroLocationPoints["ocher"] = new Point(X-2, 1);
-            MetroLocationPoints["cyan"] = new Point(X-2, Y-1);
+            MetroLocationPoints[OCHER] = new Point(X-2, 1);
+            MetroLocationPoints[CYAN] = new Point(X-2, Y-1);
         }
         else
         {
-            MetroLocationPoints["ocher"] = new Point(X-2, 0);
-            MetroLocationPoints["cyan"] = new Point(X-2, Y-2);
+            MetroLocationPoints[OCHER] = new Point(X-2, 0);
+            MetroLocationPoints[CYAN] = new Point(X-2, Y-2);
         }        
     }
 
@@ -117,24 +117,24 @@ public class Map
     {
         positionMetros();
         Globals.Log("addFixedBurbs(): height=" + Hexes.GetLength(0) + ", width=" + Hexes.GetLength(1));
-        Globals.Log("addFixedBurbs(): " + MetroLocationPoints["magenta"].X + "," + MetroLocationPoints["magenta"].Y);
-        burbs.addBurb("Amber Array", BURB_METROPLEX, this, Hexes[MetroLocationPoints["amber"].Y, MetroLocationPoints["amber"].X], "amber");
-        burbs.addBurb("Magenta Mob", BURB_METROPLEX, this, Hexes[MetroLocationPoints["magenta"].Y, MetroLocationPoints["magenta"].X], "magenta");
-        burbs.addBurb("Ocher Order", BURB_METROPLEX, this, Hexes[MetroLocationPoints["ocher"].Y, MetroLocationPoints["ocher"].X], "ocher");
-        burbs.addBurb("Cyan Circle", BURB_METROPLEX, this, Hexes[MetroLocationPoints["cyan"].Y, MetroLocationPoints["cyan"].X], "cyan");
+        Globals.Log("addFixedBurbs(): " + MetroLocationPoints[MAGENTA].X + "," + MetroLocationPoints[MAGENTA].Y);
+        burbs.addBurb(FACTION_AMBER_ARRAY, BURB_METROPLEX, this, Hexes[MetroLocationPoints[AMBER].Y, MetroLocationPoints[AMBER].X], AMBER);
+        burbs.addBurb(FACTION_MAGENTA_MOB, BURB_METROPLEX, this, Hexes[MetroLocationPoints[MAGENTA].Y, MetroLocationPoints[MAGENTA].X], MAGENTA);
+        burbs.addBurb(FACTION_OCHER_ORDER, BURB_METROPLEX, this, Hexes[MetroLocationPoints[OCHER].Y, MetroLocationPoints[OCHER].X], OCHER);
+        burbs.addBurb(FACTION_CYAN_CIRCLE, BURB_METROPLEX, this, Hexes[MetroLocationPoints[CYAN].Y, MetroLocationPoints[CYAN].X], CYAN);
         burbs.addBurb("Washington", BURB_CAPITAL, this, Hexes[Y / 2, X / 2]);
-        LeftMetro["amber"] = MetroLocations["ocher"];
-        RightMetro["amber"] = MetroLocations["magenta"];
-        DiagonalMetro["amber"] = MetroLocations["cyan"];
-        LeftMetro["ocher"] = MetroLocations["cyan"];
-        RightMetro["ocher"] = MetroLocations["amber"];
-        DiagonalMetro["ocher"] = MetroLocations["magenta"];
-        LeftMetro["cyan"] = MetroLocations["magenta"];
-        RightMetro["cyan"] = MetroLocations["ocher"];
-        DiagonalMetro["cyan"] = MetroLocations["amber"];
-        LeftMetro["magenta"] = MetroLocations["amber"];
-        RightMetro["magenta"] = MetroLocations["cyan"];
-        DiagonalMetro["magenta"] = MetroLocations["ocher"];
+        LeftMetro[AMBER] = MetroLocations[OCHER];
+        RightMetro[AMBER] = MetroLocations[MAGENTA];
+        DiagonalMetro[AMBER] = MetroLocations[CYAN];
+        LeftMetro[OCHER] = MetroLocations[CYAN];
+        RightMetro[OCHER] = MetroLocations[AMBER];
+        DiagonalMetro[OCHER] = MetroLocations[MAGENTA];
+        LeftMetro[CYAN] = MetroLocations[MAGENTA];
+        RightMetro[CYAN] = MetroLocations[OCHER];
+        DiagonalMetro[CYAN] = MetroLocations[AMBER];
+        LeftMetro[MAGENTA] = MetroLocations[AMBER];
+        RightMetro[MAGENTA] = MetroLocations[CYAN];
+        DiagonalMetro[MAGENTA] = MetroLocations[OCHER];
     }
 
     public MapHex getCapitalHex()
@@ -148,7 +148,7 @@ public class Map
 
     public bool IsMetroHex(MapHex mapHex)
     {
-        List<string> colors = ["amber", "ocher", "magenta", "cyan"];
+        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN];
         foreach (string color in colors)
         {
             if (mapHex.X == MetroLocations[color].X && mapHex.Y == MetroLocations[color].Y)
@@ -1050,7 +1050,7 @@ public class Map
 
     public void restoreMap(Burbs burbs)
     {
-        List<string> colors = ["amber", "ocher", "magenta", "cyan", "grey"];
+        List<string> colors = [AMBER, OCHER, MAGENTA, CYAN, NATIVE_COLOR];
         foreach (string color in colors)
         {
             ColorToUnitIds[color] = new HashSet<string>();

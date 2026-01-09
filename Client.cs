@@ -240,13 +240,13 @@ public class Client
 
     private void handleGameOverForClient()
     {
-        if (GameState.VictoriousColor != null && !GameState.VictoriousColor.Equals("grey"))
+        if (GameState.VictoriousColor != null && !GameState.VictoriousColor.Equals(NATIVE_COLOR))
         {
             IsObserverOnly = true;
             return;
         }
         Player player = GlobalConquestGame.identifySelf();
-        if (player == null || player.FactionColor.Equals("grey"))
+        if (player == null || player.FactionColor.Equals(NATIVE_COLOR))
         {
             IsObserverOnly = true;
             return;

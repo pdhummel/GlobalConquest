@@ -64,13 +64,13 @@ public class ConvertPlayerToAiWindow
         fightingForceComboView.BorderThickness = new Thickness(2);
 
         Label amberArrayLabel = new Label();
-        amberArrayLabel.Text = "Amber Array";
+        amberArrayLabel.Text = FACTION_AMBER_ARRAY;
         Label ochreOrderLabel = new Label();
-        ochreOrderLabel.Text = "Ochre Order";
+        ochreOrderLabel.Text = FACTION_OCHER_ORDER;
         Label magentaMobLabel = new Label();
-        magentaMobLabel.Text = "Magenta Mob";
+        magentaMobLabel.Text = FACTION_MAGENTA_MOB;
         Label cyanCircleLabel = new Label();
-        cyanCircleLabel.Text = "Cyan Circle";
+        cyanCircleLabel.Text = FACTION_CYAN_CIRCLE;
         fightingForceComboView.Widgets.Add(amberArrayLabel);
         fightingForceComboView.Widgets.Add(ochreOrderLabel);
         fightingForceComboView.Widgets.Add(magentaMobLabel);

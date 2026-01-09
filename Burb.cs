@@ -5,8 +5,8 @@ public class Burb
 {
     public string Type { get; set; } // village, town, city, capital, metro, suburb, dock
     public string Name { get; set; }
-    public string? Color { get; set; } = "grey";
-    public string? OwnerColor { get; set; } = "grey";
+    public string? Color { get; set; } = NATIVE_COLOR;
+    public string? OwnerColor { get; set; } = NATIVE_COLOR;
     public string? ParentBurbName { get; set; }
     public string? DirectionFromParent {get;set;}
     public int X { get; set; }

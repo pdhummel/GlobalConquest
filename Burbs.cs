@@ -60,12 +60,12 @@ public class Burbs
             name = names.ToList()[nameIndex];
             names.Remove(name);            
         }
-        return addBurb(name, type, map, mapHex, "grey");
+        return addBurb(name, type, map, mapHex, NATIVE_COLOR);
     }
 
     public Burb addBurb(string name, string type, Map map, MapHex mapHex)
     {
-        return addBurb(name, type, map, mapHex, "grey");
+        return addBurb(name, type, map, mapHex, NATIVE_COLOR);
     }
 
     public Burb addBurb(string name, string type, Map map, MapHex mapHex, string color)

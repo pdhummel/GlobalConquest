@@ -79,7 +79,7 @@ public class DetailsPanelView
         stackPanel.Widgets.Add(imagePanel);
 
         Player player = gcGame.identifySelf();
-        string color = "grey";
+        string color = NATIVE_COLOR;
         if (player != null)
             color = player.FactionColor;
 

@@ -5,7 +5,7 @@ public class Airplanes
 
     public Airplanes()
     {
-        List<string> colors = [ "amber", "cyan", "magenta", "ocher" ];
+        List<string> colors = [ AMBER, CYAN, MAGENTA, OCHER ];
         foreach (string color in colors)
         {
             ColorToAirplaneIds[color] = new HashSet<string>();
