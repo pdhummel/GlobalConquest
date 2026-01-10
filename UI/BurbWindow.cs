@@ -1,5 +1,7 @@
 using static UnitTypeConstants;
 using static GameConstants;
+using static GlobalConquest.Map;
+using static GlobalConquest.Burbs;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
 using Myra.Graphics2D;

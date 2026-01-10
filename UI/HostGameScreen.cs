@@ -17,6 +17,8 @@ using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
 using Panel = Myra.Graphics2D.UI.Panel;
 using ComboBoxStyle = Myra.Graphics2D.UI.Styles.ComboBoxStyle;
 using Microsoft.Xna.Framework.Audio;
+using static GlobalConquest.Factions;
+using static GlobalConquest.Burbs;
 using static GameConstants;
 
 namespace GlobalConquest.UI;

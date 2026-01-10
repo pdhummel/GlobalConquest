@@ -1,4 +1,5 @@
 using static GameConstants;
+using static GlobalConquest.Burbs;
 namespace GlobalConquest;
 
 public class Burb

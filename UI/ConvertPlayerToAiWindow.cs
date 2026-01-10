@@ -2,6 +2,7 @@ using GlobalConquest;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
 using static GameConstants;
+using static GlobalConquest.Factions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Myra.Graphics2D;

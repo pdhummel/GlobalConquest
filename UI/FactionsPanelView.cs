@@ -2,6 +2,7 @@ using GlobalConquest;
 using GlobalConquest.Units;
 using GlobalConquest.Actions;
 using static GameConstants;
+using static GlobalConquest.Burbs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;

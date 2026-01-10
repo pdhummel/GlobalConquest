@@ -4,6 +4,7 @@ using GlobalConquest.Units;
 using SharpDX.Direct2D1;
 using static UnitTypeConstants;
 using static GameConstants;
+using static GlobalConquest.Burbs;
 
 namespace GlobalConquest;
 

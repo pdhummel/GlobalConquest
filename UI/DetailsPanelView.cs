@@ -2,7 +2,7 @@ using GlobalConquest;
 using static GameConstants;
 using GlobalConquest.Units;
 using GlobalConquest.Actions;
-
+using static GlobalConquest.Burbs;
 using Myra.Graphics2D.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

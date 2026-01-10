@@ -1,6 +1,8 @@
 using static UnitTypeConstants;
 using System.Text.Json.Serialization;
 using GlobalConquest.Units;
+using static GlobalConquest.Map;
+using static GlobalConquest.Burbs;
 using static GameConstants;
 namespace GlobalConquest;
 

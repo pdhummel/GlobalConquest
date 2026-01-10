@@ -11,21 +11,6 @@ public static class GameConstants
     // desert
     public const string TERRAIN_LAND = "land";
 
-
-    public const string BURB_METROPLEX = "metro";
-    public const string BURB_CAPITAL = "capital";
-    public const string BURB_VILLAGE = "village";
-    public const string BURB_TOWN = "town";
-    public const string BURB_CITY = "city";
-    public const string BURB_DOCK = "dock";
-    public const string BURB_SUBURB = "suburb";
-
-    public const string FACTION_AMBER_ARRAY = "Amber Array";
-    public const string FACTION_CYAN_CIRCLE = "Cyan Circle";
-    public const string FACTION_MAGENTA_MOB = "Magenta Mob";
-    public const string FACTION_OCHER_ORDER = "Ocher Order";
-    public const string FACTION_NATIVES = "Natives";
-
     public const string NATIVE_COLOR = "grey";
     public const string AMBER = "amber";
     public const string OCHER = "ocher";
@@ -66,13 +51,7 @@ public static class GameConstants
     public const string VICTORY_HEAD_COUNT = "Head-Count";
     public const string VICTORY_INCOME = "Income";
     public const string VICTORY_COMBINED = "Combined";
-    public const string DIRECTION_NORTH = "north";
-    public const string DIRECTION_SOUTH = "south";
-    public const string DIRECTION_CENTER = "center";
-    public const string DIRECTION_NORTH_EAST = "northEast";
-    public const string DIRECTION_NORTH_WEST = "northWest";
-    public const string DIRECTION_SOUTH_EAST = "southEast";
-    public const string DIRECTION_SOUTH_WEST = "southWest";
+
 }
 
 

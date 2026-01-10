@@ -3,6 +3,13 @@ namespace GlobalConquest;
 
 public class Factions
 {
+    public static readonly string FACTION_AMBER_ARRAY = "Amber Array";
+    public static readonly string FACTION_CYAN_CIRCLE = "Cyan Circle";
+    public static readonly string FACTION_MAGENTA_MOB = "Magenta Mob";
+    public static readonly string FACTION_OCHER_ORDER = "Ocher Order";
+    public static readonly string FACTION_NATIVES = "Natives";
+
+
     public Dictionary<string, Faction> NameToFaction  { get; set; }= new Dictionary<string, Faction>();
 
     public Dictionary<string, Faction> ColorToFaction  { get; set; } = new Dictionary<string, Faction>();

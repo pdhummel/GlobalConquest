@@ -1,12 +1,21 @@
 using static UnitTypeConstants;
+using static GlobalConquest.Burbs;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
+using static GlobalConquest.Factions;
 using static GameConstants;
 using Microsoft.Xna.Framework;
 namespace GlobalConquest;
 
 public class Map
 {
+    public static readonly string DIRECTION_NORTH = "north";
+    public static readonly string DIRECTION_SOUTH = "south";
+    public static readonly string DIRECTION_CENTER = "center";
+    public static readonly string DIRECTION_NORTH_EAST = "northEast";
+    public static readonly string DIRECTION_NORTH_WEST = "northWest";
+    public static readonly string DIRECTION_SOUTH_EAST = "southEast";
+    public static readonly string DIRECTION_SOUTH_WEST = "southWest";
     public MapHex[,] Hexes { get; set; }
     Dictionary<string, Node> allNodesGraph = new Dictionary<string, Node>();
     Dictionary<string, Node> seaNodesGraph = new Dictionary<string, Node>();

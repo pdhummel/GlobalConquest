@@ -1,5 +1,7 @@
 using static UnitTypeConstants;
 using static GameConstants;
+using static GlobalConquest.Map;
+using static GlobalConquest.Burbs;
 using GlobalConquest.Actions;
 using Microsoft.Xna.Framework;
 using GlobalConquest.Units;

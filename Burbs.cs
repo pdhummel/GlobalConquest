@@ -1,7 +1,16 @@
 using static GameConstants;
+using static GlobalConquest.Map;
 namespace GlobalConquest;
 public class Burbs
 {
+    public static readonly string BURB_METROPLEX = "metro";
+    public static readonly string BURB_CAPITAL = "capital";
+    public static readonly string BURB_VILLAGE = "village";
+    public static readonly string BURB_TOWN = "town";
+    public static readonly string BURB_CITY = "city";
+    public static readonly string BURB_DOCK = "dock";
+    public static readonly string BURB_SUBURB = "suburb";
+
     public Dictionary<string, int> IncomeMap { get; set; } = new Dictionary<string, int>();
     public Dictionary<string, int> PointMap  { get; set; } = new Dictionary<string, int>();
     public Dictionary<string, Burb> NameToBurb { get; set; } = new Dictionary<string, Burb>();

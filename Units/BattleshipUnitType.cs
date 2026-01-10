@@ -1,6 +1,7 @@
 namespace GlobalConquest.Units;
 using static UnitTypeConstants;
 using static GameConstants;
+using static GlobalConquest.Burbs;
 
 public class BattleshipUnitType : UnitType
 {
