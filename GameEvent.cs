@@ -3,11 +3,40 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using GlobalConquest.Units;
 using Microsoft.Xna.Framework;
+using System.Security.Cryptography.X509Certificates;
 
 namespace GlobalConquest;
 
 public class GameEvent
 {
+    public static readonly string GAME_EVENT_UNIT_ATTACKED = "unitAttacked";
+    public static readonly string GAME_EVENT_ENEMY_UNIT_ATTACKED = "enemyUnitAttacked";
+    public static readonly string GAME_EVENT_UNIT_DESTROYED = "unitDestroyed";
+    public static readonly string GAME_EVENT_ENEMY_UNIT_DESTROYED = "enemyUnitDestroyed";
+    public static readonly string GAME_EVENT_AIRPLANE_MISSION_SUCEEDED = "airplaneMissionSuceeded";
+    public static readonly string GAME_EVENT_AIRPLANE_MISSION_FAILED = "airplaneMissionFailed";
+    public static readonly string GAME_EVENT_AIRPLANE_STRIKE_SUCEEDED = "airplaneStrikeSuceeded";
+    public static readonly string GAME_EVENT_AIRPLANE_BOMBING_SUCEEDED = "airplaneBombingSuceeded";
+    public static readonly string GAME_EVENT_PLAYER_LOST_GAME = "playerLostGame";
+    public static readonly string GAME_EVENT_ENEMY_PLAYER_LOST_GAME = "enemyPlayerLostGame";
+    public static readonly string GAME_EVENT_PLAYER_WON_GAME = "playerWonGame";
+    public static readonly string GAME_EVENT_ENEMY_PLAYER_WON_GAME = "enemyPlayerWonGame";
+    public static readonly string GAME_EVENT_GAME_OVER = "gameOver";
+    public static readonly string GAME_EVENT_BURB_CAPTURED = "burbCaptured";
+    public static readonly string GAME_EVENT_BURB_LOST = "burbLost";
+    public static readonly string GAME_EVENT_UNIT_MOVEMENT_BLOCKED = "unitMovementBlocked";
+    public static readonly string GAME_EVENT_UNIT_SUFFERED_ATTRITION = "unitSufferedAttrition";
+    public static readonly string GAME_EVENT_ENEMY_UNIT_DISCOVERED = "enemyUnitDiscovered";
+    public static readonly string GAME_EVENT_BURB_DISCOVERED = "burbDiscovered";
+    public static readonly string GAME_EVENT_GRACE_PERIOD_STARTED = "gracePeriodStarted";
+    public static readonly string GAME_EVENT_SERVER_MESSAGE = "serverMessage";
+    public static readonly string GAME_EVENT_PLANE_DEFENDING = "planeDefending";
+    public static readonly string GAME_EVENT_PLANE_IN_DOG_FIGHT = "planeInDogfight";
+    public static readonly string GAME_EVENT_PLANNING_PHASE_ENDED = "planningPhaseEnded";
+    public static readonly string GAME_EVENT_PLANNING_PHASE_STARTING = "planningPhaseStarting";
+    public static readonly string GAME_EVENT_JOINED_GAME= "joinedGame";
+    public static readonly string GAME_EVENT_BURB_SABOTAGED = "burbSabotaged";
+
     // Used to send separate message to clients for Events.
     // TODO: Also keep track of these events in a server log.
     public string EventType { get; set; }
@@ -48,33 +77,33 @@ public class GameEvent
     {
         var gamePlayEvents = new string[]
         {
-            "unitAttacked",         // UnitType at MapHex attacked
-            "enemyUnitAttacked",    // EnemyColor UnitType attacked at MapHex 
-            "unitDestroyed",        // UnitType at MapHex destroyed           
-            "enemyUnitDestroyed",   // EnemyColor UnitType destroyed at MapHex
-            "airplaneMissionSuceeded",
-            "airplaneStrikeSuceeded",
-            "airplaneBombingSuceeded",
-            "airplaneMissionFailed",
-            "playerLostGame",       // Game Lost           
-            "enemyPlayerLostGame",  // EnemyColor Lost Game
-            "playerWonGame",        // Game Won           
-            "enemyPlayerWonGame",   // EnemyColor Won Game
-            "gameOver",             // Game Over                           
-            "burbCaptured",         // BurbType BurbName captured at MapHex
-            "burbLost",             // BurbType BurbName lost at MapHex
-            "unitMovementBlocked",  // UnitType at MapHex movement blocked
-            "unitSufferedAttrition",// UnitType at Maphex suffered attrition
-            "enemyUnitDiscovered",  // EnemyColor UnitType discovered at MapHex
-            "burbDiscovered",       // EnemyColor BurbType BurbName discovered at MapHex
-            "gracePeriodStarted",
-            "serverMessage",
-            "planeDefending",
-            "planeInDogfight",
-            "planningPhaseEnded",
-            "planningPhaseStarting",
-            "joinedGame",
-            "burbSabotaged"
+            GAME_EVENT_UNIT_ATTACKED,         // UnitType at MapHex attacked
+            GAME_EVENT_ENEMY_UNIT_ATTACKED,    // EnemyColor UnitType attacked at MapHex 
+            GAME_EVENT_UNIT_DESTROYED,        // UnitType at MapHex destroyed           
+            GAME_EVENT_ENEMY_UNIT_DESTROYED,   // EnemyColor UnitType destroyed at MapHex
+            GAME_EVENT_AIRPLANE_MISSION_SUCEEDED,
+            GAME_EVENT_AIRPLANE_STRIKE_SUCEEDED,
+            GAME_EVENT_AIRPLANE_BOMBING_SUCEEDED,
+            GAME_EVENT_AIRPLANE_MISSION_FAILED,
+            GAME_EVENT_PLAYER_LOST_GAME,       // Game Lost           
+            GAME_EVENT_ENEMY_PLAYER_LOST_GAME,  // EnemyColor Lost Game
+            GAME_EVENT_PLAYER_WON_GAME,        // Game Won           
+            GAME_EVENT_ENEMY_PLAYER_WON_GAME,   // EnemyColor Won Game
+            GAME_EVENT_GAME_OVER,             // Game Over                           
+            GAME_EVENT_BURB_CAPTURED,         // BurbType BurbName captured at MapHex
+            GAME_EVENT_BURB_LOST,             // BurbType BurbName lost at MapHex
+            GAME_EVENT_UNIT_MOVEMENT_BLOCKED,  // UnitType at MapHex movement blocked
+            GAME_EVENT_UNIT_SUFFERED_ATTRITION,// UnitType at Maphex suffered attrition
+            GAME_EVENT_ENEMY_UNIT_DISCOVERED,  // EnemyColor UnitType discovered at MapHex
+            GAME_EVENT_BURB_DISCOVERED,       // EnemyColor BurbType BurbName discovered at MapHex
+            GAME_EVENT_GRACE_PERIOD_STARTED,
+            GAME_EVENT_SERVER_MESSAGE,
+            GAME_EVENT_PLANE_DEFENDING,
+            GAME_EVENT_PLANE_IN_DOG_FIGHT,
+            GAME_EVENT_PLANNING_PHASE_ENDED,
+            GAME_EVENT_PLANNING_PHASE_STARTING,
+            GAME_EVENT_JOINED_GAME,
+            GAME_EVENT_BURB_SABOTAGED
         };
         GamePlayEvents.UnionWith(gamePlayEvents);
     }
@@ -357,7 +386,7 @@ public class GameEvent
     public void enemyPlayerWonGameHandler()
     {
         // EnemyColor Won Game
-        Game.playSoundEffect("playerLostGame");
+        Game.playSoundEffect(GAME_EVENT_PLAYER_LOST_GAME);
         EventString = GetEnemyColor() + " Won the Game.";
         Game.addGamePlayEvent(this);
         Game.MainGameScreen.showMessage(EventString);
@@ -379,7 +408,7 @@ public class GameEvent
     public void airplaneStrikeSuceededHandler()
     {
         EventString = "Air strike suceeded for " + GetUnitType() + " at " + GetLocation() + ".";
-        Game.playSoundEffect("enemyUnitAttacked");
+        Game.playSoundEffect(GAME_EVENT_ENEMY_UNIT_ATTACKED);
         //Game.addGamePlayEvent(this);
     }
 
@@ -393,7 +422,7 @@ public class GameEvent
     public void airplaneBombingSuceededHandler()
     {
         EventString = "Bombing suceeded for " + GetUnitType() + " at " + GetLocation() + ".";
-        Game.playSoundEffect("enemyUnitDestroyed");
+        Game.playSoundEffect(GAME_EVENT_ENEMY_UNIT_DESTROYED);
         //Game.addGamePlayEvent(this);
     }
 

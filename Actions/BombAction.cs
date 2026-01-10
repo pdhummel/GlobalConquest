@@ -1,6 +1,7 @@
 using System.Text.Json;
 using GlobalConquest.Units;
 using LiteNetLib;
+using static GlobalConquest.GameEvent;
 namespace GlobalConquest.Actions;
 
 public class BombAction : PlayerAction
@@ -62,7 +63,7 @@ public class BombAction : PlayerAction
             if (outcome.IsMissionSuccessful)
             {
 
-                GameEvent gameEvent = new GameEvent("airplaneBombingSuceeded");
+                GameEvent gameEvent = new GameEvent(GAME_EVENT_AIRPLANE_BOMBING_SUCEEDED);
                 gameEvent.MapHex = targetMapHex;
                 gameEvent.Unit = existingPlane;
                 Faction faction = gameState.Factions.ColorToFaction[targetMapHex.Burb.Color];
@@ -74,7 +75,7 @@ public class BombAction : PlayerAction
             }
             else
             {
-                GameEvent gameEvent = new GameEvent("airplaneMissionFailed");
+                GameEvent gameEvent = new GameEvent(GAME_EVENT_AIRPLANE_MISSION_FAILED);
                 gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
                 gameEvent.Unit = Plane;
                 server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
@@ -92,7 +93,7 @@ public class BombAction : PlayerAction
                 GameEvent gameEvent = new GameEvent();
                 gameEvent.Unit = outcome.EnemyPlane;
                 gameEvent.MapHex = map.Hexes[BombY, BombX];
-                gameEvent.EventType = "planeDefending";
+                gameEvent.EventType = GAME_EVENT_PLANE_DEFENDING;
                 server.sendGamePlayEvent(outcome.EnemyPlane.Color, gameEvent);
             }
 

@@ -1,5 +1,6 @@
 using static UnitTypeConstants;
 using static GameConstants;
+using static GlobalConquest.GameEvent;
 using System.Text.Json;
 using GlobalConquest.Units;
 using LiteNetLib;
@@ -90,7 +91,7 @@ public class ParaDropAction : PlayerAction
                 // no longer dug-in
                 existingInfantry.UnitType = INFANTRY;
 
-                GameEvent gameEvent = new GameEvent("airplaneMissionSuceeded");
+                GameEvent gameEvent = new GameEvent(GAME_EVENT_AIRPLANE_MISSION_SUCEEDED);
                 gameEvent.MapHex = targetMapHex;
                 gameEvent.Unit = existingPlane;
                 server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
@@ -102,7 +103,7 @@ public class ParaDropAction : PlayerAction
             }
             else
             {
-                GameEvent gameEvent = new GameEvent("airplaneMissionFailed");
+                GameEvent gameEvent = new GameEvent(GAME_EVENT_AIRPLANE_MISSION_FAILED);
                 gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
                 gameEvent.Unit = Plane;
                 server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
@@ -123,7 +124,7 @@ public class ParaDropAction : PlayerAction
                 GameEvent gameEvent = new GameEvent();
                 gameEvent.Unit = outcome.EnemyPlane;
                 gameEvent.MapHex = map.Hexes[DestinationY, DestinationX];
-                gameEvent.EventType = "planeDefending";
+                gameEvent.EventType = GAME_EVENT_PLANE_DEFENDING;
                 server.sendGamePlayEvent(outcome.EnemyPlane.Color, gameEvent);
             }
 

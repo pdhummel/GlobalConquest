@@ -3,6 +3,7 @@ using GlobalConquest.Units;
 using LiteNetLib;
 using static UnitTypeConstants;
 using static GameConstants;
+using static GlobalConquest.GameEvent;
 namespace GlobalConquest.Actions;
 
 public class AirstrikeAction : PlayerAction
@@ -104,12 +105,12 @@ public class AirstrikeAction : PlayerAction
                     {
                         targetUnit.StrengthPoints = 0;
                         targetMapHex.setUnit(null);
-                        GameEvent gameEvent = new GameEvent("enemyUnitDestroyed");
+                        GameEvent gameEvent = new GameEvent(GAME_EVENT_ENEMY_UNIT_DESTROYED);
                         gameEvent.MapHex = targetMapHex;
                         gameEvent.Unit = targetUnit;
                         gameEvent.EnemyColor = targetUnit.Color;
                         server.sendGamePlayEvent(Plane.Color, gameEvent);
-                        gameEvent.EventType = "unitDestroyed";
+                        gameEvent.EventType = GAME_EVENT_UNIT_DESTROYED;
                         server.sendGamePlayEvent(targetUnit.Color, gameEvent);
                         Globals.Log("execute(): airstrike destroyed enemy");
 
@@ -119,22 +120,22 @@ public class AirstrikeAction : PlayerAction
                             faction.HasComCen = false;
                             if (!server.gameState.GameSettings.CanLoseComCen)
                             {
-                                gameEvent = new GameEvent("enemyPlayerLostGame");
+                                gameEvent = new GameEvent(GAME_EVENT_ENEMY_PLAYER_LOST_GAME);
                                 gameEvent.EnemyColor = targetUnit.Color;
                                 server.sendGamePlayEvent(Plane.Color, gameEvent);
-                                gameEvent.EventType = "playerLostGame";
+                                gameEvent.EventType = GAME_EVENT_PLAYER_LOST_GAME;
                                 server.sendGamePlayEvent(targetUnit.Color, gameEvent);
                             }
                         }
                     }
                     else
                     {
-                        GameEvent gameEvent = new GameEvent("airplaneStrikeSuceeded");
+                        GameEvent gameEvent = new GameEvent(GAME_EVENT_AIRPLANE_STRIKE_SUCEEDED);
                         gameEvent.MapHex = targetMapHex;
                         gameEvent.Unit = existingPlane;
                         gameEvent.EnemyColor = targetUnit.Color;
                         server.sendGamePlayEvent(Plane.Color, gameEvent);
-                        gameEvent = new GameEvent("unitAttacked");
+                        gameEvent = new GameEvent(GAME_EVENT_UNIT_ATTACKED);
                         gameEvent.MapHex = targetMapHex;
                         gameEvent.Unit = targetUnit;
                         gameEvent.EnemyColor = existingPlane.Color;
@@ -150,19 +151,19 @@ public class AirstrikeAction : PlayerAction
             }
             else if (outcome.IsEnemyPlaneShotDown)
             {
-                GameEvent gameEvent = new GameEvent("enemyUnitDestroyed");
+                GameEvent gameEvent = new GameEvent(GAME_EVENT_ENEMY_UNIT_DESTROYED);
                 gameEvent.MapHex = map.Hexes[outcome.EnemyPlane.Y, outcome.EnemyPlane.X];
                 gameEvent.Unit = outcome.EnemyPlane;
                 gameEvent.EnemyColor = outcome.EnemyPlane.Color;
                 server.sendGamePlayEvent(Plane.Color, gameEvent);
-                gameEvent.EventType = "unitDestroyed";
+                gameEvent.EventType = GAME_EVENT_UNIT_DESTROYED;
                 server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
                 server.sendGameStateAndMapHex(outcome.EnemyPlane.X, outcome.EnemyPlane.Y);
                 server.sendGamePlayEvent(outcome.EnemyPlane.Color, gameEvent);
             }
             else if (outcome.IsPlaneShotDown)
             {
-                GameEvent gameEvent = new GameEvent("unitDestroyed");
+                GameEvent gameEvent = new GameEvent(GAME_EVENT_UNIT_DESTROYED);
                 gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
                 gameEvent.Unit = Plane;
                 gameEvent.EnemyColor = outcome.EnemyPlane.Color;
@@ -174,7 +175,7 @@ public class AirstrikeAction : PlayerAction
             }
             else
             {
-                GameEvent gameEvent = new GameEvent("airplaneMissionFailed");
+                GameEvent gameEvent = new GameEvent(GAME_EVENT_AIRPLANE_MISSION_FAILED);
                 gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
                 gameEvent.Unit = Plane;
                 server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
@@ -193,7 +194,7 @@ public class AirstrikeAction : PlayerAction
                 GameEvent gameEvent = new GameEvent();
                 gameEvent.Unit = outcome.EnemyPlane;
                 gameEvent.MapHex = map.Hexes[StrikeY, StrikeX];
-                gameEvent.EventType = "planeDefending";
+                gameEvent.EventType = GAME_EVENT_PLANE_DEFENDING;
                 server.sendGamePlayEvent(outcome.EnemyPlane.Color, gameEvent);
             }
 

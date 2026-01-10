@@ -4,6 +4,7 @@ using LiteNetLib;
 using static UnitTypeConstants;
 using static GameConstants;
 using static GlobalConquest.Burbs;
+using static GlobalConquest.GameEvent;
 namespace GlobalConquest.Actions;
 
 public class TransferAction : PlayerAction
@@ -114,7 +115,7 @@ public class TransferAction : PlayerAction
                     targetMapHex.Airplane = existingPlane;
                 }
 
-                GameEvent gameEvent = new GameEvent("airplaneMissionSuceeded");
+                GameEvent gameEvent = new GameEvent(GAME_EVENT_AIRPLANE_MISSION_SUCEEDED);
                 gameEvent.MapHex = targetMapHex;
                 gameEvent.Unit = existingPlane;
                 server.sendGamePlayEvent(Plane.Color, gameEvent);             
@@ -124,7 +125,7 @@ public class TransferAction : PlayerAction
             }
             else
             {
-                GameEvent gameEvent = new GameEvent("airplaneMissionFailed");
+                GameEvent gameEvent = new GameEvent(GAME_EVENT_AIRPLANE_MISSION_FAILED);
                 gameEvent.MapHex = map.Hexes[existingPlane.Y, existingPlane.X];
                 gameEvent.Unit = Plane;
                 server.sendGameStateAndMapHex(existingPlane.X, existingPlane.Y);
@@ -143,7 +144,7 @@ public class TransferAction : PlayerAction
                 GameEvent gameEvent = new GameEvent();
                 gameEvent.Unit = outcome.EnemyPlane;
                 gameEvent.MapHex = map.Hexes[DestinationY, DestinationX];
-                gameEvent.EventType = "planeDefending";
+                gameEvent.EventType = GAME_EVENT_PLANE_DEFENDING;
                 server.sendGamePlayEvent(outcome.EnemyPlane.Color, gameEvent);
             }
 

@@ -1,5 +1,6 @@
 using static UnitTypeConstants;
 using static GlobalConquest.Burbs;
+using static GlobalConquest.GameEvent;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
 using static GlobalConquest.Factions;
@@ -894,11 +895,11 @@ public class Map
             {
                 mapHex.Airplane = null;
                 server.sendGameStateAndMapHex(mapHex.X, mapHex.Y);
-                GameEvent gameEvent = new GameEvent("burbCaptured");
+                GameEvent gameEvent = new GameEvent(GAME_EVENT_BURB_CAPTURED);
                 gameEvent.EnemyColor = previousOwnerColor;
                 gameEvent.MapHex = mapHex;
                 server.sendGamePlayEvent(newOwnerColor, gameEvent);
-                gameEvent.EventType = "burbLost";
+                gameEvent.EventType = GAME_EVENT_BURB_LOST;
                 gameEvent.EnemyColor = newOwnerColor;
                 server.sendGamePlayEvent(previousOwnerColor, gameEvent);
             }

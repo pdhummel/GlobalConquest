@@ -1,6 +1,7 @@
 using System.Text.Json;
 using LiteNetLib;
 using static GameConstants;
+using static GlobalConquest.GameEvent;
 namespace GlobalConquest.Actions;
 
 public class ExecuteAction : PlayerAction
@@ -75,7 +76,7 @@ public class ExecuteAction : PlayerAction
         else if (IsFactionActive && EXECUTION_GRACE.Equals(gameState.GameSettings.ExecutionMode))
         {
             GameEvent gameEvent = new GameEvent();
-            gameEvent.EventType = "gracePeriodStarted";
+            gameEvent.EventType = GAME_EVENT_GRACE_PERIOD_STARTED;
             server.sendGamePlayEvent(gameEvent);
             server.GameLogic.startExecutionTimer();
         }

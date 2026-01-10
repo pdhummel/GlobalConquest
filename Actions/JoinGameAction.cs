@@ -2,6 +2,7 @@ using System.Text.Json;
 using LiteNetLib;
 using GlobalConquest;
 using static GameConstants;
+using static GlobalConquest.GameEvent;
 namespace GlobalConquest.Actions;
 
 public class JoinGameAction : PlayerAction
@@ -28,7 +29,7 @@ public class JoinGameAction : PlayerAction
         {
             Globals.Log("execute(): Player with that name is already used:" + JoinGameValues.Name);
             GameEvent gameEvent = new GameEvent();
-            gameEvent.EventType = "serverMessage";
+            gameEvent.EventType = GAME_EVENT_SERVER_MESSAGE;
             gameEvent.TargetScreenId = "JoinGameScreen";
             gameEvent.EventString = "Player with that name is already used: " + JoinGameValues.Name;
             server.sendGamePlayEvent(peer, gameEvent);
@@ -52,7 +53,7 @@ public class JoinGameAction : PlayerAction
             {
                 Globals.Log("execute(): Faction has already been chosen: " + faction.Color);
                 GameEvent gameEvent = new GameEvent();
-                gameEvent.EventType = "serverMessage";
+                gameEvent.EventType = GAME_EVENT_SERVER_MESSAGE;
                 gameEvent.TargetScreenId = "JoinGameScreen";
                 gameEvent.EventString = "Faction has already been chosen: " + faction.Color;
                 server.sendGamePlayEvent(peer, gameEvent);
@@ -65,7 +66,7 @@ public class JoinGameAction : PlayerAction
         {
             Globals.Log("execute(): Exceeds max number of human players: " + gameState.GameSettings.NumberOfHumans);
             GameEvent gameEvent = new GameEvent();
-            gameEvent.EventType = "serverMessage";
+            gameEvent.EventType = GAME_EVENT_SERVER_MESSAGE;
             gameEvent.TargetScreenId = "JoinGameScreen";
             gameEvent.EventString = "Exceeds allowed number of human players. Please increase the setting.";
             server.sendGamePlayEvent(peer, gameEvent);
@@ -93,7 +94,7 @@ public class JoinGameAction : PlayerAction
         else
         {
             GameEvent gameEvent = new GameEvent();
-            gameEvent.EventType = "serverMessage";
+            gameEvent.EventType = GAME_EVENT_SERVER_MESSAGE;
             gameEvent.EventString = "Waiting for other players: " + gameState.PlayerJoined.Count + " of " + 
                                     gameState.GameSettings.NumberOfHumans + " have joined.";
             server.sendGamePlayEvent(gameEvent);

@@ -2,7 +2,7 @@ using LiteNetLib;
 using LiteNetLib.Utils;
 using System.Reflection;
 using System.Text.Json;
-using GlobalConquest.Units;
+using static GlobalConquest.GameEvent;
 using GlobalConquest.Actions;
 using static GameConstants;
 
@@ -111,7 +111,7 @@ public class Server
                 Globals.Log("ServerLoop(): all clients joined");
                 syncAllMapHexes();
                 initialSync = true;
-                sendGamePlayEvent(new GameEvent("joinedGame"));
+                sendGamePlayEvent(new GameEvent(GAME_EVENT_JOINED_GAME));
             }
 
             Thread.Sleep(sleepTime); // Adjust sleep time to control CPU usage.
