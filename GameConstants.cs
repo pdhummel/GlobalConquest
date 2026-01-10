@@ -40,6 +40,11 @@ public static class GameConstants
     public const string AI_GOAL_BUILD_PLANE = "build-plane";
     public const string AI_GOAL_BUILD_CARRIER = "build-carrier";
 
+    public const string TREATY_AT_WAR = "war";
+    public const string TREATY_CEASE_FIRE = "cease fire";
+    public const string TREATY_ALLIANCE = "alliance";
+    public const string TREATY_TEAM_MATES = "team-mates";
+
     public const string VISIBILITY_OMNISCIENT = "Omniscient";
     public const string VISIBILITY_COMMAND_HQ = "Command HQ";
 

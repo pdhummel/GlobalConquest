@@ -652,7 +652,7 @@ public class GameLogic
     {
         if (unit == null || unit.StrengthPoints <= 0)
             return;
-
+        Faction faction = server.gameState.Factions.ColorToFaction[unit.Color];
         unit.IsAttacking = false;
         if (unit.StrengthPoints <= 0)
             return;
@@ -724,9 +724,12 @@ public class GameLogic
 
             }
         }
-        if (unitToAttack != null && unitToAttack.Visibility[unit.Color] && unit.StrengthPoints > 0 && unitToAttack.StrengthPoints > 0)
+        if (unitToAttack != null && unitToAttack.IsVisibleToColor(unit.Color) && unit.StrengthPoints > 0 && unitToAttack.StrengthPoints > 0)
         {
             Globals.Log("checkForCombat(): " + unit.Id + " at " + unit.X + "," + unit.Y + " attacking " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
+            Faction attackedFaction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
+            if (!TREATY_AT_WAR.Equals(attackedFaction.GetTreatyForColor(unit.Color)))
+                return;
             attackingUnitsXy.Add(makeXyString(unit.X, unit.Y));
             int previousStrength = unitToAttack.StrengthPoints;
             int damage = attackerUnitType.BattleDamageToDefender[unitToAttack.UnitType];
@@ -779,8 +782,7 @@ public class GameLogic
                 killUnit(unitToAttack);
                 if (COMMAND_CENTER.Equals(unitToAttack.UnitType))
                 {
-                    Faction faction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
-                    faction.HasComCen = false;
+                    attackedFaction.HasComCen = false;
                     if (!server.gameState.GameSettings.CanLoseComCen)
                     {
                         gameEvent = new GameEvent("enemyPlayerLostGame");
@@ -803,7 +805,7 @@ public class GameLogic
                 previousVisibility = unit.Visibility[unitToAttack.Color];
             unit.Visibility[unitToAttack.Color] = true;
             unit.RoundsToBeSeen[unitToAttack.Color] = 8;
-            if (SUBMARINE.Equals(unit.UnitType) || "submarine".Equals(unit.UnitType))
+            if (SUBMARINE.Equals(unit.UnitType))
             {
                 unit.RoundsToBeSeen[unitToAttack.Color] = 2;
             }
@@ -844,17 +846,16 @@ public class GameLogic
             // Head-Count scoring point calcs for fighting
             if (!NATIVE_COLOR.Equals(unitToAttack.Color))
             {
-                Faction faction = server.gameState.Factions.ColorToFaction[unit.Color];
                 UnitType unitTypeAttacked = server.gameState.UnitTypes.UnitTypeMap[unitToAttack.UnitType];
                 faction.HeadCountScore += unitTypeAttacked.PointsPerHit;
             }
             if (!NATIVE_COLOR.Equals(unit.Color) && !NATIVE_COLOR.Equals(unitToAttack.Color))
             {
-                Faction faction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
+                attackedFaction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
                 UnitType unitTypeAttacked = server.gameState.UnitTypes.UnitTypeMap[unitToAttack.UnitType];
-                faction.HeadCountScore -= unitTypeAttacked.PointsPerHit;
-                if (faction.HeadCountScore < 0)
-                    faction.HeadCountScore = 0;
+                attackedFaction.HeadCountScore -= unitTypeAttacked.PointsPerHit;
+                if (attackedFaction.HeadCountScore < 0)
+                    attackedFaction.HeadCountScore = 0;
             }
 
             server.sendGameState();

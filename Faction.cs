@@ -1,6 +1,6 @@
 using System.Drawing;
 using System.Text.Json.Serialization;
-
+using static GameConstants;
 namespace GlobalConquest;
 
 public class Faction
@@ -16,8 +16,9 @@ public class Faction
     public int CombinedScore { get; set; } = 0;
     public int IncomeScore {get; set;} = 0;
     public int CapitalScore {get; set;} = 0;
+    public Dictionary<string, string> ColorToTreaty = new Dictionary<string, string>();
 
-    public string Status { get; set; } = "planning";
+    public string Status { get; set; } = FACTION_STATUS_PLANNING;
 
     [JsonIgnore]
     public Ai Ai { get; set; } = new Ai();
@@ -28,6 +29,14 @@ public class Faction
         Name = name;
         Color = color;
         Ai.Faction = this;
+    }
+
+    public string GetTreatyForColor(string color)
+    {
+        string treaty = TREATY_AT_WAR;
+        if (ColorToTreaty.ContainsKey(color))
+            treaty = ColorToTreaty[color];
+        return treaty;
     }
 }
 

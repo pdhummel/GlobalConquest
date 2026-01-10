@@ -824,10 +824,7 @@ class HexMapEngineAdapter
             {
                 unitTypeId = unit.Color + "-" + COMMAND_CENTER;
             }
-            if (isObserver || 
-                (unit.Visibility.ContainsKey(player.FactionColor) && unit.Visibility[player.FactionColor]) ||
-                (unit.TemporarySpyVisibility.ContainsKey(player.FactionColor) && 
-                unit.TemporarySpyVisibility[player.FactionColor]))
+            if (isObserver || (player != null && unit.IsVisibleToColor(player.FactionColor)))
             {
                 if (unit.ParentUnitId == null || !gcGame.IsShowAirplanes)
                 {
@@ -847,10 +844,8 @@ class HexMapEngineAdapter
         {
             string unitTypeId = plane.Color + "-" + plane.UnitType;
             // TODO: figure out plane visibility settings
-            if (isObserver || 
-                (mapHex.Visibility.ContainsKey(player.FactionColor) && mapHex.Visibility[player.FactionColor]) ||
-                (unit.TemporarySpyVisibility.ContainsKey(player.FactionColor) && 
-                unit.TemporarySpyVisibility[player.FactionColor]))
+            if (isObserver || (player != null && mapHex.IsVisibleToColor(player.FactionColor) || 
+                unit.IsVisibleToColor(player.FactionColor)))
             {
                 if (plane != null && gcGame.IsShowAirplanes)
                 {
@@ -892,13 +887,7 @@ class HexMapEngineAdapter
         bool visibility = false;
         if (player != null && mapHex != null)
         {
-            if (mapHex.Visibility.ContainsKey(player.FactionColor))
-                visibility = mapHex.Visibility[player.FactionColor];
-            if (!visibility)
-            {
-                if (mapHex.TemporarySpyVisibility.ContainsKey(player.FactionColor))
-                    visibility = mapHex.TemporarySpyVisibility[player.FactionColor];
-            }
+            visibility = mapHex.IsVisibleToColor(player.FactionColor);
         }
         if ((!isObserver && !visibility) || loTexture2DTile == null)
         {
@@ -976,12 +965,7 @@ class HexMapEngineAdapter
         bool visibility = false;
         if (player != null)
         {
-            if (mapHex.Visibility.ContainsKey(player.FactionColor))
-                visibility = mapHex.Visibility[player.FactionColor];
-            if (!visibility && mapHex.TemporarySpyVisibility.ContainsKey(player.FactionColor))
-            {
-                visibility = mapHex.TemporarySpyVisibility[player.FactionColor];
-            }
+            visibility = mapHex.IsVisibleToColor(player.FactionColor);
         }
         if (!isObserver && !visibility)
         {

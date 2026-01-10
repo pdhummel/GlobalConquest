@@ -279,4 +279,13 @@ public class Unit
         return HashCode.Combine(Owner + Color, UnitType, Y, X, Visibility);
     }
 
+    public bool IsVisibleToColor(string color)
+    {
+        bool isVisible = false;
+        if (Visibility.ContainsKey(color))
+            isVisible = Visibility[color];
+        if (!isVisible && TemporarySpyVisibility.ContainsKey(color))
+            isVisible = TemporarySpyVisibility[color];
+        return isVisible;
+    }
 }

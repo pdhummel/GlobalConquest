@@ -103,4 +103,14 @@ public class MapHex
         this.Y = mapHex.Y;
     }
 
+    public bool IsVisibleToColor(string color)
+    {
+        bool isVisible = false;
+        if (Visibility.ContainsKey(color))
+            isVisible = Visibility[color];
+        if (!isVisible && TemporarySpyVisibility.ContainsKey(color))
+            isVisible = TemporarySpyVisibility[color];
+        return isVisible;
+    }
+
 }

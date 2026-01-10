@@ -208,6 +208,7 @@ The game is being designed with known differences from the original.
   - [ ] Changes to Factions Panel for Treaties
 - [ ] Choose game unit palette
 
+
 ### Milestone 9
 - [ ] Complex Economics
   - [ ] Central treasury vs. city purse.
