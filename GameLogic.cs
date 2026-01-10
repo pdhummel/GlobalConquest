@@ -728,7 +728,7 @@ public class GameLogic
         {
             Globals.Log("checkForCombat(): " + unit.Id + " at " + unit.X + "," + unit.Y + " attacking " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
             Faction attackedFaction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
-            if (!TREATY_AT_WAR.Equals(attackedFaction.GetTreatyForColor(unit.Color)))
+            if (!TREATY_AT_WAR.Equals(server.gameState.Factions.GetTreaty(unit.Color, unitToAttack.Color)))
                 return;
             attackingUnitsXy.Add(makeXyString(unit.X, unit.Y));
             int previousStrength = unitToAttack.StrengthPoints;
