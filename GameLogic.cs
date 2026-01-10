@@ -220,8 +220,8 @@ public class GameLogic
                 if (player.IsHuman)
                     isFactionAi = false;
             }
-            if (isFactionAi && color.Equals(OCHER))
-            //if (isFactionAi)
+            //if (isFactionAi && color.Equals(OCHER))
+            if (isFactionAi)
             {
                 try
                 {
