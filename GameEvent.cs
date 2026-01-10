@@ -333,6 +333,7 @@ public class GameEvent
         EventString = "You Lost the Game.";
         Game.playSoundEffect(EventType);
         Game.addGamePlayEvent(this);
+        Game.MainGameScreen.showMessage(EventString);
     }
 
     public void playerWonGameHandler()
@@ -342,6 +343,7 @@ public class GameEvent
         //Game.playSoundEffect(EventType + "1");
         Game.playSoundEffect(EventType + "2");
         Game.addGamePlayEvent(this);
+        Game.MainGameScreen.showMessage(EventString);
     }
 
     public void enemyPlayerLostGameHandler()
@@ -355,8 +357,10 @@ public class GameEvent
     public void enemyPlayerWonGameHandler()
     {
         // EnemyColor Won Game
+        Game.playSoundEffect("playerLostGame");
         EventString = GetEnemyColor() + " Won the Game.";
         Game.addGamePlayEvent(this);
+        Game.MainGameScreen.showMessage(EventString);
     }
 
     public void gameOverHandler()

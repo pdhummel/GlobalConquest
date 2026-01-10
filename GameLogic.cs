@@ -220,8 +220,8 @@ public class GameLogic
                 if (player.IsHuman)
                     isFactionAi = false;
             }
-            //if (isFactionAi && color.Equals(OCHER))
-            if (isFactionAi)
+            if (isFactionAi && color.Equals(OCHER))
+            //if (isFactionAi)
             {
                 try
                 {
@@ -780,7 +780,7 @@ public class GameLogic
                 server.sendGamePlayEvent(unitToAttack.Color, gameEvent);
 
                 killUnit(unitToAttack);
-                if (COMMAND_CENTER.Equals(unitToAttack.UnitType))
+                if (COMMAND_CENTER.Equals(unitToAttack.UnitType) && !server.gameState.GameSettings.CanLoseComCen)
                 {
                     attackedFaction.HasComCen = false;
                     if (!server.gameState.GameSettings.CanLoseComCen)
@@ -1328,26 +1328,32 @@ public class GameLogic
 
         // Someone took all Metros and the capital.
         Dictionary<string, int> metroOwnerCount = new Dictionary<string, int>();
-        foreach (string color in FACTION_COLORS)
+        string candidateColor = null;
+        foreach (string factionColor in FACTION_COLORS)
         {
-            if (!metroOwnerCount.ContainsKey(color))
-            {
-                metroOwnerCount[color] = 0;
-            }
-            if (!metroOwnerCount.ContainsKey(gameState.Map.getMetroHex(color).Burb.OwnerColor))
-                metroOwnerCount[gameState.Map.getMetroHex(color).Burb.OwnerColor] = 1;
-            metroOwnerCount[gameState.Map.getMetroHex(color).Burb.OwnerColor] += 1;
+            metroOwnerCount[factionColor] = 0;
         }
-        foreach (string color in FACTION_COLORS)
+        foreach (string metroColor in FACTION_COLORS)
         {
-            if (metroOwnerCount[color] >= 4)
+            string metroOwnerColor = gameState.Map.getMetroHex(metroColor).Burb.OwnerColor;
+            metroOwnerCount[metroOwnerColor] += 1;
+        }
+        foreach (string factionColor in FACTION_COLORS)
+        {
+            if (metroOwnerCount[factionColor] >= 4)
             {
-                if (color.Equals(gameState.Map.getCapitalHex().Burb.OwnerColor))
-                {
-                    Globals.Log("checkForVictory(): + metro owner=" + color);
-                    victoriousColor = color;
-                    gameOver = true;
-                }
+                candidateColor = factionColor;
+                break;
+            }
+        }
+
+        if (candidateColor != null)
+        {
+            if (candidateColor.Equals(gameState.Map.getCapitalHex().Burb.OwnerColor))
+            {
+                Globals.Log("checkForVictory(): + metro owner=" + candidateColor);
+                victoriousColor = candidateColor;
+                gameOver = true;
             }
         }
 
