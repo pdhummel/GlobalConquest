@@ -268,6 +268,7 @@ public class MainGameScreen
         locationButton.Click += (s, a) =>
         {
             gcGame.scrollToPosition(mapHex.Y, mapHex.X);
+            mapHex.IsHighlighted = true;
             cleanUpPopup(window, mapHex);
         };
         window.Content = locationButton;
