@@ -31,12 +31,39 @@ public class Faction
         Ai.Faction = this;
     }
 
-    public string GetTreatyForColor(string color)
+    public string GetProposedTreatyForColor(string color)
     {
         string treaty = TREATY_AT_WAR;
         if (ColorToTreaty.ContainsKey(color))
             treaty = ColorToTreaty[color];
         return treaty;
+    }
+
+    public bool IsInAnyAlliance(Factions factions)
+    {
+        bool isInAlliance = false;
+        foreach (string color in FACTION_COLORS)
+        {
+            if (IsInAlliance(factions, color))
+                return true;
+        }
+        return isInAlliance;
+    }
+
+    public bool IsInAlliance(Factions factions, string color)
+    {
+        bool isInAlliance = false;
+        if (color.Equals(Color))
+            return false;
+        Faction faction = factions.ColorToFaction[color];
+        if (GetProposedTreatyForColor(color).Equals(TREATY_ALLIANCE) && faction.GetProposedTreatyForColor(Color).Equals(TREATY_ALLIANCE))
+            isInAlliance = true;
+        else if (GetProposedTreatyForColor(color).Equals(TREATY_TEAM_MATES) && faction.GetProposedTreatyForColor(Color).Equals(TREATY_ALLIANCE))
+            isInAlliance = true;
+        if (GetProposedTreatyForColor(color).Equals(TREATY_ALLIANCE) && faction.GetProposedTreatyForColor(Color).Equals(TREATY_TEAM_MATES))
+            isInAlliance = true;
+
+        return isInAlliance;
     }
 }
 

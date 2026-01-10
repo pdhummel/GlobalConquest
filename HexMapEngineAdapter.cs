@@ -826,7 +826,7 @@ class HexMapEngineAdapter
             {
                 unitTypeId = unit.Color + "-" + COMMAND_CENTER;
             }
-            if (isObserver || (player != null && unit.IsVisibleToColor(player.FactionColor)))
+            if (isObserver || (player != null && gcGame.IsUnitVisibleToColor(unit, player.FactionColor)))
             {
                 if (unit.ParentUnitId == null || !gcGame.IsShowAirplanes)
                 {
@@ -846,8 +846,8 @@ class HexMapEngineAdapter
         {
             string unitTypeId = plane.Color + "-" + plane.UnitType;
             // TODO: figure out plane visibility settings
-            if (isObserver || (player != null && mapHex.IsVisibleToColor(player.FactionColor) || 
-                unit.IsVisibleToColor(player.FactionColor)))
+            if (isObserver || (player != null && gcGame.IsMapHexVisibleToColor(mapHex, player.FactionColor) || 
+                gcGame.IsUnitVisibleToColor(unit, player.FactionColor)))
             {
                 if (plane != null && gcGame.IsShowAirplanes)
                 {
@@ -889,7 +889,7 @@ class HexMapEngineAdapter
         bool visibility = false;
         if (player != null && mapHex != null)
         {
-            visibility = mapHex.IsVisibleToColor(player.FactionColor);
+            visibility = gcGame.IsMapHexVisibleToColor(mapHex, player.FactionColor);
         }
         if ((!isObserver && !visibility) || loTexture2DTile == null)
         {

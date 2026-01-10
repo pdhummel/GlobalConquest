@@ -40,21 +40,40 @@ public class Factions
     public string GetTreaty(Faction faction1, Faction faction2)
     {
         string treaty = TREATY_AT_WAR;
-        if (faction1.GetTreatyForColor(faction2.Color).Equals(TREATY_TEAM_MATES) && faction2.GetTreatyForColor(faction1.Color).Equals(TREATY_TEAM_MATES))
+        if (faction1.GetProposedTreatyForColor(faction2.Color).Equals(TREATY_TEAM_MATES) && faction2.GetProposedTreatyForColor(faction1.Color).Equals(TREATY_TEAM_MATES))
             return TREATY_TEAM_MATES;
-        else if (faction1.GetTreatyForColor(faction2.Color).Equals(TREATY_TEAM_MATES) && faction2.GetTreatyForColor(faction1.Color).Equals(TREATY_ALLIANCE))
+        else if (faction1.GetProposedTreatyForColor(faction2.Color).Equals(TREATY_TEAM_MATES) && faction2.GetProposedTreatyForColor(faction1.Color).Equals(TREATY_ALLIANCE))
             return TREATY_ALLIANCE;
-        else if (faction2.GetTreatyForColor(faction1.Color).Equals(TREATY_TEAM_MATES) && faction1.GetTreatyForColor(faction2.Color).Equals(TREATY_ALLIANCE))
+        else if (faction2.GetProposedTreatyForColor(faction1.Color).Equals(TREATY_TEAM_MATES) && faction1.GetProposedTreatyForColor(faction2.Color).Equals(TREATY_ALLIANCE))
             return TREATY_ALLIANCE;
-        else if (faction1.GetTreatyForColor(faction2.Color).Equals(TREATY_ALLIANCE) && faction2.GetTreatyForColor(faction1.Color).Equals(TREATY_ALLIANCE))
+        else if (faction1.GetProposedTreatyForColor(faction2.Color).Equals(TREATY_ALLIANCE) && faction2.GetProposedTreatyForColor(faction1.Color).Equals(TREATY_ALLIANCE))
             return TREATY_ALLIANCE;
-        else if (faction1.GetTreatyForColor(faction2.Color).Equals(TREATY_ALLIANCE) && faction2.GetTreatyForColor(faction1.Color).Equals(TREATY_CEASE_FIRE))
+        else if (faction1.GetProposedTreatyForColor(faction2.Color).Equals(TREATY_ALLIANCE) && faction2.GetProposedTreatyForColor(faction1.Color).Equals(TREATY_CEASE_FIRE))
             return TREATY_CEASE_FIRE;
-        else if (faction2.GetTreatyForColor(faction1.Color).Equals(TREATY_ALLIANCE) && faction1.GetTreatyForColor(faction2.Color).Equals(TREATY_CEASE_FIRE))
+        else if (faction2.GetProposedTreatyForColor(faction1.Color).Equals(TREATY_ALLIANCE) && faction1.GetProposedTreatyForColor(faction2.Color).Equals(TREATY_CEASE_FIRE))
             return TREATY_CEASE_FIRE;
-        else if (faction2.GetTreatyForColor(faction1.Color).Equals(TREATY_CEASE_FIRE) && faction1.GetTreatyForColor(faction2.Color).Equals(TREATY_CEASE_FIRE))
+        else if (faction2.GetProposedTreatyForColor(faction1.Color).Equals(TREATY_CEASE_FIRE) && faction1.GetProposedTreatyForColor(faction2.Color).Equals(TREATY_CEASE_FIRE))
             return TREATY_CEASE_FIRE;
         return treaty;
+    }
+
+    public bool IsInAnyAlliance(string color)
+    {
+        Faction faction = ColorToFaction[color];
+        return IsInAnyAlliance(faction);
+    }
+    public bool IsInAnyAlliance(Faction faction)
+    {
+        return faction.IsInAnyAlliance(this);
+    }
+
+
+    public bool IsInAlliance(Faction faction1, Faction faction2)
+    {
+        string treaty = GetTreaty(faction1, faction2);
+        if (treaty.Equals(TREATY_ALLIANCE))
+            return true;
+        return false;
     }
 
 }

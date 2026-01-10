@@ -1608,4 +1608,48 @@ public class GlobalConquestGame : Game
         //Globals.Log("IsAllowedToPlan(): canPlan=" + canPlan);
         return canPlan;
     }
+
+    public bool IsMapHexVisibleToColor(MapHex mapHex, string color)
+    {
+        bool isVisible = false;
+        if (mapHex == null || color == null)
+            return false;
+        isVisible = mapHex.IsVisibleToColor(color);
+        if (isVisible)
+            return true;
+        foreach (string factionColor in FACTION_COLORS)
+        {
+            string treaty = Client.GameState.Factions.GetTreaty(color, factionColor);
+            if (treaty.Equals(TREATY_ALLIANCE) || treaty.Equals(TREATY_TEAM_MATES))
+            {
+                if (mapHex.IsVisibleToColor(factionColor))
+                    return true;
+            }
+        }
+        
+        return isVisible;
+    }
+
+
+    public bool IsUnitVisibleToColor(Unit unit, string color)
+    {
+        bool isVisible = false;
+        if (unit == null || color == null)
+            return false;
+        isVisible = unit.IsVisibleToColor(color);
+        if (isVisible)
+            return true;
+        foreach (string factionColor in FACTION_COLORS)
+        {
+            string treaty = Client.GameState.Factions.GetTreaty(color, factionColor);
+            if (treaty.Equals(TREATY_ALLIANCE) || treaty.Equals(TREATY_TEAM_MATES))
+            {
+                if (unit.IsVisibleToColor(factionColor))
+                    return true;
+            }
+        }
+        
+        return isVisible;
+    }
+
 }

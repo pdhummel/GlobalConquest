@@ -266,6 +266,10 @@ public class GameLogic
             //Globals.Log("endTurn(): burb=" + burb.Name);
             if (burb.OwnerColor != null && !NATIVE_COLOR.Equals(burb.OwnerColor))
             {
+                // When in an alliance, receive a 25% boost in income from all their burbs and resources. 
+                Faction faction = gameState.Factions.ColorToFaction[burb.OwnerColor];
+                if (faction.IsInAnyAlliance(gameState.Factions))
+                    income = income + income / 4;
                 if (isSabotaged)
                 {
                     Globals.Log("endTurn(): burb " + key + " sabotaged and lost income");
@@ -277,7 +281,6 @@ public class GameLogic
                     server.sendGamePlayEvent(burb.OwnerColor, gameEvent);
                 }
 
-                Faction faction = gameState.Factions.ColorToFaction[burb.OwnerColor];
                 if (gameState.GameSettings.IsAdvancedEconomics)
                 {
                     burb.Money += income;
@@ -731,6 +734,7 @@ public class GameLogic
         {
             Globals.Log("checkForCombat(): " + unit.Id + " at " + unit.X + "," + unit.Y + " attacking " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
             Faction attackedFaction = server.gameState.Factions.ColorToFaction[unitToAttack.Color];
+            // When in a Treaty, neither side can shoot at the other side until the agreement has been broken.
             if (!TREATY_AT_WAR.Equals(server.gameState.Factions.GetTreaty(unit.Color, unitToAttack.Color)))
                 return;
             attackingUnitsXy.Add(makeXyString(unit.X, unit.Y));
