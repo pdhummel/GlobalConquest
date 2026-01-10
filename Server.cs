@@ -198,7 +198,7 @@ public class Server
     public void sendGameStateAndMapHex(NetPeer peer, int x, int y)
     {
         GameEvent gameEvent = new GameEvent();
-        gameEvent.EventType = "gameStateAndMapUpdate";
+        gameEvent.EventType = EVENT_TYPE_GAME_STATE_AND_MAP_UPDATE;
         gameEvent.GameState = gameState;
         gameEvent.MapHex = gameState.Map.Hexes[y, x];
         gameState.MapHex = gameState.Map.Hexes[y, x];
@@ -233,7 +233,7 @@ public class Server
     public void sendGameState(NetPeer peer)
     {
         GameEvent gameEvent = new GameEvent();
-        gameEvent.EventType = "gameStateUpdate";
+        gameEvent.EventType = EVENT_TYPE_GAME_STATE_UPDATE;
         gameEvent.GameState = gameState;
         gameState.MapHex = null;
         string jsonString = JsonSerializer.Serialize(gameEvent);
@@ -313,7 +313,7 @@ public class Server
     {
         Globals.Log("sendMapBuffer(): peer=" + peer + ", mapHexBuffer=" + mapHexBuffer.Count);
         GameEvent gameEvent = new GameEvent();
-        gameEvent.EventType = "mapUpdate";
+        gameEvent.EventType = EVENT_TYPE_MAP_UPDATE;
         gameEvent.MapHexBuffer = mapHexBuffer;
         gameEvent.GameState = null;
         gameEvent.IsLastMapHexBufferUpdate = isLast;
@@ -469,7 +469,7 @@ public class Server
         subClassAction.MessageAsJson = jsonString;
         MethodInfo executeMethod = subClassAction.GetType().GetMethod("deserializeAndExecute");
         object[] parameters = new object[] { peer, this };
-        if ("plan".Equals(gameState.CurrentPhase))
+        if (GAME_PHASE_PLAN.Equals(gameState.CurrentPhase))
         {
             executeMethod?.Invoke(subClassAction, parameters);
             Globals.Log("OnNetworkReceive(): invoked method for " + subClassAction.GetType());
@@ -491,7 +491,7 @@ public class Server
             {
                 Player player = gameState.Players.playerNameToPlayer[playerName];
                 Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
-                faction.Status = "disconnected";
+                faction.Status = FACTION_STATUS_DISCONNECTED;
                 Globals.Log("Player " + playerName + " disconnected");
             }
             else

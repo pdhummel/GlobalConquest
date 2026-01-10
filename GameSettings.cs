@@ -21,7 +21,7 @@ public class GameSettings
     public string ExecutionMode { get; set; } = EXECUTION_QUORUM;
     public int TimedSeconds { get; set; } = 180;
     public int StartingMoney { get; set; } = 0;
-    public string ScoringOption { get; set; } = "Combined"; // Income, Capital, Head-Count, Combined
+    public string ScoringOption { get; set; } = VICTORY_COMBINED; // Income, Capital, Head-Count, Combined
     public bool HasNatives { get; set; } = false;
     public bool CanLoseComCen {get; set;}
     public bool IsAdvancedEconomics {get;set;}

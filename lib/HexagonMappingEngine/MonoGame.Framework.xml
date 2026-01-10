@@ -254,7 +254,7 @@
             <summary>
             Constructs a bounding sphere with the specified center and radius.  
             </summary>
-            <param name="center">The sphere center.</param>
+            <param name=DIRECTION_CENTER>The sphere center.</param>
             <param name="radius">The sphere radius.</param>
         </member>
         <member name="M:Microsoft.Xna.Framework.BoundingSphere.Contains(Microsoft.Xna.Framework.BoundingBox)">
@@ -6244,7 +6244,7 @@
         </member>
         <member name="M:Microsoft.Xna.Framework.Audio.SoundEffectInstance.Stop(System.Boolean)">
             <summary>Stops playing a SoundEffectInstance, either immediately or as authored.</summary>
-            <param name="immediate">Determined whether the sound stops immediately, or after playing its release phase and/or transitions.</param>
+            <param name=EXECUTION_IMMEDIATE>Determined whether the sound stops immediately, or after playing its release phase and/or transitions.</param>
             <remarks>Stopping a sound with the immediate argument set to false will allow it to play any release phases, such as fade, before coming to a stop.</remarks>
         </member>
         <member name="M:Microsoft.Xna.Framework.Audio.SoundEffectInstance.Dispose">
@@ -6330,12 +6330,12 @@
         <member name="M:Microsoft.Xna.Framework.Audio.DynamicSoundEffectInstance.Stop(System.Boolean)">
             <summary>
             Stops playing the DynamicSoundEffectInstance.
-            If the <paramref name="immediate"/> parameter is false, this call has no effect.
+            If the <paramref name=EXECUTION_IMMEDIATE/> parameter is false, this call has no effect.
             </summary>
             <remarks>
             Calling this also releases all queued buffers.
             </remarks>
-            <param name="immediate">When set to false, this call has no effect.</param>
+            <param name=EXECUTION_IMMEDIATE>When set to false, this call has no effect.</param>
         </member>
         <member name="M:Microsoft.Xna.Framework.Audio.DynamicSoundEffectInstance.SubmitBuffer(System.Byte[])">
             <summary>

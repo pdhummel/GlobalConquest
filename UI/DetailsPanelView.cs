@@ -52,7 +52,7 @@ public class DetailsPanelView
         Unit lastSelectedPlane = lastSelectedHex == null ? null : 
           lastSelectedHex.Airplane != null ? lastSelectedHex.Airplane : 
           lastSelectedUnit == null ? null : lastSelectedUnit.Airplane; 
-        string currentPhase = "disconnected".Equals(gameState.CurrentPhase) ? "plan" : gameState.CurrentPhase;
+        string currentPhase = FACTION_STATUS_DISCONNECTED.Equals(gameState.CurrentPhase) ? GAME_PHASE_PLAN : gameState.CurrentPhase;
 
         VerticalStackPanel stackPanel = new VerticalStackPanel();
         Label mouseLabel = new Label();

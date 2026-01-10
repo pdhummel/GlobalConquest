@@ -1145,7 +1145,7 @@
             <summary>
             Initializes a new instance of the <see cref="T:SharpDX.BoundingBox"/> struct.
             </summary>
-            <param name="center">The center of the sphere in three dimensional space.</param>
+            <param name=DIRECTION_CENTER>The center of the sphere in three dimensional space.</param>
             <param name="radius">The radius of the sphere.</param>
         </member>
         <member name="M:SharpDX.BoundingSphere.Intersects(SharpDX.Ray@)">
@@ -9085,7 +9085,7 @@
             </summary>
             <param name="x">Scaling factor that is applied along the x-axis.</param>
             <param name="y">Scaling factor that is applied along the y-axis.</param>
-            <param name="center">The center of the scaling.</param>
+            <param name=DIRECTION_CENTER>The center of the scaling.</param>
             <returns>The created scaling matrix.</returns>
         </member>
         <member name="M:SharpDX.Matrix3x2.Scaling(System.Single,System.Single,SharpDX.Vector2@,SharpDX.Matrix3x2@)">
@@ -9094,7 +9094,7 @@
             </summary>
             <param name="x">Scaling factor that is applied along the x-axis.</param>
             <param name="y">Scaling factor that is applied along the y-axis.</param>
-            <param name="center">The center of the scaling.</param>
+            <param name=DIRECTION_CENTER>The center of the scaling.</param>
             <param name="result">The created scaling matrix.</param>
         </member>
         <member name="M:SharpDX.Matrix3x2.Determinant">
@@ -9122,7 +9122,7 @@
             Creates a matrix that rotates about a specified center.
             </summary>
             <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis.</param>
-            <param name="center">The center of the rotation.</param>
+            <param name=DIRECTION_CENTER>The center of the rotation.</param>
             <returns>The created rotation matrix.</returns>
         </member>
         <member name="M:SharpDX.Matrix3x2.Rotation(System.Single,SharpDX.Vector2,SharpDX.Matrix3x2@)">
@@ -9130,7 +9130,7 @@
             Creates a matrix that rotates about a specified center.
             </summary>
             <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis.</param>
-            <param name="center">The center of the rotation.</param>
+            <param name=DIRECTION_CENTER>The center of the rotation.</param>
             <param name="result">When the method completes, contains the created rotation matrix.</param>
         </member>
         <member name="M:SharpDX.Matrix3x2.Transformation(System.Single,System.Single,System.Single,System.Single,System.Single,SharpDX.Matrix3x2@)">

@@ -180,16 +180,16 @@ public class Map
                 // 4 balanced
                 // 5 balanced
                 int islands = numberOfIslands;
-                string orientation = "balanced"; // balanced, horizontal, vertical
+                string orientation = MAP_ORIENTATION_BALANCED; // balanced, horizontal, vertical
                 if (islands == 2 || islands == 3)
                 {
                     if (X >= Y)
-                        orientation  = "horizontal";
+                        orientation  = MAP_ORIENTATION_HORIZONTAL;
                     else
-                        orientation = "vertical";
+                        orientation = MAP_ORIENTATION_VERTICAL;
                 }
 
-                if ((islands == 2 || islands == 4) && ("horizontal".Equals(orientation) || "balanced".Equals(orientation)))
+                if ((islands == 2 || islands == 4) && (MAP_ORIENTATION_HORIZONTAL.Equals(orientation) || MAP_ORIENTATION_BALANCED.Equals(orientation)))
                 {
                     // 2 horizontal islands
                     if (liX <= width/2)
@@ -201,7 +201,7 @@ public class Map
                     }
                 }
 
-                if ((islands == 2 || islands == 4) && ("vertical".Equals(orientation) || "balanced".Equals(orientation)))
+                if ((islands == 2 || islands == 4) && (MAP_ORIENTATION_VERTICAL.Equals(orientation) || MAP_ORIENTATION_BALANCED.Equals(orientation)))
                 {
                     // 2 vertical islands
                     if (liY <= height/2)
@@ -213,7 +213,7 @@ public class Map
                     }
                 }
 
-                if ((islands == 3) && ("vertical".Equals(orientation)))
+                if ((islands == 3) && (MAP_ORIENTATION_VERTICAL.Equals(orientation)))
                 {
                     // 3 vertical islands
                     if (liY < height/3)
@@ -229,7 +229,7 @@ public class Map
                         h = height/3;
                     }
                 }
-                if ((islands == 3) && ("horizontal".Equals(orientation)))
+                if ((islands == 3) && (MAP_ORIENTATION_HORIZONTAL.Equals(orientation)))
                 {
                     // 3 horizontal islands
                     if (liX < width/3)
@@ -585,12 +585,12 @@ public class Map
         if (mapHex.Y - 1 >= 0)
         {
             MapHex northHex = Hexes[mapHex.Y - 1, mapHex.X];
-            hexes["north"] = northHex;
+            hexes[DIRECTION_NORTH] = northHex;
         }
         if (mapHex.Y + 1 < Y)
         {
             MapHex southHex = Hexes[mapHex.Y + 1, mapHex.X];
-            hexes["south"] = southHex;
+            hexes[DIRECTION_SOUTH] = southHex;
         }
         MapHex northEastHex;
         MapHex southEastHex;
@@ -601,22 +601,22 @@ public class Map
             if (mapHex.X + 1 < X)
             {
                 northEastHex = Hexes[mapHex.Y, mapHex.X + 1];
-                hexes["northEast"] = northEastHex;
+                hexes[DIRECTION_NORTH_EAST] = northEastHex;
             }
             if (mapHex.Y + 1 < Y && mapHex.X + 1 < X)
             {
                 southEastHex = Hexes[mapHex.Y + 1, mapHex.X + 1];
-                hexes["southEast"] = southEastHex;
+                hexes[DIRECTION_SOUTH_EAST] = southEastHex;
             }
             if (mapHex.Y + 1 < Y && mapHex.X - 1 >= 0)
             {
                 southWestHex = Hexes[mapHex.Y + 1, mapHex.X - 1];
-                hexes["southWest"] = southWestHex;
+                hexes[DIRECTION_SOUTH_WEST] = southWestHex;
             }
             if (mapHex.X - 1 >= 0)
             {
                 northWestHex = Hexes[mapHex.Y, mapHex.X - 1];
-                hexes["northWest"] = northWestHex;
+                hexes[DIRECTION_NORTH_WEST] = northWestHex;
             }
         }
         else
@@ -624,22 +624,22 @@ public class Map
             if (mapHex.Y - 1 >= 0 && mapHex.X + 1 < X)
             {
                 northEastHex = Hexes[mapHex.Y - 1, mapHex.X + 1];
-                hexes["northEast"] = northEastHex;
+                hexes[DIRECTION_NORTH_EAST] = northEastHex;
             }
             if (mapHex.X + 1 < X)
             {
                 southEastHex = Hexes[mapHex.Y, mapHex.X + 1];
-                hexes["southEast"] = southEastHex;
+                hexes[DIRECTION_SOUTH_EAST] = southEastHex;
             }
             if (mapHex.X - 1 >= 0)
             {
                 southWestHex = Hexes[mapHex.Y, mapHex.X - 1];
-                hexes["southWest"] = southWestHex;
+                hexes[DIRECTION_SOUTH_WEST] = southWestHex;
             }
             if (mapHex.Y - 1 >= 0 && mapHex.X - 1 >= 0)
             {
                 northWestHex = Hexes[mapHex.Y - 1, mapHex.X - 1];
-                hexes["northWest"] = northWestHex;
+                hexes[DIRECTION_NORTH_WEST] = northWestHex;
             }
         }
         if (mapHex.X - 1 >= 0)
@@ -665,18 +665,18 @@ public class Map
     public List<MapHex> getSurroundingHexesList(Dictionary<string, MapHex> hexesMap)
     {
         List<MapHex> hexes = new List<MapHex>();
-        if (hexesMap.ContainsKey("north"))
-            hexes.Add(hexesMap["north"]);
-        if (hexesMap.ContainsKey("south"))
-            hexes.Add(hexesMap["south"]);
-        if (hexesMap.ContainsKey("northEast"))
-            hexes.Add(hexesMap["northEast"]);
-        if (hexesMap.ContainsKey("northWest"))
-            hexes.Add(hexesMap["northWest"]);
-        if (hexesMap.ContainsKey("southEast"))
-            hexes.Add(hexesMap["southEast"]);
-        if (hexesMap.ContainsKey("southWest"))
-            hexes.Add(hexesMap["southWest"]);
+        if (hexesMap.ContainsKey(DIRECTION_NORTH))
+            hexes.Add(hexesMap[DIRECTION_NORTH]);
+        if (hexesMap.ContainsKey(DIRECTION_SOUTH))
+            hexes.Add(hexesMap[DIRECTION_SOUTH]);
+        if (hexesMap.ContainsKey(DIRECTION_NORTH_EAST))
+            hexes.Add(hexesMap[DIRECTION_NORTH_EAST]);
+        if (hexesMap.ContainsKey(DIRECTION_NORTH_WEST))
+            hexes.Add(hexesMap[DIRECTION_NORTH_WEST]);
+        if (hexesMap.ContainsKey(DIRECTION_SOUTH_EAST))
+            hexes.Add(hexesMap[DIRECTION_SOUTH_EAST]);
+        if (hexesMap.ContainsKey(DIRECTION_SOUTH_WEST))
+            hexes.Add(hexesMap[DIRECTION_SOUTH_WEST]);
         return hexes;
     }
 
@@ -818,9 +818,9 @@ public class Map
                 return;
             if (BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type) ||
                 BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type))
-                directions = ["north", "south", "northWest", "southWest", "northEast", "southEast"];
+                directions = [DIRECTION_NORTH, DIRECTION_SOUTH, DIRECTION_NORTH_WEST, DIRECTION_SOUTH_WEST, DIRECTION_NORTH_EAST, DIRECTION_SOUTH_EAST];
             else if (BURB_TOWN.Equals(mapHex.Burb.Type))
-                directions = ["north", "south"];
+                directions = [DIRECTION_NORTH, DIRECTION_SOUTH];
             if (BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type) ||
                 BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type) ||
                 BURB_TOWN.Equals(mapHex.Burb.Type))

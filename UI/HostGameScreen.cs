@@ -230,9 +230,9 @@ public class HostGameScreen
         scoringOptionComboView.BorderThickness = new Thickness(2);
 
         Label immediateLabel = new Label();
-        immediateLabel.Text = "Immediate";
+        immediateLabel.Text = EXECUTION_IMMEDIATE;
         Label timedGraceLabel = new Label();
-        timedGraceLabel.Text = "Grace*";
+        timedGraceLabel.Text = EXECUTION_GRACE;
         Label timedLabel = new Label();
         timedLabel.Text = EXECUTION_TIMED;
         Label quorumLabel = new Label();
@@ -246,13 +246,13 @@ public class HostGameScreen
         executionComboView.SelectedIndex = 0;
 
         Label combinationScoringLabel = new Label();
-        combinationScoringLabel.Text = "Combined";
+        combinationScoringLabel.Text = VICTORY_COMBINED;
         Label capitalScoringLabel = new Label();
         capitalScoringLabel.Text = BURB_CAPITAL;
         Label incomeScoringLabel = new Label();
-        incomeScoringLabel.Text = "Income";
+        incomeScoringLabel.Text = VICTORY_INCOME;
         Label headCountScoringLabel = new Label();
-        headCountScoringLabel.Text = "Head-Count";
+        headCountScoringLabel.Text = VICTORY_HEAD_COUNT;
         scoringOptionComboView.Widgets.Add(combinationScoringLabel);
         scoringOptionComboView.Widgets.Add(capitalScoringLabel);
         scoringOptionComboView.Widgets.Add(incomeScoringLabel);

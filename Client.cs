@@ -183,12 +183,12 @@ public class Client
     {
         handleGamePlayEvent(gameEvent);
 
-        if (gameEvent != null && "mapUpdate".Equals(gameEvent.EventType))
+        if (gameEvent != null && EVENT_TYPE_MAP_UPDATE.Equals(gameEvent.EventType))
         {
             updateMap(gameEvent);
             return;
         }
-        else if (gameEvent != null && "gameStateUpdate".Equals(gameEvent.EventType))
+        else if (gameEvent != null && EVENT_TYPE_GAME_STATE_UPDATE.Equals(gameEvent.EventType))
         {
             GameState? newGameState = gameEvent.GameState;
             //if (GameState.Map != null && GameState.Map.IsMapReady)
@@ -197,14 +197,14 @@ public class Client
             GameState.copyTransferredGameState(newGameState);
             handleGameOverForClient();
         }
-        else if (gameEvent != null && "gameStateAndMapUpdate".Equals(gameEvent.EventType))
+        else if (gameEvent != null && EVENT_TYPE_GAME_STATE_AND_MAP_UPDATE.Equals(gameEvent.EventType))
         {
             GameState? newGameState = gameEvent.GameState;
             GameState.copyTransferredGameState(newGameState);
             bool isHighlighted = false;
             if (GameState.Map != null && GameState.Map.IsMapReady)
             {
-                if (gameEvent.MapHex != null) // && !"plan".Equals(GameState.CurrentPhase))
+                if (gameEvent.MapHex != null) // && !GAME_PHASE_PLAN.Equals(GameState.CurrentPhase))
                     isHighlighted = GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X].IsHighlighted;
                 //else
                 //    GameState.Map.Hexes[gameEvent.MapHex.Y, gameEvent.MapHex.X].IsHighlighted = false;
@@ -227,7 +227,7 @@ public class Client
             handleGameOverForClient();
         }
 
-        if ("plan".Equals(GameState.CurrentPhase) && GameState.PlayerPlanningReady.ContainsKey(ClientIdentifier) && GameState.PlayerPlanningReady[ClientIdentifier] == false)
+        if (GAME_PHASE_PLAN.Equals(GameState.CurrentPhase) && GameState.PlayerPlanningReady.ContainsKey(ClientIdentifier) && GameState.PlayerPlanningReady[ClientIdentifier] == false)
         {
             PlanningReadyAction action = new PlanningReadyAction();
             action.ClassType = "GlobalConquest.Actions.PlanningReadyAction";  //executeAction.GetType().FullName
@@ -277,7 +277,7 @@ public class Client
     {
         if (peer != null)
             Globals.Log($"OnPeerDisconnected(): Client peer disconnected: {peer.Address}. Reason: {disconnectInfo.Reason}");
-        GameState.CurrentPhase = "disconnected";
+        GameState.CurrentPhase = FACTION_STATUS_DISCONNECTED;
         Thread localThread = new Thread(new ThreadStart(ReConnect))
         {
             IsBackground = true // Ensures thread closes with the main app
@@ -292,7 +292,7 @@ public class Client
         long retryUntil = 3000;
         while (DateTime.Now.Ticks < originalMilliseconds + retryUntil)
         {
-            if ("disconnected".Equals(GameState.CurrentPhase))
+            if (FACTION_STATUS_DISCONNECTED.Equals(GameState.CurrentPhase))
             {
                 Globals.Log("ReConnect(): retry");
                 Connect(JoinGameValues, "GlobalConquest");

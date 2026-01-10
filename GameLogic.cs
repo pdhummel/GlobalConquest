@@ -302,7 +302,7 @@ public class GameLogic
         collectIncome(server);
 
         gameState.CurrentRound = 0;
-        server.gameState.CurrentPhase = "plan";
+        server.gameState.CurrentPhase = GAME_PHASE_PLAN;
 
         int humans = 0;
         foreach (string color in FACTION_COLORS)
@@ -1203,30 +1203,30 @@ public class GameLogic
             tmpMapHex = map.Hexes[fromY, fromX];
             destinationReached = true;
         }
-        else if (fromX == toX && fromY > toY && hexesMap.ContainsKey("north"))
+        else if (fromX == toX && fromY > toY && hexesMap.ContainsKey(DIRECTION_NORTH))
         {
-            tmpMapHex = hexesMap["north"];
+            tmpMapHex = hexesMap[DIRECTION_NORTH];
         }
-        else if (fromX < toX && fromY > toY && hexesMap.ContainsKey("northEast"))
+        else if (fromX < toX && fromY > toY && hexesMap.ContainsKey(DIRECTION_NORTH_EAST))
         {
-            tmpMapHex = hexesMap["northEast"];
+            tmpMapHex = hexesMap[DIRECTION_NORTH_EAST];
         }
-        else if (fromX < toX && fromY < toY && hexesMap.ContainsKey("southEast"))
+        else if (fromX < toX && fromY < toY && hexesMap.ContainsKey(DIRECTION_SOUTH_EAST))
         {
-            tmpMapHex = hexesMap["southEast"];
+            tmpMapHex = hexesMap[DIRECTION_SOUTH_EAST];
 
         }
-        else if (fromX == toX && fromY < toY && hexesMap.ContainsKey("south"))
+        else if (fromX == toX && fromY < toY && hexesMap.ContainsKey(DIRECTION_SOUTH))
         {
-            tmpMapHex = hexesMap["south"];
+            tmpMapHex = hexesMap[DIRECTION_SOUTH];
         }
-        else if (fromX > toX && fromY < toY && hexesMap.ContainsKey("southWest"))
+        else if (fromX > toX && fromY < toY && hexesMap.ContainsKey(DIRECTION_SOUTH_WEST))
         {
-            tmpMapHex = hexesMap["southWest"];
+            tmpMapHex = hexesMap[DIRECTION_SOUTH_WEST];
         }
-        else if (fromX > toX && fromY > toY && hexesMap.ContainsKey("northWest"))
+        else if (fromX > toX && fromY > toY && hexesMap.ContainsKey(DIRECTION_NORTH_WEST))
         {
-            tmpMapHex = hexesMap["northWest"];
+            tmpMapHex = hexesMap[DIRECTION_NORTH_WEST];
         }
         else if (fromX > toX && hexesMap.ContainsKey("west"))
         {
@@ -1387,11 +1387,11 @@ public class GameLogic
         foreach (string color in FACTION_COLORS)
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
-            if ("Head-Count".Equals(gameSettings.ScoringOption))
+            if (VICTORY_HEAD_COUNT.Equals(gameSettings.ScoringOption))
             {
                 faction.CombinedScore = calculateHeadCountScore(faction);
             }
-            else if ("Income".Equals(gameSettings.ScoringOption))
+            else if (VICTORY_INCOME.Equals(gameSettings.ScoringOption))
             {
                 faction.CombinedScore = calculateIncomeScore(server, faction, units);
             }
@@ -1400,7 +1400,7 @@ public class GameLogic
                 gameState.Burbs.PointMap[BURB_CAPITAL] = 2500;
                 faction.CombinedScore = calculateCapitalScore(server, faction);
             }
-            else if ("Combined".Equals(gameSettings.ScoringOption))
+            else if (VICTORY_COMBINED.Equals(gameSettings.ScoringOption))
             {
                 faction.CombinedScore = calculateHeadCountScore(faction);
                 faction.CombinedScore += calculateIncomeScore(server, faction, units, 8);
@@ -1770,7 +1770,7 @@ public class GameLogic
         newGameState.Map.restoreMap(newGameState.Burbs);
         server.gameState = newGameState;
 
-        server.gameState.CurrentPhase = "plan";
+        server.gameState.CurrentPhase = GAME_PHASE_PLAN;
         foreach (string color in FACTION_COLORS)
         {
             Faction faction = server.gameState.Factions.ColorToFaction[color];
@@ -1848,7 +1848,7 @@ public class GameLogic
         newGameState.Map.restoreMap(newGameState.Burbs);
         newGameState.GameSettings.ExecutionMode = executionMode;
         server.gameState = newGameState;
-        server.gameState.CurrentPhase = "plan";
+        server.gameState.CurrentPhase = GAME_PHASE_PLAN;
         // Theoretically, this should be empty as there are no clients.
         foreach (string clientIdentifier in server.gameState.PlayerPlanningReady.Keys)
         {

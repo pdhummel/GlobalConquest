@@ -52,7 +52,7 @@
             </summary>	
             <param name="angleX"><dd>  <p>The x-axis skew angle, which is measured in degrees counterclockwise from the y-axis.</p> </dd></param>	
             <param name="angleY"><dd>  <p>The y-axis skew angle, which is measured in degrees counterclockwise from the x-axis.</p> </dd></param>	
-            <param name="center"><dd>  <p>The center point of the skew operation.</p> </dd></param>	
+            <param name=DIRECTION_CENTER><dd>  <p>The center point of the skew operation.</p> </dd></param>	
             <param name="matrix"><dd>  <p>When this method returns, contains the rotation transformation. You must allocate storate for this parameter.</p> </dd></param>	
             <remarks>	
             <p><strong>Windows Phone 8.1:</strong> This API is supported.</p>	
@@ -84,7 +84,7 @@
             <p>Creates a rotation transformation that rotates by the specified angle about the specified point.</p>	
             </summary>	
             <param name="angle"><dd>  <p>The clockwise rotation angle, in degrees. </p> </dd></param>	
-            <param name="center"><dd>  <p>The point about which to rotate.</p> </dd></param>	
+            <param name=DIRECTION_CENTER><dd>  <p>The point about which to rotate.</p> </dd></param>	
             <param name="matrix"><dd>  <p>When this method returns, contains the new rotation transformation. You must allocate storage for this parameter.  </p> </dd></param>	
             <remarks>	
             <p>Rotation occurs in the plane of the 2-D surface.</p><p><strong>Windows Phone 8.1:</strong> This API is supported.</p>	
@@ -15595,7 +15595,7 @@
             <summary>
             Initializes a new instance of the <see cref="T:SharpDX.Direct2D1.Ellipse"/> struct.
             </summary>
-            <param name="center">The center.</param>
+            <param name=DIRECTION_CENTER>The center.</param>
             <param name="radiusX">The radius X.</param>
             <param name="radiusY">The radius Y.</param>
         </member>
@@ -22322,7 +22322,7 @@
             <summary>	
             <p>Specifies the center of the gradient ellipse in the brush's coordinate space. </p>	
             </summary>	
-            <param name="center"><dd>  <p>The center of the gradient ellipse, in the brush's coordinate space.</p> </dd></param>	
+            <param name=DIRECTION_CENTER><dd>  <p>The center of the gradient ellipse, in the brush's coordinate space.</p> </dd></param>	
             <!-- No matching elements were found for the following include tag --><include file=".\..\Documentation\CodeComments.xml" path="/comments/comment[@id='ID2D1RadialGradientBrush::SetCenter']/*"/>	
             <msdn-id>dd371547</msdn-id>	
             <unmanaged>void ID2D1RadialGradientBrush::SetCenter([In] D2D_POINT_2F center)</unmanaged>	

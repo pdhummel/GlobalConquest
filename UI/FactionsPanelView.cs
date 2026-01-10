@@ -119,13 +119,13 @@ public class FactionsPanelView
             playerName = player.Name;
         }
         string status = faction.Status;
-        if ("disconnected".Equals(gameState.CurrentPhase))
-            status = "disconnected";
+        if (FACTION_STATUS_DISCONNECTED.Equals(gameState.CurrentPhase))
+            status = FACTION_STATUS_DISCONNECTED;
 
         int score = faction.CombinedScore;
-        if ("Income".Equals(gameState.GameSettings.ScoringOption))
+        if (VICTORY_INCOME.Equals(gameState.GameSettings.ScoringOption))
             score = faction.IncomeScore;
-        else if ("Head-Count".Equals(gameState.GameSettings.ScoringOption))
+        else if (VICTORY_HEAD_COUNT.Equals(gameState.GameSettings.ScoringOption))
             score = faction.HeadCountScore;
         else if (BURB_CAPITAL.Equals(gameState.GameSettings.ScoringOption))
             score = faction.CapitalScore;

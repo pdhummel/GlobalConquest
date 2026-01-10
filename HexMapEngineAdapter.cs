@@ -144,8 +144,8 @@ class HexMapEngineAdapter
         Texture2D northTabCapitalTexture = game.Content.Load<Texture2D>("north-tab-capital");
         textures["north-tab-capital"] = northTabCapitalTexture;
 
-        textures["north"] = northTabTexture;
-        textures["south"] = southTabTexture;
+        textures[DIRECTION_NORTH] = northTabTexture;
+        textures[DIRECTION_SOUTH] = southTabTexture;
 
         Texture2D magentaTank = game.Content.Load<Texture2D>("magenta-tank-48x48");
         units["magenta-tank"] = magentaTank;
@@ -371,11 +371,11 @@ class HexMapEngineAdapter
             pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.MapPanel.Height
            )
         {
-            if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+            if (!TAG_MINI_MAP.Equals(Globals.spriteBatch?.Tag))
                 return;
         }
 
-        if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+        if (!TAG_MINI_MAP.Equals(Globals.spriteBatch?.Tag))
         {
             if (unitTypeId.Contains(AIRPLANE))
             {
@@ -393,7 +393,7 @@ class HexMapEngineAdapter
             pixelVector.X += 10;
             pixelVector.Y += 9;
         }
-        if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
+        if (!TAG_MINI_MAP.Equals(Globals.spriteBatch?.Tag) &&
             (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
             pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height) ||
             pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS / 2
@@ -441,11 +441,11 @@ class HexMapEngineAdapter
             pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.MapPanel.Height
            )
         {
-            if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+            if (!TAG_MINI_MAP.Equals(Globals.spriteBatch?.Tag))
                 return;
         }
 
-        if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+        if (!TAG_MINI_MAP.Equals(Globals.spriteBatch?.Tag))
         {
             pixelVector.X += 20 - currentPixelPosition.X;
             pixelVector.Y += 19 - currentPixelPosition.Y;
@@ -458,7 +458,7 @@ class HexMapEngineAdapter
             pixelVector.X += 10;
             pixelVector.Y += 9;
         }
-        if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
+        if (!TAG_MINI_MAP.Equals(Globals.spriteBatch?.Tag) &&
             (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
             pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height) ||
             pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS / 2
@@ -937,11 +937,11 @@ class HexMapEngineAdapter
             pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.MapPanel.Height
            )
         {
-            if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+            if (!TAG_MINI_MAP.Equals(Globals.spriteBatch?.Tag))
                 return;
         }
 
-        if (!"miniMap".Equals(Globals.spriteBatch?.Tag))
+        if (!TAG_MINI_MAP.Equals(Globals.spriteBatch?.Tag))
         {
             pixelVector.X += 0 - currentPixelPosition.X;
             pixelVector.Y += 0 - currentPixelPosition.Y;
@@ -951,7 +951,7 @@ class HexMapEngineAdapter
             pixelVector.X += 0;
             pixelVector.Y += 0;
         }
-        if (!"miniMap".Equals(Globals.spriteBatch?.Tag) &&
+        if (!TAG_MINI_MAP.Equals(Globals.spriteBatch?.Tag) &&
             (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
             pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height) ||
             pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS / 2

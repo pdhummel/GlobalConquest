@@ -1,6 +1,7 @@
 using System.Text.Json;
 using LiteNetLib;
 using GlobalConquest;
+using static GameConstants;
 namespace GlobalConquest.Actions;
 
 public class JoinGameAction : PlayerAction
@@ -79,12 +80,12 @@ public class JoinGameAction : PlayerAction
             }
             else
             {
-                faction.Status = "planning";
+                faction.Status = FACTION_STATUS_PLANNING;
             }
         }
         else
         {
-            faction.Status = "planning";
+            faction.Status = FACTION_STATUS_PLANNING;
         }
         server.sendGameState();
         if (gameState.PlayerJoined.Count >= gameState.GameSettings.NumberOfHumans)

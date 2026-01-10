@@ -33,7 +33,7 @@ public class RefreshGameStateAction : PlayerAction
         else if (X > -1 && Y > -1)
             server.sendGameStateAndMapHex(peer, X, Y);
         // See PlanningReadyAction
-        // else if (ReadyToPlan && gameState.CurrentPhase.Equals("plan"))
+        // else if (ReadyToPlan && gameState.CurrentPhase.Equals(GAME_PHASE_PLAN))
         // {
         //     if (gameState.Players.playerNameToPlayer.ContainsKey(ClientIdentifier))
         //     {
@@ -41,7 +41,7 @@ public class RefreshGameStateAction : PlayerAction
         //         if (player != null)
         //         {
         //             Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
-        //             faction.Status = "planning";
+        //             faction.Status = FACTION_STATUS_PLANNING;
         //         }
         //     }
         //     gameState.PlayerPlanningReady[ClientIdentifier] = true;

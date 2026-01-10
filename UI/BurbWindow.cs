@@ -164,19 +164,19 @@ public class BurbWindow
         List<string> openSpaceDirections = new List<string>();
         if (mapHex.getUnit() == null)
         {
-            openSpaceDirections.Add("center");
-            landDirections.Add("center");
+            openSpaceDirections.Add(DIRECTION_CENTER);
+            landDirections.Add(DIRECTION_CENTER);
         }
         if (mapHex.Airplane == null)
         {
-            airDirections.Add("center");
+            airDirections.Add(DIRECTION_CENTER);
         }
 
         List<string> directions = [];
         if (BURB_CITY.Equals(burb.Type) || BURB_CAPITAL.Equals(burb.Type) || BURB_METROPLEX.Equals(burb.Type))
-            directions = ["north", "northEast", "southEast", "south", "southWest", "northWest"];
+            directions = [DIRECTION_NORTH, DIRECTION_NORTH_EAST, DIRECTION_SOUTH_EAST, DIRECTION_SOUTH, DIRECTION_SOUTH_WEST, DIRECTION_NORTH_WEST];
         else if (BURB_TOWN.Equals(burb.Type))
-            directions = ["north", "south"];
+            directions = [DIRECTION_NORTH, DIRECTION_SOUTH];
         if (BURB_TOWN.Equals(burb.Type) || BURB_CITY.Equals(burb.Type) || BURB_CAPITAL.Equals(burb.Type) || BURB_METROPLEX.Equals(burb.Type))
         {
             Dictionary<string, MapHex> neighbors = map.getSurroundingHexes(mapHex);
@@ -344,7 +344,7 @@ public class BurbWindow
         Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
         Dictionary<string, MapHex> neighbors = map.getSurroundingHexes(mapHex);
         MapHex targetHex = mapHex;
-        if (!"center".Equals(direction))
+        if (!DIRECTION_CENTER.Equals(direction))
         {
             targetHex = neighbors[direction];
         }

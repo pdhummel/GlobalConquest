@@ -68,11 +68,11 @@ public class ExecuteAction : PlayerAction
                 startExecution = true;
         }
 
-        if (IsFactionActive && "Immediate".Equals(gameState.GameSettings.ExecutionMode))
+        if (IsFactionActive && EXECUTION_IMMEDIATE.Equals(gameState.GameSettings.ExecutionMode))
         {
             startExecution = true;
         }
-        else if (IsFactionActive && "Grace*".Equals(gameState.GameSettings.ExecutionMode))
+        else if (IsFactionActive && EXECUTION_GRACE.Equals(gameState.GameSettings.ExecutionMode))
         {
             GameEvent gameEvent = new GameEvent();
             gameEvent.EventType = "gracePeriodStarted";

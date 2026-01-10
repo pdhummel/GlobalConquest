@@ -21,7 +21,7 @@ public class GameState
     public Dictionary<string, bool> PlayerPlanningReady { get; set; } = new Dictionary<string, bool>();
     public Dictionary<string, bool> PlayerJoined { get; set; } = new Dictionary<string, bool>();
     public int CurrentTurn { get; set; } = 0;
-    public string CurrentPhase { get; set; } = "plan";  // plan, execution, gameOver
+    public string CurrentPhase { get; set; } = GAME_PHASE_PLAN;  // plan, execution, gameOver
     public int CurrentRound { get; set; } = 0;
     public UnitTypes UnitTypes { get; set; }
     public Burbs Burbs { get; set; }
@@ -103,7 +103,7 @@ public class GameState
         if (color.Equals(AMBER))
         {
             MapHex metroHex = Map.getMetroHex(AMBER);
-            List<string> directions = ["northWest", "northEast", "southWest", "southEast"];
+            List<string> directions = [DIRECTION_NORTH_WEST, DIRECTION_NORTH_EAST, DIRECTION_SOUTH_WEST, DIRECTION_SOUTH_EAST];
             placeUnit(metroHex, directions, comcen);
             Map.placeNewUnit(spy, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
@@ -138,7 +138,7 @@ public class GameState
         else if (color.Equals(OCHER))
         {
             MapHex metroHex = Map.getMetroHex(OCHER);
-            List<string> directions = ["northEast", "northWest", "southWest", "southEast"];
+            List<string> directions = [DIRECTION_NORTH_EAST, DIRECTION_NORTH_WEST, DIRECTION_SOUTH_WEST, DIRECTION_SOUTH_EAST];
             placeUnit(metroHex, directions, comcen);
             Map.placeNewUnit(spy, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
@@ -147,7 +147,7 @@ public class GameState
         else if (color.Equals(CYAN))
         {
             MapHex metroHex = Map.getMetroHex(CYAN);
-            List<string> directions = ["southEast", "northWest", "southWest", "northEast"];
+            List<string> directions = [DIRECTION_SOUTH_EAST, DIRECTION_NORTH_WEST, DIRECTION_SOUTH_WEST, DIRECTION_NORTH_EAST];
             placeUnit(metroHex, directions, comcen);
             Map.placeNewUnit(spy, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];
@@ -156,7 +156,7 @@ public class GameState
         else if (color.Equals(MAGENTA))
         {
             MapHex metroHex = Map.getMetroHex(MAGENTA);
-            List<string> directions = ["southWest", "northWest", "southEast", "northEast"];
+            List<string> directions = [DIRECTION_SOUTH_WEST, DIRECTION_NORTH_WEST, DIRECTION_SOUTH_EAST, DIRECTION_NORTH_EAST];
             placeUnit(metroHex, directions, comcen);
             Map.placeNewUnit(spy, metroHex);
             Faction faction = Factions.ColorToFaction[comcen.Color];

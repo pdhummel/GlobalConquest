@@ -50,10 +50,9 @@ public static class GameConstants
 
     public const string EXECUTION_QUORUM = "Quorum";
     public const string EXECUTION_TIMED = "Timed*";
-
-    // TODO:
     public const string EXECUTION_GRACE = "Grace*";
     public const string EXECUTION_IMMEDIATE = "Immediate";
+
     public const string EVENT_TYPE_MAP_UPDATE = "mapUpdate";
     public const string EVENT_TYPE_GAME_STATE_UPDATE = "gameStateUpdate";
     public const string EVENT_TYPE_GAME_STATE_AND_MAP_UPDATE = "gameStateAndMapUpdate";

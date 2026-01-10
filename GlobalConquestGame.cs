@@ -590,7 +590,7 @@ public class GlobalConquestGame : Game
 
         RenderTarget2D restoredRenderTarget = null;
         //Globals.spriteBatch?.Begin(transformMatrix: miniMapCamera.GetViewMatrix());
-        Globals.spriteBatch.Tag = "miniMap";
+        Globals.spriteBatch.Tag = TAG_MINI_MAP;
 
         // Draw on the miniMap
         if (shouldDrawMiniMap)
@@ -1544,7 +1544,7 @@ public class GlobalConquestGame : Game
             foreach (string color in colors)
             {
                 Faction faction = Client.GameState.Factions.ColorToFaction[color];
-                if ("disconnected".Equals(faction.Status))
+                if (FACTION_STATUS_DISCONNECTED.Equals(faction.Status))
                 {
                     Globals.Log("identifySelf(): found disconnected color " + color);
                     player.FactionColor = color;
@@ -1572,7 +1572,7 @@ public class GlobalConquestGame : Game
         if (Client.IsObserverOnly)
             return false;
         bool canPlan = false;
-        if ("plan".Equals(Client.GameState.CurrentPhase))
+        if (GAME_PHASE_PLAN.Equals(Client.GameState.CurrentPhase))
         {
             //Globals.Log("IsAllowedToPlan(): currentPhase=" + Client.GameState.CurrentPhase);
             canPlan = true;
@@ -1587,7 +1587,7 @@ public class GlobalConquestGame : Game
                 return canPlan;
             }
             //Globals.Log("IsAllowedToPlan(): faction status=" + faction.Status);
-            if (!"planning".Equals(faction.Status))
+            if (!FACTION_STATUS_PLANNING.Equals(faction.Status))
             {
                 canPlan = false;
                 //Globals.Log("IsAllowedToPlan(): canPlan=" + canPlan);

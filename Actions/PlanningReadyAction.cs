@@ -1,6 +1,6 @@
 using System.Text.Json;
 using LiteNetLib;
-
+using static GameConstants;
 namespace GlobalConquest.Actions;
 
 public class PlanningReadyAction : PlayerAction
@@ -29,7 +29,7 @@ public class PlanningReadyAction : PlayerAction
             gameState.PlayerPlanningReady[ClientIdentifier] = true;
             Player player = gameState.Players.playerNameToPlayer[ClientIdentifier];
             Faction faction = gameState.Factions.ColorToFaction[player.FactionColor];
-            faction.Status = "planning";
+            faction.Status = FACTION_STATUS_PLANNING;
             server.sendGameState();
         }
         GameLogic gameLogic = server.GameLogic;
