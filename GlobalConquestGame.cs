@@ -63,6 +63,7 @@ public class GlobalConquestGame : Game
     public bool IsShowDestinations { get; set; }
 
     public bool IsShowAirplanes { get; set; }
+    public bool IsShowTreaties { get; set; }
     public bool IsTargetSelectionNeeded
     { get; set; }
 
@@ -80,6 +81,8 @@ public class GlobalConquestGame : Game
     bool shouldDrawMiniMap = false;
     MemoryStream renderedMemoryMapStream;
     byte[] renderedMiniMapData;
+
+    public Textures textures = new Textures();
 
     // Flags useful for debugging
     bool turnOffDetailsPanel = false;
@@ -149,17 +152,15 @@ public class GlobalConquestGame : Game
 
     public Dictionary<string, Texture2D> GetTextures()
     {
-
-        Dictionary<string, Texture2D> textures = hexMapEngineAdapter.textures;
-        if (textures.Count <= 0)
-            hexMapEngineAdapter.LoadContent();
-        return textures;
+        if (textures.textures.Count <= 0)
+            textures.LoadContent(this);
+        return textures.textures;
     }
 
     public Texture2D GetTexture(string textureName)
     {
         Texture2D texture = null;
-        Dictionary<string, Texture2D> textures = hexMapEngineAdapter.textures;
+        Dictionary<string, Texture2D> textures = GetTextures();
         if (textures != null && textures.ContainsKey(textureName))
             texture = textures[textureName];
         return texture;
@@ -177,6 +178,7 @@ public class GlobalConquestGame : Game
 
     protected override void LoadContent()
     {
+        textures.LoadContent(this);
         var grid = new Grid
         {
             RowSpacing = 8,
