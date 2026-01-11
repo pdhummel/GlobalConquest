@@ -36,8 +36,6 @@ public class Faction
         string treaty = TREATY_AT_WAR;
         if (ColorToProposedTreaty.ContainsKey(color))
             treaty = ColorToProposedTreaty[color];
-        if (color.Equals("amber"))
-            treaty = TREATY_TEAM_MATES;
         return treaty;
     }
 }
