@@ -36,6 +36,9 @@ public class Faction
         string treaty = TREATY_AT_WAR;
         if (ColorToProposedTreaty.ContainsKey(color))
             treaty = ColorToProposedTreaty[color];
+        // TODO: remove test
+        //if (color.Equals(OCHER))
+        //    return TREATY_CEASE_FIRE;
         return treaty;
     }
 

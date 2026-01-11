@@ -123,28 +123,32 @@ public class GameControl
             Mouse.SetPosition(currentMouseState.X, currentMouseState.Y + yDistance);
         }
 
-
         previousMouseState = currentMouseState;
         currentMouseState = Mouse.GetState();
 
         if (currentMouseState.LeftButton == ButtonState.Pressed)
         {
-            gcGame.handleLeftMouseButtonOnMiniMap();
+            //Globals.Log("currentMouseState.LeftButton == ButtonState.Pressed");
+            if (!gcGame.handleLeftMouseButtonOnMiniMap())
+                gcGame.handleLeftMouseButtonOnTreaties();
         }
 
         if (currentMouseState.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released && !isMouseDown)
         {
+            //Globals.Log("currentMouseState.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released && !isMouseDown");
             isMouseDown = true;
             clickStartTime = (float)gameTime.TotalGameTime.TotalSeconds; // Or use DateTime.Now.Ticks
         }
         else if (isMouseDown && currentMouseState.LeftButton == ButtonState.Pressed &&
                  ((float)gameTime.TotalGameTime.TotalSeconds - clickStartTime >= 1.0f))
         {
+            //Globals.Log("currentMouseState.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released && !isMouseDown && ((float)gameTime.TotalGameTime.TotalSeconds - clickStartTime >= 1.0f)");
             isMouseDown = false;
             gcGame.handleLongLeftClick();
         }
         else if (currentMouseState.LeftButton == ButtonState.Released && isMouseDown)
         {
+            //Globals.Log("currentMouseState.LeftButton == ButtonState.Released && isMouseDown");
             isMouseDown = false;
             gcGame.handleLeftClick();
         }
@@ -210,7 +214,7 @@ public class GameControl
         previousKeyboardState = currentKeyboardState;
     }
 
-    private void checkAllWidgets(Desktop desktop, string AorB)
+    public void checkAllWidgets(Desktop desktop, string AorB)
     {
         List<Widget> widgets = new List<Widget>(desktop.Widgets);
         foreach (Widget child in widgets)

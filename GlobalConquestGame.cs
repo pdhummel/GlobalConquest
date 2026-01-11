@@ -1003,8 +1003,26 @@ public class GlobalConquestGame : Game
         return v;
     }
 
-    public void handleLeftMouseButtonOnMiniMap()
+    public void handleLeftMouseButtonOnTreaties()
     {
+        if (!turnOffMiniMapPanel &&
+            Client != null && isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible)
+        {
+            Panel factionsPanel = MainGameScreen.FactionsPanel;
+            Rectangle factionsPanelRectangle = new Rectangle(factionsPanel.Left, factionsPanel.Top, (int)factionsPanel.Width, (int)factionsPanel.Height);
+            var mousePosition = new Vector2(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
+            // Check for a left mouse button click within the faction panel's boundaries
+            if (factionsPanelRectangle.Contains(mousePosition))
+            {
+                GameControl.checkAllWidgets(Desktop, "A");
+            }
+        }
+            
+    }
+
+    public bool handleLeftMouseButtonOnMiniMap()
+    {
+        bool handled = false;
         if (!turnOffMiniMapPanel &&
             Client != null && isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible)
         {
@@ -1035,9 +1053,11 @@ public class GlobalConquestGame : Game
                     scrollToPosition((int)worldPosition.Y, (int)currentPosition.X);
                     currentPosition = hexMapEngineAdapter.getCurrentPixelPosition();
                     scrollToPosition((int)currentPosition.Y, (int)worldPosition.X);
+                    handled = true;
                 }
             }
         }
+        return handled;
     }
 
 

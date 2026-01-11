@@ -14,6 +14,8 @@ using Myra.Graphics2D.TextureAtlases;
 using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
 using Panel = Myra.Graphics2D.UI.Panel;
 using Label = Myra.Graphics2D.UI.Label;
+using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
+using VerticalAlignment = Myra.Graphics2D.UI.VerticalAlignment;
 using Color = Microsoft.Xna.Framework.Color;
 using System.IO;
 using Myra.Graphics2D.UI.Styles;
@@ -32,10 +34,13 @@ public class FactionsPanelView
     private VerticalStackPanel ocherPanel = new VerticalStackPanel();
     private VerticalStackPanel magentaPanel = new VerticalStackPanel();
     private VerticalStackPanel cyanPanel = new VerticalStackPanel();
+    Button[] upArrowButtons = new Button[3];
+    Button[] downArrowButtons = new Button[3];
 
     public FactionsPanelView(GlobalConquestGame gcGame, Panel factionsPanel)
     {
         this.gcGame = gcGame;
+        GameState gameState = gcGame.Client.GameState;
         FactionsPanel = factionsPanel;
         xPos = FactionsPanel.Left + 1;
         yPos = FactionsPanel.Top + 1;
@@ -45,6 +50,28 @@ public class FactionsPanelView
         drawFactionPanel(magentaPanel, Color.Magenta, 1, 0);
         drawFactionPanel(cyanPanel, Color.Cyan, 1, 1);
         FactionsPanel.Widgets.Add(grid);
+
+        Player currentPlayer = gcGame.identifySelf();
+        if (currentPlayer != null)
+        {
+            int buttonIndex = 0;
+            foreach (string otherColor in FACTION_COLORS)
+            {
+                string color = currentPlayer.FactionColor;
+                bool isCurrentPlayerFaction = currentPlayer != null && currentPlayer.FactionColor != null && currentPlayer.FactionColor.Equals(color);
+                            
+                if (isCurrentPlayerFaction)
+                {                    
+                    if (otherColor.Equals(color))
+                        continue; // Skip self
+                    Color panelColor = getColorForFaction(color);
+                    upArrowButtons[buttonIndex] = createUpArrowButton(color, otherColor, panelColor);
+                    downArrowButtons[buttonIndex] = createDownArrowButton(color, otherColor, panelColor);
+                }
+                buttonIndex++;
+
+            }
+        }
     }
 
     public void drawFactionsPanel()
@@ -106,17 +133,6 @@ public class FactionsPanelView
         Grid.SetColumn(label, 0);
         iconGrid.Widgets.Add(label);
 
-
-        /*
-        panel.Background = new NinePatchRegion(texture, new Rectangle(0, 0, 117, 82),
-                                                new Thickness
-                                                {
-                                                    Left = 1,
-                                                    Right = 1,
-                                                    Top = 1,
-                                                    Bottom = 1
-                                                });
-        */
     }
 
     private void drawMessagesForColor(VerticalStackPanel panel, string color)
@@ -162,6 +178,7 @@ public class FactionsPanelView
         GameState gameState = gcGame.Client.GameState;
 
         // Display treaties with other factions
+        int buttonIndex = 0;
         foreach (string otherColor in FACTION_COLORS)
         {
             if (otherColor.Equals(color))
@@ -196,40 +213,23 @@ public class FactionsPanelView
 
             Color panelColor = getColorForFaction(color);
             
-            // Add up arrow button (14x28)
-            var upArrowButton = new Button()
+            // Only show arrow buttons for the current player's faction
+            Player currentPlayer = gcGame.identifySelf();
+            bool isCurrentPlayerFaction = currentPlayer != null && currentPlayer.FactionColor != null && currentPlayer.FactionColor.Equals(color);
+            
+            if (isCurrentPlayerFaction)
             {
-                Id = "upArrowButton_" + color + "_" + otherColor,
-                Width = 14,
-                Height = 28,
-                Background = new SolidBrush(panelColor),
-                Content = new Label
-                {
-                    Text = "↑",
-                    TextColor = Color.Black
-                }
-            };
-            treatyRow.Widgets.Add(upArrowButton);
+                Button upArrowButton = upArrowButtons[buttonIndex];
+                treatyRow.Widgets.Add(upArrowButton);
 
-            // Add down arrow button (14x28)
-            var downArrowButton = new Button()
-            {
-                Id = "downArrowButton_" + color + "_" + otherColor,
-                Width = 14,
-                Height = 28,
-                Background = new SolidBrush(panelColor),
-                Content = new Label
-                {
-                    Text = "↓",
-                    TextColor = Color.Black
-                }
-            };
-            treatyRow.Widgets.Add(downArrowButton);
+                Button downArrowButton = downArrowButtons[buttonIndex];
+                treatyRow.Widgets.Add(downArrowButton);
+            }
 
             // If proposed treaty differs from current treaty, show the proposed treaty icon
-            if (!proposedTreaty.Equals(currentTreaty))
+            if (!proposedTreaty.Equals(currentTreaty) && isCurrentPlayerFaction)
             {
-
+                //Globals.Log("drawTreatiesForColor(): propose " + proposedTreaty + " from " + currentTreaty);
                 // Add 28x28 proposed treaty icon
                 string proposedTreatyTextureName = getTreatyTextureName(proposedTreaty);
                 Image proposedTreatyImage = new Image();
@@ -242,6 +242,7 @@ public class FactionsPanelView
             }
 
             panel.Widgets.Add(treatyRow);
+            buttonIndex++;
         }
     }
 
@@ -296,4 +297,135 @@ public class FactionsPanelView
         }
     }
 
+    private string getNextTreatyLevel(string currentTreaty)
+    {
+        switch (currentTreaty)
+        {
+            case TREATY_AT_WAR:
+                return TREATY_CEASE_FIRE;
+            case TREATY_CEASE_FIRE:
+                return TREATY_ALLIANCE;
+            case TREATY_ALLIANCE:
+                return TREATY_TEAM_MATES;
+            default:
+                return TREATY_CEASE_FIRE; // fallback
+        }
+    }
+
+    private string getPreviousTreatyLevel(string currentTreaty)
+    {
+        switch (currentTreaty)
+        {
+            case TREATY_TEAM_MATES:
+                return TREATY_ALLIANCE;
+            case TREATY_ALLIANCE:
+                return TREATY_CEASE_FIRE;
+            case TREATY_CEASE_FIRE:
+                return TREATY_AT_WAR;
+            default:
+                return TREATY_AT_WAR; // fallback
+        }
+    }
+
+    private Button createUpArrowButton(string color, string otherColor, Color panelColor)
+    {
+        Globals.Log("createUpArrowButton(): " + color + " " + otherColor);
+        Button upArrowButton = new Button()
+        {
+            Id = "upArrowButton_" + color + "_" + otherColor,
+            Width = 16,
+            Height = 28,
+            Background = new SolidBrush(panelColor),
+            Border = new SolidBrush(Color.Black),
+            BorderThickness = new Thickness(1),
+            Visible = true,
+            Enabled = true,
+            Content = new Label
+            {
+                Text = "↑",
+                TextColor = Color.Black,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            }
+        };
+        upArrowButton.Click += (s, a) =>
+        {
+            Globals.Log("upArrowButton.Click(): " + color + " " + otherColor);
+            string currentTreaty = gcGame.Client.GameState.Factions.GetCurrentTreaty(color, otherColor);
+            // Get the next treaty level based on current treaty
+            string nextTreaty = getNextTreatyLevel(currentTreaty);
+            // Create and send action to server
+            SetProposedTreatyAction action = new SetProposedTreatyAction();
+            action.ClassType = "GlobalConquest.Actions.SetProposedTreatyAction";
+            action.ClientIdentifier = gcGame.Client?.ClientIdentifier;
+            action.FactionColor = color;
+            action.OtherFactionColor = otherColor;
+            action.ProposedTreaty = nextTreaty;
+            if (gcGame.Client != null && action.ClientIdentifier != null)
+            {
+                Globals.Log("Sending action to server: " + action.ClientIdentifier + " " + action.FactionColor + " " + action.OtherFactionColor + " " + action.ProposedTreaty);
+                gcGame.Client.SendAction(action.ClientIdentifier, action);
+                gcGame.Client.GameState.Factions.ColorToFaction[color].ColorToProposedTreaty[otherColor] = nextTreaty;
+                drawTreatiesForColor(getPanelForColor(color), color);
+            }
+        };
+        return upArrowButton;
+    }
+
+    private Button createDownArrowButton(string color, string otherColor, Color panelColor)
+    {
+        Globals.Log("createDownArrowButton(): " + color + " " + otherColor);
+        Button downArrowButton = new Button()
+        {
+            Id = "downArrowButton_" + color + "_" + otherColor,
+            Width = 16,
+            Height = 28,
+            Background = new SolidBrush(panelColor),
+            Border = new SolidBrush(Color.Black),
+            BorderThickness = new Thickness(1),
+            Visible = true,
+            Enabled = true,
+            Content = new Label
+            {
+                Text = "↓",
+                TextColor = Color.Black,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            }
+        };
+        downArrowButton.Click += (s, a) =>
+        {
+            Globals.Log("downArrowButton.Click(): " + color + " " + otherColor);
+            string currentTreaty = gcGame.Client.GameState.Factions.GetCurrentTreaty(color, otherColor);
+            // Get the previous treaty level based on current treaty
+            string previousTreaty = getPreviousTreatyLevel(currentTreaty);
+            // Create and send action to server
+            SetProposedTreatyAction action = new SetProposedTreatyAction();
+            action.ClassType = "GlobalConquest.Actions.SetProposedTreatyAction";
+            action.ClientIdentifier = gcGame.Client?.ClientIdentifier;
+            action.FactionColor = color;
+            action.OtherFactionColor = otherColor;
+            action.ProposedTreaty = previousTreaty;
+            if (gcGame.Client != null && action.ClientIdentifier != null)
+            {
+                Globals.Log("Sending action to server: " + action.ClientIdentifier + " " + action.FactionColor + " " + action.OtherFactionColor + " " + action.ProposedTreaty);
+                gcGame.Client.SendAction(action.ClientIdentifier, action);
+            }
+        };
+        return downArrowButton;
+    }
+
+    private VerticalStackPanel getPanelForColor(string color)
+    {
+        VerticalStackPanel panel = null;
+        if (color.Equals(AMBER))
+            panel = amberPanel;
+        if (color.Equals(OCHER))
+            panel = ocherPanel;
+        if (color.Equals(MAGENTA))
+            panel = magentaPanel;
+        if (color.Equals(CYAN))
+            panel = cyanPanel;
+        return panel;
+    }
 }
