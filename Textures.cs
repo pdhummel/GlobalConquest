@@ -8,6 +8,11 @@ namespace GlobalConquest;
 
 public class Textures
 {
+    // <a href="https://www.flaticon.com/free-icons/war" title="war icons">War icons created by Good Ware - Flaticon</a>
+    // <a href="https://www.flaticon.com/free-icons/dove" title="dove icons">Dove icons created by Freepik - Flaticon</a>
+    // <a href="https://www.flaticon.com/free-icons/alliance" title="alliance icons">Alliance icons created by HAJICON - Flaticon</a>
+    // <a href="https://www.flaticon.com/free-icons/partner" title="partner icons">Partner icons created by Buandesign - Flaticon</a>
+
     public Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
     public Dictionary<string, Texture2D> units = new Dictionary<string, Texture2D>();
     public Dictionary<string, Texture2D> burbs = new Dictionary<string, Texture2D>();
@@ -193,6 +198,18 @@ public class Textures
 
         Texture2D hexHighlight = game.Content.Load<Texture2D>("YellowHexagonOutline_72x72");
         textures["mapHexHighlight"] = hexHighlight;
+
+        Texture2D warTexture = game.Content.Load<Texture2D>("swords");
+        textures["war"] = warTexture;
+
+        Texture2D teamMatesTexture = game.Content.Load<Texture2D>("partner");
+        textures["team-mates"] = teamMatesTexture;
+
+        Texture2D allianceTexture = game.Content.Load<Texture2D>("alliance");
+        textures["alliance"] = allianceTexture;
+
+        Texture2D ceaseFireTexture = game.Content.Load<Texture2D>("cease-fire");
+        textures["cease-fire"] = ceaseFireTexture;
 
         foreach (string key in burbs.Keys)
         {

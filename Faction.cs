@@ -16,7 +16,7 @@ public class Faction
     public int CombinedScore { get; set; } = 0;
     public int IncomeScore {get; set;} = 0;
     public int CapitalScore {get; set;} = 0;
-    public Dictionary<string, string> ColorToTreaty = new Dictionary<string, string>();
+    public Dictionary<string, string> ColorToProposedTreaty = new Dictionary<string, string>();
 
     public string Status { get; set; } = FACTION_STATUS_PLANNING;
 
@@ -31,11 +31,13 @@ public class Faction
         Ai.Faction = this;
     }
 
-    public string GetTreatyForColor(string color)
+    public string GetProposedTreatyForColor(string color)
     {
         string treaty = TREATY_AT_WAR;
-        if (ColorToTreaty.ContainsKey(color))
-            treaty = ColorToTreaty[color];
+        if (ColorToProposedTreaty.ContainsKey(color))
+            treaty = ColorToProposedTreaty[color];
+        if (color.Equals("amber"))
+            treaty = TREATY_TEAM_MATES;
         return treaty;
     }
 }
