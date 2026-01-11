@@ -1,4 +1,5 @@
 using static UnitTypeConstants;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using GlobalConquest.Units;
 using static GlobalConquest.Map;
@@ -294,6 +295,16 @@ public class GameState
         }
         this.VictoriousColor = newGameState.VictoriousColor;
 
+    }
+
+    public override string ToString()
+    {
+        string returnString = "GameState: " + ToJson();
+        return returnString;
+    }
+    public string ToJson()
+    {
+        return JsonSerializer.Serialize(this);
     }
 
 }

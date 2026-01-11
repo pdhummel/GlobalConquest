@@ -16,7 +16,7 @@ public class Faction
     public int CombinedScore { get; set; } = 0;
     public int IncomeScore {get; set;} = 0;
     public int CapitalScore {get; set;} = 0;
-    public Dictionary<string, string> ColorToProposedTreaty = new Dictionary<string, string>();
+    public Dictionary<string, string> ColorToProposedTreaty {get; set;} = new Dictionary<string, string>();
 
     public string Status { get; set; } = FACTION_STATUS_PLANNING;
 

@@ -194,7 +194,7 @@ public class Client
             //if (GameState.Map != null && GameState.Map.IsMapReady)
             //    newGameState.Map = GameState.Map;
             //GameState = newGameState;
-            GameState.copyTransferredGameState(newGameState);            
+            GameState.copyTransferredGameState(newGameState);
             handleGameOverForClient();
         }
         else if (gameEvent != null && EVENT_TYPE_GAME_STATE_AND_MAP_UPDATE.Equals(gameEvent.EventType))
