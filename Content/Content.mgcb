@@ -43,6 +43,18 @@
 /processorParam:Quality=Best
 /build:airplaneNotification.wav
 
+#begin alliance.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:alliance.png
+
 #begin amber-battleship-48x48.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -258,6 +270,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:capital-72x72.png
+
+#begin cease-fire.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:cease-fire.png
 
 #begin city-hex-72x72.png
 /importer:TextureImporter
@@ -1173,6 +1197,18 @@
 /processorParam:TextureFormat=Color
 /build:ocher-transport-tank-48x48.png
 
+#begin partner.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:partner.png
+
 #begin playerLostGame.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -1334,6 +1370,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:swamp-flat-hex-72x72.png
+
+#begin swords.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:swords.png
 
 #begin town-hex-72x72.png
 /importer:TextureImporter

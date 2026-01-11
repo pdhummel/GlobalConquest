@@ -19,6 +19,7 @@ public class MainGameMenu
     MenuItem executeMenuItem = new MenuItem("Execute", "&Execute!");
     MenuItem destinationsMenuItem = new MenuItem("Destinations", "&Destinations");
     MenuItem airplanesMenuItem = new MenuItem("Airplanes", "&Airplanes");
+    MenuItem treatiesMenuItem = new MenuItem("Treaties", "&Treaties");
     MenuItem fileMenuItem = new MenuItem("File", "&File");
     MenuItem settingsMenuItem = new MenuItem("Settings", "&Settings");
     MenuItem viewMenuItem = new MenuItem("View", "&View");
@@ -42,6 +43,8 @@ public class MainGameMenu
         destinationsMenuItem.Color = Color.Yellow;
         airplanesMenuItem.Id = "MainGameMenu.horizontalMenu.airplanesMenuItem";
         airplanesMenuItem.Color = Color.Yellow;
+        treatiesMenuItem.Id = "MainGameMenu.horizontalMenu.treatiesMenuItem";
+        treatiesMenuItem.Color = Color.Yellow;
 
         GameControlActionMapper actionMapper = mainGameScreen.gcGame.GameControl.GameControlActionMapper;
         actionMapper.registerControlMethod(executeMenuItem.Id, this, "executeMenuItemSelected");
@@ -50,6 +53,8 @@ public class MainGameMenu
         actionMapper.registerSelectedIndex(horizontalMenu.Id, 1, destinationsMenuItem.Id);
         actionMapper.registerControlMethod(airplanesMenuItem.Id, this, "airplanesMenuItemSelected");
         actionMapper.registerSelectedIndex(horizontalMenu.Id, 2, airplanesMenuItem.Id);
+        actionMapper.registerControlMethod(treatiesMenuItem.Id, this, "treatiesMenuItemSelected");
+        actionMapper.registerSelectedIndex(horizontalMenu.Id, 3, treatiesMenuItem.Id);
 
         executeMenuItem.Selected += (s, a) =>
         {
@@ -64,6 +69,11 @@ public class MainGameMenu
         airplanesMenuItem.Selected += (s, a) =>
         {
             airplanesMenuItemSelected();
+        };
+
+        treatiesMenuItem.Selected += (s, a) =>
+        {
+            treatiesMenuItemSelected();
         };
 
 
@@ -88,6 +98,7 @@ public class MainGameMenu
         horizontalMenu.Items.Add(executeMenuItem);
         horizontalMenu.Items.Add(destinationsMenuItem);
         horizontalMenu.Items.Add(airplanesMenuItem);
+        horizontalMenu.Items.Add(treatiesMenuItem);
         mainGameScreen.MainGameMenuPanel.Widgets.Add(horizontalMenu);
         refreshMenu();
     }
@@ -285,6 +296,22 @@ public class MainGameMenu
         else
         {
             airplanesMenuItem.Text = "&Airplanes";
+        }
+
+    }
+
+    public void treatiesMenuItemSelected()
+    {
+        mainGameScreen.gcGame.IsShowTreaties = !mainGameScreen.gcGame.IsShowTreaties;
+        mainGameScreen.ContextMenu.HideContextMenu();
+        mainGameScreen.ContextMenu.IsShowContextMenu = false;
+        if (mainGameScreen.gcGame.IsShowTreaties)
+        {
+            treatiesMenuItem.Text = "&TREATIES";
+        }
+        else
+        {
+            treatiesMenuItem.Text = "&Treaties";
         }
 
     }

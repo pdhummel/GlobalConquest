@@ -54,15 +54,25 @@ public class FactionsPanelView
         magentaPanel.Widgets.Clear();
         cyanPanel.Widgets.Clear();
 
-        drawMessagesForColor(amberPanel, AMBER);
-        drawMessagesForColor(ocherPanel, OCHER);
-        drawMessagesForColor(magentaPanel, MAGENTA);
-        drawMessagesForColor(cyanPanel, CYAN);
+        if (gcGame.IsShowTreaties)
+        {
+            drawTreatiesForColor(amberPanel, AMBER);
+            drawTreatiesForColor(ocherPanel, OCHER);
+            drawTreatiesForColor(magentaPanel, MAGENTA);
+            drawTreatiesForColor(cyanPanel, CYAN);
+        }
+        else
+        {
+            drawMessagesForColor(amberPanel, AMBER);
+            drawMessagesForColor(ocherPanel, OCHER);
+            drawMessagesForColor(magentaPanel, MAGENTA);
+            drawMessagesForColor(cyanPanel, CYAN);
 
-        addFactionIcon(amberPanel, "amber-array");
-        addFactionIcon(ocherPanel, "ocher-order");
-        addFactionIcon(magentaPanel, "magenta-mob");
-        addFactionIcon(cyanPanel, "cyan-circle");
+            addFactionIcon(amberPanel, "amber-array");
+            addFactionIcon(ocherPanel, "ocher-order");
+            addFactionIcon(magentaPanel, "magenta-mob");
+            addFactionIcon(cyanPanel, "cyan-circle");
+        }
     }
 
     private void drawFactionPanel(VerticalStackPanel panel, Color color, int row, int col)
@@ -145,6 +155,101 @@ public class FactionsPanelView
         scoreLabel.Text = "" + score;
         scoreLabel.TextColor = Color.Black;
         panel.Widgets.Add(scoreLabel);
+    }
+
+    private void drawTreatiesForColor(VerticalStackPanel panel, string color)
+    {
+        GameState gameState = gcGame.Client.GameState;
+
+        // Display treaties with other factions
+        foreach (string otherColor in FACTION_COLORS)
+        {
+            if (otherColor.Equals(color))
+                continue; // Skip self
+
+            string currentTreaty = gameState.Factions.GetCurrentTreaty(color, otherColor);
+            Faction faction = gameState.Factions.ColorToFaction[color];
+            string proposedTreaty = faction.GetProposedTreatyForColor(otherColor);
+            string otherFactionTexture = getFactionTextureName(otherColor);
+
+            // Create a horizontal panel for icon + treaty status
+            HorizontalStackPanel treatyRow = new HorizontalStackPanel();
+            
+            // Add 32x32 faction icon
+            Image factionImage = new Image();
+            Texture2D texture = gcGame.GetTexture(otherFactionTexture);
+            var textureRegion = new TextureRegion(texture);
+            factionImage.Renderable = textureRegion;
+            factionImage.Width = 32;
+            factionImage.Height = 32;
+            treatyRow.Widgets.Add(factionImage);
+
+            // Add 28x28 current treaty icon
+            string treatyTextureName = getTreatyTextureName(currentTreaty);
+            Image treatyImage = new Image();
+            Texture2D treatyTexture = gcGame.GetTexture(treatyTextureName);
+            var treatyTextureRegion = new TextureRegion(treatyTexture);
+            treatyImage.Renderable = treatyTextureRegion;
+            treatyImage.Width = 28;
+            treatyImage.Height = 28;
+            treatyRow.Widgets.Add(treatyImage);
+
+            // If proposed treaty differs from current treaty, show "?" and proposed treaty icon
+            if (!proposedTreaty.Equals(currentTreaty))
+            {
+                // Add "?" label
+                Label questionLabel = new Label();
+                questionLabel.Text = "?";
+                questionLabel.TextColor = Color.Black;
+                treatyRow.Widgets.Add(questionLabel);
+
+                // Add 28x28 proposed treaty icon
+                string proposedTreatyTextureName = getTreatyTextureName(proposedTreaty);
+                Image proposedTreatyImage = new Image();
+                Texture2D proposedTreatyTexture = gcGame.GetTexture(proposedTreatyTextureName);
+                var proposedTreatyTextureRegion = new TextureRegion(proposedTreatyTexture);
+                proposedTreatyImage.Renderable = proposedTreatyTextureRegion;
+                proposedTreatyImage.Width = 28;
+                proposedTreatyImage.Height = 28;
+                treatyRow.Widgets.Add(proposedTreatyImage);
+            }
+
+            panel.Widgets.Add(treatyRow);
+        }
+    }
+
+    private string getFactionTextureName(string color)
+    {
+        switch (color)
+        {
+            case AMBER:
+                return "amber-array";
+            case OCHER:
+                return "ocher-order";
+            case MAGENTA:
+                return "magenta-mob";
+            case CYAN:
+                return "cyan-circle";
+            default:
+                return "amber-array"; // fallback
+        }
+    }
+
+    private string getTreatyTextureName(string treaty)
+    {
+        switch (treaty)
+        {
+            case TREATY_AT_WAR:
+                return "war";
+            case TREATY_CEASE_FIRE:
+                return "cease-fire";
+            case TREATY_ALLIANCE:
+                return "alliance";
+            case TREATY_TEAM_MATES:
+                return "team-mates";
+            default:
+                return "war"; // fallback
+        }
     }
 
 }

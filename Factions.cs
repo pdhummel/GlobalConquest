@@ -30,14 +30,14 @@ public class Factions
         ColorToFaction[faction.Color] = faction;
     }
 
-    public string GetTreaty(string color1, string color2)
+    public string GetCurrentTreaty(string color1, string color2)
     {
         Faction faction1 = ColorToFaction[color1];
         Faction faction2 = ColorToFaction[color2];
-        return GetTreaty(faction1, faction2);
+        return GetCurrentTreaty(faction1, faction2);
     }
 
-    public string GetTreaty(Faction faction1, Faction faction2)
+    public string GetCurrentTreaty(Faction faction1, Faction faction2)
     {
         string treaty = TREATY_AT_WAR;
         if (faction1.GetProposedTreatyForColor(faction2.Color).Equals(TREATY_TEAM_MATES) && faction2.GetProposedTreatyForColor(faction1.Color).Equals(TREATY_TEAM_MATES))
@@ -70,7 +70,7 @@ public class Factions
 
     public bool IsInAlliance(Faction faction1, Faction faction2)
     {
-        string treaty = GetTreaty(faction1, faction2);
+        string treaty = GetCurrentTreaty(faction1, faction2);
         if (treaty.Equals(TREATY_ALLIANCE))
             return true;
         return false;
