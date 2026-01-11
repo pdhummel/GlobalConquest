@@ -194,14 +194,41 @@ public class FactionsPanelView
             treatyImage.Height = 28;
             treatyRow.Widgets.Add(treatyImage);
 
-            // If proposed treaty differs from current treaty, show "?" and proposed treaty icon
+            Color panelColor = getColorForFaction(color);
+            
+            // Add up arrow button (14x28)
+            var upArrowButton = new Button()
+            {
+                Id = "upArrowButton_" + color + "_" + otherColor,
+                Width = 14,
+                Height = 28,
+                Background = new SolidBrush(panelColor),
+                Content = new Label
+                {
+                    Text = "↑",
+                    TextColor = Color.Black
+                }
+            };
+            treatyRow.Widgets.Add(upArrowButton);
+
+            // Add down arrow button (14x28)
+            var downArrowButton = new Button()
+            {
+                Id = "downArrowButton_" + color + "_" + otherColor,
+                Width = 14,
+                Height = 28,
+                Background = new SolidBrush(panelColor),
+                Content = new Label
+                {
+                    Text = "↓",
+                    TextColor = Color.Black
+                }
+            };
+            treatyRow.Widgets.Add(downArrowButton);
+
+            // If proposed treaty differs from current treaty, show the proposed treaty icon
             if (!proposedTreaty.Equals(currentTreaty))
             {
-                // Add "?" label
-                Label questionLabel = new Label();
-                questionLabel.Text = "?";
-                questionLabel.TextColor = Color.Black;
-                treatyRow.Widgets.Add(questionLabel);
 
                 // Add 28x28 proposed treaty icon
                 string proposedTreatyTextureName = getTreatyTextureName(proposedTreaty);
@@ -249,6 +276,23 @@ public class FactionsPanelView
                 return "team-mates";
             default:
                 return "war"; // fallback
+        }
+    }
+
+    private Color getColorForFaction(string color)
+    {
+        switch (color)
+        {
+            case AMBER:
+                return Color.Yellow;
+            case OCHER:
+                return Color.Orange;
+            case MAGENTA:
+                return Color.Magenta;
+            case CYAN:
+                return Color.Cyan;
+            default:
+                return Color.Yellow; // fallback
         }
     }
 
