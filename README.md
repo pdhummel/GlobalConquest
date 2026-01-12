@@ -206,7 +206,7 @@ The game is being designed with known differences from the original.
   - [x] Alliance
   - [x] Teammates
   - [x] Changes to Factions Panel for Treaties
-  - [ ] Ability to downgrade treaty to war during planning.
+  - [x] Ability to downgrade treaty to war during planning.
   - [ ] AI treaty enhancements.
 - [ ] Choose game unit palette
 

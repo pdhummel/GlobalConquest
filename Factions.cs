@@ -30,6 +30,12 @@ public class Factions
         ColorToFaction[faction.Color] = faction;
     }
 
+    public string DetermineNewTreaty(string color1, string color2)
+    {
+        Faction faction1 = ColorToFaction[color1];
+        Faction faction2 = ColorToFaction[color2];
+        return DetermineNewTreaty(faction1, faction2);
+    }
 
     public string DetermineNewTreaty(Faction faction1, Faction faction2)
     {
@@ -104,6 +110,16 @@ public class Factions
         Faction faction1 = ColorToFaction[color1];
         Faction faction2 = ColorToFaction[color2];
         return AreTeamMates(faction1, faction2);
+    }
+
+    public void SetCurrentTreaty(string color1, string color2, string treaty)
+    {
+        Faction faction1 = this.ColorToFaction[color1];
+        Faction faction2 = this.ColorToFaction[color2];
+        faction1.ColorToProposedTreaty[faction2.Color] = treaty;
+        faction2.ColorToProposedTreaty[faction1.Color] = treaty;
+        this.FactionColorsToCurrentTreaties[color1+"-"+color2] = treaty;
+        this.FactionColorsToCurrentTreaties[color2+"-"+color1] = treaty;
     }
 
 

@@ -33,6 +33,7 @@ public class SetProposedTreatyAction : PlayerAction
             if (player.FactionColor.Equals(FactionColor) && gameState.Factions.ColorToFaction.ContainsKey(FactionColor))
             {
                 Faction faction = gameState.Factions.ColorToFaction[FactionColor];
+                Faction otherFaction = gameState.Factions.ColorToFaction[OtherFactionColor];
                 // Verify the other faction color is valid
                 if (FACTION_COLORS.Contains(OtherFactionColor) && !OtherFactionColor.Equals(FactionColor))
                 {
@@ -40,6 +41,33 @@ public class SetProposedTreatyAction : PlayerAction
                     faction.ColorToProposedTreaty[OtherFactionColor] = ProposedTreaty;
                     gameState.Factions.ColorToFaction[FactionColor] = faction;
                     Globals.Log($"execute(): Set proposed treaty from {FactionColor} to {OtherFactionColor} to {ProposedTreaty}");
+
+                    string currentTreaty = gameState.Factions.GetCurrentTreaty(FactionColor, OtherFactionColor);
+                    string newTreaty = gameState.Factions.DetermineNewTreaty(FactionColor, OtherFactionColor);
+                    if (currentTreaty.Equals(TREATY_TEAM_MATES) && 
+                        faction.GetProposedTreatyForColor(OtherFactionColor).Equals(otherFaction.GetProposedTreatyForColor(FactionColor)) &&
+                        newTreaty.Equals(TREATY_ALLIANCE))
+                    {
+                        gameState.Factions.SetCurrentTreaty(FactionColor, OtherFactionColor, newTreaty);
+                        faction.SetProposedTreatyForColor(OtherFactionColor, newTreaty);
+                        otherFaction.SetProposedTreatyForColor(FactionColor, newTreaty);
+                    }
+                    else if (currentTreaty.Equals(TREATY_ALLIANCE) && 
+                        faction.GetProposedTreatyForColor(OtherFactionColor).Equals(otherFaction.GetProposedTreatyForColor(FactionColor)) &&
+                        newTreaty.Equals(TREATY_CEASE_FIRE))
+                    {
+                        gameState.Factions.SetCurrentTreaty(FactionColor, OtherFactionColor, newTreaty);
+                        faction.SetProposedTreatyForColor(OtherFactionColor, newTreaty);
+                        otherFaction.SetProposedTreatyForColor(FactionColor, newTreaty);
+                    }
+                    else if (currentTreaty.Equals(TREATY_CEASE_FIRE) && 
+                        faction.GetProposedTreatyForColor(OtherFactionColor).Equals(otherFaction.GetProposedTreatyForColor(FactionColor)) &&
+                        newTreaty.Equals(TREATY_AT_WAR))
+                    {
+                        gameState.Factions.SetCurrentTreaty(FactionColor, OtherFactionColor, newTreaty);
+                        faction.SetProposedTreatyForColor(OtherFactionColor, newTreaty);
+                        otherFaction.SetProposedTreatyForColor(FactionColor, newTreaty);
+                    }
                     // Send updated game state to all clients
                     server.sendGameState();
                 }

@@ -352,8 +352,14 @@ public class FactionsPanelView
         {
             Globals.Log("upArrowButton.Click(): " + color + " " + otherColor);
             string currentTreaty = gcGame.Client.GameState.Factions.GetCurrentTreaty(color, otherColor);
+            string currentProposedTreaty = gcGame.Client.GameState.Factions.ColorToFaction[color].GetProposedTreatyForColor(otherColor);
             // Get the next treaty level based on current treaty
             string nextTreaty = getNextTreatyLevel(currentTreaty);
+            string previousTreaty = getPreviousTreatyLevel(currentTreaty);
+            Globals.Log("downArrowButton.Click(): currentTreaty=" + currentTreaty + ", currentProposedTreaty=" + currentProposedTreaty + ", previousTreaty=" + previousTreaty + ", nextTreaty=" + nextTreaty);
+            if (currentProposedTreaty.Equals(previousTreaty) && !currentTreaty.Equals(previousTreaty))
+                nextTreaty = currentTreaty;
+            Globals.Log("downArrowButton.Click(): nextTreaty=" + nextTreaty);
             // Create and send action to server
             SetProposedTreatyAction action = new SetProposedTreatyAction();
             action.ClassType = "GlobalConquest.Actions.SetProposedTreatyAction";
@@ -397,8 +403,14 @@ public class FactionsPanelView
         {
             Globals.Log("downArrowButton.Click(): " + color + " " + otherColor);
             string currentTreaty = gcGame.Client.GameState.Factions.GetCurrentTreaty(color, otherColor);
+            string currentProposedTreaty = gcGame.Client.GameState.Factions.ColorToFaction[color].GetProposedTreatyForColor(otherColor);
             // Get the previous treaty level based on current treaty
             string previousTreaty = getPreviousTreatyLevel(currentTreaty);
+            string nextTreaty = getNextTreatyLevel(currentTreaty);
+            Globals.Log("downArrowButton.Click(): currentTreaty=" + currentTreaty + ", currentProposedTreaty=" + currentProposedTreaty + ", previousTreaty=" + previousTreaty + ", nextTreaty=" + nextTreaty);
+            if (currentProposedTreaty.Equals(nextTreaty) && !currentTreaty.Equals(nextTreaty))
+                previousTreaty = currentTreaty;
+            Globals.Log("downArrowButton.Click(): previousTreaty=" + previousTreaty);
             // Create and send action to server
             SetProposedTreatyAction action = new SetProposedTreatyAction();
             action.ClassType = "GlobalConquest.Actions.SetProposedTreatyAction";

@@ -78,10 +78,7 @@ public class GameLogic
             {
                 Faction faction2 = gameState.Factions.ColorToFaction[color2];
                 string treaty = gameState.Factions.DetermineNewTreaty(faction1, faction2);
-                faction1.ColorToProposedTreaty[faction2.Color] = treaty;
-                faction2.ColorToProposedTreaty[faction1.Color] = treaty;
-                gameState.Factions.FactionColorsToCurrentTreaties[color1+"-"+color2] = treaty;
-                gameState.Factions.FactionColorsToCurrentTreaties[color2+"-"+color1] = treaty;
+                gameState.Factions.SetCurrentTreaty(color1, color2, treaty);
             }
         }
 

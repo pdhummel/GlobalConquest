@@ -36,10 +36,12 @@ public class Faction
         string treaty = TREATY_AT_WAR;
         if (ColorToProposedTreaty.ContainsKey(color))
             treaty = ColorToProposedTreaty[color];
-        // TODO: remove test
-        //if (color.Equals(OCHER))
-        //    return TREATY_CEASE_FIRE;
         return treaty;
+    }
+
+    public void SetProposedTreatyForColor(string color, string treaty)
+    {
+        ColorToProposedTreaty[color] = treaty;
     }
 
     public bool IsInAnyAlliance(Factions factions)
@@ -68,5 +70,6 @@ public class Faction
 
         return isInAlliance;
     }
+
 }
 

@@ -632,7 +632,25 @@ class HexMapEngineAdapter
             {
                 unitTypeId = unit.Color + "-" + COMMAND_CENTER;
             }
-            if (isObserver || (player != null && gcGame.IsUnitVisibleToColor(unit, player.FactionColor)))
+            Faction faction = null;
+            if (player != null && mapHex != null)
+            {
+                faction = gcGame.Client.GameState.Factions.ColorToFaction[player.FactionColor];
+            }
+            bool teamMateVisibility = false;
+            foreach (string otherFactionColor in FACTION_COLORS)
+            {
+                if (faction != null && 
+                    (gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_TEAM_MATES) ||
+                     gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_ALLIANCE)))
+                {
+                    teamMateVisibility = gcGame.IsMapHexVisibleToColor(mapHex, otherFactionColor);
+                    if (teamMateVisibility)
+                        break;
+                }
+            }
+
+            if (isObserver || (player != null && gcGame.IsUnitVisibleToColor(unit, player.FactionColor) || teamMateVisibility))
             {
                 if (unit.ParentUnitId == null || !gcGame.IsShowAirplanes)
                 {
@@ -693,11 +711,25 @@ class HexMapEngineAdapter
 
         Vector2 destination = new Vector2(piCalculatedMapTileX, piCalculatedMapTileY);
         bool visibility = false;
+        Faction faction = null;
         if (player != null && mapHex != null)
         {
             visibility = gcGame.IsMapHexVisibleToColor(mapHex, player.FactionColor);
+            faction = gcGame.Client.GameState.Factions.ColorToFaction[player.FactionColor];
         }
-        if ((!isObserver && !visibility) || loTexture2DTile == null)
+        bool teamMateVisibility = false;
+        foreach (string otherFactionColor in FACTION_COLORS)
+        {
+            if (faction != null && 
+                (gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_TEAM_MATES) ||
+                 gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_ALLIANCE)))
+            {
+                teamMateVisibility = gcGame.IsMapHexVisibleToColor(mapHex, otherFactionColor);
+                if (teamMateVisibility)
+                    break;
+            }
+        }
+        if ((!isObserver && !visibility && !teamMateVisibility) || loTexture2DTile == null)
         {
             if (terrain.ContainsKey(TERRAIN_UNKNOWN))
                 coSpriteBatch.Draw(
@@ -771,11 +803,25 @@ class HexMapEngineAdapter
         Map map = gcGame.Client.GameState.Map;
         MapHex mapHex = map.Hexes[row, column];
         bool visibility = false;
+        Faction faction = null;
         if (player != null)
         {
             visibility = mapHex.IsVisibleToColor(player.FactionColor);
+            faction = gcGame.Client.GameState.Factions.ColorToFaction[player.FactionColor];
         }
-        if (!isObserver && !visibility)
+        bool teamMateVisibility = false;
+        foreach (string otherFactionColor in FACTION_COLORS)
+        {
+            if (faction != null && 
+                (gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_TEAM_MATES) ||
+                 gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_ALLIANCE)))
+            {
+                teamMateVisibility = gcGame.IsMapHexVisibleToColor(mapHex, otherFactionColor);
+                if (teamMateVisibility)
+                    break;
+            }
+        }
+        if (!isObserver && !visibility && !teamMateVisibility)
         {
             if (terrain.ContainsKey(TERRAIN_UNKNOWN))
                 coSpriteBatch.Draw(

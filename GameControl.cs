@@ -129,8 +129,8 @@ public class GameControl
         if (currentMouseState.LeftButton == ButtonState.Pressed)
         {
             //Globals.Log("currentMouseState.LeftButton == ButtonState.Pressed");
-            if (!gcGame.handleLeftMouseButtonOnMiniMap())
-                gcGame.handleLeftMouseButtonOnTreaties();
+            gcGame.handleLeftMouseButtonOnMiniMap();
+
         }
 
         if (currentMouseState.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released && !isMouseDown)
@@ -151,6 +151,7 @@ public class GameControl
             //Globals.Log("currentMouseState.LeftButton == ButtonState.Released && isMouseDown");
             isMouseDown = false;
             gcGame.handleLeftClick();
+            gcGame.handleLeftMouseButtonOnTreaties();
         }
 
 

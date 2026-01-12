@@ -868,7 +868,9 @@ public class GlobalConquestGame : Game
             return;
         // TODO: team-mates
         if (!Client.IsObserverOnly && (player == null || 
-            !(unit.Color.Equals(player.FactionColor) || Client.GameState.Factions.AreTeamMates(unit.Color, player.FactionColor))))
+            !(unit.Color.Equals(player.FactionColor) || 
+             Client.GameState.Factions.AreTeamMates(unit.Color, player.FactionColor) ||
+              Client.GameState.Factions.GetCurrentTreaty(unit.Color, player.FactionColor).Equals(TREATY_ALLIANCE))))
             return;
         MapHex mapHex = Client.GameState.Map.Hexes[unit.Y, unit.X];
         unit = mapHex.getUnit();
