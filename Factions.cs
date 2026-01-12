@@ -11,8 +11,8 @@ public class Factions
 
 
     public Dictionary<string, Faction> NameToFaction  { get; set; }= new Dictionary<string, Faction>();
-
     public Dictionary<string, Faction> ColorToFaction  { get; set; } = new Dictionary<string, Faction>();
+    public Dictionary<string, string> FactionColorsToCurrentTreaties {get;set;} = new Dictionary<string, string>();
 
     public Factions()
     {
@@ -30,14 +30,8 @@ public class Factions
         ColorToFaction[faction.Color] = faction;
     }
 
-    public string GetCurrentTreaty(string color1, string color2)
-    {
-        Faction faction1 = ColorToFaction[color1];
-        Faction faction2 = ColorToFaction[color2];
-        return GetCurrentTreaty(faction1, faction2);
-    }
 
-    public string GetCurrentTreaty(Faction faction1, Faction faction2)
+    public string DetermineNewTreaty(Faction faction1, Faction faction2)
     {
         string treaty = TREATY_AT_WAR;
         if (faction1.GetProposedTreatyForColor(faction2.Color).Equals(TREATY_TEAM_MATES) && faction2.GetProposedTreatyForColor(faction1.Color).Equals(TREATY_TEAM_MATES))
@@ -54,6 +48,27 @@ public class Factions
             return TREATY_CEASE_FIRE;
         else if (faction2.GetProposedTreatyForColor(faction1.Color).Equals(TREATY_CEASE_FIRE) && faction1.GetProposedTreatyForColor(faction2.Color).Equals(TREATY_CEASE_FIRE))
             return TREATY_CEASE_FIRE;
+        return treaty;
+    }
+
+    public string GetCurrentTreaty(string color1, string color2)
+    {
+        Faction faction1 = ColorToFaction[color1];
+        Faction faction2 = ColorToFaction[color2];
+        return GetCurrentTreaty(faction1, faction2);
+    }
+
+    public string GetCurrentTreaty(Faction faction1, Faction faction2)
+    {
+        string treaty = TREATY_AT_WAR;
+        if (FactionColorsToCurrentTreaties.ContainsKey(faction1.Color + "-" + faction2.Color))
+        {
+            treaty = FactionColorsToCurrentTreaties[faction1.Color + "-" + faction2.Color];
+        }
+        else if (FactionColorsToCurrentTreaties.ContainsKey(faction2.Color + "-" + faction1.Color))
+        {
+            treaty = FactionColorsToCurrentTreaties[faction2.Color + "-" + faction1.Color];
+        }
         return treaty;
     }
 

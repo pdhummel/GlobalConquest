@@ -62,16 +62,29 @@ public class GameLogic
         // Globals.Log("doExecutionPhase(): test 4");
         // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 4, true, true);
         // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 4, false, true);
-
-        outputDataStructureUse();
+        //outputDataStructureUse();
 
         Globals.Log("doExecutionPhase(): set factions executing");
-
         foreach (string color in FACTION_COLORS)
         {
             Faction faction = gameState.Factions.ColorToFaction[color];
             faction.Status = "executing";
         }
+        Globals.Log("doExecutionPhase(): set factions executing");
+        foreach (string color1 in FACTION_COLORS)
+        {
+            Faction faction1 = gameState.Factions.ColorToFaction[color1];
+            foreach (string color2 in FACTION_COLORS)
+            {
+                Faction faction2 = gameState.Factions.ColorToFaction[color2];
+                string treaty = gameState.Factions.DetermineNewTreaty(faction1, faction2);
+                faction1.ColorToProposedTreaty[faction2.Color] = treaty;
+                faction2.ColorToProposedTreaty[faction1.Color] = treaty;
+                gameState.Factions.FactionColorsToCurrentTreaties[color1+"-"+color2] = treaty;
+                gameState.Factions.FactionColorsToCurrentTreaties[color2+"-"+color1] = treaty;
+            }
+        }
+
         server.sendGameState();
 
         Globals.Log("doExecutionPhase(): AI planning starting");
