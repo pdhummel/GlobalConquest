@@ -518,11 +518,15 @@ public class GlobalConquestGame : Game
         if (player != null && Client != null && MainGameScreen != null && MainGameScreen.IsShowContextMenu() && IsAllowedToPlan())
         {
             //Globals.Log("Draw(): check ShowContextMenu");
-            if (IsShowAirplanes && lastSelectedPlane != null && lastSelectedPlane.Color.Equals(player.FactionColor))
+            if (IsShowAirplanes && lastSelectedPlane != null && 
+                (lastSelectedPlane.Color.Equals(player.FactionColor) || 
+                 Client.GameState.Factions.AreTeamMates(lastSelectedPlane.Color, player.FactionColor)))
             {
                 MainGameScreen?.ShowContextMenu(lastSelectedPlane);
             }
-            else if (!IsShowAirplanes && lastSelectedUnit != null && lastSelectedUnit.Color.Equals(player.FactionColor))
+            else if (!IsShowAirplanes && lastSelectedUnit != null && 
+                    (lastSelectedUnit.Color.Equals(player.FactionColor) ||
+                     Client.GameState.Factions.AreTeamMates(lastSelectedUnit.Color, player.FactionColor)))
             {
                 MainGameScreen?.ShowContextMenu(lastSelectedUnit);
             }
@@ -862,7 +866,9 @@ public class GlobalConquestGame : Game
         Player player = identifySelf();
         if (unit == null)
             return;
-        if (!Client.IsObserverOnly && (player == null || !unit.Color.Equals(player.FactionColor)))
+        // TODO: team-mates
+        if (!Client.IsObserverOnly && (player == null || 
+            !(unit.Color.Equals(player.FactionColor) || Client.GameState.Factions.AreTeamMates(unit.Color, player.FactionColor))))
             return;
         MapHex mapHex = Client.GameState.Map.Hexes[unit.Y, unit.X];
         unit = mapHex.getUnit();
@@ -1014,6 +1020,8 @@ public class GlobalConquestGame : Game
             // Check for a left mouse button click within the faction panel's boundaries
             if (factionsPanelRectangle.Contains(mousePosition))
             {
+                // This is a work around so that the up and down arrows in the FactionsPanel, Treaties view,
+                // get triggered when the mouse is clicked.
                 GameControl.checkAllWidgets(Desktop, "A");
             }
         }

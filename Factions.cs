@@ -91,5 +91,21 @@ public class Factions
         return false;
     }
 
+    public bool AreTeamMates(Faction faction1, Faction faction2)
+    {
+        string treaty = GetCurrentTreaty(faction1, faction2);
+        if (treaty.Equals(TREATY_TEAM_MATES))
+            return true;
+        return false;
+    }
+
+    public bool AreTeamMates(string color1, string color2)
+    {
+        Faction faction1 = ColorToFaction[color1];
+        Faction faction2 = ColorToFaction[color2];
+        return AreTeamMates(faction1, faction2);
+    }
+
+
 }
 
