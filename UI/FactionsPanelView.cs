@@ -240,6 +240,25 @@ public class FactionsPanelView
                 proposedTreatyImage.Height = 28;
                 treatyRow.Widgets.Add(proposedTreatyImage);
             }
+            
+            // In other faction panels, when viewing the row with the current player's faction, 
+            // show what the other faction has proposed to the current player's faction
+            if (currentPlayer != null && currentPlayer.FactionColor != null && !isCurrentPlayerFaction && otherColor.Equals(currentPlayer.FactionColor))
+            {
+                // proposedTreaty already contains what 'faction' (the other faction) has proposed to 'otherColor' (current player's faction)
+                if (!proposedTreaty.Equals(currentTreaty))
+                {
+                    // Add 28x28 proposed treaty icon from the other faction
+                    string proposedTreatyTextureName = getTreatyTextureName(proposedTreaty);
+                    Image proposedTreatyImage = new Image();
+                    Texture2D proposedTreatyTexture = gcGame.GetTexture(proposedTreatyTextureName);
+                    var proposedTreatyTextureRegion = new TextureRegion(proposedTreatyTexture);
+                    proposedTreatyImage.Renderable = proposedTreatyTextureRegion;
+                    proposedTreatyImage.Width = 28;
+                    proposedTreatyImage.Height = 28;
+                    treatyRow.Widgets.Add(proposedTreatyImage);
+                }
+            }
 
             panel.Widgets.Add(treatyRow);
             buttonIndex++;
