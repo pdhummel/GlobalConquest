@@ -109,6 +109,7 @@ public class Server
             if (!initialSync && gameState.PlayerJoined.Count >= gameState.GameSettings.NumberOfHumans)
             {
                 Globals.Log("ServerLoop(): all clients joined");
+                GameLogic.gameStarted(this);
                 syncAllMapHexes();
                 initialSync = true;
                 sendGamePlayEvent(new GameEvent(GAME_EVENT_JOINED_GAME));

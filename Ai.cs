@@ -94,12 +94,57 @@ public class Ai
         Globals.Log("Ai.planTurn(): faction=" + Faction.Color);
         if (!Faction.HasComCen && !gameSettings.CanLoseComCen)
             return;
+        acceptTreaties();
         checkAvailableUnits();
         addGoals();
         processGoals();
         checkForStuckUnits();
         moveUnitsAwayFromMetro();
         moveSpy();
+    }
+
+
+/*
+rules for AI treaties
+
+#1-2 human player game player can specify a preferred AI team mate
+2 human player game player will be assigned a preferred AI team mate who will offer a cease fire when the game begins
+	If active faction count > 2
+		A preferred AI team-mate will match any proposed treaty from its human team-mate
+	When a preferred AI team-mate is at treaty level TREATY_TEAM_MATES, it will not perform any AI moves
+
+AI will not set ShouldMoveToTarget=true, if the target is covered by a treaty (burb owned by faction for which there is a treaty)
+
+if active faction count == 2
+	AI will break all treaties
+
+
+if not playing with preferred AI team mates
+	if active faction count == 4
+		lowest score AI will propose treaty with next lowest score AI faction - cease fire and then alliance
+		next lowest score AI will accept cease fire and alliance treaty from lowest score faction
+		lowest score AI will accept cease fire and alliance treaty with next lowest score faction
+		AI will accept cease fire treaty from any other AI
+		if the first place faction is human and the other factions are AI
+			The second place faction will randomally offer cease fire to the other AIs, which they would accept
+
+	if active faction count == 3
+		lowest score AI will propose treaty with next lowest score AI faction - cease fire and then alliance
+		next lowest score AI will accept cease fire and alliance treaty from lowest score AI faction
+
+	AI will step down a treaty, if conditions no longer apply for the current treaty
+	AI prefers treaties with other AI vs. humans
+
+
+*/
+    public void offerTreaties()
+    {
+
+    }
+
+    private void acceptTreaties()
+    {
+        
     }
 
     private void addGoals()

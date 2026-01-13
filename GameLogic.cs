@@ -236,6 +236,23 @@ public class GameLogic
             //if (isFactionAi && color.Equals(OCHER))
             if (isFactionAi)
             {
+                faction.Ai.offerTreaties();
+            }
+        }
+
+        foreach (string color in FACTION_COLORS)
+        {
+            bool isFactionAi = true;
+            Faction faction = gameState.Factions.ColorToFaction[color];
+            if (gameState.Players.colorToPlayer.ContainsKey(color))
+            {
+                Player player = gameState.Players.colorToPlayer[color];
+                if (player.IsHuman)
+                    isFactionAi = false;
+            }
+            //if (isFactionAi && color.Equals(OCHER))
+            if (isFactionAi)
+            {
                 try
                 {
                     //faction.Ai.outputDataStructureUse();
@@ -398,7 +415,50 @@ public class GameLogic
             faction.Money = gameState.GameSettings.StartingMoney;
             faction.Ai.initialize(server);
         }
+                
         Globals.Log("startGame(): exit");
+    }
+
+    public void gameStarted(Server server)
+    {
+        Globals.Log("gameStarted(): enter");
+        // Assign preferred AI team mates to human players when there are 2 human players
+        GameState gameState = server.gameState;
+        if (gameState.GameSettings.NumberOfHumans == 2)
+        {
+            Globals.Log("gameStarted(): 2 humans");
+            List<string> humanFactionColors = new List<string>();
+            List<string> aiFactionColors = new List<string>();
+            
+            foreach (string color in FACTION_COLORS)
+            {
+                Faction faction = gameState.Factions.ColorToFaction[color];
+                if (faction.Player != null && faction.Player.IsHuman)
+                {
+                    humanFactionColors.Add(color);
+                }
+                else
+                {
+                    aiFactionColors.Add(color);
+                }
+            }
+            Globals.Log("gameStarted(): humans=" + humanFactionColors.Count + " ai=" + aiFactionColors.Count);
+            // Assign preferred AI team mates: first human gets first AI, second human gets second AI
+            // The PreferredTeamMateColor on the human faction stores which AI is their preferred team mate
+            if (humanFactionColors.Count == 2 && aiFactionColors.Count >= 2)
+            {
+                Faction humanFaction1 = gameState.Factions.ColorToFaction[humanFactionColors[0]];
+                Faction humanFaction2 = gameState.Factions.ColorToFaction[humanFactionColors[1]];
+                humanFaction1.PreferredTeamMateColor = aiFactionColors[0];
+                humanFaction2.PreferredTeamMateColor = aiFactionColors[1];
+                Faction aiFaction1 = gameState.Factions.ColorToFaction[aiFactionColors[0]];
+                Faction aiFaction2 = gameState.Factions.ColorToFaction[aiFactionColors[1]];
+                aiFaction1.SetProposedTreatyForColor(humanFactionColors[0], TREATY_CEASE_FIRE);
+                aiFaction2.SetProposedTreatyForColor(humanFactionColors[1], TREATY_CEASE_FIRE);
+                Globals.Log("gameStarted(): Assigned preferred AI team mates - " + humanFactionColors[0] + " -> " + aiFactionColors[0] + ", " + humanFactionColors[1] + " -> " + aiFactionColors[1]);
+            }
+        }
+        Globals.Log("gameStarted(): exit");
     }
 
     public void processRound(int round, Server server, List<Unit> units)

@@ -19,6 +19,7 @@ public class Faction
     public Dictionary<string, string> ColorToProposedTreaty {get; set;} = new Dictionary<string, string>();
 
     public string Status { get; set; } = FACTION_STATUS_PLANNING;
+    public string PreferredTeamMateColor {get;set;}
 
     [JsonIgnore]
     public Ai Ai { get; set; } = new Ai();

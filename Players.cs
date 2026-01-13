@@ -23,6 +23,7 @@ public class Players
         colorToPlayer[color] = player;
         factionNameToPlayer[gameState.Factions.ColorToFaction[color].Name] = player;
         gameState.PlayerJoined[name] = true;
+        gameState.Factions.ColorToFaction[color].Player = player;
         return player;
     }
     

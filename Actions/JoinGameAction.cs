@@ -60,7 +60,9 @@ public class JoinGameAction : PlayerAction
                 return;
             }
             if (player.FactionColor != null)
+            {
                 factionsWithHumanPlayer += 1;
+            }
         }
         if (factionsWithHumanPlayer >= gameState.GameSettings.NumberOfHumans)
         {
