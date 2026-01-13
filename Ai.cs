@@ -99,8 +99,12 @@ public class Ai
         addGoals();
         processGoals();
         checkForStuckUnits();
-        moveUnitsAwayFromMetro();
-        moveSpy();
+        // Don't move units away from metro if AI has TREATY_TEAM_MATES with a human player
+        if (!hasTeamMatesTreatyWithHuman())
+        {
+            moveUnitsAwayFromMetro();
+            moveSpy();
+        }
     }
 
 
@@ -180,6 +184,32 @@ if not playing with preferred AI team mates
         }
     }
 
+    private bool hasTeamMatesTreatyWithHuman()
+    {
+        // Check if this AI faction has TREATY_TEAM_MATES with any human player
+        foreach (string color in FACTION_COLORS)
+        {
+            if (color.Equals(Faction.Color))
+                continue;
+                
+            Faction otherFaction = gameState.Factions.ColorToFaction[color];
+            
+            // Check if the other faction is human
+            bool isHumanFaction = otherFaction.Player != null && otherFaction.Player.IsHuman;
+            
+            if (isHumanFaction)
+            {
+                // Check if we have TREATY_TEAM_MATES with this human
+                string currentTreaty = gameState.Factions.GetCurrentTreaty(Faction.Color, color);
+                if (currentTreaty.Equals(TREATY_TEAM_MATES))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void addGoals()
     {
         if (gameState == null)
@@ -223,12 +253,12 @@ if not playing with preferred AI team mates
         if (sortedConquestGoalsAsc.Count > 0)
         {
             bestConquestGoal = sortedConquestGoalsAsc[0];
-            Globals.Log("Ai.processGoal(): best conquest goal for " + Faction.Color + " is " + bestConquestGoal);
+            Globals.Log("processGoals(): best conquest goal for " + Faction.Color + " is " + bestConquestGoal);
         }
         if (sortedConquestGoalsAsc.Count > 1)
         {
             nextBestConquestGoal = sortedConquestGoalsAsc[1];
-            Globals.Log("Ai.processGoals(): next best goal for " + Faction.Color + " is " + nextBestConquestGoal);
+            Globals.Log("processGoals(): next best goal for " + Faction.Color + " is " + nextBestConquestGoal);
         }
         // Pick a random goal
         if (goals.Count > 0)
@@ -248,7 +278,7 @@ if not playing with preferred AI team mates
                 index = random.Next(0, exploreGoals.Count);
                 randomGoal = exploreGoals[index];
             }
-            Globals.Log("Ai.processGoals(): random goal for " + Faction.Color + " is " + randomGoal + ", goalCount=" + goals.Count);
+            Globals.Log("processGoals(): random goal for " + Faction.Color + " is " + randomGoal + ", goalCount=" + goals.Count);
         }
 
         if (randomGoal != null)
@@ -476,10 +506,15 @@ if not playing with preferred AI team mates
             Unit unit = null;
             if (spendMoney)
                 unit = buildUnits(aiGoal, IsLog);
-            int moveCount = moveUnits(aiGoal);
+            // Don't move units if AI has TREATY_TEAM_MATES with a human player
+            int moveCount = 0;
+            if (!hasTeamMatesTreatyWithHuman())
+            {
+                moveCount = moveUnits(aiGoal);
+            }
             goalsToKeep.Add(aiGoal);
             if (unit != null || moveCount > 0)
-                Globals.Log("Ai.processGoal(): remaining goal for " + Faction.Color + " is " + aiGoal);
+                Globals.Log("processGoal(): remaining goal for " + Faction.Color + " is " + aiGoal);
         }
     }
 
@@ -951,7 +986,7 @@ if not playing with preferred AI team mates
             {
                 if (!TERRAIN_SEA.Equals(unitType.LandOrSea))
                 {
-                    Globals.Log("Ai.moveUnits(): ShouldMoveToTarget " + aiUnit.Unit.Id + " to " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
+                    Globals.Log("moveUnits(): ShouldMoveToTarget " + aiUnit.Unit.Id + " to " + goal.TargetMapHex.X + "," + goal.TargetMapHex.Y);
                     aiUnit.Unit.IsSneaking = false;
                     moveUnit(unitType, aiUnit.Unit, goal.TargetMapHex);
                 }
@@ -972,7 +1007,7 @@ if not playing with preferred AI team mates
             }
             else if (aiUnit.InitialPosition != null)
             {
-                Globals.Log("Ai.moveUnits(): InitialPosition " + aiUnit.Unit.Id + " to " + aiUnit.InitialPosition.X + "," + aiUnit.InitialPosition.Y);
+                Globals.Log("moveUnits(): InitialPosition " + aiUnit.Unit.Id + " to " + aiUnit.InitialPosition.X + "," + aiUnit.InitialPosition.Y);
                 if (!TERRAIN_SEA.Equals(unitType.LandOrSea))
                 {
                     if (AI_GOAL_CONQUER.Equals(goal.Type) || TRANSPORT_INFANTRY.Equals(unitType.Name))
@@ -1010,7 +1045,7 @@ if not playing with preferred AI team mates
                 MapHex foundMapHex = findHexAroundBurb(goal, aiUnit);
                 if (foundMapHex != null && aiUnit.Unit != null)
                 {
-                    Globals.Log("Ai.moveUnits(): DistanceFromTarget=" + aiUnit.DistanceFromTarget + ", " +
+                    Globals.Log("moveUnits(): DistanceFromTarget=" + aiUnit.DistanceFromTarget + ", " +
                         aiUnit.Unit.Id + " to " + foundMapHex.X + "," + foundMapHex.Y);
                     //if (AI_GOAL_CONQUER.Equals(goal.Type) &&
                     //    (AIRCRAFT_CARRIER.Equals(unitType.Name) && aiUnit.Unit.StrengthPoints == 100))
