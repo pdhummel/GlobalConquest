@@ -109,31 +109,27 @@ public class Ai
 
 
 /*
-rules for AI treaties
-
 AI will not set ShouldMoveToTarget=true, if the target is covered by a treaty (burb owned by faction for which there is a treaty)
-
-
+TODO:
 if not playing with preferred AI team mates
 	if active faction count == 4
-		lowest score AI will propose treaty with next lowest score AI faction - cease fire and then alliance
-		next lowest score AI will accept cease fire and alliance treaty from lowest score faction
-		lowest score AI will accept cease fire and alliance treaty with next lowest score faction
-		AI will accept cease fire treaty from any other AI
 		if the first place faction is human and the other factions are AI
 			The second place faction will randomally offer cease fire to the other AIs, which they would accept
-
-	AI will step down a treaty, if conditions no longer apply for the current treaty
-	AI prefers treaties with other AI vs. humans
-
-
 */
     public void offerTreaties()
     {
         int activeFactionCount = gameState.GetActiveFactionCount();
-        
-        // If active faction count == 3, an AI faction with the 3rd place score will offer a cease fire treaty to an AI faction with the 2nd place score
+        int secondPlaceScoreIndex = 1;
+        int lastPlaceScoreIndex = 3;
+        int secondToLastPlaceScoreIndex = 2;
         if (activeFactionCount == 3)
+        {
+            lastPlaceScoreIndex = 2;
+            secondToLastPlaceScoreIndex = 1;
+        }
+        // If active faction count == 3 or 4, an AI faction with the last place score will offer a cease fire treaty 
+        // to an AI faction with the 2nd-to-last place score
+        if (activeFactionCount >= 3)
         {
             // Get all active factions sorted by score
             List<(string color, int score, bool isAi)> activeFactions = new List<(string, int, bool)>();
@@ -153,14 +149,16 @@ if not playing with preferred AI team mates
             // Sort by score descending (highest first)
             activeFactions.Sort((a, b) => b.score.CompareTo(a.score));
             
-            // Check if 2nd place is AI and 3rd place is AI
-            string secondPlaceColor = activeFactions[1].color;
-            bool secondPlaceIsAi = activeFactions[1].isAi;
-            string thirdPlaceColor = activeFactions[2].color;
-            bool thirdPlaceIsAi = activeFactions[2].isAi;
+            // Check if 2nd-to-last place is AI and last place is AI
+            string secondToLastPlaceColor = activeFactions[secondToLastPlaceScoreIndex].color;
+            bool secondToLastPlaceIsAi = activeFactions[secondToLastPlaceScoreIndex].isAi;
+            string lastPlaceColor = activeFactions[lastPlaceScoreIndex].color;
+            bool lastPlaceIsAi = activeFactions[lastPlaceScoreIndex].isAi;
+            string secondPlaceColor = activeFactions[secondPlaceScoreIndex].color;
+            bool secondPlaceIsAi = activeFactions[secondPlaceScoreIndex].isAi;
             
             // First, check if this AI has a treaty with another AI that should be downgraded
-            // (if either faction is no longer in 2nd or 3rd place)
+            // (if either faction is no longer in 2nd-to-last or last place)
             foreach (string color in FACTION_COLORS)
             {
                 if (color.Equals(Faction.Color))
@@ -175,32 +173,32 @@ if not playing with preferred AI team mates
                     string currentTreaty = gameState.Factions.GetCurrentTreaty(Faction.Color, color);
                     string currentProposed = Faction.GetProposedTreatyForColor(color);
                     
-                    // If we have a treaty (not at war), check if either faction is no longer in 2nd or 3rd place
+                    // If we have a treaty (not at war), check if either faction is no longer in 2nd-to-last or last place
                     if (!currentTreaty.Equals(TREATY_AT_WAR))
                     {
-                        bool thisInSecondOrThird = Faction.Color.Equals(secondPlaceColor) || Faction.Color.Equals(thirdPlaceColor);
-                        bool otherInSecondOrThird = color.Equals(secondPlaceColor) || color.Equals(thirdPlaceColor);
+                        bool thisInLastORSecondToLast = Faction.Color.Equals(secondToLastPlaceColor) || Faction.Color.Equals(lastPlaceColor);
+                        bool otherInLastOrSecondToLast = color.Equals(secondToLastPlaceColor) || color.Equals(lastPlaceColor);
                         
-                        // If either faction is no longer in 2nd or 3rd place, downgrade the treaty
-                        if (!thisInSecondOrThird || !otherInSecondOrThird)
+                        // If either faction is no longer in last or 2nd-to-last 3rd place, downgrade the treaty
+                        if (!thisInLastORSecondToLast || !otherInLastOrSecondToLast)
                         {
                             string previousTreaty = getPreviousTreatyLevel(currentTreaty);
                             // Only propose if we haven't already proposed this level or lower
                             if (!currentProposed.Equals(previousTreaty) && !currentProposed.Equals(TREATY_AT_WAR))
                             {
                                 Faction.SetProposedTreatyForColor(color, previousTreaty);
-                                Globals.Log($"offerTreaties(): AI {Faction.Color} downgrading treaty with {color} from {currentTreaty} to {previousTreaty} (no longer in 2nd/3rd place)");
+                                Globals.Log($"offerTreaties(): AI {Faction.Color} downgrading treaty with {color} from {currentTreaty} to {previousTreaty} (no longer in last/2nd-to-last place)");
                             }
                         }
                     }
                 }
             }
             
-            // If this AI is the 3rd place AI and 2nd place is also AI
-            if (Faction.Color.Equals(thirdPlaceColor) && thirdPlaceIsAi && secondPlaceIsAi)
+            // If this AI is the last place AI and 2nd-to-last place is also AI
+            if (Faction.Color.Equals(lastPlaceColor) && lastPlaceIsAi && secondToLastPlaceIsAi)
             {
-                string currentTreaty = gameState.Factions.GetCurrentTreaty(Faction.Color, secondPlaceColor);
-                string currentProposed = Faction.GetProposedTreatyForColor(secondPlaceColor);
+                string currentTreaty = gameState.Factions.GetCurrentTreaty(Faction.Color, secondToLastPlaceColor);
+                string currentProposed = Faction.GetProposedTreatyForColor(secondToLastPlaceColor);
                 
                 // If they already have a cease fire, offer alliance
                 if (currentTreaty.Equals(TREATY_CEASE_FIRE))
@@ -208,15 +206,15 @@ if not playing with preferred AI team mates
                     // Only offer if we haven't already proposed alliance or better
                     if (!currentProposed.Equals(TREATY_ALLIANCE) && !currentProposed.Equals(TREATY_TEAM_MATES))
                     {
-                        Faction.SetProposedTreatyForColor(secondPlaceColor, TREATY_ALLIANCE);
-                        Globals.Log($"offerTreaties(): 3rd place AI {Faction.Color} offering alliance to 2nd place AI {secondPlaceColor}");
+                        Faction.SetProposedTreatyForColor(secondToLastPlaceColor, TREATY_ALLIANCE);
+                        Globals.Log($"offerTreaties(): last place AI {Faction.Color} offering alliance to 2nd-to-last place AI {secondToLastPlaceColor}");
                     }
                 }
                 // Otherwise, offer cease fire if currently at war
                 else if (currentProposed.Equals(TREATY_AT_WAR) || currentTreaty.Equals(TREATY_AT_WAR))
                 {
-                    Faction.SetProposedTreatyForColor(secondPlaceColor, TREATY_CEASE_FIRE);
-                    Globals.Log($"offerTreaties(): 3rd place AI {Faction.Color} offering cease fire to 2nd place AI {secondPlaceColor}");
+                    Faction.SetProposedTreatyForColor(secondToLastPlaceColor, TREATY_CEASE_FIRE);
+                    Globals.Log($"offerTreaties(): last place AI {Faction.Color} offering cease fire to 2nd-to-last place AI {secondToLastPlaceColor}");
                 }
             }
         }
@@ -256,9 +254,20 @@ if not playing with preferred AI team mates
     private void acceptTreaties()
     {
         int activeFactionCount = gameState.GetActiveFactionCount();
-        
-        // If active faction count == 3, an AI faction with the 2nd place score will accept a treaty from an AI faction with the 3rd place score
+        int secondPlaceIndex = 1;
+        int secondToLastPlaceScoreIndex = 2;
+        int lastPlaceScoreIndex = 3;
+        bool mustBeAiOffer = false;
         if (activeFactionCount == 3)
+        {
+            secondToLastPlaceScoreIndex = 1;
+            lastPlaceScoreIndex = 2;
+            mustBeAiOffer = true;
+        }
+
+        // If active faction count == 3, an AI faction with the 2nd-to-last place score will accept a treaty from an AI faction with the last place score
+        // If active faction count == 4, an AI faction with the 2nd-to-last place score will accept a treaty from an AI faction with the last place score
+        if (activeFactionCount >= 3)
         {
             // Get all active factions sorted by score
             List<(string color, int score, bool isAi)> activeFactions = new List<(string, int, bool)>();
@@ -278,29 +287,75 @@ if not playing with preferred AI team mates
             // Sort by score descending (highest first)
             activeFactions.Sort((a, b) => b.score.CompareTo(a.score));
             
-            // Check if 2nd place is AI and 3rd place is AI
-            string secondPlaceColor = activeFactions[1].color;
-            bool secondPlaceIsAi = activeFactions[1].isAi;
-            string thirdPlaceColor = activeFactions[2].color;
-            bool thirdPlaceIsAi = activeFactions[2].isAi;
+            // Check if 2nd-to-last place is AI and last place is AI
+            string secondToLastPlaceColor = activeFactions[secondToLastPlaceScoreIndex].color;
+            bool secondToLastPlaceIsAi = activeFactions[secondToLastPlaceScoreIndex].isAi;
+            string lastPlaceColor = activeFactions[lastPlaceScoreIndex].color;
+            bool lastPlaceIsAi = activeFactions[lastPlaceScoreIndex].isAi;
+            string secondPlaceColor = activeFactions[secondPlaceIndex].color;
+            bool secondPlaceIsAi = activeFactions[secondPlaceIndex].isAi;
             
-            // If this AI is the 2nd place AI and 3rd place is also AI, accept any treaty proposal from the 3rd place AI
-            if (Faction.Color.Equals(secondPlaceColor) && secondPlaceIsAi && thirdPlaceIsAi)
+            // If this AI is the 2nd-to-last place AI, accept any treaty proposal from the last place
+            if (Faction.Color.Equals(secondToLastPlaceColor) && secondToLastPlaceIsAi && 
+                (!mustBeAiOffer || (mustBeAiOffer && lastPlaceIsAi)))
             {
-                Faction thirdPlaceFaction = gameState.Factions.ColorToFaction[thirdPlaceColor];
-                string proposedTreaty = thirdPlaceFaction.GetProposedTreatyForColor(Faction.Color);
+                Faction lastPlaceFaction = gameState.Factions.ColorToFaction[lastPlaceColor];
+                string proposedTreaty = lastPlaceFaction.GetProposedTreatyForColor(Faction.Color);
                 
                 // If there's a proposed treaty (not at war) and it's not already matched, match it
                 if (!proposedTreaty.Equals(TREATY_AT_WAR))
                 {
-                    string currentProposed = Faction.GetProposedTreatyForColor(thirdPlaceColor);
+                    string currentProposed = Faction.GetProposedTreatyForColor(lastPlaceColor);
                     if (!currentProposed.Equals(proposedTreaty))
                     {
-                        Faction.SetProposedTreatyForColor(thirdPlaceColor, proposedTreaty);
-                        Globals.Log($"acceptTreaties(): 2nd place AI {Faction.Color} accepting treaty {proposedTreaty} from 3rd place AI {thirdPlaceColor}");
+                        Faction.SetProposedTreatyForColor(lastPlaceColor, proposedTreaty);
+                        Globals.Log($"acceptTreaties(): 2nd-to-last place AI {Faction.Color} accepting treaty {proposedTreaty} from last place {lastPlaceColor}");
                     }
                 }
             }
+
+            // If this AI is the last place AI, accept any treaty proposal from the 2nd-to-last place
+            if (Faction.Color.Equals(lastPlaceColor) && lastPlaceIsAi &&
+                (!mustBeAiOffer || (mustBeAiOffer && secondToLastPlaceIsAi)))
+            {
+                Faction secondToLastPlaceFaction = gameState.Factions.ColorToFaction[secondToLastPlaceColor];
+                string proposedTreaty = secondToLastPlaceFaction.GetProposedTreatyForColor(Faction.Color);
+                
+                // If there's a proposed treaty (not at war) and it's not already matched, match it
+                if (!proposedTreaty.Equals(TREATY_AT_WAR))
+                {
+                    string currentProposed = Faction.GetProposedTreatyForColor(secondToLastPlaceColor);
+                    if (!currentProposed.Equals(proposedTreaty))
+                    {
+                        Faction.SetProposedTreatyForColor(secondToLastPlaceColor, proposedTreaty);
+                        Globals.Log($"acceptTreaties(): 2nd-to-last place AI {Faction.Color} accepting treaty {proposedTreaty} from last place {secondToLastPlaceColor}");
+                    }
+                }
+            }
+
+            if (activeFactionCount == 4)
+            {
+                // If this AI is the 2nd-to-last place AI or last place AI accept any treaty proposal from any other AI
+                if (((Faction.Color.Equals(secondToLastPlaceColor) && secondToLastPlaceIsAi) ||
+                    (Faction.Color.Equals(lastPlaceColor) && lastPlaceIsAi)) && 
+                    secondPlaceIsAi)
+                {
+                    Faction secondPlaceFaction = gameState.Factions.ColorToFaction[secondPlaceColor];
+                    string proposedTreaty = secondPlaceFaction.GetProposedTreatyForColor(Faction.Color);
+                    
+                    // If there's a proposed treaty (not at war) and it's not already matched, match it
+                    if (!proposedTreaty.Equals(TREATY_AT_WAR))
+                    {
+                        string currentProposed = Faction.GetProposedTreatyForColor(secondPlaceColor);
+                        if (!currentProposed.Equals(proposedTreaty))
+                        {
+                            Faction.SetProposedTreatyForColor(secondPlaceColor, proposedTreaty);
+                            Globals.Log($"acceptTreaties(): AI {Faction.Color} accepting treaty {proposedTreaty} from second place AI {secondPlaceColor}");
+                        }
+                    }
+                }                
+            }
+
         }
 
         // If active faction count > 2, a preferred AI team-mate will match any proposed treaty from its human team-mate
@@ -809,13 +864,32 @@ if not playing with preferred AI team mates
             int randomGo = random.Next(0, 4);
             if (isInPosition || randomGo < 1)
             {
-                goal.ShouldMoveToTarget = true;
-                foreach (AiUnit builtAiUnit in goal.ActualUnits)
+                // Check if target is a burb owned by a faction with a non-war treaty
+                bool shouldBlockMove = false;
+                if (goal.TargetMapHex.Burb != null && goal.TargetMapHex.Burb.OwnerColor != null)
                 {
-                    builtAiUnit.ShouldMoveToTarget = true;
+                    string burbOwnerColor = goal.TargetMapHex.Burb.OwnerColor;
+                    if (!burbOwnerColor.Equals(Faction.Color) && !burbOwnerColor.Equals(NATIVE_COLOR))
+                    {
+                        string currentTreaty = gameState.Factions.GetCurrentTreaty(Faction.Color, burbOwnerColor);
+                        if (!currentTreaty.Equals(TREATY_AT_WAR))
+                        {
+                            shouldBlockMove = true;
+                            Globals.Log("Ai.evaluateGoal(): Blocking move to target burb owned by faction with non-war treaty: " + goal);
+                        }
+                    }
                 }
-                if (goal.ActualUnits.Count > 0)
-                    Globals.Log("Ai.evaluateGoal(): ShouldMoveToTarget, attack ready for " + goal);
+                
+                if (!shouldBlockMove)
+                {
+                    goal.ShouldMoveToTarget = true;
+                    foreach (AiUnit builtAiUnit in goal.ActualUnits)
+                    {
+                        builtAiUnit.ShouldMoveToTarget = true;
+                    }
+                    if (goal.ActualUnits.Count > 0)
+                        Globals.Log("Ai.evaluateGoal(): ShouldMoveToTarget, attack ready for " + goal);
+                }
             }
         }
         else if (goal.ActualUnits.Count + 3 < goal.DesiredUnits.Count && goal.IsGoalStarted)
