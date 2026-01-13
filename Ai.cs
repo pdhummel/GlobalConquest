@@ -123,10 +123,6 @@ if not playing with preferred AI team mates
 		if the first place faction is human and the other factions are AI
 			The second place faction will randomally offer cease fire to the other AIs, which they would accept
 
-	if active faction count == 3
-		lowest score AI will propose treaty with next lowest score AI faction - cease fire and then alliance
-		next lowest score AI will accept cease fire and alliance treaty from lowest score AI faction
-
 	AI will step down a treaty, if conditions no longer apply for the current treaty
 	AI prefers treaties with other AI vs. humans
 
@@ -162,6 +158,43 @@ if not playing with preferred AI team mates
             bool secondPlaceIsAi = activeFactions[1].isAi;
             string thirdPlaceColor = activeFactions[2].color;
             bool thirdPlaceIsAi = activeFactions[2].isAi;
+            
+            // First, check if this AI has a treaty with another AI that should be downgraded
+            // (if either faction is no longer in 2nd or 3rd place)
+            foreach (string color in FACTION_COLORS)
+            {
+                if (color.Equals(Faction.Color))
+                    continue;
+                    
+                Faction otherFaction = gameState.Factions.ColorToFaction[color];
+                bool otherIsAi = otherFaction.Player == null || !otherFaction.Player.IsHuman;
+                
+                // Only check treaties between AI factions
+                if (otherIsAi)
+                {
+                    string currentTreaty = gameState.Factions.GetCurrentTreaty(Faction.Color, color);
+                    string currentProposed = Faction.GetProposedTreatyForColor(color);
+                    
+                    // If we have a treaty (not at war), check if either faction is no longer in 2nd or 3rd place
+                    if (!currentTreaty.Equals(TREATY_AT_WAR))
+                    {
+                        bool thisInSecondOrThird = Faction.Color.Equals(secondPlaceColor) || Faction.Color.Equals(thirdPlaceColor);
+                        bool otherInSecondOrThird = color.Equals(secondPlaceColor) || color.Equals(thirdPlaceColor);
+                        
+                        // If either faction is no longer in 2nd or 3rd place, downgrade the treaty
+                        if (!thisInSecondOrThird || !otherInSecondOrThird)
+                        {
+                            string previousTreaty = getPreviousTreatyLevel(currentTreaty);
+                            // Only propose if we haven't already proposed this level or lower
+                            if (!currentProposed.Equals(previousTreaty) && !currentProposed.Equals(TREATY_AT_WAR))
+                            {
+                                Faction.SetProposedTreatyForColor(color, previousTreaty);
+                                Globals.Log($"offerTreaties(): AI {Faction.Color} downgrading treaty with {color} from {currentTreaty} to {previousTreaty} (no longer in 2nd/3rd place)");
+                            }
+                        }
+                    }
+                }
+            }
             
             // If this AI is the 3rd place AI and 2nd place is also AI
             if (Faction.Color.Equals(thirdPlaceColor) && thirdPlaceIsAi && secondPlaceIsAi)
