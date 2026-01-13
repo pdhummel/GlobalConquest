@@ -94,7 +94,6 @@ public class Ai
         Globals.Log("Ai.planTurn(): faction=" + Faction.Color);
         if (!Faction.HasComCen && !gameSettings.CanLoseComCen)
             return;
-        offerTreaties();
         acceptTreaties();
         checkAvailableUnits();
         addGoals();
@@ -137,8 +136,59 @@ if not playing with preferred AI team mates
     {
         int activeFactionCount = gameState.GetActiveFactionCount();
         
+        // If active faction count == 3, an AI faction with the 3rd place score will offer a cease fire treaty to an AI faction with the 2nd place score
+        if (activeFactionCount == 3)
+        {
+            // Get all active factions sorted by score
+            List<(string color, int score, bool isAi)> activeFactions = new List<(string, int, bool)>();
+            foreach (string color in FACTION_COLORS)
+            {
+                Faction faction = gameState.Factions.ColorToFaction[color];
+                // Check if faction is active
+                bool isActive = faction.HasComCen || gameState.GameSettings.CanLoseComCen;
+                bool isAi = faction.Player == null || !faction.Player.IsHuman;
+                
+                if (isActive)
+                {
+                    activeFactions.Add((color, faction.CombinedScore, isAi));
+                }
+            }
+            
+            // Sort by score descending (highest first)
+            activeFactions.Sort((a, b) => b.score.CompareTo(a.score));
+            
+            // Check if 2nd place is AI and 3rd place is AI
+            string secondPlaceColor = activeFactions[1].color;
+            bool secondPlaceIsAi = activeFactions[1].isAi;
+            string thirdPlaceColor = activeFactions[2].color;
+            bool thirdPlaceIsAi = activeFactions[2].isAi;
+            
+            // If this AI is the 3rd place AI and 2nd place is also AI
+            if (Faction.Color.Equals(thirdPlaceColor) && thirdPlaceIsAi && secondPlaceIsAi)
+            {
+                string currentTreaty = gameState.Factions.GetCurrentTreaty(Faction.Color, secondPlaceColor);
+                string currentProposed = Faction.GetProposedTreatyForColor(secondPlaceColor);
+                
+                // If they already have a cease fire, offer alliance
+                if (currentTreaty.Equals(TREATY_CEASE_FIRE))
+                {
+                    // Only offer if we haven't already proposed alliance or better
+                    if (!currentProposed.Equals(TREATY_ALLIANCE) && !currentProposed.Equals(TREATY_TEAM_MATES))
+                    {
+                        Faction.SetProposedTreatyForColor(secondPlaceColor, TREATY_ALLIANCE);
+                        Globals.Log($"offerTreaties(): 3rd place AI {Faction.Color} offering alliance to 2nd place AI {secondPlaceColor}");
+                    }
+                }
+                // Otherwise, offer cease fire if currently at war
+                else if (currentProposed.Equals(TREATY_AT_WAR) || currentTreaty.Equals(TREATY_AT_WAR))
+                {
+                    Faction.SetProposedTreatyForColor(secondPlaceColor, TREATY_CEASE_FIRE);
+                    Globals.Log($"offerTreaties(): 3rd place AI {Faction.Color} offering cease fire to 2nd place AI {secondPlaceColor}");
+                }
+            }
+        }
         // If active faction count == 2, AI will offer all factions a previous treaty proposal until it is at war with every other faction
-        if (activeFactionCount == 2)
+        else if (activeFactionCount == 2)
         {
             foreach (string color in FACTION_COLORS)
             {
