@@ -108,14 +108,13 @@ public class Ai
     }
 
 
-/*
-AI will not set ShouldMoveToTarget=true, if the target is covered by a treaty (burb owned by faction for which there is a treaty)
-TODO:
-if not playing with preferred AI team mates
-	if active faction count == 4
-		if the first place faction is human and the other factions are AI
-			The second place faction will randomally offer cease fire to the other AIs, which they would accept
-*/
+    /*
+    TODO:
+    if not playing with preferred AI team mates
+        if active faction count == 4
+            if the first place faction is human and the other factions are AI
+                The second place faction will randomally offer cease fire to the other AIs, which they would accept
+    */
     public void offerTreaties()
     {
         int activeFactionCount = gameState.GetActiveFactionCount();
@@ -578,6 +577,20 @@ if not playing with preferred AI team mates
                             difficulty -= 1;
                             difficulty -= (aiUnit.Unit.StrengthPoints / 10);
                             difficulty -= unitType.Cost;
+                        }
+                    }
+                }
+                // Add 1000 to difficulty if target is a burb owned by a faction with a non-war treaty
+                if (goal.TargetMapHex.Burb != null && goal.TargetMapHex.Burb.OwnerColor != null)
+                {
+                    string burbOwnerColor = goal.TargetMapHex.Burb.OwnerColor;
+                    if (!burbOwnerColor.Equals(Faction.Color) && !burbOwnerColor.Equals(NATIVE_COLOR))
+                    {
+                        string currentTreaty = gameState.Factions.GetCurrentTreaty(Faction.Color, burbOwnerColor);
+                        if (!currentTreaty.Equals(TREATY_AT_WAR))
+                        {
+                            difficulty += 1000;
+                            Globals.Log("prioritizeConquestGoals(): Added 1000 to difficulty for burb with non-war treaty: " + goal);
                         }
                     }
                 }
