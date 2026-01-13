@@ -94,6 +94,7 @@ public class Ai
         Globals.Log("Ai.planTurn(): faction=" + Faction.Color);
         if (!Faction.HasComCen && !gameSettings.CanLoseComCen)
             return;
+        offerTreaties();
         acceptTreaties();
         checkAvailableUnits();
         addGoals();
@@ -110,11 +111,6 @@ public class Ai
 
 /*
 rules for AI treaties
-
-x - 2 human player game player will be assigned a preferred AI team mate 
-    who will offer a cease fire when the game begins
-    If active faction count > 2, A preferred AI team-mate will match any proposed treaty from its human team-mate
-	When a preferred AI team-mate is at treaty level TREATY_TEAM_MATES, it will not perform any AI moves
 
 AI will not set ShouldMoveToTarget=true, if the target is covered by a treaty (burb owned by faction for which there is a treaty)
 
@@ -142,7 +138,39 @@ if not playing with preferred AI team mates
 */
     public void offerTreaties()
     {
-
+        int activeFactionCount = gameState.GetActiveFactionCount();
+        
+        // If active faction count == 2, AI will offer all factions a previous treaty proposal until it is at war with every other faction
+        if (activeFactionCount == 2)
+        {
+            foreach (string color in FACTION_COLORS)
+            {
+                if (color.Equals(Faction.Color))
+                    continue;
+                    
+                Faction otherFaction = gameState.Factions.ColorToFaction[color];
+                string currentTreaty = gameState.Factions.GetCurrentTreaty(Faction.Color, color);
+                string currentProposed = Faction.GetProposedTreatyForColor(color);
+                
+                // If not already at war, propose the previous (lower) treaty level
+                if (!currentTreaty.Equals(TREATY_AT_WAR))
+                {
+                    string previousTreaty = getPreviousTreatyLevel(currentTreaty);
+                    // Only propose if we haven't already proposed this level or lower
+                    if (!currentProposed.Equals(previousTreaty) && !currentProposed.Equals(TREATY_AT_WAR))
+                    {
+                        Faction.SetProposedTreatyForColor(color, previousTreaty);
+                        Globals.Log($"offerTreaties(): AI {Faction.Color} downgrading treaty with {color} from {currentTreaty} to {previousTreaty}");
+                    }
+                }
+                else if (!currentProposed.Equals(TREATY_AT_WAR))
+                {
+                    // Current treaty is war but proposed is not, set proposed to war
+                    Faction.SetProposedTreatyForColor(color, TREATY_AT_WAR);
+                    Globals.Log($"offerTreaties(): AI {Faction.Color} setting proposed treaty with {color} to war");
+                }
+            }
+        }
     }
 
     private void acceptTreaties()
@@ -181,6 +209,21 @@ if not playing with preferred AI team mates
                     }
                 }
             }
+        }
+    }
+
+    private string getPreviousTreatyLevel(string currentTreaty)
+    {
+        switch (currentTreaty)
+        {
+            case TREATY_TEAM_MATES:
+                return TREATY_ALLIANCE;
+            case TREATY_ALLIANCE:
+                return TREATY_CEASE_FIRE;
+            case TREATY_CEASE_FIRE:
+                return TREATY_AT_WAR;
+            default:
+                return TREATY_AT_WAR; // fallback
         }
     }
 
