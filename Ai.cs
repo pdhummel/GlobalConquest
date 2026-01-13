@@ -114,9 +114,6 @@ rules for AI treaties
 
 AI will not set ShouldMoveToTarget=true, if the target is covered by a treaty (burb owned by faction for which there is a treaty)
 
-if active faction count == 2
-	AI will break all treaties
-
 
 if not playing with preferred AI team mates
 	if active faction count == 4
@@ -175,8 +172,55 @@ if not playing with preferred AI team mates
 
     private void acceptTreaties()
     {
-        // If active faction count > 2, a preferred AI team-mate will match any proposed treaty from its human team-mate
         int activeFactionCount = gameState.GetActiveFactionCount();
+        
+        // If active faction count == 3, an AI faction with the 2nd place score will accept a treaty from an AI faction with the 3rd place score
+        if (activeFactionCount == 3)
+        {
+            // Get all active factions sorted by score
+            List<(string color, int score, bool isAi)> activeFactions = new List<(string, int, bool)>();
+            foreach (string color in FACTION_COLORS)
+            {
+                Faction faction = gameState.Factions.ColorToFaction[color];
+                // Check if faction is active
+                bool isActive = faction.HasComCen || gameState.GameSettings.CanLoseComCen;
+                bool isAi = faction.Player == null || !faction.Player.IsHuman;
+                
+                if (isActive)
+                {
+                    activeFactions.Add((color, faction.CombinedScore, isAi));
+                }
+            }
+            
+            // Sort by score descending (highest first)
+            activeFactions.Sort((a, b) => b.score.CompareTo(a.score));
+            
+            // Check if 2nd place is AI and 3rd place is AI
+            string secondPlaceColor = activeFactions[1].color;
+            bool secondPlaceIsAi = activeFactions[1].isAi;
+            string thirdPlaceColor = activeFactions[2].color;
+            bool thirdPlaceIsAi = activeFactions[2].isAi;
+            
+            // If this AI is the 2nd place AI and 3rd place is also AI, accept any treaty proposal from the 3rd place AI
+            if (Faction.Color.Equals(secondPlaceColor) && secondPlaceIsAi && thirdPlaceIsAi)
+            {
+                Faction thirdPlaceFaction = gameState.Factions.ColorToFaction[thirdPlaceColor];
+                string proposedTreaty = thirdPlaceFaction.GetProposedTreatyForColor(Faction.Color);
+                
+                // If there's a proposed treaty (not at war) and it's not already matched, match it
+                if (!proposedTreaty.Equals(TREATY_AT_WAR))
+                {
+                    string currentProposed = Faction.GetProposedTreatyForColor(thirdPlaceColor);
+                    if (!currentProposed.Equals(proposedTreaty))
+                    {
+                        Faction.SetProposedTreatyForColor(thirdPlaceColor, proposedTreaty);
+                        Globals.Log($"acceptTreaties(): 2nd place AI {Faction.Color} accepting treaty {proposedTreaty} from 3rd place AI {thirdPlaceColor}");
+                    }
+                }
+            }
+        }
+
+        // If active faction count > 2, a preferred AI team-mate will match any proposed treaty from its human team-mate
         if (activeFactionCount > 2)
         {
             // Check all factions to see if any human has this AI as their preferred team-mate
