@@ -297,6 +297,22 @@ public class GameState
 
     }
 
+    public int GetActiveFactionCount()
+    {
+        int activeCount = 0;
+        foreach (string color in FACTION_COLORS)
+        {
+            Faction faction = Factions.ColorToFaction[color];
+            // If CanLoseComCen is true, all factions are active regardless of HasComCen
+            // Otherwise, only factions with HasComCen are active
+            if (GameSettings.CanLoseComCen || faction.HasComCen)
+            {
+                activeCount++;
+            }
+        }
+        return activeCount;
+    }
+
     public override string ToString()
     {
         string returnString = "GameState: " + ToJson();

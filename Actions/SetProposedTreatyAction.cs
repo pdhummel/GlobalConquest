@@ -42,6 +42,25 @@ public class SetProposedTreatyAction : PlayerAction
                     gameState.Factions.ColorToFaction[FactionColor] = faction;
                     Globals.Log($"execute(): Set proposed treaty from {FactionColor} to {OtherFactionColor} to {ProposedTreaty}");
 
+                    // If active faction count > 2, a preferred AI team-mate will match any proposed treaty from its human team-mate
+                    int activeFactionCount = gameState.GetActiveFactionCount();
+                    if (activeFactionCount > 2)
+                    {
+                        // Check if the proposing faction is human and the other faction is its preferred AI team-mate
+                        bool isHumanFaction = faction.Player != null && faction.Player.IsHuman;
+                        bool isPreferredTeamMate = faction.PreferredTeamMateColor != null && 
+                                                   faction.PreferredTeamMateColor.Equals(OtherFactionColor);
+                        bool isOtherFactionAI = otherFaction.Player == null || !otherFaction.Player.IsHuman;
+                        
+                        if (isHumanFaction && isPreferredTeamMate && isOtherFactionAI)
+                        {
+                            // Automatically match the proposed treaty
+                            otherFaction.SetProposedTreatyForColor(FactionColor, ProposedTreaty);
+                            gameState.Factions.ColorToFaction[OtherFactionColor] = otherFaction;
+                            Globals.Log($"execute(): Preferred AI team-mate {OtherFactionColor} automatically matched treaty {ProposedTreaty} from human {FactionColor}");
+                        }
+                    }
+
                     string currentTreaty = gameState.Factions.GetCurrentTreaty(FactionColor, OtherFactionColor);
                     string newTreaty = gameState.Factions.DetermineNewTreaty(FactionColor, OtherFactionColor);
                     if (currentTreaty.Equals(TREATY_TEAM_MATES) && 

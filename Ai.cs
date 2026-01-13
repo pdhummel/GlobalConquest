@@ -107,10 +107,9 @@ public class Ai
 /*
 rules for AI treaties
 
-#1-2 human player game player can specify a preferred AI team mate
-2 human player game player will be assigned a preferred AI team mate who will offer a cease fire when the game begins
-	If active faction count > 2
-		A preferred AI team-mate will match any proposed treaty from its human team-mate
+x - 2 human player game player will be assigned a preferred AI team mate 
+    who will offer a cease fire when the game begins
+    If active faction count > 2, A preferred AI team-mate will match any proposed treaty from its human team-mate
 	When a preferred AI team-mate is at treaty level TREATY_TEAM_MATES, it will not perform any AI moves
 
 AI will not set ShouldMoveToTarget=true, if the target is covered by a treaty (burb owned by faction for which there is a treaty)
@@ -144,7 +143,41 @@ if not playing with preferred AI team mates
 
     private void acceptTreaties()
     {
-        
+        // If active faction count > 2, a preferred AI team-mate will match any proposed treaty from its human team-mate
+        int activeFactionCount = gameState.GetActiveFactionCount();
+        if (activeFactionCount > 2)
+        {
+            // Check all factions to see if any human has this AI as their preferred team-mate
+            foreach (string color in FACTION_COLORS)
+            {
+                if (color.Equals(Faction.Color))
+                    continue;
+                    
+                Faction otherFaction = gameState.Factions.ColorToFaction[color];
+                
+                // Check if this other faction is human and has this AI as preferred team-mate
+                bool isHumanFaction = otherFaction.Player != null && otherFaction.Player.IsHuman;
+                bool isPreferredTeamMate = otherFaction.PreferredTeamMateColor != null && 
+                                           otherFaction.PreferredTeamMateColor.Equals(Faction.Color);
+                
+                if (isHumanFaction && isPreferredTeamMate)
+                {
+                    // Get the proposed treaty from the human
+                    string proposedTreaty = otherFaction.GetProposedTreatyForColor(Faction.Color);
+                    
+                    // If there's a proposed treaty (not at war) and it's not already matched, match it
+                    if (!proposedTreaty.Equals(TREATY_AT_WAR))
+                    {
+                        string currentProposed = Faction.GetProposedTreatyForColor(color);
+                        if (!currentProposed.Equals(proposedTreaty))
+                        {
+                            Faction.SetProposedTreatyForColor(color, proposedTreaty);
+                            Globals.Log($"acceptTreaties(): Preferred AI team-mate {Faction.Color} automatically matched treaty {proposedTreaty} from human {color}");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void addGoals()
