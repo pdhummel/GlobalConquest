@@ -1,17 +1,25 @@
+using System.Text.Json.Serialization;
 using static GameConstants;
 using static GlobalConquest.Burbs;
 namespace GlobalConquest;
 
 public class Burb
 {
+    [JsonPropertyName("T")]
     public string Type { get; set; } // village, town, city, capital, metro, suburb, dock
+    [JsonPropertyName("N")]
     public string Name { get; set; }
+    [JsonPropertyName("C")]
     public string? Color { get; set; } = NATIVE_COLOR;
+    [JsonPropertyName("OC")]
     public string? OwnerColor { get; set; } = NATIVE_COLOR;
+    [JsonPropertyName("PBN")]
     public string? ParentBurbName { get; set; }
+    [JsonPropertyName("DFP")]
     public string? DirectionFromParent {get;set;}
     public int X { get; set; }
     public int Y { get; set; }
+    [JsonPropertyName("M")]
     public int Money {get; set;}
 
     public Burb()

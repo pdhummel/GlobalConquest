@@ -119,7 +119,7 @@ public class Server
         }
     }
 
-    public void syncAllMapHexes()
+    public void syncAllMapHexes(NetPeer peer=null)
     {
         Globals.Log("syncAllMapHexes(): enter");
         for (int liY = 0; liY < gameState.Map.Y; liY++)
@@ -133,7 +133,7 @@ public class Server
             }
         }
         sendGameState();
-        sendMap(null);
+        sendMap(peer);
     }
 
     public void sendGameState()

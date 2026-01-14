@@ -9,29 +9,41 @@ namespace GlobalConquest;
 
 public class GameState
 {
-
+    [JsonPropertyName("GS")]
     public GameSettings GameSettings { get; set; }
+    [JsonPropertyName("F")]
     public Factions Factions { get; set; }
 
+    [JsonPropertyName("P")]
     public Players Players { get; set; }
 
     [JsonIgnore]
     public Map Map { get; set; }
 
+    [JsonPropertyName("MP")]
     public MapHex MapHex { get; set; }
 
+    [JsonPropertyName("PER")]
     public Dictionary<string, bool> PlayerExecutionReady { get; set; } = new Dictionary<string, bool>();
+    [JsonPropertyName("PPR")]
     public Dictionary<string, bool> PlayerPlanningReady { get; set; } = new Dictionary<string, bool>();
+    [JsonPropertyName("PJ")]
     public Dictionary<string, bool> PlayerJoined { get; set; } = new Dictionary<string, bool>();
+    [JsonPropertyName("CT")]
     public int CurrentTurn { get; set; } = 0;
+    [JsonPropertyName("CP")]
     public string CurrentPhase { get; set; } = GAME_PHASE_PLAN;  // plan, execution, gameOver
+    [JsonPropertyName("CR")]
     public int CurrentRound { get; set; } = 0;
+    [JsonPropertyName("UT")]
     public UnitTypes UnitTypes { get; set; }
     public Burbs Burbs { get; set; }
 
+    [JsonPropertyName("VC")]
     public string VictoriousColor { get; set; } = NATIVE_COLOR;
     public long Ticks { get; set; } = 0;
 
+    [JsonPropertyName("SRUE")]
     public int SecondsRemainingUntilExecution {get; set;}
 
     // if any of the data elements in the entities change above, then this version should be bumped.

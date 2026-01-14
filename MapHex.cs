@@ -2,6 +2,7 @@ using static UnitTypeConstants;
 using System.Text.Json;
 using GlobalConquest.Units;
 using static GameConstants;
+using System.Text.Json.Serialization;
 namespace GlobalConquest;
 
 public class MapHex
@@ -10,13 +11,19 @@ public class MapHex
     public int Y { get; set; }
     public int X { get; set; }
 
+    [JsonPropertyName("V")]
     public Dictionary<string, bool> Visibility { get; set; } = new Dictionary<string, bool>();
+    [JsonPropertyName("TSV")]
     public Dictionary<string, bool> TemporarySpyVisibility { get; set; } = new Dictionary<string, bool>();
 
+    [JsonPropertyName("U")]
     public Unit Unit { get; set; }
+    [JsonPropertyName("A")]
     public Unit Airplane { get; set; }
 
+    [JsonPropertyName("B")]
     public Burb? Burb { get; set; }
+    [JsonPropertyName("iH")]
     public bool IsHighlighted {get; set;}
 
     public MapHex()

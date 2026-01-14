@@ -4,21 +4,32 @@ using System.Text.Json;
 using static GameConstants;
 using GlobalConquest.Actions;
 using Microsoft.Xna.Framework;
+using System.Text.Json.Serialization;
 
 namespace GlobalConquest.Units;
 
 public class Unit
 {
     public string Id { get; set; }
+    [JsonPropertyName("O")]
     public Faction Owner { get; set; }
+    [JsonPropertyName("UT")]
     public string UnitType { get; set; }
+    [JsonPropertyName("C")]
     public string Color { get; set; }
+    [JsonPropertyName("OBX")]
     public int OriginalBurbX { get; set; }
+    [JsonPropertyName("OBY")]
     public int OriginalBurbY { get; set; }
+    [JsonPropertyName("HBX")]
     public int HomeBurbX { get; set; }
+    [JsonPropertyName("HBY")]
     public int HomeBurbY { get; set; }
+    [JsonPropertyName("UTPX")]
     public int UnitToPursueX { get; set; } = -1;
+    [JsonPropertyName("UTPY")]
     public int UnitToPursueY { get; set; } = -1;
+    [JsonPropertyName("UTP")]
     public string UnitIdToPursue { get; set; }
 
     public int Y { get; set; }
@@ -27,13 +38,16 @@ public class Unit
     // If this unit is a plane, it may have a ParentUnit such as a comcen or carrier.
     // When a plane is a child, the X,Y are inherited from the ParentUnit.
     // Alternatively, a plane could reside on a burb maphex and have a meaningful X and Y.
+    [JsonPropertyName("PU")]
     public string? ParentUnitId { get; set; }
 
     // if this unit is a carrier or comcen, it may have an Airplane associated with it.
+    [JsonPropertyName("A")]
     public Unit? Airplane { get; set; }
 
     // Global Conquest Manual - Technical Notes - p79-83
     // Units start with 100 strength points. When strength equals zero the unit is dead.
+    [JsonPropertyName("SP")]
     public int StrengthPoints { get; set; } = 100;
 
     // When an infantry or armor unit moves from land to sea,
@@ -42,11 +56,14 @@ public class Unit
     // When going from transport to land (unloading), it will take eight rounds.
     // If the beach square has a friendly dug-in infantry unit squatting in it,
     // this loading/unloading takes only one round.
+    [JsonPropertyName("RTP")]
     public int RoundsToPause { get; set; } = 0;
 
     // TODO: Add option, wait till repaired
+    [JsonPropertyName("RTW")]
     public int RoundsToWait { get; set; } = 0;
 
+    [JsonPropertyName("MS")]
     public int MoveSteps { get; set; } = 0;
 
     // After flying a mission, a plane is unavailable for one turn 
@@ -62,31 +79,41 @@ public class Unit
     // your planes will automatically defend against the attack. 
     // If your plane survives this defense, it will need even more rest than usual. 
     // Planes need an additional 1/2 turn of rest (i.e., are unavailable) per attack they defend against.
+    [JsonPropertyName("TU")]
     public float TurnsUnavailable {get; set; }
 
-
+    [JsonPropertyName("V")]
     public Dictionary<string, bool> Visibility { get; set; } = new Dictionary<string, bool>();
 
+    [JsonPropertyName("TSV")]
     public Dictionary<string, bool> TemporarySpyVisibility { get; set; } = new Dictionary<string, bool>();
 
+    [JsonPropertyName("VTS")]
     public Dictionary<string, bool> VisibleToSpies { get; set; } = new Dictionary<string, bool>();
+    [JsonPropertyName("RTBS")]
     public Dictionary<string, int> RoundsToBeSeen { get; set; } = new Dictionary<string, int>();
 
+    [JsonPropertyName("AQ")]
     public List<UnitAction> ActionQueue { get; set; } = new List<UnitAction>();
+    [JsonPropertyName("P")]
     public List<UnitAction> Patrol { get; set; } = new List<UnitAction>();
 
+    [JsonPropertyName("LTUV")]
     public Vector2 lastTargetUnitVector { get; set; } = new Vector2(-1, -1);
 
+    [JsonPropertyName("IU")]
     public bool IsUnloading { get; set; } = false;
+    [JsonPropertyName("IL")]
     public bool IsLoading { get; set; } = false;
-
+    [JsonPropertyName("IB")]
     public bool IsBlitzing { get; set; } = false;
-
+    [JsonPropertyName("IS")]
     public bool IsSneaking { get; set; } = false;
-
+    [JsonPropertyName("IA")]
     public bool IsAttacked {get;set;} = false;
+    [JsonPropertyName("IAg")]
     public bool IsAttacking {get; set;}
-
+    [JsonPropertyName("ID")]
     public bool IsDefending {get; set;} = true;
 
     public Unit()
