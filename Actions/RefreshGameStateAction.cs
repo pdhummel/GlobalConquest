@@ -29,7 +29,10 @@ public class RefreshGameStateAction : PlayerAction
         GameState gameState = server.gameState;
         gameState.updateTicks();
         if (RefreshMap)
+        {
             server.syncAllMapHexes();
+            server.sendMap(peer);
+        }
         else if (X > -1 && Y > -1)
             server.sendGameStateAndMapHex(peer, X, Y);
         // See PlanningReadyAction

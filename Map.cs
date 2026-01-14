@@ -826,13 +826,11 @@ public class Map
             List<string> directions = [];
             if (BURB_DOCK.Equals(mapHex.Burb.Type) || BURB_SUBURB.Equals(mapHex.Burb.Type))
                 return;
-            if (BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type) ||
-                BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type))
+            if (BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type))
                 directions = [DIRECTION_NORTH, DIRECTION_SOUTH, DIRECTION_NORTH_WEST, DIRECTION_SOUTH_WEST, DIRECTION_NORTH_EAST, DIRECTION_SOUTH_EAST];
             else if (BURB_TOWN.Equals(mapHex.Burb.Type))
                 directions = [DIRECTION_NORTH, DIRECTION_SOUTH];
             if (BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type) ||
-                BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type) ||
                 BURB_TOWN.Equals(mapHex.Burb.Type))
             {
                 string color = null;
@@ -866,6 +864,9 @@ public class Map
                         newOwnerColor = color;
                     }
                 }
+                // Always update suburb OwnerColors to match the parent burb
+                // This ensures town suburbs (north/south) and city suburbs (all 6 directions) are updated
+                // This must happen after the parent burb's OwnerColor is set (if color != null)
                 foreach (string direction in directions)
                 {
                     if (surroundingHexes.ContainsKey(direction))
@@ -895,6 +896,29 @@ public class Map
             {
                 mapHex.Airplane = null;
                 server.sendGameStateAndMapHex(mapHex.X, mapHex.Y);
+                // Also send updates for suburb hexes (north/south for towns, all 6 directions for cities)
+                // This ensures the client gets the updated OwnerColor for suburbs
+                if (BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type) ||
+                    BURB_TOWN.Equals(mapHex.Burb.Type))
+                {
+                    List<string> suburbDirections = [];
+                    if (BURB_CAPITAL.Equals(mapHex.Burb.Type) || BURB_METROPLEX.Equals(mapHex.Burb.Type) || BURB_CITY.Equals(mapHex.Burb.Type))
+                        suburbDirections = [DIRECTION_NORTH, DIRECTION_SOUTH, DIRECTION_NORTH_WEST, DIRECTION_SOUTH_WEST, DIRECTION_NORTH_EAST, DIRECTION_SOUTH_EAST];
+                    else if (BURB_TOWN.Equals(mapHex.Burb.Type))
+                        suburbDirections = [DIRECTION_NORTH, DIRECTION_SOUTH];
+                    Dictionary<string, MapHex> surroundingHexes = getSurroundingHexes(mapHex);
+                    foreach (string direction in suburbDirections)
+                    {
+                        if (surroundingHexes.ContainsKey(direction))
+                        {
+                            MapHex neighborHex = surroundingHexes[direction];
+                            if (neighborHex.Burb != null)
+                            {
+                                server.sendGameStateAndMapHex(neighborHex.X, neighborHex.Y);
+                            }
+                        }
+                    }
+                }
                 GameEvent gameEvent = new GameEvent(GAME_EVENT_BURB_CAPTURED);
                 gameEvent.EnemyColor = previousOwnerColor;
                 gameEvent.MapHex = mapHex;

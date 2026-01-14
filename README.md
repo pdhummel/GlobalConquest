@@ -201,13 +201,13 @@ The game is being designed with known differences from the original.
 - [x] Build decoy ComCen/units.
 
 ### Milestone 8
-- [ ] Treaties
+- [x] Treaties
   - [x] Cease Fire 
   - [x] Alliance
   - [x] Teammates
   - [x] Changes to Factions Panel for Treaties
   - [x] Ability to downgrade treaty to war during planning.
-  - [ ] AI treaty enhancements.
+  - [x] AI treaty enhancements.
 - [ ] Choose game unit palette
 
 

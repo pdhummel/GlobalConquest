@@ -104,10 +104,8 @@ public class Burbs
         Dictionary<string, MapHex> surroundingHexes = map.getSurroundingHexes(mapHex);
         if (BURB_METROPLEX.Equals(type) || BURB_CAPITAL.Equals(type) || BURB_CITY.Equals(type))
             directions = [DIRECTION_NORTH, DIRECTION_SOUTH, DIRECTION_NORTH_WEST, DIRECTION_NORTH_EAST, DIRECTION_SOUTH_WEST, DIRECTION_SOUTH_EAST];
-            //directions = [DIRECTION_NORTH_WEST, DIRECTION_NORTH_EAST, DIRECTION_SOUTH_WEST, DIRECTION_SOUTH_EAST];
         else if (BURB_TOWN.Equals(type))
             directions = [DIRECTION_NORTH, DIRECTION_SOUTH];
-            //directions = [];
 
         if (BURB_METROPLEX.Equals(type))
             mapHex.Terrain = TERRAIN_SWAMP;

@@ -458,18 +458,7 @@ public class GlobalConquestGame : Game
                     int yPixels = (int)v2.Y * 2;
                     float xZoom = (float)MainGameScreen.MiniMapPanel.Width / xPixels;
                     float yZoom = (float)MainGameScreen.MiniMapPanel.Height / yPixels;
-                    //Globals.Log("Draw(): v2PixelCenter=" + v2.X + "," + v2.Y);
-                    //Globals.Log("Draw(): xZoom=" + xZoom + ", yZoom=" + yZoom);
-                    //Globals.Log("Draw(): miniMap width=" + MainGameScreen.MiniMapPanel.Width +
-                    //            ", height=" + MainGameScreen.MiniMapPanel.Height);
-                    // v2PixelCenter=648,888 ---> 1296x1776
-                    // miniMapWidth=250
-                    // miniMapHeight=256
-                    // xZoom=0.14029181, yZoom=0.104832105
-                    // 256/1776 =
-                    // 250/1296
 
-                    //if (yZoom < xZoom)
                     if (yPixels > xPixels)
                         miniMapCamera.Zoom = yZoom;
                     else
@@ -538,14 +527,24 @@ public class GlobalConquestGame : Game
                     parentBurb = Client.GameState.Burbs.NameToBurb[lastSelectedBurb.ParentBurbName];
                 }
                 //Globals.Log("Draw(): burb context: " + lastSelectedBurb.Type + " ," + lastSelectedBurb.OwnerColor);
-                if (lastSelectedHex != null && lastSelectedBurb != null && lastSelectedBurb.OwnerColor != null &&
-                    player != null &&
-                    (lastSelectedBurb.OwnerColor.Equals(player.FactionColor) ||
-                    (parentBurb != null && parentBurb.OwnerColor != null && parentBurb.OwnerColor.Equals(player.FactionColor))) &&
+                // Check if player owns the burb (either directly or through parent)
+                bool isOwned = false;
+                if (player != null)
+                {
+                    if (lastSelectedBurb.OwnerColor != null && lastSelectedBurb.OwnerColor.Equals(player.FactionColor))
+                    {
+                        isOwned = true;
+                    }
+                    else if (parentBurb != null && parentBurb.OwnerColor != null && parentBurb.OwnerColor.Equals(player.FactionColor))
+                    {
+                        isOwned = true;
+                    }
+                }
+                if (lastSelectedHex != null && lastSelectedBurb != null &&
                     MainGameScreen.IsShowContextMenu() && IsAllowedToPlan())
                 {
                     //Globals.Log("Draw(): ShowContextMenu 6");
-                    MainGameScreen?.ShowContextMenu(lastSelectedHex);
+                    MainGameScreen?.ShowContextMenu(lastSelectedHex, isOwned);
                 }
                 else
                 {
