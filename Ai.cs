@@ -1108,7 +1108,8 @@ public class Ai
                 }
             }
             aiUnit.UnitType = newUnitType;
-            if (!AIRPLANE.Equals(aiUnit.UnitType))
+            if (!AIRPLANE.Equals(aiUnit.UnitType) || (AI_GOAL_DEFEND.Equals(goal.Type) && 
+                goal.TargetMapHex != null && (goal.TargetMapHex.X != myMetroHex.X || goal.TargetMapHex.Y != myMetroHex.Y)))
                 goal.ActualUnits.Add(aiUnit);
             else
                 defaultGoal.ActualUnits.Add(aiUnit);
