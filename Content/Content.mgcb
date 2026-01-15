@@ -878,6 +878,18 @@
 /processorParam:TextureFormat=Color
 /build:magenta-transport-tank-48x48.png
 
+#begin marriage.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:marriage.png
+
 #begin mountain-flat-hex-72x72.png
 /importer:TextureImporter
 /processor:TextureProcessor

@@ -369,7 +369,7 @@ public class GlobalConquestGame : Game
                         MapHex mapHex = new MapHex();
                         mapHex.Y = liY;
                         mapHex.X = liX;
-                        mapHex.Terrain = TERRAIN_SEA;     // this is temporary so should not matter
+                        mapHex.Terrain = TERRAIN_UNKNOWN;     // this is temporary so should not matter
                         Client.GameState.Map.Hexes[liY, liX] = mapHex;
                     }
                     else
