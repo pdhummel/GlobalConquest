@@ -87,9 +87,9 @@ public class DetailsPanelView
         bool teamMateVisibility = false;
         foreach (string otherFactionColor in FACTION_COLORS)
         {
-            if (faction != null && 
-                (gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_TEAM_MATES) ||
-                 gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_ALLIANCE)))
+            if (faction != null && player != null &&
+                (TREATY_TEAM_MATES.Equals(gameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor)) ||
+                 TREATY_ALLIANCE.Equals(gameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor))))
             {
                 teamMateVisibility = gcGame.IsMapHexVisibleToColor(lastSelectedHex, otherFactionColor);
                 if (teamMateVisibility)
@@ -142,9 +142,9 @@ public class DetailsPanelView
         teamMateVisibility = false;
         foreach (string otherFactionColor in FACTION_COLORS)
         {
-            if (faction != null && 
-                (gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_TEAM_MATES) ||
-                 gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_ALLIANCE)))
+            if (faction != null && player != null &&
+                (TREATY_TEAM_MATES.Equals(gameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor)) ||
+                 TREATY_ALLIANCE.Equals(gameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor))))
             {
                 teamMateVisibility = gcGame.IsUnitVisibleToColor(lastSelectedUnit, otherFactionColor);
                 if (teamMateVisibility)

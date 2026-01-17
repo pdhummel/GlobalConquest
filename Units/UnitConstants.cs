@@ -19,7 +19,7 @@ public static class UnitConstants
 
     public const string UNIT_PALETTE_NAME_EXTENDED = "Extended-set";
     public const string UNIT_PALETTE_NAME_ORIGINAL_GC = "Original GC";
-    public const string UNIT_PALETTE_NAME_COMCEN = "ComCen";
+    public const string UNIT_PALETTE_NAME_COMCEN = "No Spy GC";
     public const string UNIT_PALETTE_NAME_WW2 = "WW2";
     public const string UNIT_PALETTE_NAME_BASIC = "Basic-set";
     public const string UNIT_PALETTE_NAME_CHQ1918 = "CHQ 1918";
