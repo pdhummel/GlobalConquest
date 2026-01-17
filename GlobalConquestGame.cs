@@ -15,7 +15,7 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Point = Microsoft.Xna.Framework.Point;
 using Microsoft.Xna.Framework.Audio;
 using GlobalConquest.HexMapEngine.Structures;
-using static UnitTypeConstants;
+using static UnitConstants;
 using static GameConstants;
 using static Microsoft.Xna.Framework.Graphics.Texture2D;
 namespace GlobalConquest;

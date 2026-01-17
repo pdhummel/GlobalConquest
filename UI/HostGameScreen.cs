@@ -19,6 +19,7 @@ using ComboBoxStyle = Myra.Graphics2D.UI.Styles.ComboBoxStyle;
 using Microsoft.Xna.Framework.Audio;
 using static GlobalConquest.Factions;
 using static GlobalConquest.Burbs;
+using static UnitConstants;
 using static GameConstants;
 
 namespace GlobalConquest.UI;
@@ -70,6 +71,8 @@ public class HostGameScreen
     TextBox timedSecondsTextBox = new TextBox();
     Label canLoseComCenLabel = new Label();
     CheckButton canLoseComCenCheckButton = new CheckButton();
+    Label unitsLabel = new Label();
+    ComboView unitsComboView = new ComboView();
     MainGameScreen mainGameScreen;
 
 
@@ -273,6 +276,20 @@ public class HostGameScreen
         canLoseComCenCheckButton.IsChecked = false;
         canLoseComCenCheckButton.VerticalAlignment = VerticalAlignment.Center;
 
+        unitsLabel.Id = "unitsLabel";
+        unitsLabel.Text = "units:";
+        unitsLabel.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Right;
+        unitsComboView.Id = "unitsComboView";
+        unitsComboView.Border = new SolidBrush("#808000FF");
+        unitsComboView.BorderThickness = new Thickness(2);
+        unitsComboView.Widgets.Add(new Label() {Text=UNIT_PALETTE_NAME_FULL});
+        unitsComboView.Widgets.Add(new Label() {Text=UNIT_PALETTE_NAME_COMCEN});
+        unitsComboView.Widgets.Add(new Label() {Text=UNIT_PALETTE_NAME_WW2});
+        unitsComboView.Widgets.Add(new Label() {Text=UNIT_PALETTE_NAME_BASIC});
+        unitsComboView.Widgets.Add(new Label() {Text=UNIT_PALETTE_NAME_CHQ1918});
+        unitsComboView.Widgets.Add(new Label() {Text=UNIT_PALETTE_NAME_INFANTRY});
+        unitsComboView.SelectedIndex = 0;
+
         cancelButton.Click += cancelButtonClicked;
         okButton.Click += okButtonClicked;
 
@@ -308,6 +325,7 @@ public class HostGameScreen
         addPanelRow(verticalStackPanel, executionLabel, executionComboView);
         addPanelRow(verticalStackPanel, timedSecondsLabel, timedSecondsTextBox);
         addPanelRow(verticalStackPanel, scoringOptionLabel, scoringOptionComboView);
+        addPanelRow(verticalStackPanel, unitsLabel, unitsComboView);
         addPanelRow(verticalStackPanel, nativesLabel, nativesCheckButton);
         addPanelRow(verticalStackPanel, canLoseComCenLabel, canLoseComCenCheckButton);
 
@@ -374,6 +392,8 @@ public class HostGameScreen
         standaloneServerCheckButton.Visible = false;
         canLoseComCenLabel.Visible = false;
         canLoseComCenCheckButton.Visible = false;
+        unitsLabel.Visible = false;
+        unitsComboView.Visible = false;
 
         hostSettingsLabel.RemoveFromParent();
         portLabel.RemoveFromParent();
@@ -410,6 +430,8 @@ public class HostGameScreen
         canLoseComCenCheckButton.RemoveFromParent();
         standaloneServerLabel.RemoveFromParent();
         standaloneServerCheckButton.RemoveFromParent();
+        unitsLabel.RemoveFromParent();
+        unitsComboView.RemoveFromParent();
     }
 
     private void cancelButtonClicked(object? sender, EventArgs e)
@@ -443,6 +465,7 @@ public class HostGameScreen
         gameSettings.Visibility = ((Label)visibilityComboView.SelectedItem).Text;
         gameSettings.ExecutionMode = ((Label)executionComboView.SelectedItem).Text;
         gameSettings.ScoringOption = ((Label)scoringOptionComboView.SelectedItem).Text;
+        gameSettings.UnitPalette = ((Label)unitsComboView.SelectedItem).Text;
         if (nativesCheckButton.IsChecked)
             gameSettings.HasNatives = true;
         else

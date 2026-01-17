@@ -1,5 +1,5 @@
 namespace GlobalConquest.Units;
-using static UnitTypeConstants;
+using static UnitConstants;
 using static GameConstants;
 using static GlobalConquest.Burbs;
 

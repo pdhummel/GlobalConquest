@@ -10,7 +10,7 @@ using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
-using static UnitTypeConstants;
+using static UnitConstants;
 using Point = Microsoft.Xna.Framework.Point;
 using Thickness = Myra.Graphics2D.Thickness;
 using Microsoft.Xna.Framework.Input;

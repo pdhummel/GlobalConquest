@@ -1,4 +1,4 @@
-using static UnitTypeConstants;
+using static UnitConstants;
 using System.Text.Json;
 using GlobalConquest.Units;
 using static GameConstants;

@@ -1,7 +1,7 @@
 using System.Text.Json;
 using GlobalConquest.Units;
 using LiteNetLib;
-using static UnitTypeConstants;
+using static UnitConstants;
 using static GameConstants;
 using static GlobalConquest.Burbs;
 using static GlobalConquest.GameEvent;

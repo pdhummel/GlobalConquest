@@ -1,7 +1,7 @@
 using System.Text.Json;
 using LiteNetLib;
 using GlobalConquest.Units;
-using static UnitTypeConstants;
+using static UnitConstants;
 namespace GlobalConquest.Actions;
 
 public class ChangeUnitContextAction : PlayerAction

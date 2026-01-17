@@ -10,7 +10,7 @@ using Label = Myra.Graphics2D.UI.Label;
 using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.ObjectModel;
-using static UnitTypeConstants;
+using static UnitConstants;
 namespace GlobalConquest.UI;
 
 public class ContextMenu

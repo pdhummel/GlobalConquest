@@ -1,4 +1,4 @@
-using static UnitTypeConstants;
+using static UnitConstants;
 using static GlobalConquest.Burbs;
 using static GlobalConquest.GameEvent;
 using GlobalConquest.Actions;

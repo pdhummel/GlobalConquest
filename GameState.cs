@@ -1,4 +1,4 @@
-using static UnitTypeConstants;
+using static UnitConstants;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using GlobalConquest.Units;
@@ -47,7 +47,7 @@ public class GameState
     public int SecondsRemainingUntilExecution {get; set;}
 
     // if any of the data elements in the entities change above, then this version should be bumped.
-    public string Version { get; set; } = "v0.8.0";
+    public string Version { get; set; } = "v0.8.1";
     private Random rand = new System.Random();
 
 
@@ -83,103 +83,145 @@ public class GameState
         int width = GameSettings.Width;
         int height = GameSettings.Height;
 
-        Unit comcen = new Unit();
-        comcen.UnitType = COMMAND_CENTER;
-        comcen.Color = color;
-        Unit tank1 = new Unit();
-        tank1.UnitType = ARMOR;
-        tank1.Color = color;
-        Unit tank2 = new Unit();
-        tank2.UnitType = ARMOR;
-        tank2.Color = color;
-        Unit infantry = new Unit();
-        infantry.UnitType = INFANTRY;
-        infantry.Color = color;
-        Unit spy = new Unit();
-        spy.UnitType = SPY;
-        spy.Color = color;
-
-        Unit plane1 = new Unit();
-        plane1.UnitType = AIRPLANE;
-        plane1.Color = color;
-
-        if (VISIBILITY_OMNISCIENT.Equals(GameSettings.Visibility))
-        {
-            comcen.setOmniVisibility();
-            plane1.setOmniVisibility();
-            spy.setOmniVisibility();
-        }
-        else
-        {
-            comcen.setBaseVisibility();
-            plane1.setBaseVisibility();
-            spy.setBaseVisibility();
-        }
+        MapHex metroHex = Map.getMetroHex(color);
+        List<string> directions = [];
         if (color.Equals(AMBER))
         {
-            MapHex metroHex = Map.getMetroHex(AMBER);
-            List<string> directions = [DIRECTION_NORTH_WEST, DIRECTION_NORTH_EAST, DIRECTION_SOUTH_WEST, DIRECTION_SOUTH_EAST];
-            placeUnit(metroHex, directions, comcen);
-            Map.placeNewUnit(spy, metroHex);
-            Faction faction = Factions.ColorToFaction[comcen.Color];
-            faction.HasComCen = true;
-
-            // Test with some large quantity of units
-            if (1 == 0)
-            {
-                Unit decoyComcen = new Unit();
-                decoyComcen.UnitType = DECOY_COMMAND_CENTER;
-                decoyComcen.Color = color;
-                decoyComcen.setBaseVisibility();
-                placeUnit(Map.Hexes[5,5], directions, decoyComcen);
-
-                for (int i=0; i< 100; i++)
-                {
-                    int x = rand.Next(5, 20);
-                    int y = rand.Next(5, 20);
-                    MapHex mapHex = Map.Hexes[y, x];
-                    if (mapHex.getUnit() == null)
-                    {
-                        infantry = new Unit();
-                        infantry.UnitType = INFANTRY;
-                        infantry.Color = color;
-                        //infantry.setOmniVisibility();
-                        infantry.setBaseVisibility();
-                        placeUnit(mapHex, infantry);
-                    }    
-                }
-            }
+            directions = [DIRECTION_NORTH_WEST, DIRECTION_NORTH_EAST, DIRECTION_SOUTH_WEST, DIRECTION_SOUTH_EAST];
+            // testPlacement(color, directions)
         }
         else if (color.Equals(OCHER))
         {
-            MapHex metroHex = Map.getMetroHex(OCHER);
-            List<string> directions = [DIRECTION_NORTH_EAST, DIRECTION_NORTH_WEST, DIRECTION_SOUTH_WEST, DIRECTION_SOUTH_EAST];
-            placeUnit(metroHex, directions, comcen);
-            Map.placeNewUnit(spy, metroHex);
-            Faction faction = Factions.ColorToFaction[comcen.Color];
-            faction.HasComCen = true;
+            directions = [DIRECTION_NORTH_EAST, DIRECTION_NORTH_WEST, DIRECTION_SOUTH_WEST, DIRECTION_SOUTH_EAST];
         }
         else if (color.Equals(CYAN))
         {
-            MapHex metroHex = Map.getMetroHex(CYAN);
-            List<string> directions = [DIRECTION_SOUTH_EAST, DIRECTION_NORTH_WEST, DIRECTION_SOUTH_WEST, DIRECTION_NORTH_EAST];
-            placeUnit(metroHex, directions, comcen);
-            Map.placeNewUnit(spy, metroHex);
-            Faction faction = Factions.ColorToFaction[comcen.Color];
-            faction.HasComCen = true;
+            directions = [DIRECTION_SOUTH_EAST, DIRECTION_NORTH_WEST, DIRECTION_SOUTH_WEST, DIRECTION_NORTH_EAST];
         }
         else if (color.Equals(MAGENTA))
         {
-            MapHex metroHex = Map.getMetroHex(MAGENTA);
-            List<string> directions = [DIRECTION_SOUTH_WEST, DIRECTION_NORTH_WEST, DIRECTION_SOUTH_EAST, DIRECTION_NORTH_EAST];
-            placeUnit(metroHex, directions, comcen);
-            Map.placeNewUnit(spy, metroHex);
-            Faction faction = Factions.ColorToFaction[comcen.Color];
-            faction.HasComCen = true;
+            directions = [DIRECTION_SOUTH_WEST, DIRECTION_NORTH_WEST, DIRECTION_SOUTH_EAST, DIRECTION_NORTH_EAST];
         }
 
-        comcen.Airplane = plane1;
-        plane1.ParentUnitId = comcen.Id;
+        Unit comcen = new Unit();
+        comcen.UnitType = COMMAND_CENTER;
+        comcen.Color = color;
+        Unit spy = new Unit();
+        spy.UnitType = SPY;
+        spy.Color = color;
+        Unit plane = new Unit();
+        plane.UnitType = AIRPLANE;
+        plane.Color = color;
+        Unit infantry = new Unit();
+        infantry.UnitType = INFANTRY;
+        infantry.Color = color;
+        Unit tank = new Unit();
+        tank.UnitType = ARMOR;
+        tank.Color = color;
+        Unit carrier = new Unit();
+        carrier.UnitType = AIRCRAFT_CARRIER;
+        carrier.Color = color;
+        Unit battleship = new Unit();
+        battleship.UnitType = BATTLESHIP;
+        battleship.Color = color;
+
+        Faction faction = Factions.ColorToFaction[color];
+        faction.HasComCen = true;
+        if (GameSettings.UnitPalette.Equals(UNIT_PALETTE_NAME_FULL))
+        {
+            placeUnit(metroHex, directions, comcen);
+            Map.placeNewUnit(spy, metroHex);
+            comcen.Airplane = plane;
+            plane.ParentUnitId = comcen.Id;
+            List<Unit> units = [comcen, spy, plane];
+            setInitialUnitsVisibility(units);
+        }
+        else if (GameSettings.UnitPalette.Equals(UNIT_PALETTE_NAME_COMCEN))
+        {
+            placeUnit(metroHex, directions, comcen);
+            Map.placeNewUnit(infantry, metroHex);
+            comcen.Airplane = plane;
+            plane.ParentUnitId = comcen.Id;
+            List<Unit> units = [comcen, infantry, plane];
+            setInitialUnitsVisibility(units);
+        }
+        else if (GameSettings.UnitPalette.Equals(UNIT_PALETTE_NAME_WW2))
+        {
+            placeUnit(metroHex, directions, infantry);
+            Map.placeNewUnit(carrier, metroHex);
+            carrier.Airplane = plane;
+            plane.ParentUnitId = carrier.Id;
+            List<Unit> units = [carrier, infantry, plane];
+            setInitialUnitsVisibility(units);
+        }
+        else if (GameSettings.UnitPalette.Equals(UNIT_PALETTE_NAME_BASIC))
+        {
+            placeUnit(metroHex, directions, infantry);
+            Map.placeNewUnit(battleship, metroHex);
+            List<Unit> units = [battleship, infantry];
+            setInitialUnitsVisibility(units);
+        }
+        else if (GameSettings.UnitPalette.Equals(UNIT_PALETTE_NAME_CHQ1918))
+        {
+            placeUnit(metroHex, directions, infantry);
+            Map.placeNewUnit(battleship, metroHex);
+            List<Unit> units = [battleship, infantry];
+            setInitialUnitsVisibility(units);
+        }
+        else if (GameSettings.UnitPalette.Equals(UNIT_PALETTE_NAME_INFANTRY))
+        {
+            Map.placeNewUnit(infantry, metroHex);
+            List<Unit> units = [infantry];
+            setInitialUnitsVisibility(units);
+        }
+    }
+
+    private void setInitialUnitsVisibility(List<Unit> units)
+    {
+        foreach (Unit unit in units)
+        {
+            if (VISIBILITY_OMNISCIENT.Equals(GameSettings.Visibility))
+            {
+                unit.setOmniVisibility();
+            }
+            else
+            {
+                unit.setBaseVisibility();
+            }
+        }
+    }
+
+    private void testPlacement(string color, List<string> directions)
+    {
+        Unit infantry = new Unit();
+        infantry.UnitType = INFANTRY;
+        infantry.Color = color;
+
+        // Test with some large quantity of units
+        if (1 == 0)
+        {
+            Unit decoyComcen = new Unit();
+            decoyComcen.UnitType = DECOY_COMMAND_CENTER;
+            decoyComcen.Color = color;
+            decoyComcen.setBaseVisibility();
+            placeUnit(Map.Hexes[5,5], directions, decoyComcen);
+
+            for (int i=0; i< 100; i++)
+            {
+                int x = rand.Next(5, 20);
+                int y = rand.Next(5, 20);
+                MapHex mapHex = Map.Hexes[y, x];
+                if (mapHex.getUnit() == null)
+                {
+                    infantry = new Unit();
+                    infantry.UnitType = INFANTRY;
+                    infantry.Color = color;
+                    //infantry.setOmniVisibility();
+                    infantry.setBaseVisibility();
+                    placeUnit(mapHex, infantry);
+                }    
+            }
+        }
 
     }
 

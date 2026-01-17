@@ -1,6 +1,6 @@
 using GlobalConquest;
 using GlobalConquest.Units;
-using static UnitTypeConstants;
+using static UnitConstants;
 using static GameConstants;
 
 public class AiGoal

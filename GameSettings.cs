@@ -27,6 +27,7 @@ public class GameSettings
     public bool IsAdvancedEconomics {get;set;}
     public int NumberOfIslands {get; set;} = 1;
     public bool IsStandaloneServer {get; set;}
+    public string UnitPalette {get; set;}
 
     public GameSettings()
     {

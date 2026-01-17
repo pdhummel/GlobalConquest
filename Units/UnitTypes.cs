@@ -1,6 +1,6 @@
 using System.Data;
 using GlobalConquest.Units;
-using static UnitTypeConstants;
+using static UnitConstants;
 
 public class UnitTypes
 {
