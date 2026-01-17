@@ -208,7 +208,7 @@ The game is being designed with known differences from the original.
   - [x] Changes to Factions Panel for Treaties
   - [x] Ability to downgrade treaty to war during planning.
   - [x] AI treaty enhancements.
-- [ ] Choose game unit palette
+- [x] Choose game unit palette
 
 
 ### Milestone 9

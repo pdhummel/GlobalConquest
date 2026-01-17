@@ -82,9 +82,24 @@ public class DetailsPanelView
         string color = NATIVE_COLOR;
         if (player != null)
             color = player.FactionColor;
+        Faction faction = gameState.Factions.ColorToFaction[color];
+
+        bool teamMateVisibility = false;
+        foreach (string otherFactionColor in FACTION_COLORS)
+        {
+            if (faction != null && 
+                (gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_TEAM_MATES) ||
+                 gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_ALLIANCE)))
+            {
+                teamMateVisibility = gcGame.IsMapHexVisibleToColor(lastSelectedHex, otherFactionColor);
+                if (teamMateVisibility)
+                    break;
+            }
+        }
 
         if (lastSelectedHex != null && 
-            (lastSelectedHex.Visibility.ContainsKey(color) && lastSelectedHex.Visibility[color]|| gcGame.Client.IsObserverOnly))
+            (lastSelectedHex.Visibility.ContainsKey(color) && 
+             lastSelectedHex.Visibility[color] || gcGame.Client.IsObserverOnly || teamMateVisibility))
         {
             Image image = new Image();
             Texture2D texture = gcGame.GetTextures()[lastSelectedHex.Terrain];
@@ -124,8 +139,22 @@ public class DetailsPanelView
             stackPanel.Widgets.Add(burbLabel);
         }
 
+        teamMateVisibility = false;
+        foreach (string otherFactionColor in FACTION_COLORS)
+        {
+            if (faction != null && 
+                (gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_TEAM_MATES) ||
+                 gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_ALLIANCE)))
+            {
+                teamMateVisibility = gcGame.IsUnitVisibleToColor(lastSelectedUnit, otherFactionColor);
+                if (teamMateVisibility)
+                    break;
+            }
+        }
+
         if (lastSelectedUnit != null && lastSelectedUnit.StrengthPoints > 0 &&
-            (lastSelectedUnit.Visibility.ContainsKey(color) && lastSelectedUnit.Visibility[color] || gcGame.Client.IsObserverOnly))
+            (lastSelectedUnit.Visibility.ContainsKey(color) && lastSelectedUnit.Visibility[color] || 
+             gcGame.Client.IsObserverOnly || teamMateVisibility))
         {
             string unitText = lastSelectedUnit == null ?
             "Unit: " :
@@ -168,7 +197,8 @@ public class DetailsPanelView
         }
 
         if (lastSelectedPlane != null && lastSelectedPlane.StrengthPoints > 0 &&
-            (lastSelectedPlane.Visibility.ContainsKey(color) && lastSelectedPlane.Visibility[color] || gcGame.Client.IsObserverOnly))
+            (lastSelectedPlane.Visibility.ContainsKey(color) && lastSelectedPlane.Visibility[color] || 
+             gcGame.Client.IsObserverOnly || teamMateVisibility))
         {
             string planeText = lastSelectedPlane.TurnsUnavailable == 0 ? "Plane available" : "Plane grounded " + lastSelectedPlane.TurnsUnavailable + " turns";
             string textureKey = lastSelectedPlane.Color + "-plane";
