@@ -127,7 +127,7 @@ public class GameState
 
         Faction faction = Factions.ColorToFaction[color];
         faction.HasComCen = true;
-        if (GameSettings.UnitPalette.Equals(UNIT_PALETTE_NAME_FULL))
+        if (GameSettings.UnitPalette.Equals(UNIT_PALETTE_NAME_ORIGINAL_GC) || GameSettings.UnitPalette.Equals(UNIT_PALETTE_NAME_EXTENDED))
         {
             placeUnit(metroHex, directions, comcen);
             Map.placeNewUnit(spy, metroHex);

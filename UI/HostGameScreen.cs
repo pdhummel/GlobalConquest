@@ -282,7 +282,8 @@ public class HostGameScreen
         unitsComboView.Id = "unitsComboView";
         unitsComboView.Border = new SolidBrush("#808000FF");
         unitsComboView.BorderThickness = new Thickness(2);
-        unitsComboView.Widgets.Add(new Label() {Text=UNIT_PALETTE_NAME_FULL});
+        unitsComboView.Widgets.Add(new Label() {Text=UNIT_PALETTE_NAME_EXTENDED});
+        unitsComboView.Widgets.Add(new Label() {Text=UNIT_PALETTE_NAME_ORIGINAL_GC});
         unitsComboView.Widgets.Add(new Label() {Text=UNIT_PALETTE_NAME_COMCEN});
         unitsComboView.Widgets.Add(new Label() {Text=UNIT_PALETTE_NAME_WW2});
         unitsComboView.Widgets.Add(new Label() {Text=UNIT_PALETTE_NAME_BASIC});

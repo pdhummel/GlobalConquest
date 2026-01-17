@@ -293,6 +293,11 @@ public class BurbWindow
         MainGameScreen mainGameScreen, Grid grid, List<int> rowNumbers)
     {
         GameState gameState = mainGameScreen.gcGame.Client.GameState;
+        string unitPaletteName = gameState.GameSettings.UnitPalette;
+        HashSet<string> units = UNIT_PALETTES[unitPaletteName];
+        if (!units.Contains(unitType))
+            return rowIndex;
+
 
         costByRow[rowIndex] = gameState.UnitTypes.UnitTypeMap[unitType].Cost;
         int costValue = costByRow[rowIndex];
@@ -308,6 +313,13 @@ public class BurbWindow
     {
         if (!mainGameScreen.gcGame.IsAllowedToPlan())
             return;
+        GameState gameState = mainGameScreen.gcGame.Client.GameState;
+        string unitPaletteName = gameState.GameSettings.UnitPalette;
+        HashSet<string> units = UNIT_PALETTES[unitPaletteName];
+        string unitType = unitTypeByRow[row];
+        if (!units.Contains(unitType))
+            return;
+
         int count = 0;
         foreach (string direction in directions)
         {
@@ -328,7 +340,7 @@ public class BurbWindow
             buildButton.Click += (s, a) =>
             {
                 window.Close();
-                purchaseUnit(mainGameScreen, unitTypeByRow[row], mapHex, direction);
+                purchaseUnit(mainGameScreen, unitType, mapHex, direction);
             };
 
             //Globals.Log("addPurchaseBuildButton(): " + "Build " + direction + ", row=" + row + ", column=" + "" + (2 + count));
