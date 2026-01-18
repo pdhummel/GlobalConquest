@@ -53,6 +53,13 @@ public static class GameConstants
     public const string VICTORY_INCOME = "Income";
     public const string VICTORY_COMBINED = "Combined";
 
+    // higher number at bottom
+    public const float LAYER_TERRAIN = 0.85f;
+    public const float LAYER_HEX_HIGHLIGHT = 0.80f;
+    public const float LAYER_RESOURCE = 0.75f;
+    public const float LAYER_BURB = 0.60f;
+    public const float LAYER_UNIT = 0.50f;
+    public const float LAYER_PLANE = 0.35f;
 }
 
 

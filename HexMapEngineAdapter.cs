@@ -209,9 +209,9 @@ class HexMapEngineAdapter
         {
             return;
         }
-        float layerDepth = 0.5f;
+        float layerDepth = LAYER_UNIT;
         if (unitTypeId.Contains(AIRPLANE))
-            layerDepth = 0.35f;
+            layerDepth = LAYER_PLANE;
         if (loadedTextures.units.ContainsKey(unitTypeId))
         {
             coSpriteBatch.Draw(
@@ -529,7 +529,7 @@ class HexMapEngineAdapter
                                     Vector2.Zero,
                                     new Vector2(1.0f, 1.0f),
                                     SpriteEffects.None,
-                                    0.8f // higher number at bottom - .85=hex, .8 highlight, .75=burb, .5=unit, .35=plane
+                                    LAYER_HEX_HIGHLIGHT
                                     );
                         }
                         Draw_HexTile(loHexTile,
@@ -632,7 +632,6 @@ class HexMapEngineAdapter
         }
 
         string resourceId = resource.Type;
-        float layerDepth = 0.35f;
         if (loadedTextures.textures.ContainsKey(resourceId))
         {
             //Globals.Log("DrawResourceAtMapHex(): drawing resource " + resourceId);
@@ -645,7 +644,7 @@ class HexMapEngineAdapter
                                 Vector2.Zero,
                                 new Vector2(1.0f, 1.0f),
                                 SpriteEffects.None,
-                                layerDepth  // higher number at bottom
+                                LAYER_RESOURCE  // higher number at bottom
                                 );
 
         }
@@ -774,7 +773,7 @@ class HexMapEngineAdapter
                                 Vector2.Zero,
                                 new Vector2(1.0f, 1.0f),
                                 SpriteEffects.None,
-                                0.85f // higher number at bottom - .85=hex, .75=burb, .5=unit, .35=plane
+                                LAYER_TERRAIN
                                 );
             return;
         }
@@ -788,7 +787,7 @@ class HexMapEngineAdapter
                             Vector2.Zero,
                             new Vector2(1.0f, 1.0f),
                             SpriteEffects.None,
-                            0.85f // higher number at bottom
+                            LAYER_TERRAIN
                             );
 
 
@@ -866,7 +865,7 @@ class HexMapEngineAdapter
                                 Vector2.Zero,
                                 new Vector2(1.0f, 1.0f),
                                 SpriteEffects.None,
-                                0.75f  // higher number at bottom
+                                LAYER_BURB
                                 );
             return;
         }
@@ -889,7 +888,7 @@ class HexMapEngineAdapter
                             Vector2.Zero,
                             new Vector2(1.0f, 1.0f),
                             SpriteEffects.None,
-                            0.75f  // higher number at bottom
+                            LAYER_BURB
                             );
             return;
         }
@@ -905,7 +904,7 @@ class HexMapEngineAdapter
                             Vector2.Zero,
                             new Vector2(1.0f, 1.0f),
                             SpriteEffects.None,
-                            0.75f  // higher number at bottom
+                            LAYER_BURB
                             );
 
     }
