@@ -32,6 +32,7 @@ public static class GameConstants
 
     public const string VISIBILITY_OMNISCIENT = "Omniscient";
     public const string VISIBILITY_COMMAND_HQ = "Command HQ";
+    public const string VISIBILITY_FOG = "Fog of War";
 
     public const string EXECUTION_QUORUM = "Quorum";
     public const string EXECUTION_TIMED = "Timed*";

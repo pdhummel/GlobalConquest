@@ -4,8 +4,10 @@ using static GlobalConquest.GameEvent;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
 using static GlobalConquest.Factions;
+using static GlobalConquest.Resource;
 using static GameConstants;
 using Microsoft.Xna.Framework;
+using GlobalConquest.HexMapEngine.Structures;
 namespace GlobalConquest;
 
 public class Map
@@ -40,12 +42,14 @@ public class Map
         positionMetros();
     }
 
-    public Map(int y, int x, int numberOfIslands=1)
+    public Map(int y, int x, int numberOfIslands=1, string visibilityMode=VISIBILITY_FOG)
     {
         Y = y;
-        X = x;
+        X = x; 
+        VisibilityMode = visibilityMode;
         positionMetros();
         Hexes = generateMap(y, x, numberOfIslands);
+        placeResources();
         buildNodesForShortestPath();
         IsMapReady = true;
         foreach (string color in NATIVE_AND_FACTION_COLORS)
@@ -301,6 +305,81 @@ public class Map
         }
         Globals.Log("generateMap(): hexes=" + hexes.GetLength(0) + "," + hexes.GetLength(1));
         return hexes;
+    }
+
+    public void placeResources()
+    {
+        for (int liY = 0; liY < Y; liY++)
+        {
+            for (int liX = 0; liX < X; liX++)
+            {
+                MapHex mapHex = Hexes[liY, liX];
+                placeResource(mapHex);
+            }
+        }
+    }
+
+    private void placeResource(MapHex mapHex)
+    {
+        if (mapHex == null)
+            return;
+        if (!(TERRAIN_SWAMP.Equals(mapHex.Terrain) || TERRAIN_MOUNTAIN.Equals(mapHex.Terrain)))
+            return;
+        Resource resource = null;
+        if (TERRAIN_MOUNTAIN.Equals(mapHex.Terrain))
+        {
+            // TODO: Make this adjustable - 20% of mountains have minerals.
+            int randomMinerals = random.Next(5);
+            if (randomMinerals == 0)
+            {
+                Resource mineralDeposits = new Resource();
+                mineralDeposits.X = mapHex.X;
+                mineralDeposits.Y = mapHex.Y;
+                mineralDeposits.Type = RESOURCE_MINERAL_DEPOSITS;
+                resource = mineralDeposits;
+                mapHex.Resource = resource;
+                Globals.Log("placeResource(): mineralDeposits placed at " + mapHex.X + "," + mapHex.Y);
+            }
+        }
+        // SWAMP
+        else
+        {
+            bool nextToLand = false;
+            List<MapHex> surroundingHexes = getSurroundingHexesList(mapHex);
+            foreach(MapHex surroundingHex in surroundingHexes)
+            {
+                if (!TERRAIN_SEA.Equals(surroundingHex.Terrain) && !TERRAIN_SWAMP.Equals(surroundingHex.Terrain))
+                {
+                    nextToLand = true;
+                    break;
+                }
+            }
+            if (nextToLand)
+            {
+                // TODO: Make this adjustable - 50% of swamp next to land have fuel.
+                int randomFuel = random.Next(2);
+                if (randomFuel == 0)
+                {
+                    Resource fuel = new Resource();
+                    fuel.X = mapHex.X;
+                    fuel.Y = mapHex.Y;
+                    fuel.Type = RESOURCE_FUEL;
+                    resource = fuel;
+                    mapHex.Resource = resource;
+                    Globals.Log("placeResource(): fuel placed at " + mapHex.X + "," + mapHex.Y);
+                }
+            }
+        }
+        if (resource != null)
+        {
+            foreach (string color in FACTION_COLORS)
+            {
+                if (VISIBILITY_OMNISCIENT.Equals(VisibilityMode))
+                    resource.Visibility[color] = true;
+                else
+                    resource.Visibility[color] = false;
+            }
+        }
     }
 
     public void placeNewUnit(Unit unit, MapHex mapHex)

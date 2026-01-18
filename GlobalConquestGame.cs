@@ -1662,6 +1662,27 @@ public class GlobalConquestGame : Game
     }
 
 
+    public bool IsResourceVisibleToColor(MapHex mapHex, string color)
+    {
+        bool isVisible = false;
+        if (mapHex == null || mapHex.Resource == null || color == null)
+            return false;
+        isVisible = mapHex.Resource.IsVisibleToColor(color);
+        if (isVisible)
+            return true;
+        foreach (string factionColor in FACTION_COLORS)
+        {
+            string treaty = Client.GameState.Factions.GetCurrentTreaty(color, factionColor);
+            if (treaty.Equals(TREATY_ALLIANCE) || treaty.Equals(TREATY_TEAM_MATES))
+            {
+                if (mapHex.Resource.IsVisibleToColor(factionColor))
+                    return true;
+            }
+        }
+        
+        return isVisible;
+    }
+
     public bool IsUnitVisibleToColor(Unit unit, string color)
     {
         bool isVisible = false;

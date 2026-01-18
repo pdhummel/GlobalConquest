@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using static GlobalConquest.Burbs;
 using static GlobalConquest.Map;
+using static GlobalConquest.Resource;
 using static GameConstants;
 
 namespace GlobalConquest;
@@ -213,8 +214,8 @@ public class Textures
 
         Texture2D ceaseFireTexture = game.Content.Load<Texture2D>("cease-fire");
         textures["cease-fire"] = ceaseFireTexture;
-        textures["gold"] =  game.Content.Load<Texture2D>("gold-mining-cart");
-        textures["oil"] =  game.Content.Load<Texture2D>("oil");
+        textures[RESOURCE_MINERAL_DEPOSITS] =  game.Content.Load<Texture2D>("gold-mining-cart");
+        textures[RESOURCE_FUEL] =  game.Content.Load<Texture2D>("oil");
 
         foreach (string key in burbs.Keys)
         {

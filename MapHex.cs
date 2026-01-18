@@ -23,6 +23,9 @@ public class MapHex
 
     [JsonPropertyName("B")]
     public Burb? Burb { get; set; }
+    [JsonPropertyName("R")]
+    public Resource? Resource { get; set; }
+
     [JsonPropertyName("iH")]
     public bool IsHighlighted {get; set;}
 
@@ -101,6 +104,8 @@ public class MapHex
         this.Airplane = mapHex.Airplane;
         if (this.Burb == null)
             this.Burb = mapHex.Burb;
+        if (this.Resource == null)
+            this.Resource = mapHex.Resource;
         this.IsHighlighted = mapHex.IsHighlighted;
         this.Terrain = mapHex.Terrain;
         this.Visibility = mapHex.Visibility;

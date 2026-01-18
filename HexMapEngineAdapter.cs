@@ -238,55 +238,6 @@ class HexMapEngineAdapter
         }
     }
 
-    private void drawFlame(int row, int column)
-    {
-        Vector2 currentPixelPosition = this.getCurrentPixelPosition();
-        Vector2 rowColVector = new Vector2(column, row);
-        Vector2 pixelVector = ConvertHexToPixels(rowColVector);
-        if (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS < currentPixelPosition.X ||
-            pixelVector.X > currentPixelPosition.X + gcGame.MainGameScreen.MapPanel.Width ||
-            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS < currentPixelPosition.Y ||
-            pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.MapPanel.Height
-           )
-        {
-            if (!TAG_MINI_MAP.Equals(Globals.spriteBatch?.Tag))
-                return;
-        }
-
-        if (!TAG_MINI_MAP.Equals(Globals.spriteBatch?.Tag))
-        {
-            pixelVector.X += 20 - currentPixelPosition.X;
-            pixelVector.Y += 19 - currentPixelPosition.Y;
-            //pixelVector.X += 10 - currentPixelPosition.X;
-            //pixelVector.Y += 9 - currentPixelPosition.Y;
-
-        }
-        else
-        {
-            pixelVector.X += 10;
-            pixelVector.Y += 9;
-        }
-        if (!TAG_MINI_MAP.Equals(Globals.spriteBatch?.Tag) &&
-            (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
-            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height) ||
-            pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS / 2
-            )
-        {
-            return;
-        }
-        float layerDepth = 0.25f;
-        coSpriteBatch.Draw(
-                            loadedTextures.units["flame"],
-                            pixelVector,
-                            null,
-                            Color.White,
-                            0.0f,
-                            Vector2.Zero,
-                            new Vector2(1.0f, 1.0f),
-                            SpriteEffects.None,
-                            layerDepth  // higher number at bottom
-                            );
-    }
 
     private Player identifySelf()
     {
@@ -591,6 +542,7 @@ class HexMapEngineAdapter
                 }
 
                 DrawBurbAtMapHex(mapHex, player, sourceRectangle);
+                DrawResourceAtMapHex(mapHex, player, planeRectangle);
 
                 DrawUnitAtMapHex(mapHex, isObserver, player, unitRectangle, planeRectangle);
             }
@@ -615,6 +567,87 @@ class HexMapEngineAdapter
         if (burb != null && burb.DirectionFromParent != null)
         {
             drawBurbAtHex(liY, liX, "", burb, sourceRectangle, player);
+        }
+    }
+
+    private void DrawResourceAtMapHex(MapHex mapHex, Player player, Rectangle sourceRectangle)
+    {
+        if (mapHex == null)
+            return;
+        Resource? resource = mapHex.Resource;
+        if (resource == null)
+            return;
+        
+        bool isObserver = gcGame.Client.IsObserverOnly;
+        Faction faction = null;
+        if (player != null && mapHex != null)
+        {
+            faction = gcGame.Client.GameState.Factions.ColorToFaction[player.FactionColor];
+        }
+        bool teamMateVisibility = false;
+        foreach (string otherFactionColor in FACTION_COLORS)
+        {
+            if (faction != null && 
+                (gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_TEAM_MATES) ||
+                    gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_ALLIANCE)))
+            {
+                teamMateVisibility = gcGame.IsResourceVisibleToColor(mapHex, otherFactionColor);
+                if (teamMateVisibility)
+                    break;
+            }
+        }
+
+        //Globals.Log("DrawResourceAtMapHex(): is resource visible?");
+        if (!isObserver && ! teamMateVisibility && !(player != null && gcGame.IsResourceVisibleToColor(mapHex, player.FactionColor)))
+            return;
+
+        //Globals.Log("DrawResourceAtMapHex(): resource should be visible " + isObserver + " " + teamMateVisibility);
+        Vector2 currentPixelPosition = this.getCurrentPixelPosition();
+        Vector2 rowColVector = new Vector2(mapHex.X, mapHex.Y);
+        Vector2 pixelVector = ConvertHexToPixels(rowColVector);
+        if (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS < currentPixelPosition.X ||
+            pixelVector.X > currentPixelPosition.X + gcGame.MainGameScreen.MapPanel.Width ||
+            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS < currentPixelPosition.Y ||
+            pixelVector.Y > currentPixelPosition.Y + gcGame.MainGameScreen.MapPanel.Height
+           )
+        {
+            if (!TAG_MINI_MAP.Equals(Globals.spriteBatch?.Tag))
+            {
+                //Globals.Log("DrawResourceAtMapHex(): return1");
+                return;
+            }
+        }
+
+        pixelVector.X += 20 - currentPixelPosition.X;
+        pixelVector.Y += 19 - currentPixelPosition.Y;
+
+        if (!TAG_MINI_MAP.Equals(Globals.spriteBatch?.Tag) &&
+            (pixelVector.X + Global.ACTUAL_TILE_WIDTH_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Left + gcGame.MainGameScreen.MapPanel.Width ||
+            pixelVector.Y + Global.ACTUAL_TILE_HEIGHT_IN_PIXELS > gcGame.MainGameScreen.MapPanel.Top + gcGame.MainGameScreen.MapPanel.Height) ||
+            pixelVector.Y < Global.Y_VIEW_OFFSET_PIXELS / 2
+            )
+        {
+            //Globals.Log("DrawResourceAtMapHex(): return2");
+            return;
+        }
+
+        string resourceId = resource.Type;
+        float layerDepth = 0.35f;
+        if (loadedTextures.textures.ContainsKey(resourceId))
+        {
+            //Globals.Log("DrawResourceAtMapHex(): drawing resource " + resourceId);
+            coSpriteBatch.Draw(
+                                loadedTextures.textures[resourceId],
+                                pixelVector,
+                                sourceRectangle,
+                                Color.White,
+                                0.0f,
+                                Vector2.Zero,
+                                new Vector2(1.0f, 1.0f),
+                                SpriteEffects.None,
+                                layerDepth  // higher number at bottom
+                                );
+
         }
     }
 
