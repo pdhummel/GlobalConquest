@@ -13,6 +13,8 @@ public class Textures
     // <a href="https://www.flaticon.com/free-icons/alliance" title="alliance icons">Alliance icons created by HAJICON - Flaticon</a>
     // <a href="https://www.flaticon.com/free-icons/partner" title="partner icons">Partner icons created by Buandesign - Flaticon</a>
     // <a href="https://www.flaticon.com/free-icons/marriage" title="marriage icons">Marriage icons created by Freepik - Flaticon</a>
+    // <a href="https://www.flaticon.com/free-icons/well" title="well icons">Well icons created by Aziz Muttaqin - Flaticon</a>
+    // <a href="https://www.flaticon.com/free-icons/gold" title="gold icons">Gold icons created by Freepik - Flaticon</a>
 
     public Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
     public Dictionary<string, Texture2D> units = new Dictionary<string, Texture2D>();
@@ -211,6 +213,8 @@ public class Textures
 
         Texture2D ceaseFireTexture = game.Content.Load<Texture2D>("cease-fire");
         textures["cease-fire"] = ceaseFireTexture;
+        textures["gold"] =  game.Content.Load<Texture2D>("gold-mining-cart");
+        textures["oil"] =  game.Content.Load<Texture2D>("oil");
 
         foreach (string key in burbs.Keys)
         {
