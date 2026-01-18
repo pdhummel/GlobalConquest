@@ -32,6 +32,13 @@ public class GameControl
     GamePadState gamepadState2 = GamePad.GetState(PlayerIndex.Two);
     GamePadState previousGamepadState2 = GamePad.GetState(PlayerIndex.Two);
     public GameControlActionMapper GameControlActionMapper { get; set; } = new GameControlActionMapper();
+    const int MENU_FILE_LEFT = 390;
+    const int MENU_FILE_RIGHT = 439;
+    const int MENU_SETTINGS_LEFT = 440;
+    const int MENU_SETTINGS_RIGHT = 520;
+    const int MENU_VIEW_LEFT = 521;
+    const int MENU_VIEW_RIGHT = 580;
+
 
     public GlobalConquestGame gcGame;
     public GameControl()
@@ -236,13 +243,12 @@ public class GameControl
 
         Globals.Log("checkAllWidgets(): menuItem=" + menuItem.Text);
         checkAllWidgets(menuItem.Menu, AorB);
-        // File=310, Settings=360, View=465
         string parentMenuItemId = "";
-        if (gcGame.GameControl.currentMouseState.X >= 310 && gcGame.GameControl.currentMouseState.X < 360)
+        if (gcGame.GameControl.currentMouseState.X >= MENU_FILE_LEFT && gcGame.GameControl.currentMouseState.X < MENU_FILE_RIGHT)
             parentMenuItemId = "File";
-        else if (gcGame.GameControl.currentMouseState.X >= 360 && gcGame.GameControl.currentMouseState.X < 440)
+        else if (gcGame.GameControl.currentMouseState.X >= MENU_SETTINGS_LEFT && gcGame.GameControl.currentMouseState.X < MENU_SETTINGS_RIGHT)
             parentMenuItemId = "Settings";
-        else if (gcGame.GameControl.currentMouseState.X >= 440 && gcGame.GameControl.currentMouseState.X < 500)
+        else if (gcGame.GameControl.currentMouseState.X >= MENU_VIEW_LEFT && gcGame.GameControl.currentMouseState.X < MENU_VIEW_RIGHT)
             parentMenuItemId = "View";
         if (!parentMenuItemId.Equals(menuItem.Id))
             return;

@@ -212,22 +212,34 @@ The game is being designed with known differences from the original.
 
 
 ### Milestone 9
-- [ ] Complex Economics
+- [ ] Complex Economics - part 1
+  - [ ] Add oil and mineral resources.
+    - [ ] Provides money. 
+    - [ ] Oil is needed to build tanks and planes. 
+    - [ ] Minerals are needed for building ships.
+  - [ ] Exploit options.
+
+### Milestone 10
+- [ ] Complex Economics - part 2
   - [ ] Central treasury vs. city purse.
   - [ ] Unit production automation by city.
   - [ ] Unit supported by a city.
   - [ ] Unit Context Menu - home
-  - [ ] Add oil and mineral resources.
-  - [ ] Exploit resources.
-
-### Milestone 10
-- [ ] Event Cards
 
 ### Milestone 11
+- [ ] Event Cards
+
+### Milestone 12
+- [ ] Ability to save Custom Game configurations.
+- [ ] Improve restore, load, and save options.
 - [ ] Support headless server.
 - [ ] Game controller support.
 - [ ] UI improvements.
 - [ ] Network robustness.
 - [ ] Steam integration
 - [ ] Multi-platform support
+
+### Milestone 13
 - [ ] Playback.
+- [ ] Custom maps.
+- [ ] Custom units.
