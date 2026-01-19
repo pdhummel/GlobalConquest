@@ -897,19 +897,29 @@ public class Map
                 updateBurbOwners(server, mapHex);
                 if (mapHex.Resource != null && mapHex.Unit != null)
                 {
-                    string previousOwnerColor = mapHex.Resource.OwnerColor;
-                    string newOwnerColor = mapHex.Unit.Color;
-                    if (!previousOwnerColor.Equals(newOwnerColor))
+                    // Only infantry, tanks (armor), and command centers can conquer resources
+                    string unitType = mapHex.Unit.UnitType;
+                    bool canConquerResource = INFANTRY.Equals(unitType) || 
+                                             DUG_IN_INFANTRY.Equals(unitType) || 
+                                             ARMOR.Equals(unitType) || 
+                                             COMMAND_CENTER.Equals(unitType);
+                    
+                    if (canConquerResource)
                     {
-                        mapHex.Resource.OwnerColor = mapHex.Unit.Color;
-                        GameEvent gameEvent = new GameEvent(GAME_EVENT_RESOURCE_CAPTURED);
-                        gameEvent.EnemyColor = previousOwnerColor;
-                        gameEvent.MapHex = mapHex;
-                        server.sendGamePlayEvent(newOwnerColor, gameEvent);
-                        gameEvent.EventType = GAME_EVENT_RESOURCE_LOST;
-                        gameEvent.EnemyColor = newOwnerColor;
-                        server.sendGamePlayEvent(previousOwnerColor, gameEvent);
-                        server.sendGameStateAndMapHex(mapHex.X, mapHex.Y);
+                        string previousOwnerColor = mapHex.Resource.OwnerColor;
+                        string newOwnerColor = mapHex.Unit.Color;
+                        if (!previousOwnerColor.Equals(newOwnerColor))
+                        {
+                            mapHex.Resource.OwnerColor = mapHex.Unit.Color;
+                            GameEvent gameEvent = new GameEvent(GAME_EVENT_RESOURCE_CAPTURED);
+                            gameEvent.EnemyColor = previousOwnerColor;
+                            gameEvent.MapHex = mapHex;
+                            server.sendGamePlayEvent(newOwnerColor, gameEvent);
+                            gameEvent.EventType = GAME_EVENT_RESOURCE_LOST;
+                            gameEvent.EnemyColor = newOwnerColor;
+                            server.sendGamePlayEvent(previousOwnerColor, gameEvent);
+                            server.sendGameStateAndMapHex(mapHex.X, mapHex.Y);
+                        }
                     }
                 }
             }
