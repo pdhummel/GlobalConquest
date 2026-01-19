@@ -537,7 +537,7 @@ class HexMapEngineAdapter
                                         liCalculatedMapTileY,
                                         sourceRectangle, player);
 
-                        DrawOwnershipOutline(mapHex, liCalculatedMapTileX, liCalculatedMapTileY, sourceRectangle);
+                        DrawOwnershipOutline(mapHex, liCalculatedMapTileX, liCalculatedMapTileY, sourceRectangle, player);
 
                     }
 
@@ -552,9 +552,36 @@ class HexMapEngineAdapter
 
     }
 
-    private void DrawOwnershipOutline(MapHex mapHex, int liCalculatedMapTileX, int liCalculatedMapTileY, Rectangle sourceRectangle)
+    private void DrawOwnershipOutline(MapHex mapHex, int liCalculatedMapTileX, int liCalculatedMapTileY, Rectangle sourceRectangle, Player player)
     {
-        if (mapHex == null)
+        if (mapHex == null || (mapHex.Burb == null && mapHex.Resource == null) || 
+            (mapHex.Burb != null && mapHex.Burb.Type != null && 
+            (BURB_SUBURB.Equals(mapHex.Burb.Type) || BURB_DOCK.Equals(mapHex.Burb.Type))))
+            return;
+
+        // Check if the MapHex itself is visible before showing faction color highlight
+        bool isObserver = gcGame.Client.IsObserverOnly;
+        bool visibility = false;
+        Faction faction = null;
+        if (player != null && mapHex != null)
+        {
+            visibility = gcGame.IsMapHexVisibleToColor(mapHex, player.FactionColor);
+            faction = gcGame.Client.GameState.Factions.ColorToFaction[player.FactionColor];
+        }
+        bool teamMateVisibility = false;
+        foreach (string otherFactionColor in FACTION_COLORS)
+        {
+            if (faction != null && 
+                (gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_TEAM_MATES) ||
+                 gcGame.Client.GameState.Factions.GetCurrentTreaty(player.FactionColor, otherFactionColor).Equals(TREATY_ALLIANCE)))
+            {
+                teamMateVisibility = gcGame.IsMapHexVisibleToColor(mapHex, otherFactionColor);
+                if (teamMateVisibility)
+                    break;
+            }
+        }
+        // Don't show faction color highlight if the MapHex itself is not visible
+        if (!isObserver && !visibility && !teamMateVisibility)
             return;
 
         string? ownerColor = null;
@@ -718,7 +745,7 @@ class HexMapEngineAdapter
                                 SpriteEffects.None,
                                 LAYER_RESOURCE  // higher number at bottom
                                 );
-
+            //DrawOwnershipOutline(mapHex, (int)currentPixelPosition.X, (int)currentPixelPosition.Y, sourceRectangle, player);
         }
     }
 
@@ -944,6 +971,7 @@ class HexMapEngineAdapter
         if (burb != null && burb.DirectionFromParent != null && loadedTextures.textures.ContainsKey(burb.DirectionFromParent) &&
             gcGame.Client.GameState.Burbs.NameToBurb.ContainsKey(burb.ParentBurbName))
         {
+            //DrawOwnershipOutline(mapHex, (int)currentPixelPosition.X, (int)currentPixelPosition.Y, (Rectangle)sourceRectangle, player);
             Burb parentBurb = gcGame.Client.GameState.Burbs.NameToBurb[burb.ParentBurbName];
             string texture = burb.DirectionFromParent;
             if (BURB_METROPLEX.Equals(parentBurb.Type))

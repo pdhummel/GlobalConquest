@@ -263,8 +263,19 @@ public class GlobalConquestGame : Game
 
     public void addGamePlayEvent(GameEvent gameEvent)
     {
+        if (gameEvent == null)
+            return;
+        GameEvent lastGameEvent = null;
+        if (GamePlayEvents.Count > 0)
+            lastGameEvent = GamePlayEvents[GamePlayEvents.Count-1];
+        if (lastGameEvent != null && lastGameEvent.EventString != null && 
+            lastGameEvent.EventType.Equals(gameEvent.EventType) && lastGameEvent.EventString.Equals(gameEvent.EventString) &&
+            lastGameEvent.Turn == gameEvent.Turn)
+        {
+            return;
+        }
         GamePlayEvents.Add(gameEvent);
-        int maxSize = 25;
+        int maxSize = 35;
         if (GamePlayEvents.Count > maxSize)
         {
             // Remove the first (Count - maxSize) elements

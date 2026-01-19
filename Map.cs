@@ -808,8 +808,8 @@ public class Map
     public HashSet<MapHex> getMapHexesInRange(MapHex mapHex, int range, bool useOriginalLogic=true, bool shouldLog=false)
     {
         HashSet<MapHex> hexes = new HashSet<MapHex>();
-        if (range > 5)
-            useOriginalLogic = false;
+        //if (range > 5)
+        //    useOriginalLogic = true;
         Dictionary<int, HashSet<MapHex>> checkedHexes = new Dictionary<int, HashSet<MapHex>>();
         hexes = getMapHexesInRange(hexes, checkedHexes, mapHex, range, useOriginalLogic, shouldLog);
         if (shouldLog)
@@ -845,16 +845,15 @@ public class Map
             hexes.Add(mapHex);
         }
 
-        // TODO: This is less precise than the above but much quicker.
         else if (range > 0)
         {
             hexes.Add(mapHex);
             int x = mapHex.X;
             int y = mapHex.Y;
             int minX = x - range;
-            int maxX = x + range;
+            int maxX = x + range + 1;
             int minY = y - range;
-            int maxY = y + range;
+            int maxY = y + range + 1;
             if (minX < 0)
                 minX = 0;
             if (maxX > X)
@@ -869,8 +868,8 @@ public class Map
                 for (int liX = minX; liX < maxX; liX++)
                 {
                     float distance = -1;
-                    //if (liX == minX || liX >= maxX-2 || liY == minY || liY >= maxY-2)
-                    //    distance = Math.Abs(calculateDistance(mapHex, Hexes[liY, liX]));
+                    if (liX <= minX || liX >= maxX-2 || liY <= minY || liY >= maxY-2)
+                        distance = Math.Abs(calculateDistance(mapHex, Hexes[liY, liX]));
                     if (Math.Round(distance) <= range)
                     {
                         //if (shouldLog && distance != -1)
@@ -1044,8 +1043,32 @@ public class Map
     // A row snakes up and down so the vertical distance to a hex in a row changes.
     public float calculateDistance(MapHex mapHex1, MapHex mapHex2)
     {
-        float distance = (float)Math.Sqrt((Math.Pow(mapHex1.X - mapHex2.X, 2) + Math.Pow(mapHex1.Y - mapHex2.Y, 2)));
-        return distance;
+        // Old logic - commented out
+        // float distance = (float)Math.Sqrt((Math.Pow(mapHex1.X - mapHex2.X, 2) + Math.Pow(mapHex1.Y - mapHex2.Y, 2)));
+        // return distance;
+
+        // Use DijkstraAlgorithm with allNodesGraph to calculate distance
+        Node originNode = new Node(mapHex1);
+        Node destinationNode = new Node(mapHex2);
+        
+        // If same hex, distance is 0
+        if (originNode.Name.Equals(destinationNode.Name))
+        {
+            return 0.0f;
+        }
+        
+        // Find shortest path using Dijkstra
+        Dictionary<string, string> previousNodes = DijkstraAlgorithm.FindShortestPaths(allNodesGraph, originNode.Name);
+        List<string> nodesInPath = DijkstraAlgorithm.ReconstructPath(previousNodes, originNode.Name, destinationNode.Name);
+        
+        // If no path found, return a large distance
+        if (nodesInPath.Count == 0)
+        {
+            return float.MaxValue;
+        }
+        
+        // Return the number of hexes in the path (path includes both start and end, so distance is count - 1)
+        return (float)(nodesInPath.Count - 1);
     }
 
     public List<UnitAction> determineSeaPath(MapHex origin, MapHex destination)

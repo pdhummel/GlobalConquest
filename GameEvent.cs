@@ -322,7 +322,7 @@ public class GameEvent
         // EnemyColor UnitType attacked at MapHex
         EventString = GetEnemyColor() + " " + GetUnitType() + " attacked at " + GetLocation();
         //Game.playSoundEffect(EventType);
-        //Game.addGamePlayEvent(this);
+        Game.addGamePlayEvent(this);
     }
 
     public void enemyUnitDestroyedHandler()
@@ -429,21 +429,21 @@ public class GameEvent
     {
         EventString = "Air strike suceeded for " + GetUnitType() + " at " + GetLocation() + ".";
         Game.playSoundEffect(GAME_EVENT_ENEMY_UNIT_ATTACKED);
-        //Game.addGamePlayEvent(this);
+        Game.addGamePlayEvent(this);
     }
 
     public void airplaneMissionFailedHandler()
     {
         EventString = "Air mission failed for " + GetUnitType() + " at " + GetLocation() + ".";
         Game.playSoundEffect(EventType);
-        //Game.addGamePlayEvent(this);
+        Game.addGamePlayEvent(this);
     }
 
     public void airplaneBombingSuceededHandler()
     {
         EventString = "Bombing suceeded for " + GetUnitType() + " at " + GetLocation() + ".";
         Game.playSoundEffect(GAME_EVENT_ENEMY_UNIT_DESTROYED);
-        //Game.addGamePlayEvent(this);
+        Game.addGamePlayEvent(this);
     }
 
     public void gracePeriodStartedHandler()

@@ -46,7 +46,7 @@ public class GameLogic
         gameState.CurrentPhase = "execution";
 
         // TODO: Need to refactor getMapHexesInRange and this test code is useful testing it.
-        // Map map = server.gameState.Map;
+        //Map map = server.gameState.Map;
         // Globals.Log("doExecutionPhase(): test 0");
         // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 0, true, true);
         // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 0, false, true);
@@ -62,6 +62,12 @@ public class GameLogic
         // Globals.Log("doExecutionPhase(): test 4");
         // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 4, true, true);
         // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 4, false, true);
+        // Globals.Log("doExecutionPhase(): test 5");
+        // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 5, true, true);
+        // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 5, false, true);
+        // Globals.Log("doExecutionPhase(): test 6");
+        // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 6, true, true);
+        // server.gameState.Map.getMapHexesInRange(map.Hexes[12,12], 6, false, true);
         //outputDataStructureUse();
 
         Globals.Log("doExecutionPhase(): set factions executing");
@@ -686,7 +692,8 @@ public class GameLogic
     {
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
-        if (ARMOR.Equals(unitType.Name) || INFANTRY.Equals(unitType.Name) || DUG_IN_INFANTRY.Equals(unitType.Name))
+        if (ARMOR.Equals(unitType.Name) || COMMAND_CENTER.Equals(unitType.Name) ||
+            INFANTRY.Equals(unitType.Name) || DUG_IN_INFANTRY.Equals(unitType.Name))
         {
             if (mapHex.Resource != null)
             {
