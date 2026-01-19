@@ -31,6 +31,7 @@ public class Map
     public Dictionary<string, MapHex> LeftMetro { get; set; } = new Dictionary<string, MapHex>();
     public Dictionary<string, MapHex> RightMetro { get; set; } = new Dictionary<string, MapHex>();
     public Dictionary<string, MapHex> DiagonalMetro { get; set; } = new Dictionary<string, MapHex>();
+    public HashSet<Resource> Resources {get; set;} = new HashSet<Resource>();
 
     public Dictionary<string, Unit> UnitIdToUnit { get; set; } = new Dictionary<string, Unit>();
     public Dictionary<string, HashSet<string>> ColorToUnitIds { get; set; } = new Dictionary<string, HashSet<string>>();
@@ -338,6 +339,7 @@ public class Map
                 mineralDeposits.Type = RESOURCE_MINERAL_DEPOSITS;
                 resource = mineralDeposits;
                 mapHex.Resource = resource;
+                Resources.Add(resource);
                 Globals.Log("placeResource(): mineralDeposits placed at " + mapHex.X + "," + mapHex.Y);
             }
         }
@@ -366,6 +368,7 @@ public class Map
                     fuel.Type = RESOURCE_FUEL;
                     resource = fuel;
                     mapHex.Resource = resource;
+                    Resources.Add(resource);
                     Globals.Log("placeResource(): fuel placed at " + mapHex.X + "," + mapHex.Y);
                 }
             }
@@ -896,7 +899,7 @@ public class Map
                 {
                     string previousOwnerColor = mapHex.Resource.OwnerColor;
                     string newOwnerColor = mapHex.Unit.Color;
-                    if (!previousOwnerColor.Equals(mapHex.Unit.Color))
+                    if (!previousOwnerColor.Equals(newOwnerColor))
                     {
                         mapHex.Resource.OwnerColor = mapHex.Unit.Color;
                         GameEvent gameEvent = new GameEvent(GAME_EVENT_RESOURCE_CAPTURED);

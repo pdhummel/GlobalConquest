@@ -272,6 +272,7 @@ public class GameLogic
     {
         GameState gameState = server.gameState;
 
+
         // Collect income
         foreach (string key in gameState.Burbs.NameToBurb.Keys)
         {
@@ -319,6 +320,17 @@ public class GameLogic
                 Globals.Log("endTurn(): added " + income + " income to " + burb.OwnerColor);
             }
         }
+
+        foreach (Resource resource in gameState.Map.Resources)
+        {
+            if (resource.OwnerColor != null && !NATIVE_COLOR.Equals(resource.OwnerColor))
+            {
+                // TODO:  A resource contributes two bucks to the income of your nearest burb.
+                Faction faction = gameState.Factions.ColorToFaction[resource.OwnerColor];
+                faction.Money += 2;
+            }
+        }
+
     }
 
     public void endTurn(Server server)
