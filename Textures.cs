@@ -203,6 +203,15 @@ public class Textures
         Texture2D hexHighlight = game.Content.Load<Texture2D>("YellowHexagonOutline_72x72");
         textures["mapHexHighlight"] = hexHighlight;
 
+        Texture2D amberHexOutline = game.Content.Load<Texture2D>("AmberHexagonOutline_72x72");
+        textures["amber-outline"] = amberHexOutline;
+        Texture2D cyanHexOutline = game.Content.Load<Texture2D>("CyanHexagonOutline_72x72");
+        textures["cyan-outline"] = cyanHexOutline;
+        Texture2D magentaHexOutline = game.Content.Load<Texture2D>("MagentaHexagonOutline_72x72");
+        textures["magenta-outline"] = magentaHexOutline;
+        Texture2D ocherHexOutline = game.Content.Load<Texture2D>("OcherHexagonOutline_72x72");
+        textures["ocher-outline"] = ocherHexOutline;
+
         Texture2D warTexture = game.Content.Load<Texture2D>("swords");
         textures["war"] = warTexture;
 

@@ -213,8 +213,8 @@ The game is being designed with known differences from the original.
 
 ### Milestone 9
 - [ ] Complex Economics - part 1
-  - [ ] Add oil and mineral resources.
-    - [ ] Provides money. 
+  - [x] Add oil and mineral resources.
+    - [x] Provides money. 
     - [ ] Oil is needed to build tanks and planes. 
     - [ ] Minerals are needed for building ships.
   - [ ] Exploit options.

@@ -537,6 +537,8 @@ class HexMapEngineAdapter
                                         liCalculatedMapTileY,
                                         sourceRectangle, player);
 
+                        DrawOwnershipOutline(mapHex, liCalculatedMapTileX, liCalculatedMapTileY, sourceRectangle);
+
                     }
 
                 }
@@ -548,6 +550,76 @@ class HexMapEngineAdapter
             }
         }
 
+    }
+
+    private void DrawOwnershipOutline(MapHex mapHex, int liCalculatedMapTileX, int liCalculatedMapTileY, Rectangle sourceRectangle)
+    {
+        if (mapHex == null)
+            return;
+
+        string? ownerColor = null;
+        Burb? burbToCheck = null;
+
+        // Check if burb is owned by a faction (show on village, town, city, capital, but not suburb or dock)
+        if (mapHex.Burb != null)
+        {
+            // Check if this is a main burb (village, town, city, capital)
+            if (BURB_VILLAGE.Equals(mapHex.Burb.Type) ||
+                BURB_TOWN.Equals(mapHex.Burb.Type) ||
+                BURB_CITY.Equals(mapHex.Burb.Type) ||
+                BURB_CAPITAL.Equals(mapHex.Burb.Type))
+            {
+                burbToCheck = mapHex.Burb;
+            }
+            // Check if this is a suburb/dock with a parent burb that's a village/town/city/capital
+            else if ((BURB_SUBURB.Equals(mapHex.Burb.Type) || BURB_DOCK.Equals(mapHex.Burb.Type)) &&
+                     mapHex.Burb.ParentBurbName != null &&
+                     gcGame.Client.GameState.Burbs.NameToBurb.ContainsKey(mapHex.Burb.ParentBurbName))
+            {
+                Burb parentBurb = gcGame.Client.GameState.Burbs.NameToBurb[mapHex.Burb.ParentBurbName];
+                if (BURB_VILLAGE.Equals(parentBurb.Type) ||
+                    BURB_TOWN.Equals(parentBurb.Type) ||
+                    BURB_CITY.Equals(parentBurb.Type) ||
+                    BURB_CAPITAL.Equals(parentBurb.Type))
+                {
+                    burbToCheck = parentBurb;
+                }
+            }
+        }
+
+        if (burbToCheck != null && 
+            burbToCheck.OwnerColor != null && 
+            !NATIVE_COLOR.Equals(burbToCheck.OwnerColor))
+        {
+            ownerColor = burbToCheck.OwnerColor;
+        }
+        // Check if resource is owned by a faction
+        else if (mapHex.Resource != null && mapHex.Resource.OwnerColor != null && !NATIVE_COLOR.Equals(mapHex.Resource.OwnerColor))
+        {
+            ownerColor = mapHex.Resource.OwnerColor;
+        }
+
+        // Draw the appropriate colored outline
+        if (ownerColor != null)
+        {
+            string outlineKey = ownerColor + "-outline";
+            if (loadedTextures.textures.ContainsKey(outlineKey))
+            {
+                Vector2 destination = new Vector2(liCalculatedMapTileX, liCalculatedMapTileY);
+                // Draw after burbs but before units
+                coSpriteBatch.Draw(
+                    loadedTextures.textures[outlineKey],
+                    destination,
+                    sourceRectangle,
+                    Color.White,
+                    0.0f,
+                    Vector2.Zero,
+                    new Vector2(1.0f, 1.0f),
+                    SpriteEffects.None,
+                    LAYER_HEX_HIGHLIGHT
+                    );
+            }
+        }
     }
 
     private void DrawBurbAtMapHex(MapHex mapHex, Player player, Rectangle sourceRectangle)

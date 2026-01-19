@@ -137,6 +137,16 @@ public class DetailsPanelView
             Label hexLabel = new Label();
             hexLabel.Text = "" + lastSelectedHex?.X + "," + lastSelectedHex?.Y + "; " + lastSelectedHex?.Terrain;
             stackPanel.Widgets.Add(hexLabel);
+
+            // Show resource owner when there's a resource but no unit
+            if (lastSelectedResource != null && lastSelectedUnit == null &&
+                (gcGame.IsResourceVisibleToColor(lastSelectedHex, color) || gcGame.Client.IsObserverOnly) &&
+                lastSelectedResource.OwnerColor != null && !NATIVE_COLOR.Equals(lastSelectedResource.OwnerColor))
+            {
+                Label resourceOwnerLabel = new Label();
+                resourceOwnerLabel.Text = "Resource Owner: " + lastSelectedResource.OwnerColor;
+                stackPanel.Widgets.Add(resourceOwnerLabel);
+            }
         }
         if (lastSelectedBurb != null && 
             (lastSelectedHex.Visibility.ContainsKey(color) && lastSelectedHex.Visibility[color] || gcGame.Client.IsObserverOnly))
