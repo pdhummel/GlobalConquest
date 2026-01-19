@@ -11,6 +11,7 @@ using HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.ObjectModel;
 using static UnitConstants;
+using static GlobalConquest.Map;
 namespace GlobalConquest.UI;
 
 public class ContextMenu
@@ -798,16 +799,22 @@ public class ContextMenu
         Globals.Log("build");
         BurbWindow burbWindow = new BurbWindow();
         Burb burb = mapHex.Burb;
+        string directionToHighlight = null;
+        
         if (burb != null && burb.Name != null)
         {
-            burbWindow.showPurchaseUnit(MainGameScreen, mapHex, burb);
+            // The burb is at mapHex, so direction is center
+            directionToHighlight = DIRECTION_CENTER;
+            burbWindow.showPurchaseUnit(MainGameScreen, mapHex, burb, directionToHighlight);
             HideContextMenu();
         }
         else if (burb != null && burb.ParentBurbName != null)
         {
             Burb parentBurb = gcGame.Client.GameState.Burbs.NameToBurb[burb.ParentBurbName];
             MapHex parentMapHex = gcGame.Client.GameState.Map.Hexes[parentBurb.Y, parentBurb.X];
-            burbWindow.showPurchaseUnit(MainGameScreen, parentMapHex, parentBurb);
+            // Use the stored DirectionFromParent property - it's already set when the burb is created
+            directionToHighlight = burb.DirectionFromParent;
+            burbWindow.showPurchaseUnit(MainGameScreen, parentMapHex, parentBurb, directionToHighlight);
             HideContextMenu();
         }
     }

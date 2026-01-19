@@ -9,6 +9,7 @@ using Myra.Graphics2D.UI;
 using Button = Myra.Graphics2D.UI.Button;
 using Label = Myra.Graphics2D.UI.Label;
 using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
+using Color = Microsoft.Xna.Framework.Color;
 namespace GlobalConquest.UI;
 
 public class BurbWindow
@@ -65,6 +66,7 @@ public class BurbWindow
             MapHex mapHex = gameState.Map.Hexes[y, x];
             if (player != null && mapHex.Visibility[player.FactionColor])
             {
+                burb = mapHex.Burb;
                 addBurbRow(mainGameScreen, window, grid, row, mapHex, burb);
                 row += 1;
             }
@@ -153,6 +155,11 @@ public class BurbWindow
     }
 
     public void showPurchaseUnit(MainGameScreen mainGameScreen, MapHex mapHex, Burb burb)
+    {
+        showPurchaseUnit(mainGameScreen, mapHex, burb, null);
+    }
+
+    public void showPurchaseUnit(MainGameScreen mainGameScreen, MapHex mapHex, Burb burb, string directionToHighlight)
     {
         Globals.Log("showPurchaseUnit(): enter");
         GameState gameState = mainGameScreen.gcGame.Client.GameState;
@@ -257,28 +264,30 @@ public class BurbWindow
         rowIndex = addUnitRow(AIRPLANE,  unitTypeByRow, 
                    costByRow, rowIndex, mainGameScreen, grid, airUnitRows);
 
+        // Store the direction to highlight (if any)
+
         List<int> rows = [];
         foreach (int row in landUnitRows)
         {
             if (costByRow[row] <= faction.Money && !gameState.GameSettings.IsAdvancedEconomics)
-                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, openSpaceDirections, unitTypeByRow);
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, openSpaceDirections, unitTypeByRow, directionToHighlight);
             else if (costByRow[row] <= burb.Money && gameState.GameSettings.IsAdvancedEconomics)
-                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, openSpaceDirections, unitTypeByRow);
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, openSpaceDirections, unitTypeByRow, directionToHighlight);
         }
         foreach (int row in seaUnitRows)
         {
             if (costByRow[row] <= faction.Money && !gameState.GameSettings.IsAdvancedEconomics)
-                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, dockDirections, unitTypeByRow);
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, dockDirections, unitTypeByRow, directionToHighlight);
             else if (costByRow[row] <= burb.Money && gameState.GameSettings.IsAdvancedEconomics)
-                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, dockDirections, unitTypeByRow);
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, dockDirections, unitTypeByRow, directionToHighlight);
 
         }
         foreach (int row in airUnitRows)
         {
             if (costByRow[row] <= faction.Money && !gameState.GameSettings.IsAdvancedEconomics)
-                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, airDirections, unitTypeByRow);
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, airDirections, unitTypeByRow, directionToHighlight);
             else if (costByRow[row] <= burb.Money && gameState.GameSettings.IsAdvancedEconomics)
-                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, airDirections, unitTypeByRow);
+                addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, airDirections, unitTypeByRow, directionToHighlight);
 
         }
 
@@ -309,7 +318,7 @@ public class BurbWindow
     }
 
     private void addPurchaseBuildButton(Window window, Grid grid, int row, MainGameScreen mainGameScreen, 
-        MapHex mapHex, Burb burb, List<string> directions, Dictionary<int, string> unitTypeByRow)
+        MapHex mapHex, Burb burb, List<string> directions, Dictionary<int, string> unitTypeByRow, string directionToHighlight)
     {
         if (!mainGameScreen.gcGame.IsAllowedToPlan())
             return;
@@ -323,16 +332,27 @@ public class BurbWindow
         int count = 0;
         foreach (string direction in directions)
         {
+            bool shouldHighlight = directionToHighlight != null && directionToHighlight.Equals(direction);
+            
+            var label = new Label
+            {
+                Text = "Build " + direction,
+                Width = 150,
+                Border = new SolidBrush("#808000FF"),
+                BorderThickness = new Thickness(2)
+            };
+            
+            if (shouldHighlight)
+            {
+                //label.Background = new SolidBrush("#FFD700FF"); // Gold background
+                //label.TextColor = Color.Black; // Black text
+                label.TextColor = new SolidBrush("#FFD700FF").Color;
+            }
+            
             var buildButton = new Button()
             {
                 Id = "buildButton" + row + direction,
-                Content = new Label
-                {
-                    Text = "Build " + direction,
-                    Width = 150,
-                    Border = new SolidBrush("#808000FF"),
-                    BorderThickness = new Thickness(2)
-                }
+                Content = label
             };
             Grid.SetRow(buildButton, row);
             Grid.SetColumn(buildButton, 2 + count);
