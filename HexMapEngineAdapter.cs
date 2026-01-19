@@ -660,7 +660,7 @@ class HexMapEngineAdapter
         if (unit != null && unit.StrengthPoints > 0)
         {
             string unitTypeId = unit.Color + "-" + unit.UnitType;
-            if (DECOY_COMMAND_CENTER.Equals(unit.UnitType) && !player.FactionColor.Equals(unit.Color))
+            if (DECOY_COMMAND_CENTER.Equals(unit.UnitType) && player == null && !player.FactionColor.Equals(unit.Color))
             {
                 unitTypeId = unit.Color + "-" + COMMAND_CENTER;
             }

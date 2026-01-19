@@ -101,11 +101,38 @@ public class DetailsPanelView
             (lastSelectedHex.Visibility.ContainsKey(color) && 
              lastSelectedHex.Visibility[color] || gcGame.Client.IsObserverOnly || teamMateVisibility))
         {
-            Image image = new Image();
+            Grid terrainResourceGrid = new Grid();
+            terrainResourceGrid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+            terrainResourceGrid.RowsProportions.Add(new Proportion(ProportionType.Auto));
+            
+            Image terrainImage = new Image();
             Texture2D texture = gcGame.GetTextures()[lastSelectedHex.Terrain];
             var textureRegion = new TextureRegion(texture);
-            image.Renderable = textureRegion;
-            imagePanel.Widgets.Add(image);
+            terrainImage.Renderable = textureRegion;
+            Grid.SetRow(terrainImage, 0);
+            Grid.SetColumn(terrainImage, 0);
+            terrainResourceGrid.Widgets.Add(terrainImage);
+
+            Resource lastSelectedResource = lastSelectedHex.Resource;
+            if (lastSelectedResource != null && 
+                (gcGame.IsResourceVisibleToColor(lastSelectedHex, color) || gcGame.Client.IsObserverOnly))
+            {
+                string resourceTextureKey = lastSelectedResource.Type;
+                if (gcGame.GetTextures().ContainsKey(resourceTextureKey))
+                {
+                    Image resourceImage = new Image();
+                    Texture2D resourceTexture = gcGame.GetTextures()[resourceTextureKey];
+                    var resourceTextureRegion = new TextureRegion(resourceTexture);
+                    resourceImage.Renderable = resourceTextureRegion;
+                    resourceImage.HorizontalAlignment = Myra.Graphics2D.UI.HorizontalAlignment.Center;
+                    resourceImage.VerticalAlignment = Myra.Graphics2D.UI.VerticalAlignment.Center;
+                    Grid.SetRow(resourceImage, 0);
+                    Grid.SetColumn(resourceImage, 0);
+                    terrainResourceGrid.Widgets.Add(resourceImage);
+                }
+            }
+            
+            imagePanel.Widgets.Add(terrainResourceGrid);
 
             Label hexLabel = new Label();
             hexLabel.Text = "" + lastSelectedHex?.X + "," + lastSelectedHex?.Y + "; " + lastSelectedHex?.Terrain;
@@ -138,6 +165,7 @@ public class DetailsPanelView
             burbLabel.Text = burbText;
             stackPanel.Widgets.Add(burbLabel);
         }
+
 
         teamMateVisibility = false;
         foreach (string otherFactionColor in FACTION_COLORS)
