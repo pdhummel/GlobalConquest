@@ -163,7 +163,7 @@ public class GameLogic
                 return;
         }
         Globals.Log("doExecutionPhase(): update burb ownership");
-        gameState.Map.checkBurbsForOwner(server);
+        gameState.Map.checkHexesForOwner(server);
         Globals.Log("doExecutionPhase(): calculate scores");
         calculateScore(server, units);
         Globals.Log("doExecutionPhase(): check for game end");
@@ -653,6 +653,8 @@ public class GameLogic
             return;
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
+        scanForResources(server, unit, unitType);
+
         HashSet<MapHex> hexesToScan = map.getMapHexesInRange(mapHex, unitType.DiscoveryRange);
         //Globals.Log("hexes to scan=" + hexesToScan.Count);
         foreach (MapHex hex in hexesToScan)
@@ -668,6 +670,37 @@ public class GameLogic
         }
     }
 
+    private void scanForResources(Server server, Unit unit, UnitType unitType)
+    {
+        Map map = server.gameState.Map;
+        MapHex mapHex = map.Hexes[unit.Y, unit.X];
+        if (ARMOR.Equals(unitType.Name) || INFANTRY.Equals(unitType.Name) || DUG_IN_INFANTRY.Equals(unitType.Name))
+        {
+            if (mapHex.Resource != null)
+            {
+                bool wasVisible = false;
+                if (mapHex.Resource.Visibility.ContainsKey(unit.Color))
+                    wasVisible = mapHex.Resource.Visibility[unit.Color];
+                mapHex.Resource.Visibility[unit.Color] = true;
+                if (!wasVisible)
+                    server.sendGameStateAndMapHex(mapHex.X, mapHex.Y);
+            }
+            List<MapHex> surroundingHexes = map.getSurroundingHexesList(mapHex);
+            foreach (MapHex surroundingHex in surroundingHexes)
+            {
+                if (surroundingHex.Resource != null)
+                {
+                    bool wasVisible = false;
+                    if (surroundingHex.Resource.Visibility.ContainsKey(unit.Color))
+                        wasVisible = surroundingHex.Resource.Visibility[unit.Color];
+                    surroundingHex.Resource.Visibility[unit.Color] = true;
+                    if (!wasVisible)
+                        server.sendGameStateAndMapHex(surroundingHex.X, surroundingHex.Y);
+                }
+            }
+        }        
+    }
+
     private void sufferAttrition(Server server, Unit unit)
     {
         if (unit == null || unit.StrengthPoints <= 0)
@@ -676,7 +709,7 @@ public class GameLogic
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
         UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
-        if (unitType.AttritionByTerrain.ContainsKey(mapHex.Terrain))
+        if (unitType.AttritionByTerrain.ContainsKey(mapHex.Terrain) && mapHex.Resource == null)
         {
             if (unit.StrengthPoints > 20)
             {
@@ -694,6 +727,8 @@ public class GameLogic
             return;
 
         // TODO: handle resources
+        // The rate units repair is based on the site they are on (2% for resources).
+        // The repair amount is added to the unit's strength every other round.
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
         UnitType unitType = server.gameState.UnitTypes.UnitTypeMap[unit.UnitType];
@@ -712,9 +747,13 @@ public class GameLogic
             }
             repairPoints = unitType.RepairRateByFacility[facility];
         }
+        else if (mapHex.Resource != null)
+        {
+            repairPoints = 2;
+        }
         if (unit.getNextAction() == null)
         {
-            if (unit.StrengthPoints < 100 && repairPoints > 0)
+            if (unit.StrengthPoints < 100 && repairPoints > 0 && server.gameState.CurrentRound % 2 == 0)
             {
                 unit.StrengthPoints += repairPoints;
                 if (unit.StrengthPoints > 100)

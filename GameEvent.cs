@@ -24,6 +24,9 @@ public class GameEvent
     public static readonly string GAME_EVENT_GAME_OVER = "gameOver";
     public static readonly string GAME_EVENT_BURB_CAPTURED = "burbCaptured";
     public static readonly string GAME_EVENT_BURB_LOST = "burbLost";
+    public static readonly string GAME_EVENT_RESOURCE_CAPTURED = "resourceCaptured";
+    public static readonly string GAME_EVENT_RESOURCE_LOST = "resourceLost";
+
     public static readonly string GAME_EVENT_UNIT_MOVEMENT_BLOCKED = "unitMovementBlocked";
     public static readonly string GAME_EVENT_UNIT_SUFFERED_ATTRITION = "unitSufferedAttrition";
     public static readonly string GAME_EVENT_ENEMY_UNIT_DISCOVERED = "enemyUnitDiscovered";
@@ -103,7 +106,9 @@ public class GameEvent
             GAME_EVENT_PLANNING_PHASE_ENDED,
             GAME_EVENT_PLANNING_PHASE_STARTING,
             GAME_EVENT_JOINED_GAME,
-            GAME_EVENT_BURB_SABOTAGED
+            GAME_EVENT_BURB_SABOTAGED,
+            GAME_EVENT_RESOURCE_CAPTURED,
+            GAME_EVENT_RESOURCE_LOST
         };
         GamePlayEvents.UnionWith(gamePlayEvents);
     }
@@ -355,6 +360,21 @@ public class GameEvent
         }
         catch(Exception exIgnore) {}
     }
+
+    public void resourceCapturedHandler()
+    {
+        EventString = "Resource captured from " + GetEnemyColor() + " at " + GetLocation();
+        Game.playSoundEffect(GAME_EVENT_BURB_CAPTURED);
+        Game.addGamePlayEvent(this);
+    }
+
+    public void resourceLostHandler()
+    {
+        EventString = "Resource lost to " + GetEnemyColor() + " at " + GetLocation();
+        Game.playSoundEffect(GAME_EVENT_BURB_LOST);
+        Game.addGamePlayEvent(this);
+    }
+
 
     public void playerLostGameHandler()
     {

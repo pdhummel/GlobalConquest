@@ -883,7 +883,7 @@ public class Map
         return hexes;
     }
 
-    public void checkBurbsForOwner(Server server)
+    public void checkHexesForOwner(Server server)
     {
 
         for (int liY = 0; liY < Y; liY++)
@@ -892,6 +892,23 @@ public class Map
             {
                 MapHex mapHex = Hexes[liY, liX];
                 updateBurbOwners(server, mapHex);
+                if (mapHex.Resource != null && mapHex.Unit != null)
+                {
+                    string previousOwnerColor = mapHex.Resource.OwnerColor;
+                    string newOwnerColor = mapHex.Unit.Color;
+                    if (!previousOwnerColor.Equals(mapHex.Unit.Color))
+                    {
+                        mapHex.Resource.OwnerColor = mapHex.Unit.Color;
+                        GameEvent gameEvent = new GameEvent(GAME_EVENT_RESOURCE_CAPTURED);
+                        gameEvent.EnemyColor = previousOwnerColor;
+                        gameEvent.MapHex = mapHex;
+                        server.sendGamePlayEvent(newOwnerColor, gameEvent);
+                        gameEvent.EventType = GAME_EVENT_RESOURCE_LOST;
+                        gameEvent.EnemyColor = newOwnerColor;
+                        server.sendGamePlayEvent(previousOwnerColor, gameEvent);
+                        server.sendGameStateAndMapHex(mapHex.X, mapHex.Y);
+                    }
+                }
             }
         }
     }
