@@ -12,7 +12,7 @@ namespace GlobalConquest
         //static List<string> logTextMatches = ["outputDataStructureUse()", "sendJsonString()", "processGameEventQueue()"];
         // Useful for debugging just the AI planning
         //static List<string> logTextMatches = ["Ai ", "AiGoal"];
-        //static List<string> logTextMatches = ["doExecutionPhase", "getMapHexesInRange"];
+        //static List<string> logTextMatches = ["doExecutionPhase", "getMapHexesInRange", "IsInFiringRange", "checkForCombat"];
         static List<string> logTextMatches = new List<string>();
 
         public static void Log(string message, [CallerFilePath] string sourceFilePath = "")

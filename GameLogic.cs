@@ -793,71 +793,43 @@ public class GameLogic
         // A sneaking unit can't fire at other units at all.
         if (unit.IsSneaking)
             return;
-        //Globals.Log("checkForCombat(): " + unit.Id);
+
+
         Unit unitToAttack = null;
         Map map = server.gameState.Map;
         MapHex mapHex = map.Hexes[unit.Y, unit.X];
         UnitTypes unitTypes = server.gameState.UnitTypes;
         UnitType attackerUnitType = unitTypes.UnitTypeMap[unit.UnitType];
-        HashSet<MapHex> previouslyScannedHexes = new HashSet<MapHex>();
-        for (int i = 0; i < 4; i++)
+        
+        Unit lastTargetUnit = map.getUnitAtXY((int)unit.lastTargetUnitVector.X, (int)unit.lastTargetUnitVector.Y);
+        if (lastTargetUnit != null && lastTargetUnit.StrengthPoints > 0 && !lastTargetUnit.Color.Equals(unit.Color) && 
+            lastTargetUnit.IsVisibleToColor(unit.Color)) // TODO: check for treaty visibility too
         {
-            int scanRange = i + 1;
-            HashSet<MapHex> hexesToScan = map.getMapHexesInRange(mapHex, scanRange);
-            if (unitToAttack == null)
+            if (IsInFiringRange(unit, lastTargetUnit))
             {
-                Unit lastTargetUnit = map.getUnitAtXY((int)unit.lastTargetUnitVector.X, (int)unit.lastTargetUnitVector.Y);
-                // if already attacking a unit, keep attacking the same unit.
-                if (lastTargetUnit != null && lastTargetUnit.StrengthPoints > 0 && !lastTargetUnit.Color.Equals(unit.Color))
-                {
-                    MapHex targetMapHex = map.Hexes[lastTargetUnit.Y, lastTargetUnit.X];
-                    UnitType targetUnitType = unitTypes.UnitTypeMap[lastTargetUnit.UnitType];
-                    int firingRangeFromAttacker = targetUnitType.FiringRangeFromAttacker[unit.UnitType];
-                    int firingRangeToDefender = attackerUnitType.FiringRangeToDefender[lastTargetUnit.UnitType];
-                    if (lastTargetUnit.StrengthPoints > 0 && lastTargetUnit.Visibility[unit.Color] &&
-                        scanRange <= firingRangeFromAttacker && scanRange <= firingRangeToDefender && hexesToScan.Contains(targetMapHex))
-                    {
-                        unitToAttack = lastTargetUnit;
-                        if (!NATIVE_COLOR.Equals(unit.Color))
-                            Globals.Log("checkForCombat(): " + unit.Id + " wants to continue to attack " + unitToAttack.Id);
-                    }
-                }
-
-                if (unitToAttack == null)
-                {
-                    if (!NATIVE_COLOR.Equals(unit.Color) && scanRange == 4)
-                        Globals.Log("checkForCombat(): no previous unit to attack found for " + unit.Id);
-                    foreach (MapHex hex in hexesToScan.Except(previouslyScannedHexes))
-                    {
-                        Unit hexUnit = hex.getUnit();
-                        if (hexUnit != null)
-                        {
-                            MapHex targetMapHex = map.Hexes[hex.Y, hex.X];
-                            UnitType targetUnitType = unitTypes.UnitTypeMap[hexUnit.UnitType];
-                            int firingRangeFromAttacker = targetUnitType.FiringRangeFromAttacker[unit.UnitType];
-                            int firingRangeToDefender = attackerUnitType.FiringRangeToDefender[hexUnit.UnitType];
-
-                            if (hexUnit.Visibility[unit.Color] && scanRange <= firingRangeFromAttacker && scanRange <= firingRangeToDefender &&
-                                attackerUnitType.BattleDamageToDefender[hexUnit.UnitType] > 0 && hexUnit.Color != unit.Color)
-                            {
-                                unitToAttack = hexUnit;
-                                Globals.Log("checkForCombat(): " + unit.Id + " wants to attack " + unitToAttack.Id);
-                                break;
-                            }
-                        }
-
-                    }
-                    // As we expand the range from 1 to 4, we don't need to scan the hexes from the previous ranges.
-                    previouslyScannedHexes.UnionWith(hexesToScan);
-                }
-
-                if (unitToAttack != null)
-                {
-                    break;
-                }
-
+                unitToAttack = lastTargetUnit;
             }
         }
+
+        if (unitToAttack == null)
+        {
+            HashSet<MapHex> hexesToScan = map.getMapHexesInRange(mapHex, 4);
+            foreach (MapHex hex in hexesToScan)
+            {
+                Unit hexUnit = hex.getUnit();
+                if (hexUnit != null && hexUnit.StrengthPoints > 0 && !hexUnit.Color.Equals(unit.Color) && 
+                    hexUnit.IsVisibleToColor(unit.Color)) // TODO: check for treaty visibility too
+                {
+                    if (IsInFiringRange(unit, hexUnit))
+                    {
+                        unitToAttack = hexUnit;
+                        break;
+                    }
+                }
+            }
+
+        }
+
         if (unitToAttack != null && unitToAttack.IsVisibleToColor(unit.Color) && unit.StrengthPoints > 0 && unitToAttack.StrengthPoints > 0)
         {
             Globals.Log("checkForCombat(): " + unit.Id + " at " + unit.X + "," + unit.Y + " attacking " + unitToAttack.Id + " at " + unitToAttack.X + "," + unitToAttack.Y);
@@ -994,6 +966,31 @@ public class GameLogic
 
             server.sendGameState();
         }
+    }
+
+    private bool IsInFiringRange(Unit attacker, Unit defender)
+    {
+        //Globals.Log("IsInFiringRange(): " + defender.X + "," + defender.Y + "; target=" + defender.UnitType);
+        bool isInFiringRange = false;
+        Map map = server.gameState.Map;
+        UnitTypes unitTypes = server.gameState.UnitTypes;
+        UnitType attackerUnitType = unitTypes.UnitTypeMap[attacker.UnitType];
+        MapHex attackerMapHex = map.Hexes[attacker.Y, attacker.X];
+        MapHex defenderMapHex = map.Hexes[defender.Y, defender.X];
+        float distance = map.calculateDistance(attackerMapHex, defenderMapHex);
+        UnitType targetUnitType = unitTypes.UnitTypeMap[defender.UnitType];
+        int firingRangeFromAttacker = targetUnitType.FiringRangeFromAttacker[attacker.UnitType];
+        int firingRangeToDefender = attackerUnitType.FiringRangeToDefender[defender.UnitType];
+        if (firingRangeFromAttacker != firingRangeToDefender)
+            Globals.Log("IsInFiringRange(): " + defender.X + "," + defender.Y + "; target=" + defender.UnitType + ", firingRangeFromAttacker=" + firingRangeFromAttacker + ", firingRangeToDefender=" + firingRangeToDefender);
+        // TODO: check treaty visibility
+        if (defender.StrengthPoints > 0 && defender.Visibility[attacker.Color] &&
+            distance <= firingRangeFromAttacker && distance <= firingRangeToDefender)
+        {
+            isInFiringRange = true;
+        }
+
+        return isInFiringRange;
     }
 
     private void killUnit(Unit unit, MapHex mapHex = null)
