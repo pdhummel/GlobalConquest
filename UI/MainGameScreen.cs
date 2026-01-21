@@ -93,29 +93,44 @@ public class MainGameScreen
         grid.Desktop.Widgets.Add(MainGameMenuPanel);
         MainGameMenuPanel.Visible = true;
 
-        MapPanel.Left = 0;
-        MapPanel.Top = (int)MainGameMenuPanel.Height;
-        grid.Desktop.Widgets.Add(MapPanel);
-        MapPanel.Visible = true;
-
-        grid.Desktop.Widgets.Add(FactionsPanel);
-        FactionsPanel.Left = (int)MapPanel.Width;
-        FactionsPanel.Top = (int)MainGameMenuPanel.Height;
-        FactionsPanel.Visible = true;
-
-        grid.Desktop.Widgets.Add(MiniMapPanel);
-        MiniMapPanel.Left = (int)MapPanel.Width;
-        MiniMapPanel.Top = (int)MainGameMenuPanel.Height + (int)FactionsPanel.Height;
-        MiniMapPanel.Visible = true;
-
-        grid.Desktop.Widgets.Add(DetailsPanel);
-        DetailsPanel.Left = (int)MapPanel.Width;
-        if (MiniMapPanel.Height == null)
+        if (gcGame.Server?.gameState?.GameSettings?.IsStandaloneServer == true)
         {
-            MiniMapPanel.Height = FactionsPanel.Height;
+            // Standalone Server: hide Main Map, Mini Map, and Details Panel
+            MapPanel.Visible = false;
+            MiniMapPanel.Visible = false;
+            DetailsPanel.Visible = false;
+
+            grid.Desktop.Widgets.Add(FactionsPanel);
+            FactionsPanel.Left = 0;
+            FactionsPanel.Top = (int)MainGameMenuPanel.Height;
+            FactionsPanel.Visible = true;
         }
-        DetailsPanel.Top = (int)MainGameMenuPanel.Height + (int)FactionsPanel.Height + (int)MiniMapPanel.Height;
-        DetailsPanel.Visible = true;
+        else
+        {
+            MapPanel.Left = 0;
+            MapPanel.Top = (int)MainGameMenuPanel.Height;
+            grid.Desktop.Widgets.Add(MapPanel);
+            MapPanel.Visible = true;
+
+            grid.Desktop.Widgets.Add(FactionsPanel);
+            FactionsPanel.Left = (int)MapPanel.Width;
+            FactionsPanel.Top = (int)MainGameMenuPanel.Height;
+            FactionsPanel.Visible = true;
+
+            grid.Desktop.Widgets.Add(MiniMapPanel);
+            MiniMapPanel.Left = (int)MapPanel.Width;
+            MiniMapPanel.Top = (int)MainGameMenuPanel.Height + (int)FactionsPanel.Height;
+            MiniMapPanel.Visible = true;
+
+            grid.Desktop.Widgets.Add(DetailsPanel);
+            DetailsPanel.Left = (int)MapPanel.Width;
+            if (MiniMapPanel.Height == null)
+            {
+                MiniMapPanel.Height = FactionsPanel.Height;
+            }
+            DetailsPanel.Top = (int)MainGameMenuPanel.Height + (int)FactionsPanel.Height + (int)MiniMapPanel.Height;
+            DetailsPanel.Visible = true;
+        }
         IsVisible = true;
         showTimedMessagePopup("loading", 5);
     }
@@ -142,6 +157,15 @@ public class MainGameScreen
 
     private void Window_ClientSizeChanged(object sender, System.EventArgs e)
     {
+        if (gcGame.Server?.gameState?.GameSettings?.IsStandaloneServer == true)
+        {
+            if (game.Window.ClientBounds.Width > 1000)
+            {
+                FactionsPanel.Left = 0;
+                FactionsPanel.Height = 200;
+            }
+            return;
+        }
         if (game.Window.ClientBounds.Width > 1000)
         {
             MapPanel.Width = game.Window.ClientBounds.Width - 250;

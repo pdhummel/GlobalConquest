@@ -533,6 +533,8 @@ public class HostGameScreen
     private void setupForStandaloneServer()
     {
         GlobalConquestGame gcGame = (GlobalConquestGame)game;
+        gcGame.SetWindowSize(600, 300);
+        //gcGame.Window.AllowUserResizing = true;
         JoinGameValues joinGameValues = new JoinGameValues();
         joinGameValues.IsObserverOnly = true;
         gcGame.Client.IsObserverOnly = true;

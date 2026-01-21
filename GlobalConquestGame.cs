@@ -118,6 +118,16 @@ public class GlobalConquestGame : Game
         e.GraphicsDeviceInformation.PresentationParameters.DeviceWindowHandle = drawSurface;
     }
 
+    public void SetWindowSize(int width, int height)
+    {
+        Globals.WIDTH = width;
+        Globals.HEIGHT = height;
+        _graphics.IsFullScreen = false;
+        _graphics.PreferredBackBufferWidth = width;
+        _graphics.PreferredBackBufferHeight = height;
+        _graphics.ApplyChanges();
+    }
+
     public void minimizeScreen()
     {
         Globals.Log("minimizeScreen(): enter");
@@ -132,10 +142,7 @@ public class GlobalConquestGame : Game
           Form form = (Form)Control.FromHandle(Window.Handle);
           form.Hide();
 #endif
-        _graphics.IsFullScreen = false;
-        _graphics.PreferredBackBufferWidth = 300;
-        _graphics.PreferredBackBufferHeight = 100;
-        _graphics.ApplyChanges();
+        SetWindowSize(300, 100);
         JoinGameScreen.showMessage("You may minimize this window");
     }
 
@@ -289,9 +296,9 @@ public class GlobalConquestGame : Game
         {
             hexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
             hexMapEngineAdapter.LoadContent();
-            miniMapHexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
-            if (!turnOffMiniMapPanel)
+            if (!turnOffMiniMapPanel && Server?.gameState?.GameSettings?.IsStandaloneServer != true)
             {
+                miniMapHexMapEngineAdapter = new HexMapEngineAdapter(this, GraphicsDevice, _graphics, Client.GameState.Map.Y, Client.GameState.Map.X);
                 miniMapHexMapEngineAdapter.LoadContent();
                 if (MainGameScreen != null && MainGameScreen.MiniMapPanel != null && MainGameScreen.MiniMapPanel.Width != null && MainGameScreen.MiniMapPanel.Height != null)
                 {
@@ -313,7 +320,7 @@ public class GlobalConquestGame : Game
     {
         if (Client != null && isLoadContentComplete && MainGameScreen != null &&
             MainGameScreen.MapPanel != null && MainGameScreen.MapPanel.Width != null && MainGameScreen.MapPanel.Height != null &&
-            MainGameScreen.IsVisible)
+            MainGameScreen.IsVisible && Server?.gameState?.GameSettings?.IsStandaloneServer != true)
         {
             mouseOverVector = findHexFromPixels(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);
         }
@@ -422,7 +429,7 @@ public class GlobalConquestGame : Game
             return;
         Globals.Log("updateMap()");
         hexMapEngineAdapter?.updateMap();
-        if (!turnOffMiniMapPanel)
+        if (!turnOffMiniMapPanel && Server?.gameState?.GameSettings?.IsStandaloneServer != true)
         {
             miniMapHexMapEngineAdapter?.updateMap();
             shouldDrawMiniMap = true;
@@ -435,9 +442,19 @@ public class GlobalConquestGame : Game
         if (MainGameScreen != null && turnOffMainGameScreen)
             MainGameScreen.IsVisible = false;
         // If the MainGameScreen is visible and the map is calculated.
-        if (Client != null && isLoadContentComplete && MainGameScreen != null &&
+        if (Client != null && isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible && Server?.gameState?.GameSettings?.IsStandaloneServer == true)
+        {
+            // Standalone Server: draw only Factions panel (no Main Map, Mini Map, or Details Panel)
+            Globals.spriteBatch?.Begin(SpriteSortMode.BackToFront, null, null, null, null, null, transformMatrix: Matrix.Identity);
+            if (MainGameScreen.FactionsPanel != null && !turnOffFactionsPanel)
+            {
+                MainGameScreen.drawFactionsPanel();
+            }
+            Globals.spriteBatch?.End();
+        }
+        else if (Client != null && isLoadContentComplete && MainGameScreen != null &&
             MainGameScreen.MapPanel != null && MainGameScreen.MapPanel.Width != null && MainGameScreen.MapPanel.Height != null &&
-            MainGameScreen.IsVisible)
+            MainGameScreen.IsVisible && Server?.gameState?.GameSettings?.IsStandaloneServer != true)
         {
             //Globals.Log("currentX=" + currentPosition.X + ", currentY=" + currentPosition.Y + ", viewWidth=" + viewportRectangle.Width + ", viewHeight=" + viewportRectangle.Height);
 
@@ -1043,7 +1060,7 @@ public class GlobalConquestGame : Game
     public bool handleLeftMouseButtonOnMiniMap()
     {
         bool handled = false;
-        if (!turnOffMiniMapPanel &&
+        if (!turnOffMiniMapPanel && Server?.gameState?.GameSettings?.IsStandaloneServer != true &&
             Client != null && isLoadContentComplete && MainGameScreen != null && MainGameScreen.IsVisible)
         {
             var mousePosition = new Vector2(GameControl.currentMouseState.X, GameControl.currentMouseState.Y);

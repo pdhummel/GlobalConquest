@@ -47,7 +47,7 @@ public class GameState
     public int SecondsRemainingUntilExecution {get; set;}
 
     // if any of the data elements in the entities change above, then this version should be bumped.
-    public string Version { get; set; } = "v0.9.0";
+    public string Version { get; set; } = "v0.9.1";
     private Random rand = new System.Random();
 
 
