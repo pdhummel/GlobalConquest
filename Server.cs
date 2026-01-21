@@ -246,7 +246,7 @@ public class Server
         List<MapHex> mapHexBuffer = new List<MapHex>();
         Map map = gameState.Map;
         // 200 - Server sendMapBuffer(): Exception:System.OverflowException: Arithmetic operation resulted in an overflow.
-        int bufferSize = 175;
+        int bufferSize = 200;
         for (int y = 0; y < map.Y; y++)
         {
             for (int x = 0; x < map.X; x++)
@@ -318,7 +318,25 @@ public class Server
         gameEvent.GameState = null;
         gameEvent.IsLastMapHexBufferUpdate = isLast;
         string jsonString = JsonSerializer.Serialize(gameEvent);
-        sendJsonString(peer, jsonString);
+        try
+        {
+            sendJsonString(peer, jsonString);    
+        }
+        catch(OverflowException oe)
+        {
+            Globals.Log("sendMapBuffer(): Caught overflow exception. Retrying with split.");
+            // split the maxHexBuffer and try again.
+            int halfLength = mapHexBuffer.Count / 2;
+
+            // First list takes elements from the beginning
+            List<MapHex> firstHalf = mapHexBuffer.Take<MapHex>(halfLength).ToList();
+            // Second list skips the first half and takes the rest
+            List<MapHex> secondHalf = mapHexBuffer.Skip(halfLength).ToList();
+
+            sendMapBuffer(peer, firstHalf, false);
+            sendMapBuffer(peer, secondHalf, isLast);
+        }
+        
     }
 
     public void sendGamePlayEvent(GameEvent gameEvent)
