@@ -28,6 +28,7 @@ public class GameSettings
     public int NumberOfIslands {get; set;} = 1;
     public bool IsStandaloneServer {get; set;}
     public string UnitPalette {get; set;}
+    public String ResourceMode {get;set;}
 
     public GameSettings()
     {

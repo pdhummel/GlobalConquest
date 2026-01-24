@@ -56,7 +56,6 @@ public class GameState
         Factions = new Factions();
         UnitTypes = new UnitTypes();
         Players = new Players();
-        Burbs = new Burbs();
     }
 
     public void updateTicks()

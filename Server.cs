@@ -33,8 +33,9 @@ public class Server
         this.maxPeers = 8; // gameSettings.NumberOfHumans;
         this.key = key;
         gameState.GameSettings = gameSettings;
-        Map map = new Map(gameSettings.Height, gameSettings.Width, gameSettings.NumberOfIslands, gameSettings.Visibility);
-        map.addBurbs(gameState.Burbs, gameState.GameSettings.NumberOfBurbs);
+        Map map = new Map(gameSettings.Height, gameSettings.Width, gameState.GameSettings.NumberOfBurbs, 
+                          gameSettings.NumberOfIslands, gameSettings.Visibility);
+        gameState.Burbs = map.Burbs;
         gameState.Map = map;
         gameState.placeInitialUnits();
         listener = new EventBasedNetListener();

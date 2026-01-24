@@ -8,6 +8,7 @@ using static GlobalConquest.Resource;
 using static GameConstants;
 using Microsoft.Xna.Framework;
 using GlobalConquest.HexMapEngine.Structures;
+using System.Numerics;
 namespace GlobalConquest;
 
 public class Map
@@ -36,6 +37,7 @@ public class Map
     public Dictionary<string, Unit> UnitIdToUnit { get; set; } = new Dictionary<string, Unit>();
     public Dictionary<string, HashSet<string>> ColorToUnitIds { get; set; } = new Dictionary<string, HashSet<string>>();
     public bool IsMapReady { get; set; } = false;
+    public Burbs Burbs {get;set;} = new Burbs();
     Random random = new Random();
 
     public Map()
@@ -43,15 +45,16 @@ public class Map
         positionMetros();
     }
 
-    public Map(int y, int x, int numberOfIslands=1, string visibilityMode=VISIBILITY_FOG)
+    public Map(int y, int x, int numberOfBurbs=0, int numberOfIslands=1, string visibilityMode=VISIBILITY_FOG)
     {
         Y = y;
         X = x; 
         VisibilityMode = visibilityMode;
         positionMetros();
         Hexes = generateMap(y, x, numberOfIslands);
-        placeResources();
         buildNodesForShortestPath();
+        addBurbs(Burbs, numberOfBurbs);
+        placeResources(Burbs);
         IsMapReady = true;
         foreach (string color in NATIVE_AND_FACTION_COLORS)
         {
@@ -308,19 +311,19 @@ public class Map
         return hexes;
     }
 
-    public void placeResources()
+    public void placeResources(Burbs burbs)
     {
         for (int liY = 0; liY < Y; liY++)
         {
             for (int liX = 0; liX < X; liX++)
             {
                 MapHex mapHex = Hexes[liY, liX];
-                placeResource(mapHex);
+                placeResource(mapHex, burbs);
             }
         }
     }
 
-    private void placeResource(MapHex mapHex)
+    private void placeResource(MapHex mapHex, Burbs burbs)
     {
         if (mapHex == null)
             return;
@@ -381,6 +384,29 @@ public class Map
                     resource.Visibility[color] = true;
                 else
                     resource.Visibility[color] = false;
+            }
+            if (burbs != null)
+            {
+                float shortestDistanceToBurb = float.MaxValue;
+                Burb closestBurb = null;
+                MapHex resourceHex = Hexes[resource.Y, resource.X];
+                foreach (string burbName in burbs.NameToBurb.Keys)
+                {
+                    Burb burb = burbs.NameToBurb[burbName];
+                    MapHex burbHex = Hexes[burb.Y, burb.X];
+                    float distanceToBurb = calculateDistance(burbHex, resourceHex);
+                    //Globals.Log("placeResource(): distanceToBurb=" + distanceToBurb + ", burb=" + burbName);
+                    if (distanceToBurb < shortestDistanceToBurb)
+                    {
+                        closestBurb = burb;
+                        shortestDistanceToBurb = distanceToBurb;
+                    }
+                }
+                if (closestBurb != null)
+                {
+                    resource.ParentBurbXy = closestBurb.X + "," + closestBurb.Y;
+                    Globals.Log("placeResource(): closest burb=" + resource.ParentBurbXy);
+                }
             }
         }
     }
