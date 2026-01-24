@@ -288,7 +288,8 @@ public class GameLogic
             foreach (MapHex burbHex in burbHexes)
             {
                 Unit unitInBurb = burbHex.getUnit();
-                if (unitInBurb != null && !unitInBurb.Color.Equals(burb.OwnerColor) && SPY.Equals(unitInBurb.UnitType))
+                if (unitInBurb != null && !unitInBurb.Color.Equals(burb.OwnerColor) && 
+                    SPY.Equals(unitInBurb.UnitType) && unitInBurb.StrengthPoints > 0)
                 {
                     isSabotaged = true;
                     break;

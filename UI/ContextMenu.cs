@@ -797,7 +797,7 @@ public class ContextMenu
     public void buildMenuItemSelected()
     {
         Globals.Log("build");
-        BurbWindow burbWindow = new BurbWindow();
+        BurbUnitWindow burbUnitWindow = new BurbUnitWindow();
         Burb burb = mapHex.Burb;
         string directionToHighlight = null;
         
@@ -805,7 +805,7 @@ public class ContextMenu
         {
             // The burb is at mapHex, so direction is center
             directionToHighlight = DIRECTION_CENTER;
-            burbWindow.showPurchaseUnit(MainGameScreen, mapHex, burb, directionToHighlight);
+            burbUnitWindow.showPurchaseUnit(MainGameScreen, mapHex, burb, directionToHighlight);
             HideContextMenu();
         }
         else if (burb != null && burb.ParentBurbName != null)
@@ -814,7 +814,7 @@ public class ContextMenu
             MapHex parentMapHex = gcGame.Client.GameState.Map.Hexes[parentBurb.Y, parentBurb.X];
             // Use the stored DirectionFromParent property - it's already set when the burb is created
             directionToHighlight = burb.DirectionFromParent;
-            burbWindow.showPurchaseUnit(MainGameScreen, parentMapHex, parentBurb, directionToHighlight);
+            burbUnitWindow.showPurchaseUnit(MainGameScreen, parentMapHex, parentBurb, directionToHighlight);
             HideContextMenu();
         }
     }
