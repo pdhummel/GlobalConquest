@@ -331,9 +331,19 @@ public class GameLogic
         {
             if (resource.OwnerColor != null && !NATIVE_COLOR.Equals(resource.OwnerColor))
             {
-                // TODO:  A resource contributes two bucks to the income of your nearest burb.
                 Faction faction = gameState.Factions.ColorToFaction[resource.OwnerColor];
-                faction.Money += 2;
+                Burb burb = null;
+                if (resource.ParentBurbXy != null && gameState.Burbs.HexXyToBurb.ContainsKey(resource.ParentBurbXy))
+                    burb = gameState.Burbs.HexXyToBurb[resource.ParentBurbXy];
+                if (gameState.GameSettings.IsAdvancedEconomics)
+                {
+                    if (burb.OwnerColor.Equals(resource.OwnerColor))
+                        burb.Money += 2;
+                }
+                else
+                {
+                    faction.Money += 2;
+                }
             }
         }
 

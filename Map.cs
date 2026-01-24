@@ -32,11 +32,11 @@ public class Map
     public Dictionary<string, MapHex> LeftMetro { get; set; } = new Dictionary<string, MapHex>();
     public Dictionary<string, MapHex> RightMetro { get; set; } = new Dictionary<string, MapHex>();
     public Dictionary<string, MapHex> DiagonalMetro { get; set; } = new Dictionary<string, MapHex>();
-    public HashSet<Resource> Resources {get; set;} = new HashSet<Resource>();
-
     public Dictionary<string, Unit> UnitIdToUnit { get; set; } = new Dictionary<string, Unit>();
     public Dictionary<string, HashSet<string>> ColorToUnitIds { get; set; } = new Dictionary<string, HashSet<string>>();
     public bool IsMapReady { get; set; } = false;
+    public HashSet<Resource> Resources {get; set;} = new HashSet<Resource>();
+
     public Burbs Burbs {get;set;} = new Burbs();
     Random random = new Random();
 
@@ -45,21 +45,37 @@ public class Map
         positionMetros();
     }
 
-    public Map(int y, int x, int numberOfBurbs=0, int numberOfIslands=1, string visibilityMode=VISIBILITY_FOG)
+    public Map(GameSettings gameSettings)
     {
-        Y = y;
-        X = x; 
+        setupMapForConstructor(gameSettings.Height, gameSettings.Width, gameSettings.Visibility, 
+            gameSettings.NumberOfIslands,
+            gameSettings.NumberOfBurbs, gameSettings.ResourceMode);
+    }
+
+
+    public Map(int height, int width, 
+        string visibilityMode=VISIBILITY_FOG, int numberOfIslands=1, int numberOfBurbs=0, string resourceMode="")
+    {
+        setupMapForConstructor(height, width);
+    }
+
+    private void setupMapForConstructor(int height, int width, 
+        string visibilityMode=VISIBILITY_FOG, int numberOfIslands=1, int numberOfBurbs=0, string resourceMode="")
+    {
+        Y = height;
+        X = width;
         VisibilityMode = visibilityMode;
         positionMetros();
-        Hexes = generateMap(y, x, numberOfIslands);
+        Hexes = generateMap(Y, X, numberOfIslands);
         buildNodesForShortestPath();
         addBurbs(Burbs, numberOfBurbs);
-        placeResources(Burbs);
-        IsMapReady = true;
+        if (!RESOURCE_MODE_NONE.Equals(resourceMode))
+            placeResources(Burbs);
         foreach (string color in NATIVE_AND_FACTION_COLORS)
         {
             ColorToUnitIds[color] = new HashSet<string>();
         }
+        IsMapReady = true;        
     }
 
     private void positionMetros()
@@ -1272,6 +1288,25 @@ public class Map
 
             }
         }
+    }
+
+    public bool HasResourceInRange(MapHex mapHex, string color, string resourceType)
+    {
+        bool hasResource = false;
+        foreach (Resource resource in Resources)
+        {
+            if (!color.Equals(resource.OwnerColor))
+                continue;
+            if (!resourceType.Equals(resource.Type))
+                continue;
+            MapHex resourceHex = Hexes[resource.Y, resource.X];
+            if (calculateDistance(mapHex, resourceHex) <= 25)
+            {
+                hasResource = true;
+                break;
+            }
+        }
+        return hasResource;
     }
 
     public void outputDataStructureUse()

@@ -20,6 +20,7 @@ using Microsoft.Xna.Framework.Audio;
 using static GlobalConquest.Factions;
 using static GlobalConquest.Burbs;
 using static UnitConstants;
+using static GlobalConquest.Resource;
 using static GameConstants;
 
 namespace GlobalConquest.UI;
@@ -73,6 +74,9 @@ public class HostGameScreen
     CheckButton canLoseComCenCheckButton = new CheckButton();
     Label unitsLabel = new Label();
     ComboView unitsComboView = new ComboView();
+
+    Label resourcesLabel = new Label();
+    ComboView resourcesComboView = new ComboView();
     MainGameScreen mainGameScreen;
 
 
@@ -291,6 +295,18 @@ public class HostGameScreen
         unitsComboView.Widgets.Add(new Label() {Text=UNIT_PALETTE_NAME_INFANTRY});
         unitsComboView.SelectedIndex = 0;
 
+        resourcesLabel.Id = "resourcesLabel";
+        resourcesLabel.Text = "resources:";
+        resourcesComboView.Id = "resourcesComboView";
+        resourcesComboView.Border = new SolidBrush("#808000FF");
+        resourcesComboView.BorderThickness = new Thickness(2);
+        resourcesComboView.Widgets.Add(new Label() {Text=RESOURCE_MODE_NONE});
+        resourcesComboView.Widgets.Add(new Label() {Text=RESOURCE_MODE_MONEY});
+        resourcesComboView.Widgets.Add(new Label() {Text=RESOURCE_MODE_OIL});
+        resourcesComboView.Widgets.Add(new Label() {Text=RESOURCE_MODE_MINERALS});
+        resourcesComboView.Margin = new Thickness(0);
+        resourcesComboView.SelectedIndex = 1;
+
         cancelButton.Click += cancelButtonClicked;
         okButton.Click += okButtonClicked;
 
@@ -306,8 +322,8 @@ public class HostGameScreen
         gcImage.Visible = true;
 
         var hostSettingsPanel = new Panel();
-        hostSettingsPanel.Width = 300;
-        hostSettingsPanel.MaxWidth = 300;
+        hostSettingsPanel.Width = 375;
+        hostSettingsPanel.MaxWidth = 375;
         verticalStackPanel.Widgets.Add(hostSettingsPanel);
         hostSettingsPanel.Widgets.Add(hostSettingsLabel);
         hostSettingsLabel.Visible = true;
@@ -327,6 +343,7 @@ public class HostGameScreen
         addPanelRow(verticalStackPanel, timedSecondsLabel, timedSecondsTextBox);
         addPanelRow(verticalStackPanel, scoringOptionLabel, scoringOptionComboView);
         addPanelRow(verticalStackPanel, unitsLabel, unitsComboView);
+        addPanelRow(verticalStackPanel, resourcesLabel, resourcesComboView);
         addPanelRow(verticalStackPanel, nativesLabel, nativesCheckButton);
         addPanelRow(verticalStackPanel, canLoseComCenLabel, canLoseComCenCheckButton);
 
@@ -345,8 +362,8 @@ public class HostGameScreen
     private void addPanelRow(VerticalStackPanel verticalStackPanel, Label label, Widget widget)
     {
         var panel = new Panel();
-        panel.Width = 300;
-        panel.MaxWidth = 300;
+        panel.Width = 375;
+        panel.MaxWidth = 375;
         verticalStackPanel.Widgets.Add(panel);
         panel.Widgets.Add(label);
         label.Visible = true;
@@ -395,6 +412,8 @@ public class HostGameScreen
         canLoseComCenCheckButton.Visible = false;
         unitsLabel.Visible = false;
         unitsComboView.Visible = false;
+        resourcesLabel.Visible = false;
+        resourcesComboView.Visible = false;
 
         hostSettingsLabel.RemoveFromParent();
         portLabel.RemoveFromParent();
@@ -433,6 +452,8 @@ public class HostGameScreen
         standaloneServerCheckButton.RemoveFromParent();
         unitsLabel.RemoveFromParent();
         unitsComboView.RemoveFromParent();
+        resourcesLabel.RemoveFromParent();
+        resourcesComboView.RemoveFromParent();
     }
 
     private void cancelButtonClicked(object? sender, EventArgs e)
@@ -467,6 +488,7 @@ public class HostGameScreen
         gameSettings.ExecutionMode = ((Label)executionComboView.SelectedItem).Text;
         gameSettings.ScoringOption = ((Label)scoringOptionComboView.SelectedItem).Text;
         gameSettings.UnitPalette = ((Label)unitsComboView.SelectedItem).Text;
+        gameSettings.ResourceMode = ((Label)resourcesComboView.SelectedItem).Text;
         if (nativesCheckButton.IsChecked)
             gameSettings.HasNatives = true;
         else

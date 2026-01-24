@@ -217,6 +217,7 @@ The game is being designed with known differences from the original.
     - [x] Provides money. 
     - [ ] Oil is needed to build tanks and planes. 
     - [ ] Minerals are needed for building ships.
+    - [ ] Make AI aware of resources.
   - [ ] Exploit options.
 
 ### Milestone 10

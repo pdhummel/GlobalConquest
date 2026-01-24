@@ -8,10 +8,10 @@ public class Resource
 {
     public static readonly string RESOURCE_FUEL = "fuel";
     public static readonly string RESOURCE_MINERAL_DEPOSITS = "mineral deposits";
-    public static readonly string RESOURCE_MODE_NONE = "None";
-    public static readonly string RESOURCE_MODE_MONEY = "Money $";
-    public static readonly string RESOURCE_MODE_OIL = "$, Oil->Tanks+Planes";
-    public static readonly string RESOURCE_MODE_MINERALS = "$, Oil, Minerals->Ships";
+    public static readonly string RESOURCE_MODE_NONE = "0: None";
+    public static readonly string RESOURCE_MODE_MONEY = "1: Money";
+    public static readonly string RESOURCE_MODE_OIL = "2: #1 + Oil->Tanks+Planes";
+    public static readonly string RESOURCE_MODE_MINERALS = "3: #2 + Minerals->Ships";
 
     [JsonPropertyName("T")]
     public string Type { get; set; }
