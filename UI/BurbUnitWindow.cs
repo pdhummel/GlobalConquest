@@ -2,6 +2,7 @@ using static UnitConstants;
 using static GameConstants;
 using static GlobalConquest.Map;
 using static GlobalConquest.Burbs;
+using static GlobalConquest.Resource;
 using GlobalConquest.Actions;
 using GlobalConquest.Units;
 using Myra.Graphics2D;
@@ -95,9 +96,16 @@ public class BurbUnitWindow
             ColumnSpacing = 8,
             RowSpacing = 8,
         };
+
+        grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels, 125)); // units
+        grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels, 125)); // city
+        grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels, 75)); // resource
+        grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels, 125)); // buttons
+
         window.Content = grid;
         int costValue = 0;
         Dictionary<int, int> costByRow = new Dictionary<int, int>();
+        Dictionary<int, string> resourceByRow = new Dictionary<int, string>();
         List<int> airUnitRows = new List<int>();
         List<int> landUnitRows = new List<int>();
         List<int> seaUnitRows = new List<int>();
@@ -112,22 +120,22 @@ public class BurbUnitWindow
         rowIndex += 1;
         
         rowIndex = addUnitRow(INFANTRY,  unitTypeByRow, 
-                   costByRow, rowIndex, mainGameScreen, grid, landUnitRows);
+                   costByRow, resourceByRow, rowIndex, mainGameScreen, grid, landUnitRows);
         costByRow[rowIndex] = gameState.UnitTypes.UnitTypeMap[INFANTRY].Cost;
         rowIndex = addUnitRow(ARMOR,  unitTypeByRow, 
-                   costByRow, rowIndex, mainGameScreen, grid, landUnitRows);
+                   costByRow, resourceByRow, rowIndex, mainGameScreen, grid, landUnitRows);
         rowIndex = addUnitRow(SUBMARINE,  unitTypeByRow, 
-                   costByRow, rowIndex, mainGameScreen, grid, seaUnitRows);
+                   costByRow, resourceByRow, rowIndex, mainGameScreen, grid, seaUnitRows);
         rowIndex = addUnitRow(BATTLESHIP,  unitTypeByRow, 
-                   costByRow, rowIndex, mainGameScreen, grid, seaUnitRows);
+                   costByRow, resourceByRow, rowIndex, mainGameScreen, grid, seaUnitRows);
         rowIndex = addUnitRow(AIRCRAFT_CARRIER,  unitTypeByRow, 
-                   costByRow, rowIndex, mainGameScreen, grid, seaUnitRows);
+                   costByRow, resourceByRow, rowIndex, mainGameScreen, grid, seaUnitRows);
         rowIndex = addUnitRow(SPY,  unitTypeByRow, 
-                   costByRow, rowIndex, mainGameScreen, grid, landUnitRows);
+                   costByRow, resourceByRow, rowIndex, mainGameScreen, grid, landUnitRows);
         rowIndex = addUnitRow(DECOY_COMMAND_CENTER,  unitTypeByRow, 
-                   costByRow, rowIndex, mainGameScreen, grid, landUnitRows);
+                   costByRow, resourceByRow, rowIndex, mainGameScreen, grid, landUnitRows);
         rowIndex = addUnitRow(AIRPLANE,  unitTypeByRow, 
-                   costByRow, rowIndex, mainGameScreen, grid, airUnitRows);
+                   costByRow, resourceByRow, rowIndex, mainGameScreen, grid, airUnitRows);
 
         // Store the direction to highlight (if any)
 
@@ -163,11 +171,12 @@ public class BurbUnitWindow
     }
 
     private int addUnitRow(string unitType,  Dictionary<int, string> unitTypeByRow, 
-        Dictionary<int, int> costByRow, int rowIndex, 
+        Dictionary<int, int> costByRow, Dictionary<int, string> resourceByRow, int rowIndex, 
         MainGameScreen mainGameScreen, Grid grid, List<int> rowNumbers)
     {
         GameState gameState = mainGameScreen.gcGame.Client.GameState;
-        string unitPaletteName = gameState.GameSettings.UnitPalette;
+        GameSettings gameSettings = gameState.GameSettings;
+        string unitPaletteName = gameSettings.UnitPalette;
         HashSet<string> units = UNIT_PALETTES[unitPaletteName];
         if (!units.Contains(unitType))
             return rowIndex;
@@ -175,10 +184,24 @@ public class BurbUnitWindow
 
         costByRow[rowIndex] = gameState.UnitTypes.UnitTypeMap[unitType].Cost;
         int costValue = costByRow[rowIndex];
+        string resource = "";
+        if ((ARMOR.Equals(unitType) || TRANSPORT_ARMOR.Equals(unitType) || AIRPLANE.Equals(unitType)) &&
+             (RESOURCE_MODE_OIL.Equals(gameSettings.ResourceMode) || RESOURCE_MODE_MINERALS.Equals(gameSettings.ResourceMode)))
+        {
+            resourceByRow[rowIndex] = RESOURCE_SHORT_NAME_OIL;
+            resource = resourceByRow[rowIndex];
+        }
+        if ((BATTLESHIP.Equals(unitType) || SUBMARINE.Equals(unitType) || AIRCRAFT_CARRIER.Equals(unitType)) &&
+             RESOURCE_MODE_MINERALS.Equals(gameSettings.ResourceMode))
+        {
+            resourceByRow[rowIndex] = RESOURCE_SHORT_NAME_MINERALS;
+            resource = resourceByRow[rowIndex];
+        }
         rowNumbers.Add(rowIndex);
         unitTypeByRow[rowIndex] = unitType;
         addLabelToGrid(grid, rowIndex, 0, unitType);
-        addLabelToGrid(grid, rowIndex++, 1, "" + costValue);
+        addLabelToGrid(grid, rowIndex, 1, "" + costValue);
+        addLabelToGrid(grid, rowIndex++, 2, resource, 50);
         return rowIndex;
     }
 
@@ -220,7 +243,7 @@ public class BurbUnitWindow
                 Content = label
             };
             Grid.SetRow(buildButton, row);
-            Grid.SetColumn(buildButton, 2 + count);
+            Grid.SetColumn(buildButton, 3 + count);
             grid.Widgets.Add(buildButton);
             buildButton.Click += (s, a) =>
             {
@@ -276,10 +299,15 @@ public class BurbUnitWindow
         mainGameScreen.gcGame.Client.SendAction(player.Name, action);
     }
 
-    private void addLabelToGrid(Grid grid, int row, int col, string labelText)
+    private void addLabelToGrid(Grid grid, int row, int col, string labelText, int width=0)
     {
         Label label = new Label();
         label.Text = labelText;
+        if (width > 0)
+        {
+            label.Width = width;
+            label.MaxWidth = width;
+        }
         Grid.SetRow(label, row);
         Grid.SetColumn(label, col);
         grid.Widgets.Add(label);

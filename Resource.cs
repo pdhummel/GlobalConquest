@@ -8,6 +8,8 @@ public class Resource
 {
     public static readonly string RESOURCE_FUEL = "fuel";
     public static readonly string RESOURCE_MINERAL_DEPOSITS = "mineral deposits";
+    public static readonly string RESOURCE_SHORT_NAME_MINERALS = "minerals";
+    public static readonly string RESOURCE_SHORT_NAME_OIL = "oil";
     public static readonly string RESOURCE_MODE_NONE = "0: None";
     public static readonly string RESOURCE_MODE_MONEY = "1: Money";
     public static readonly string RESOURCE_MODE_OIL = "2: #1 + Oil->Tanks+Planes";
