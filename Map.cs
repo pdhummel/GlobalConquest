@@ -20,6 +20,15 @@ public class Map
     public static readonly string DIRECTION_NORTH_WEST = "northWest";
     public static readonly string DIRECTION_SOUTH_EAST = "southEast";
     public static readonly string DIRECTION_SOUTH_WEST = "southWest";
+
+    public static readonly string DIRECTION_NORTH_SHORT_NAME = "↑N";
+    public static readonly string DIRECTION_SOUTH_SHORT_NAME = "↓S";
+    public static readonly string DIRECTION_CENTER_SHORT_NAME = "center";
+    public static readonly string DIRECTION_NORTH_EAST_SHORT_NAME = "\u2197NE";
+    public static readonly string DIRECTION_NORTH_WEST_SHORT_NAME = "\u2196NW";
+    public static readonly string DIRECTION_SOUTH_EAST_SHORT_NAME = "\u2198SE";
+    public static readonly string DIRECTION_SOUTH_WEST_SHORT_NAME = "\u2199SW";
+
     public MapHex[,] Hexes { get; set; }
     Dictionary<string, Node> allNodesGraph = new Dictionary<string, Node>();
     Dictionary<string, Node> seaNodesGraph = new Dictionary<string, Node>();

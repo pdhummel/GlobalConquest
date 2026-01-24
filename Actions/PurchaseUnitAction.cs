@@ -87,7 +87,7 @@ public class PurchaseUnitAction : PlayerAction
             if (map.HasResourceInRange(mapHex, FactionColor, RESOURCE_FUEL))
                 hasRequired = true;
         }
-        if ((BATTLESHIP.Equals(Unit.UnitType) || SUBMARINE.Equals(Unit.UnitType) || AIRCRAFT_CARRIER.Equals(Unit.UnitType)) &&
+        else if ((BATTLESHIP.Equals(Unit.UnitType) || SUBMARINE.Equals(Unit.UnitType) || AIRCRAFT_CARRIER.Equals(Unit.UnitType)) &&
              RESOURCE_MODE_MINERALS.Equals(gameSettings.ResourceMode))
         {
             // The mineral resource is a necessity for building all naval units. 
@@ -97,6 +97,8 @@ public class PurchaseUnitAction : PlayerAction
                 hasRequired = true;
 
         }
+        else
+            hasRequired = true;
 
         return hasRequired;
     }

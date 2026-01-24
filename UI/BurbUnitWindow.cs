@@ -98,9 +98,9 @@ public class BurbUnitWindow
         };
 
         grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels, 125)); // units
-        grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels, 125)); // city
-        grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels, 75)); // resource
-        grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels, 125)); // buttons
+        grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels, 125)); // cost (City header)
+        grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels, 100));  // resource
+        grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels, 100)); // buttons
 
         window.Content = grid;
         int costValue = 0;
@@ -118,7 +118,13 @@ public class BurbUnitWindow
         addLabelToGrid(grid, rowIndex, 0, "Burb Balance:");
         addLabelToGrid(grid, rowIndex++, 1, "" + burb.Money);
         rowIndex += 1;
-        
+
+        addLabelToGrid(grid, rowIndex, 0, "Unit Type");
+        addLabelToGrid(grid, rowIndex, 1, "Cost");
+        addLabelToGrid(grid, rowIndex, 2, "Resource");
+        addLabelToGrid(grid, rowIndex++, 3, "Build:");
+
+
         rowIndex = addUnitRow(INFANTRY,  unitTypeByRow, 
                    costByRow, resourceByRow, rowIndex, mainGameScreen, grid, landUnitRows);
         costByRow[rowIndex] = gameState.UnitTypes.UnitTypeMap[INFANTRY].Cost;
@@ -201,7 +207,7 @@ public class BurbUnitWindow
         unitTypeByRow[rowIndex] = unitType;
         addLabelToGrid(grid, rowIndex, 0, unitType);
         addLabelToGrid(grid, rowIndex, 1, "" + costValue);
-        addLabelToGrid(grid, rowIndex++, 2, resource, 50);
+        addLabelToGrid(grid, rowIndex++, 2, resource);
         return rowIndex;
     }
 
@@ -217,6 +223,14 @@ public class BurbUnitWindow
         if (!units.Contains(unitType))
             return;
 
+        Dictionary<string, string> directionToShortName = new Dictionary<string, string>();
+        directionToShortName[DIRECTION_CENTER] = DIRECTION_CENTER_SHORT_NAME;
+        directionToShortName[DIRECTION_NORTH] = DIRECTION_NORTH_SHORT_NAME;
+        directionToShortName[DIRECTION_SOUTH] = DIRECTION_SOUTH_SHORT_NAME;
+        directionToShortName[DIRECTION_NORTH_EAST] = DIRECTION_NORTH_EAST_SHORT_NAME;
+        directionToShortName[DIRECTION_NORTH_WEST] = DIRECTION_NORTH_WEST_SHORT_NAME;
+        directionToShortName[DIRECTION_SOUTH_EAST] = DIRECTION_SOUTH_EAST_SHORT_NAME;
+        directionToShortName[DIRECTION_SOUTH_WEST] = DIRECTION_SOUTH_WEST_SHORT_NAME;
         int count = 0;
         foreach (string direction in directions)
         {
@@ -224,8 +238,8 @@ public class BurbUnitWindow
             
             var label = new Label
             {
-                Text = "Build " + direction,
-                Width = 150,
+                Text = directionToShortName[direction],
+                Width = 100,
                 Border = new SolidBrush("#808000FF"),
                 BorderThickness = new Thickness(2)
             };
@@ -299,15 +313,10 @@ public class BurbUnitWindow
         mainGameScreen.gcGame.Client.SendAction(player.Name, action);
     }
 
-    private void addLabelToGrid(Grid grid, int row, int col, string labelText, int width=0)
+    private void addLabelToGrid(Grid grid, int row, int col, string labelText)
     {
         Label label = new Label();
         label.Text = labelText;
-        if (width > 0)
-        {
-            label.Width = width;
-            label.MaxWidth = width;
-        }
         Grid.SetRow(label, row);
         Grid.SetColumn(label, col);
         grid.Widgets.Add(label);
