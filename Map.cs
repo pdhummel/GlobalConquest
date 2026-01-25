@@ -1308,19 +1308,19 @@ public class Map
         bool hasResource = false;
         foreach (Resource resource in Resources)
         {
-            Globals.Log("HasResourceInRange(): resource=" + resource.Type + "; " + resource.X + "," + resource.Y + " " + resource.OwnerColor);
+            //Globals.Log("HasResourceInRange(): resource=" + resource.Type + "; " + resource.X + "," + resource.Y + " " + resource.OwnerColor);
             if (!resourceType.Equals(resource.Type))
                 continue;
             MapHex resourceHex = Hexes[resource.Y, resource.X];
             if (resourceHex.Resource == null)
             {
-                Globals.Log("HasResourceInRange(): resource is null for " + resource.Type + "; " + resource.X + "," + resource.Y);
+                //Globals.Log("HasResourceInRange(): resource is null for " + resource.Type + "; " + resource.X + "," + resource.Y);
                 continue;
             }
             if (!color.Equals(resourceHex.Resource.OwnerColor))
                 continue;
             float distance = calculateDistance(mapHex, resourceHex);
-                Globals.Log("HasResourceInRange(): resourceHex=" + resourceHex + ", distance=" + distance);
+            //Globals.Log("HasResourceInRange(): resourceHex=" + resourceHex + ", distance=" + distance);
             if (distance <= 25)
             {
                 hasResource = true;
