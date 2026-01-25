@@ -71,35 +71,9 @@ public class PurchaseUnitAction : PlayerAction
 
     private bool checkIfHasRequiredResources(Server server)
     {
-        bool hasRequired = false;
         GameState gameState = server.gameState;
-        GameSettings gameSettings = gameState.GameSettings;
         Map map = gameState.Map;
-        if (RESOURCE_MODE_NONE.Equals(gameSettings.ResourceMode) || RESOURCE_MODE_MONEY.Equals(gameSettings.ResourceMode))
-            return true;
-        if ((ARMOR.Equals(Unit.UnitType) || TRANSPORT_ARMOR.Equals(Unit.UnitType) || AIRPLANE.Equals(Unit.UnitType)) &&
-             (RESOURCE_MODE_OIL.Equals(gameSettings.ResourceMode) || RESOURCE_MODE_MINERALS.Equals(gameSettings.ResourceMode)))
-        {
-            // An oil resource must be either "attached" or within 25 spaces 
-            // of one of your burbs in order for you to use it to build these units.
-            // RESOURCE_MODE_MINERALS includes the requirements for RESOURCE_MODE_OIL as well.
-            MapHex mapHex = map.Hexes[Y, X];
-            if (map.HasResourceInRange(mapHex, FactionColor, RESOURCE_FUEL))
-                hasRequired = true;
-        }
-        else if ((BATTLESHIP.Equals(Unit.UnitType) || SUBMARINE.Equals(Unit.UnitType) || AIRCRAFT_CARRIER.Equals(Unit.UnitType)) &&
-             RESOURCE_MODE_MINERALS.Equals(gameSettings.ResourceMode))
-        {
-            // The mineral resource is a necessity for building all naval units. 
-            // The needed resources must be "attached" or within 25 spaces of your burb in order to be useful.
-            MapHex mapHex = map.Hexes[Y, X];
-            if (map.HasResourceInRange(mapHex, FactionColor, RESOURCE_MINERAL_DEPOSITS))
-                hasRequired = true;
-
-        }
-        else
-            hasRequired = true;
-
-        return hasRequired;
+        MapHex mapHex = map.Hexes[Y, X];
+        return gameState.CheckIfHasRequiredResources(mapHex, Unit.UnitType, FactionColor);
     }
 }

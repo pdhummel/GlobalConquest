@@ -151,7 +151,7 @@ public class DetailsPanelView
                     parentBurb = gameState.Burbs.HexXyToBurb[lastSelectedResource.ParentBurbXy].Name + " ";
                 }
                 string owner = lastSelectedResource.OwnerColor;
-                resourceOwnerLabel.Text = "Owner: " + parentBurb + "(" + owner + ")";
+                resourceOwnerLabel.Text = "Resource: " + parentBurb + "(" + owner + ")";
                 stackPanel.Widgets.Add(resourceOwnerLabel);
             }
         }

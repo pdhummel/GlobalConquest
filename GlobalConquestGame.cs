@@ -371,6 +371,10 @@ public class GlobalConquestGame : Game
                 Client.GameState.Map = new Map(gameSettings.Height, gameSettings.Width);
                 Map map = Client.GameState.Map;
                 map.Hexes = new MapHex[gameSettings.Height, gameSettings.Width];
+                if (Client.GameState.Burbs != null)
+                    map.Burbs = Client.GameState.Burbs;
+                if (Client.GameState.Resources != null)
+                    map.Resources = Client.GameState.Resources;
             }
             if (Client.GameState.Map.Hexes == null)
             {

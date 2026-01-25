@@ -35,6 +35,7 @@ public class Server
         gameState.GameSettings = gameSettings;
         Map map = new Map(gameSettings);
         gameState.Burbs = map.Burbs;
+        gameState.Resources = map.Resources;
         gameState.Map = map;
         gameState.placeInitialUnits();
         listener = new EventBasedNetListener();

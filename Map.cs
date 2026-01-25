@@ -47,6 +47,7 @@ public class Map
     public HashSet<Resource> Resources {get; set;} = new HashSet<Resource>();
 
     public Burbs Burbs {get;set;} = new Burbs();
+
     Random random = new Random();
 
     public Map()
@@ -78,6 +79,8 @@ public class Map
         Hexes = generateMap(Y, X, numberOfIslands);
         buildNodesForShortestPath();
         addBurbs(Burbs, numberOfBurbs);
+        if (resourceMode == null || resourceMode.Equals(""))
+            resourceMode = RESOURCE_MODE_NONE;
         if (!RESOURCE_MODE_NONE.Equals(resourceMode))
             placeResources(Burbs);
         foreach (string color in NATIVE_AND_FACTION_COLORS)
@@ -365,9 +368,9 @@ public class Map
                 mineralDeposits.X = mapHex.X;
                 mineralDeposits.Y = mapHex.Y;
                 mineralDeposits.Type = RESOURCE_MINERAL_DEPOSITS;
+                mapHex.Resource = mineralDeposits;
                 resource = mineralDeposits;
-                mapHex.Resource = resource;
-                Resources.Add(resource);
+                Resources.Add(mineralDeposits);
                 Globals.Log("placeResource(): mineralDeposits placed at " + mapHex.X + "," + mapHex.Y);
             }
         }
@@ -395,8 +398,8 @@ public class Map
                     fuel.Y = mapHex.Y;
                     fuel.Type = RESOURCE_FUEL;
                     resource = fuel;
-                    mapHex.Resource = resource;
-                    Resources.Add(resource);
+                    mapHex.Resource = fuel;
+                    Resources.Add(fuel);
                     Globals.Log("placeResource(): fuel placed at " + mapHex.X + "," + mapHex.Y);
                 }
             }
@@ -1301,20 +1304,30 @@ public class Map
 
     public bool HasResourceInRange(MapHex mapHex, string color, string resourceType)
     {
+        Globals.Log("HasResourceInRange(): checking" + mapHex + " " + color + " " + resourceType);
         bool hasResource = false;
         foreach (Resource resource in Resources)
         {
-            if (!color.Equals(resource.OwnerColor))
-                continue;
+            Globals.Log("HasResourceInRange(): resource=" + resource.Type + "; " + resource.X + "," + resource.Y + " " + resource.OwnerColor);
             if (!resourceType.Equals(resource.Type))
                 continue;
             MapHex resourceHex = Hexes[resource.Y, resource.X];
-            if (calculateDistance(mapHex, resourceHex) <= 25)
+            if (resourceHex.Resource == null)
+            {
+                Globals.Log("HasResourceInRange(): resource is null for " + resource.Type + "; " + resource.X + "," + resource.Y);
+                continue;
+            }
+            if (!color.Equals(resourceHex.Resource.OwnerColor))
+                continue;
+            float distance = calculateDistance(mapHex, resourceHex);
+                Globals.Log("HasResourceInRange(): resourceHex=" + resourceHex + ", distance=" + distance);
+            if (distance <= 25)
             {
                 hasResource = true;
                 break;
             }
         }
+        Globals.Log("HasResourceInRange(): hasResource=" + hasResource);
         return hasResource;
     }
 

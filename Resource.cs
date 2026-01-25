@@ -40,4 +40,21 @@ public class Resource
         return isVisible;
     }
 
+    public override bool Equals(object obj)
+    {
+        if (obj is Resource other)
+        {
+            return Type == other.Type &&
+                Y == other.Y &&
+                X == other.X;
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        // Combine hash codes of relevant properties
+        return HashCode.Combine(Type, Y, X);
+    }
+
 }

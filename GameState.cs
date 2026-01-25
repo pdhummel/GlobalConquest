@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using GlobalConquest.Units;
 using static GlobalConquest.Map;
 using static GlobalConquest.Burbs;
+using static GlobalConquest.Resource;
 using static GameConstants;
 namespace GlobalConquest;
 
@@ -38,6 +39,7 @@ public class GameState
     [JsonPropertyName("UT")]
     public UnitTypes UnitTypes { get; set; }
     public Burbs Burbs { get; set; }
+    public HashSet<Resource> Resources {get;set;}
 
     [JsonPropertyName("VC")]
     public string VictoriousColor { get; set; } = NATIVE_COLOR;
@@ -331,6 +333,10 @@ public class GameState
         {
             this.Burbs = newGameState.Burbs;
         }
+        if (newGameState.Resources.Count > 0)
+        {
+            this.Resources = newGameState.Resources;
+        }
         this.Factions = newGameState.Factions;
         this.GameSettings = newGameState.GameSettings;
         this.Players = newGameState.Players;
@@ -364,6 +370,38 @@ public class GameState
             }
         }
         return activeCount;
+    }
+
+    public bool CheckIfHasRequiredResources(MapHex mapHex, string unitType, string color)
+    {
+        Globals.Log("CheckIfHasRequiredResources(): " + mapHex + " " + unitType + " " + color);
+        bool hasRequired = false;
+        GameSettings gameSettings = GameSettings;
+        Map map = Map;
+        if (RESOURCE_MODE_NONE.Equals(gameSettings.ResourceMode) || RESOURCE_MODE_MONEY.Equals(gameSettings.ResourceMode))
+            return true;
+        if ((ARMOR.Equals(unitType) || TRANSPORT_ARMOR.Equals(unitType) || AIRPLANE.Equals(unitType)) &&
+             (RESOURCE_MODE_OIL.Equals(gameSettings.ResourceMode) || RESOURCE_MODE_MINERALS.Equals(gameSettings.ResourceMode)))
+        {
+            // An oil resource must be either "attached" or within 25 spaces 
+            // of one of your burbs in order for you to use it to build these units.
+            // RESOURCE_MODE_MINERALS includes the requirements for RESOURCE_MODE_OIL as well.
+            if (map.HasResourceInRange(mapHex, color, RESOURCE_FUEL))
+                hasRequired = true;
+        }
+        else if ((BATTLESHIP.Equals(unitType) || SUBMARINE.Equals(unitType) || AIRCRAFT_CARRIER.Equals(unitType)) &&
+             RESOURCE_MODE_MINERALS.Equals(gameSettings.ResourceMode))
+        {
+            // The mineral resource is a necessity for building all naval units. 
+            // The needed resources must be "attached" or within 25 spaces of your burb in order to be useful.
+            if (map.HasResourceInRange(mapHex, color, RESOURCE_MINERAL_DEPOSITS))
+                hasRequired = true;
+        }
+        else
+            hasRequired = true;
+
+        Globals.Log("CheckIfHasRequiredResources(): hasRequired=" + hasRequired);
+        return hasRequired;
     }
 
     public override string ToString()

@@ -148,6 +148,8 @@ public class BurbUnitWindow
         List<int> rows = [];
         foreach (int row in landUnitRows)
         {
+            if (!gameState.CheckIfHasRequiredResources(mapHex, unitTypeByRow[row], faction.Color))
+                continue;
             if (costByRow[row] <= faction.Money && !gameState.GameSettings.IsAdvancedEconomics)
                 addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, openSpaceDirections, unitTypeByRow, directionToHighlight);
             else if (costByRow[row] <= burb.Money && gameState.GameSettings.IsAdvancedEconomics)
@@ -155,6 +157,8 @@ public class BurbUnitWindow
         }
         foreach (int row in seaUnitRows)
         {
+            if (!gameState.CheckIfHasRequiredResources(mapHex, unitTypeByRow[row], faction.Color))
+                continue;
             if (costByRow[row] <= faction.Money && !gameState.GameSettings.IsAdvancedEconomics)
                 addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, dockDirections, unitTypeByRow, directionToHighlight);
             else if (costByRow[row] <= burb.Money && gameState.GameSettings.IsAdvancedEconomics)
@@ -163,6 +167,8 @@ public class BurbUnitWindow
         }
         foreach (int row in airUnitRows)
         {
+            if (!gameState.CheckIfHasRequiredResources(mapHex, unitTypeByRow[row], faction.Color))
+                continue;
             if (costByRow[row] <= faction.Money && !gameState.GameSettings.IsAdvancedEconomics)
                 addPurchaseBuildButton(window, grid, row, mainGameScreen, mapHex, burb, airDirections, unitTypeByRow, directionToHighlight);
             else if (costByRow[row] <= burb.Money && gameState.GameSettings.IsAdvancedEconomics)
