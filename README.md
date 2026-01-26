@@ -215,8 +215,8 @@ The game is being designed with known differences from the original.
 - [ ] Complex Economics - part 1
   - [x] Add oil and mineral resources.
     - [x] Provides money. 
-    - [ ] Oil is needed to build tanks and planes. 
-    - [ ] Minerals are needed for building ships.
+    - [x] Oil is needed to build tanks and planes. 
+    - [x] Minerals are needed for building ships.
     - [ ] Make AI aware of resources.
   - [ ] Exploit options.
 

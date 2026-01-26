@@ -461,6 +461,14 @@ public class Ai
                 createConquerBurbGoal(mapHex);
             }
         }
+
+        foreach (Resource resource in gameState.Resources)
+        {
+            if (resource.IsVisibleToColor(Faction.Color) && !resource.OwnerColor.Equals(Faction.Color))
+            {
+                createConquerResource(resource);
+            }
+        }
     }
 
     public void processGoals()
@@ -1153,7 +1161,8 @@ public class Ai
     {
         int count = 0;
         // Brute force assault on burb.
-        if (AI_GOAL_CONQUER.Equals(goal.Type) && goal.TargetMapHex != null && goal.ShouldMoveToTarget && !goal.IsComplete)
+        if (AI_GOAL_CONQUER.Equals(goal.Type) && goal.TargetMapHex != null && goal.TargetMapHex.Burb != null &&
+            goal.ShouldMoveToTarget && !goal.IsComplete)
         {
             HashSet<MapHex> nearbyHexes = map.getMapHexesInRange(goal.TargetMapHex, 4);
             foreach (MapHex nearbyHex in nearbyHexes)
@@ -1218,7 +1227,8 @@ public class Ai
                 if (unitHex.Burb != null)
                     isBurbCenter = unitHex.Burb.IsBurbCenter();
                 // If a unit is in the burb center, make it stay
-                if (isBurbCenter && !SPY.Equals(aiUnit.Unit) && unitHex.Burb.OwnerColor.Equals(aiUnit.Unit.Color))
+                if (isBurbCenter && !SPY.Equals(aiUnit.Unit) && unitHex.Burb != null && 
+                    unitHex.Burb.OwnerColor.Equals(aiUnit.Unit.Color))
                 {
                     goal.ActualUnits.Remove(aiUnit);
                     aiUnit.Unit.ActionQueue.Clear();
@@ -1253,9 +1263,11 @@ public class Ai
                     int distance = 3;
                     Unit unit = aiUnit.Unit;
                     aiUnit.Unit.IsSneaking = false;
-                    if (BURB_METROPLEX.Equals(goal.TargetMapHex.Burb.Type) && BATTLESHIP.Equals(unit.UnitType))
+                    if (goal.TargetMapHex.Burb != null && BURB_METROPLEX.Equals(goal.TargetMapHex.Burb.Type) && 
+                        BATTLESHIP.Equals(unit.UnitType))
                         distance = 2;
-                    else if (BURB_METROPLEX.Equals(goal.TargetMapHex.Burb.Type) && AIRCRAFT_CARRIER.Equals(unit.UnitType))
+                    else if (goal.TargetMapHex.Burb != null && BURB_METROPLEX.Equals(goal.TargetMapHex.Burb.Type) && 
+                             AIRCRAFT_CARRIER.Equals(unit.UnitType))
                         distance = 3;
                     MapHex nearbyHex = findHexAroundBurb(goal.TargetMapHex, aiUnit, distance);
                     if (nearbyHex != null)
@@ -1681,7 +1693,7 @@ public class Ai
 
     private MapHex findHexAroundBurb(MapHex burbHex, Unit unit, int distance)
     {
-        if (unit == null || burbHex == null)
+        if (unit == null || burbHex == null || burbHex.Burb == null)
             return null;
 
         HashSet<MapHex> rangeHexes = map.getMapHexesAtDistance(burbHex, distance);
@@ -2134,6 +2146,27 @@ public class Ai
             conquerInteriorBurbGoal(burbHex);
     }
 
+    private void createConquerResource(Resource resource)
+    {
+        if (targetXyToGoal.ContainsKey(resource.X + "," + resource.Y))
+            return;
+        AiGoal attackGoal = new AiGoal();
+        attackGoal.Type = AI_GOAL_CONQUER;
+        MapHex mapHex = map.Hexes[resource.Y, resource.X];
+        attackGoal.TargetMapHex = mapHex;
+        attackGoal.ShouldMoveToTarget = true;
+        attackGoal.IsOngoingGoal = false;
+        AiUnit infantry = new AiUnit();
+        infantry.InitialPosition = mapHex;
+        infantry.GoalTargetXy = attackGoal.TargetMapHex.X + "," + attackGoal.TargetMapHex.Y;
+        infantry.UnitType = INFANTRY;
+        attackGoal.DesiredUnits.Add(infantry);
+        goals.Add(attackGoal);
+        Globals.Log("createConquerResource(): added conquer goal for " + mapHex.X + "," + mapHex.Y);
+        targetXyToGoal[mapHex.X + "," + mapHex.Y] = attackGoal;
+
+    }
+
     private bool IsBurbCoastal(MapHex burbHex)
     {
         bool isCoastal = false;
@@ -2167,6 +2200,8 @@ public class Ai
     private void updateDesiredUnitsForInteriorBurbGoal(AiGoal attackGoal)
     {
         MapHex burbHex = attackGoal.TargetMapHex;
+        if (burbHex.Burb == null)
+            return;
         List<MapHex> neighbors = map.getSurroundingHexesList(burbHex);
         int enemies = 0;
         if (burbHex.getUnit() != null)
@@ -2224,6 +2259,8 @@ public class Ai
     private void updateDesiredUnitsForCoastalBurbGoal(AiGoal attackGoal)
     {
         MapHex burbHex = attackGoal.TargetMapHex;
+        if (burbHex.Burb == null)
+            return;
         List<MapHex> neighbors = map.getSurroundingHexesList(burbHex);
         int enemies = 0;
         if (burbHex.getUnit() != null)

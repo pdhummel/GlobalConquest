@@ -31,6 +31,9 @@ public class JoinGameScreen
     CheckButton observerOnlyCheckButton = new CheckButton();
     Label gameSpeedLabel = new Label();
     ComboView gameSpeedComboView = new ComboView();
+    Label soundVolumeLabel = new Label();
+    TextBox soundVolumeTextBox = new TextBox();
+
     Label hostIpLabel = new Label();
     TextBox hostIpTextBox = new TextBox();
     Label portLabel = new Label();
@@ -161,6 +164,15 @@ public class JoinGameScreen
         gameSpeedComboView.Widgets.Add(falconLabel);
         gameSpeedComboView.SelectedIndex = 2;
 
+        soundVolumeLabel.Id = "soundVolumeLabel";
+        soundVolumeLabel.Text = "sound volume (0-100):";
+        soundVolumeLabel.HorizontalAlignment = HorizontalAlignment.Right;
+        soundVolumeTextBox.Id = "soundVolumeTextBox";
+        soundVolumeTextBox.Text = "50";
+        soundVolumeTextBox.Width = 50;
+        soundVolumeTextBox.Border = new SolidBrush("#808000FF");
+        soundVolumeTextBox.BorderThickness = new Thickness(2);
+
         cancelButton.Click += cancelButtonClicked;
         okButton.Click += okButtonClicked;
 
@@ -186,6 +198,7 @@ public class JoinGameScreen
         addPanelRow(verticalStackPanel, nameLabel, nameTextBox);
         addPanelRow(verticalStackPanel, fightingForceLabel, fightingForceComboView);
         addPanelRow(verticalStackPanel, gameSpeedLabel, gameSpeedComboView);
+        addPanelRow(verticalStackPanel, soundVolumeLabel, soundVolumeTextBox);
 
         var buttonsPanel = new HorizontalStackPanel { Spacing = 8 };
         verticalStackPanel.Widgets.Add(buttonsPanel);
@@ -215,6 +228,8 @@ public class JoinGameScreen
         fightingForceComboView.Visible = false;
         gameSpeedLabel.Visible = false;
         gameSpeedComboView.Visible = false;
+        soundVolumeLabel.Visible = false;
+        soundVolumeTextBox.Visible = false;
         okButton.Visible = false;
         cancelButton.Visible = false;
 
@@ -232,6 +247,8 @@ public class JoinGameScreen
         fightingForceComboView.RemoveFromParent();
         gameSpeedLabel.RemoveFromParent();
         gameSpeedComboView.RemoveFromParent();
+        soundVolumeLabel.RemoveFromParent();
+        soundVolumeLabel.RemoveFromParent();
         okButton.RemoveFromParent();
         cancelButton.RemoveFromParent();
     }
@@ -273,6 +290,7 @@ public class JoinGameScreen
         try
         {
             joinGameValues.Port = validateTextBoxInteger(portLabel.Text, portTextBox, 1024, 49151);
+            joinGameValues.SoundVolume = validateTextBoxInteger(soundVolumeLabel.Text, soundVolumeTextBox, 0, 100);
         }
         catch(Exception ex)
         {
