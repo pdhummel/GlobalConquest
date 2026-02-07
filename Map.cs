@@ -351,7 +351,7 @@ public class Map
         }
     }
 
-    private void placeResource(MapHex mapHex, Burbs burbs)
+    public void placeResource(MapHex mapHex, Burbs burbs, bool isRandom=true)
     {
         if (mapHex == null)
             return;
@@ -362,7 +362,7 @@ public class Map
         {
             // TODO: Make this adjustable - 20% of mountains have minerals.
             int randomMinerals = random.Next(5);
-            if (randomMinerals == 0)
+            if (randomMinerals == 0 || !isRandom)
             {
                 Resource mineralDeposits = new Resource();
                 mineralDeposits.X = mapHex.X;
@@ -391,7 +391,7 @@ public class Map
             {
                 // TODO: Make this adjustable - 50% of swamp next to land have fuel.
                 int randomFuel = random.Next(2);
-                if (randomFuel == 0)
+                if (randomFuel == 0 || !isRandom)
                 {
                     Resource fuel = new Resource();
                     fuel.X = mapHex.X;

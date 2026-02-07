@@ -1004,7 +1004,7 @@ public class GameLogic
         return isInFiringRange;
     }
 
-    private void killUnit(Unit unit, MapHex mapHex = null)
+    public void killUnit(Unit unit, MapHex mapHex = null)
     {
         if (unit == null)
             return;

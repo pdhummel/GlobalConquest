@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.ObjectModel;
 using static UnitConstants;
 using static GlobalConquest.Map;
+using static GameConstants;
 namespace GlobalConquest.UI;
 
 public class ContextMenu
@@ -298,6 +299,25 @@ public class ContextMenu
         actionMapper.registerControlMethod(pursueMenuItem.Id, this, "pursueMenuItemSelected");
         actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, pursueMenuItem.Id);
         itemIndex += 1;
+
+        // Add Exploit option for mountain/swamp terrain with no burb or resource, and for infantry/dug-in infantry units
+        if ((mapHex.Terrain == TERRAIN_MOUNTAIN || mapHex.Terrain == TERRAIN_SWAMP) && 
+            mapHex.Burb == null && 
+            mapHex.Resource == null &&
+            (unit.UnitType == INFANTRY || unit.UnitType == DUG_IN_INFANTRY))
+        {
+            var exploitMenuItem = new MenuItem();
+            exploitMenuItem.Id = "ContextMenu.verticalMenu.exploitMenuItem";
+            exploitMenuItem.Text = "Exploit";
+            exploitMenuItem.Selected += (s, a) =>
+            {
+                exploitMenuItemSelected();
+            };
+            verticalMenu.Items.Add(exploitMenuItem);
+            actionMapper.registerControlMethod(exploitMenuItem.Id, this, "exploitMenuItemSelected");
+            actionMapper.registerSelectedIndex(verticalMenu.Id, itemIndex, exploitMenuItem.Id);
+            itemIndex += 1;
+        }
 
         MapHex unitHex = map.Hexes[unit.Y, unit.X];
         if (unitHex.Burb != null)
@@ -951,6 +971,17 @@ public class ContextMenu
         MainGameScreen.MainGameMenu.refreshStateMenuItemSelected();
     }
 
+    public void exploitMenuItemSelected()
+    {
+        // Create and send an ExploitAction to the server
+        ExploitAction action = new ExploitAction();
+        action.ClassType = "GlobalConquest.Actions.ExploitAction";
+        action.ClientIdentifier = gcGame.Client.ClientIdentifier;
+        action.X = unit.X;
+        action.Y = unit.Y;
+        gcGame.Client.SendAction(gcGame.Client.ClientIdentifier, action);
+        HideContextMenu();
+    }
+
 
 }
-
